@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { User } from "@generated/type-graphql";
-import { Arg, Field, Mutation, ObjectType, Resolver } from "type-graphql";
+import { User } from "../../dist/generated/typegraphql-prisma";
+import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
+import { MyContext } from "src/types";
 
 // TODO: Refactor to "throw" graphql errors instead of returning?
 
@@ -26,6 +27,23 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
 
+  @Query(() => User, { nullable: true })
+  async me(
+    @Ctx() { req }: MyContext
+  ) {
+    // Not logged in
+    if (!req.session.userId) {
+      return null
+    }
+
+    const prisma = new PrismaClient()
+    const user = await prisma.user.findUnique({
+      where: { id: req.session.userId }
+    })
+
+    return user
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("username") username: string,
@@ -43,6 +61,7 @@ export class UserResolver {
         }
       })
       return { user }
+
     } catch (ex: any) {
       console.log(ex.message)
 
@@ -60,13 +79,12 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("username") username: string,
-    @Arg("password") password: string
+    @Arg("password") password: string,
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-
 
     const prisma = new PrismaClient()
     const user = await prisma.user.findUnique({ where: { username } })
-
 
     if (user === null || !await argon2.verify(user.password, password)) {
       return {
@@ -75,6 +93,9 @@ export class UserResolver {
         ]
       }
     }
+
+    // set a cookie to log the user in
+    req.session.userId = user.id
 
     return { user }
   }
