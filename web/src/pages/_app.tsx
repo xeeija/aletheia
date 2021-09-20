@@ -1,8 +1,8 @@
-import '../styles/global.css'
+import '../../styles/global.css'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { theme } from '../src/theme'
+import { theme } from '../theme'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
