@@ -81,9 +81,9 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
 
           <Divider variant="middle" sx={{ mt: -0.25, borderBottomWidth: theme.spacing(0.5) }} />
 
-          {items.map(({ name = "", icon, divider, onClick }) => (
+          {items.map(({ name = "", icon, divider, onClick }, index) => (
             divider ?
-              <Divider variant="middle" sx={{ borderBottomWidth: theme.spacing(0.25) }} /> :
+              <Divider key={`divider-${index}`} variant="middle" sx={{ borderBottomWidth: theme.spacing(0.25) }} /> :
               <Tooltip key={name} title={name} arrow placement="right" enterDelay={1000} >
                 <ListItem button key={name} onClick={onClick} sx={{
                   width: `calc(100% - ${theme.spacing(2)})`,
@@ -92,7 +92,8 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
                   p: theme.spacing(0.5, 1.5),
                 }}>
                   <ListItemIcon>
-                    <SvgIcon component={icon?.type} />
+                    {/* <SvgIcon component={icon?.type} /> */}
+                    {icon}
                   </ListItemIcon>
                   <ListItemText primary={name} />
                 </ListItem>

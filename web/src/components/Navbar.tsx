@@ -14,6 +14,7 @@ export const Navbar: React.FC<Props> = ({ children, drawerWidth = 0, open = fals
   return (
     <AppBar position="fixed" sx={{
       // zIndex: theme.zIndex.drawer + 1 // Set Appbar above Drawer
+      // background: "transparent"
     }}>
       <Toolbar sx={{
         ...(open && {
