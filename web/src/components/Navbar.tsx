@@ -1,30 +1,36 @@
 import React from "react"
-import { AppBar, Box, Toolbar, IconButton, Typography, Button, Container } from "@mui/material"
+import { AppBar, Toolbar, Typography, Button, useTheme } from "@mui/material"
+import { transitionMixin } from "./MiniDrawer"
 
-interface Props { }
+interface Props {
+  drawerWidth?: number
+  open?: boolean
+}
 
-export const Navbar: React.FC<Props> = () => {
+export const Navbar: React.FC<Props> = ({ children, drawerWidth = 0, open = false }) => {
+
+  const theme = useTheme()
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            {/* <MenuIcon /> */}
-          </IconButton>
-          <Container>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
-            </Typography>
-          </Container>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="fixed" sx={{
+      // zIndex: theme.zIndex.drawer + 1 // Set Appbar above Drawer
+    }}>
+      <Toolbar sx={{
+        ...(open && {
+          ml: `${drawerWidth}px`
+        }),
+        ...(!open && {
+          ml: `calc(${theme.spacing(7)} + 1px)`,
+          [theme.breakpoints.up('sm')]: {
+            ml: `calc(${theme.spacing(8)} + 1px)`,
+          },
+        }),
+        ...transitionMixin(theme)
+      }}>
+
+        {children}
+
+      </Toolbar>
+    </AppBar>
   )
 }
