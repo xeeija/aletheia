@@ -19,7 +19,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Sidebar>
-        <Box sx={{ p: 3, "& button": { mr: 1 } }}>
+        <Box sx={{ "& button": { mr: 1 } }}>
           <Typography variant="h3">Hello world</Typography>
           <Typography paragraph>Would you like to reboot now?</Typography>
 

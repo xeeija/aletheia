@@ -4,6 +4,7 @@ import {
   Box, CSSObject, Divider, Drawer, List, ListItem, ListItemIcon,
   ListItemText, SvgIcon, Theme, Tooltip, useTheme
 } from "@mui/material"
+import Link from "next/link"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({
@@ -31,10 +32,11 @@ const closedMixin = (theme: Theme): CSSObject => ({
 })
 
 export interface DrawerItem {
-  name?: string,
-  icon?: JSX.Element,
-  divider?: boolean,
+  name?: string
+  icon?: JSX.Element
+  divider?: boolean
   onClick?: React.MouseEventHandler
+  href?: string
 }
 
 interface Props {
@@ -81,22 +83,27 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
 
           <Divider variant="middle" sx={{ mt: -0.25, borderBottomWidth: theme.spacing(0.5) }} />
 
-          {items.map(({ name = "", icon, divider, onClick }, index) => (
+          {items.map(({ name = "", icon, divider, onClick, href }, index) => (
             divider ?
               <Divider key={`divider-${index}`} variant="middle" sx={{ borderBottomWidth: theme.spacing(0.25) }} /> :
-              <Tooltip key={name} title={name} arrow placement="right" enterDelay={1000} >
-                <ListItem button key={name} onClick={onClick} sx={{
-                  width: `calc(100% - ${theme.spacing(2)})`,
-                  borderRadius: 1.5,
-                  m: 1, // theme.spacing(0.75, 1),
-                  p: theme.spacing(0.5, 1.5),
-                }}>
-                  <ListItemIcon>
-                    {/* <SvgIcon component={icon?.type} /> */}
-                    {icon}
-                  </ListItemIcon>
-                  <ListItemText primary={name} />
-                </ListItem>
+              <Tooltip key={name} title={name} arrow placement="right" enterDelay={1000}>
+                {/* Tooltip needs a child that accepts a ref, eg. basic elements, not function components, eg. <Link> */}
+                <span>
+                  <Link href={href ?? ""} passHref={href !== undefined}>
+                    <ListItem button component="a" onClick={onClick} sx={{
+                      width: `calc(100% - ${theme.spacing(2)})`,
+                      borderRadius: 1.5,
+                      m: 1, // theme.spacing(0.75, 1),
+                      p: theme.spacing(0.5, 1.5),
+                    }}>
+                      <ListItemIcon>
+                        {/* <SvgIcon component={icon?.type} /> */}
+                        {icon}
+                      </ListItemIcon>
+                      <ListItemText primary={name} />
+                    </ListItem>
+                  </Link>
+                </span>
               </Tooltip>
           ))}
         </List>

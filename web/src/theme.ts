@@ -56,5 +56,21 @@ export const theme = createTheme({
         }
       }
     },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          "::before, :hover:not(.Mui-disabled)::before": { borderWidth: 0 },
+          "::after": {
+            borderWidth: 3,
+            borderRadius: "0 0 6px 6px",
+            opacity: 0.6
+          },
+          borderRadius: 6,
+        },
+      },
+      defaultProps: {
+        // size: "small",
+      },
+    },
   },
 })
