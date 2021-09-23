@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { User } from "../../dist/generated/typegraphql-prisma";
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
@@ -29,14 +28,13 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async me(
-    @Ctx() { req }: MyContext
+    @Ctx() { req, prisma }: MyContext
   ) {
     // Not logged in
     if (!req.session.userId) {
       return null
     }
 
-    const prisma = new PrismaClient()
     const user = await prisma.user.findUnique({
       where: { id: req.session.userId }
     })
@@ -47,19 +45,37 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("username") username: string,
-    @Arg("password") password: string
+    @Arg("displayname", { nullable: true }) displayname: string,
+    @Arg("password") password: string,
+    @Ctx() { req, prisma }: MyContext,
   ): Promise<UserResponse> {
+
+    let errors: FieldError[] = []
+
+    // Handle empty fields
+    if (!username) {
+      errors = [...errors, { field: "username", message: "Username may not be empty" }]
+    }
+    if (!password) {
+      errors = [...errors, { field: "password", message: "Password may not be empty" }]
+    }
+    if (errors.length > 0) return { errors }
+
 
     const passwordHash = await argon2.hash(password)
 
-    const prisma = new PrismaClient()
     try {
       const user = await prisma.user.create({
         data: {
           username,
+          displayname,
           password: passwordHash
         }
       })
+
+      // Log the user in directly
+      req.session.userId = user.id
+
       return { user }
 
     } catch (ex: any) {
@@ -70,7 +86,7 @@ export class UserResolver {
       return {
         errors: [{
           field: "username",
-          message: "username already exists"
+          message: "Username already exists"
         }]
       }
     }
@@ -80,16 +96,26 @@ export class UserResolver {
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() { req }: MyContext
+    @Ctx() { req, prisma }: MyContext,
   ): Promise<UserResponse> {
 
-    const prisma = new PrismaClient()
+    let errors: FieldError[] = []
+
+    // Handle empty fields
+    if (!username) {
+      errors = [...errors, { field: "username", message: "Username may not be empty" }]
+    }
+    if (!password) {
+      errors = [...errors, { field: "password", message: "Password may not be empty" }]
+    }
+    if (errors.length > 0) return { errors }
+
     const user = await prisma.user.findUnique({ where: { username } })
 
     if (user === null || !await argon2.verify(user.password, password)) {
       return {
         errors: [
-          { field: "username", message: "Username or password incorrect" }
+          { field: "password", message: "Username or password incorrect" }
         ]
       }
     }

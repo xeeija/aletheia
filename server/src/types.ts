@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client"
 
 // Define custom properties on the session
 declare module "express-session" {
@@ -12,4 +13,5 @@ declare module "express-session" {
 export type MyContext = {
   req: Request
   res: Response
+  prisma: PrismaClient
 }

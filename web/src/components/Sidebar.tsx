@@ -5,6 +5,7 @@ import { DrawerItem, MiniDrawer } from "./MiniDrawer";
 import { Navbar } from "./Navbar";
 import { theme } from "../theme";
 import Link from "next/link"
+import { useMeQuery } from "../generated/graphql";
 interface Props {
   noAppbar?: boolean
   noPadding?: boolean
@@ -30,6 +31,8 @@ const bodyStyle = <GlobalStyles styles={{ body: { backgroundColor: theme.palette
 export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
   const [open, setOpen] = useState(false)
 
+  const [{ data }] = useMeQuery()
+
   return (
     <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={open} setOpen={setOpen}>
 
@@ -39,12 +42,17 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
             Mini variant drawer navbar
           </Typography>
 
-          <Link href="/register" passHref>
-            <Button variant="outlined" color="secondary" sx={{ ml: 1 }}>Register</Button>
-          </Link>
-          <Link href="/login" passHref>
-            <Button variant="outlined" color="primary" sx={{ ml: 1 }}>Login</Button>
-          </Link>
+          {data?.me ? (<>
+            <div>{data.me.username}</div>
+          </>) : (<>
+            <Link href="/register" passHref>
+              <Button variant="outlined" color="secondary" sx={{ ml: 1 }}>Register</Button>
+            </Link>
+            <Link href="/login" passHref>
+              <Button variant="outlined" color="primary" sx={{ ml: 1 }}>Login</Button>
+            </Link>
+          </>)}
+
         </Navbar>
       }
 

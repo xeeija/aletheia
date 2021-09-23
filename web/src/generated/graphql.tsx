@@ -36,6 +36,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationRegisterArgs = {
+  displayname?: Maybe<Scalars['String']>;
   password: Scalars['String'];
   username: Scalars['String'];
 };
@@ -61,21 +62,42 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type NormalUserFragment = { __typename?: 'User', id: number, username: string, displayname?: Maybe<string> };
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+
+export type RegisterMutationVariables = Exact<{
+  username: Scalars['String'];
+  password: Scalars['String'];
+  displayname?: Maybe<Scalars['String']>;
+}>;
 
 
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }> };
+
+export const NormalUserFragmentDoc = gql`
+    fragment NormalUser on User {
+  id
+  username
+  displayname
+}
+    `;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
     user {
-      id
-      username
+      ...NormalUser
     }
     errors {
       field
@@ -83,8 +105,36 @@ export const LoginDocument = gql`
     }
   }
 }
-    `;
+    ${NormalUserFragmentDoc}`;
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const RegisterDocument = gql`
+    mutation Register($username: String!, $password: String!, $displayname: String) {
+  register(username: $username, password: $password, displayname: $displayname) {
+    user {
+      ...NormalUser
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    ${NormalUserFragmentDoc}`;
+
+export function useRegisterMutation() {
+  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const MeDocument = gql`
+    query Me {
+  me {
+    ...NormalUser
+  }
+}
+    ${NormalUserFragmentDoc}`;
+
+export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };

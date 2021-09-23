@@ -4,9 +4,14 @@ import session from "express-session"
 import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
 import { buildSchema } from "type-graphql"
+import { PrismaClient } from "@prisma/client"
 import { UserResolver } from "./resolvers/User"
 import { HelloResolver } from "./resolvers/Hello"
 import { MyContext } from "./types"
+
+// Database client
+// Create one instance and pass it around is the best practice for prisma
+const prisma = new PrismaClient()
 
 const main = async () => {
 
@@ -24,12 +29,12 @@ const main = async () => {
     resave: false,
     saveUninitialized: false,
     cookie: {
+      // sameSite: "lax" // for csrf?
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24
     },
   }))
-
 
   // # Graphql Server
   const apolloServer = new ApolloServer({
@@ -37,7 +42,7 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver],
       validate: false
     }),
-    context: ({ req, res }): MyContext => ({ req, res }),
+    context: ({ req, res }): MyContext => ({ req, res, prisma }),
     plugins: [
       process.env.NODE_ENV === "production"
         ? ApolloServerPluginLandingPageDisabled()
@@ -58,7 +63,6 @@ const main = async () => {
 }
 
 main()
-  .finally(() => {
-    // TODO: Disconnect prisma?
-    // But then I'd need to pass it as context to graphql resolvers?
+  .finally(async () => {
+    await prisma.$disconnect()
   })
