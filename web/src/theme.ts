@@ -18,9 +18,9 @@ export const theme = createTheme({
     primary: { main: "#a48de3" }, // #8d9ae3
     secondary: { main: "#7cc1d6" },
     info: { main: "#76cca4" },
-    success: { main: "#70c275" },
+    success: { main: "#70c275", dark: "#58975b" }, // #70c275, #5cbf63, #67c16c, #6bd571, #6fd074, #73d278, #73cc78
     warning: { main: "#ccc776" },
-    error: { main: "#d58077" },
+    error: { main: "#e37568" }, // #d58077, #db776c, #ee7466, #e37568
   },
   typography: {
     // root font size 17?

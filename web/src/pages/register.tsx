@@ -1,17 +1,22 @@
-import React from "react"
+import React, { useState } from "react"
 import { NextPage } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { Sidebar } from "../components/Sidebar"
-import { Box, Button, TextField, Typography } from "@mui/material"
+import { Alert, Box, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { InputField } from "../components/InputField"
 import { PasswordField } from "../components/PasswordField"
 import { useRegisterMutation } from "../generated/graphql"
+import { LoadingButton } from "../components/LoadingButton"
+import { TiArrowRight, TiWarning } from "react-icons/ti"
 
 const Register: NextPage = () => {
   const [{ }, register] = useRegisterMutation()
   const router = useRouter()
+
+  const [generalError, setGeneralError] = useState<string | null>(null)
+  const [showError, setShowError] = useState(false)
 
   return (
     <>
@@ -36,22 +41,45 @@ const Register: NextPage = () => {
 
               const errors: any = {}
 
-              if (password !== confirmPassword && password !== "" && confirmPassword !== "") {
+              // Make sure user confirms
+              if (confirmPassword === "" && password)
+                errors.confirmPassword = "Please confirm your password"
+
+              if (password !== confirmPassword && password !== "" && confirmPassword !== "")
                 errors.confirmPassword = "Passwords must match"
-              }
 
               return errors
             }}
             onSubmit={async (values, { setFieldError }) => {
 
-              const { confirmPassword: _, displayname, ...rest } = values
+              // Reset error message (so same error shows again)
+              setShowError(false)
 
-              console.log(values)
+              const { confirmPassword: _, displayname, ...rest } = values
 
               const response = await register({
                 displayname: (displayname || null), // pass null if empty
                 ...rest
               })
+
+              // Unexpected error
+              if (response.error) {
+                // console.log({ error: response.error })
+
+                let errorMsg: string
+                if (response.error.networkError) errorMsg = "Could not connect to login server."
+                else if (response.error.graphQLErrors) errorMsg = "The login server is currently unavailable."
+                else errorMsg = "Unknown error, please try again later."
+
+                // Reset password
+                values.password = ""
+                values.confirmPassword = ""
+
+                // Show error alert
+                setGeneralError(errorMsg)
+                setShowError(true)
+                return
+              }
 
               // Handle errors
               if (response.data?.register.errors) {
@@ -74,6 +102,16 @@ const Register: NextPage = () => {
             {({ isSubmitting }) => (
               <Form>
 
+                {/* Error Alert */}
+                <Collapse in={showError} onExited={() => setGeneralError("")}>
+                  <Alert severity="error" variant="filled" icon={<TiWarning />}
+                    onClose={() => setShowError(false)}
+                    sx={{ my: 1, }}
+                  >
+                    {generalError}
+                  </Alert>
+                </Collapse>
+
                 <InputField name="username" variant="filled" label="Username" size="small" margin="normal" fullWidth />
 
                 <InputField name="displayname" variant="filled" label="Display name (optional)" size="small" margin="normal" fullWidth />
@@ -85,7 +123,13 @@ const Register: NextPage = () => {
                 <InputField name="confirmPassword" label="Confirm password" type="password" variant="filled" size="small" margin="normal" fullWidth />
 
                 <p />
-                <Button type="submit" disabled={isSubmitting} variant="contained" fullWidth>Register</Button>
+
+                <LoadingButton type="submit" variant="contained" fullWidth
+                  loading={isSubmitting} position="end"
+                  endIcon={<SvgIcon component={TiArrowRight} />}
+                >
+                  Register
+                </LoadingButton>
 
               </Form>
             )}

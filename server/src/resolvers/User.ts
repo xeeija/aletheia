@@ -79,16 +79,22 @@ export class UserResolver {
       return { user }
 
     } catch (ex: any) {
+
       console.log(ex.message)
 
       // User_username_key
 
-      return {
-        errors: [{
-          field: "username",
-          message: "Username already exists"
-        }]
+      if ((ex.message as string).includes("User_username_key")) {
+        return {
+          errors: [{
+            field: "username",
+            message: "Username already exists"
+          }]
+        }
+      } else {
+        throw ex
       }
+
     }
   }
 
