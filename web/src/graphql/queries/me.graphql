@@ -1,7 +1,5 @@
 query Me {
   me {
-    user {
-      ...NormalUser
-    } 
+    ...NormalUser
   }
 }

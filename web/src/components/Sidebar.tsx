@@ -1,11 +1,13 @@
 import React, { useState } from "react"
-import { Avatar, Badge, Box, Button, GlobalStyles, IconButton, SvgIcon, Typography, useTheme } from "@mui/material"
-import { TiFlag, TiFlash, TiHome, TiNotes, TiStarFullOutline, TiUser } from "react-icons/ti"
+import { Alert, Avatar, Badge, Box, Button, GlobalStyles, IconButton, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
+import { TiFlag, TiFlash, TiHome, TiNotes, TiStarFullOutline, TiUser, TiWarning } from "react-icons/ti"
 import { DrawerItem, MiniDrawer } from "./MiniDrawer"
 import { Navbar } from "./Navbar"
 import Link from "next/link"
-import { useMeQuery } from "../generated/graphql"
+import { useLogoutMutation, useMeQuery } from "../generated/graphql"
 import { theme } from "../theme"
+import { useRouter } from "next/router"
+import { LoadingButton } from "./LoadingButton"
 
 interface Props {
   noAppbar?: boolean
@@ -32,9 +34,13 @@ const bodyStyle = <GlobalStyles styles={{ body: { backgroundColor: theme.palette
 export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
 
   const theme = useTheme()
+  const router = useRouter()
 
   const [open, setOpen] = useState(false)
   const [{ data }] = useMeQuery()
+  const [{ fetching: fetchingLogout }, logout] = useLogoutMutation()
+
+  const [logoutError, setLogoutError] = useState(false)
 
   return (
     <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={open} setOpen={setOpen}>
@@ -49,7 +55,7 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
             <>
 
               {/* If logged in, show user avatar and dropdown menu (TODO) with profile, logout buttons etc. */}
-              <Typography variant="button" sx={{ px: 1 }}>
+              <Typography sx={{ px: 1, fontWeight: "bold", fontSize: "0.875em" }}>
                 {data.me.displayname ?? data.me.username}
               </Typography>
 
@@ -84,7 +90,46 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
               </Badge>
 
               {/* TODO: Provisional logout button until dropdown is ready */}
-              <Button variant="outlined" color="primary" sx={{ ml: 2 }}>Logout</Button>
+              <LoadingButton variant="outlined" color="primary" sx={{ ml: 2 }}
+                loading={fetchingLogout} loadingIndicator="" fade onClick={async () => {
+                  const response = await logout()
+
+                  if (response.error) {
+                    console.log({ error: response.error })
+                    // Show error snackbar?
+                    setLogoutError(true)
+                    return
+                  }
+
+                  if (!response.data?.logout) {
+                    console.log("Logout: ", response.data?.logout)
+                    setLogoutError(true)
+                    return
+                  }
+
+                  // TODO: Invalidate cache?
+
+                  // Hack to reload page without actually reloading
+                  router.replace(router.pathname)
+
+                }}>
+                Logout
+              </LoadingButton>
+
+              {/* Logout Error Alert */}
+              <Snackbar open={logoutError}
+                autoHideDuration={6000}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                sx={{ transform: "translateY(56px)" }}
+                onClose={() => setLogoutError(false)}>
+
+                <Alert severity="error" variant="filled" sx={{ width: "100%" }} icon={<TiWarning />}
+                // action={<Button size="small" color="inherit" sx={{ pt: 0.25 }}>Try again</Button>}
+                >
+                  Could not log out correctly.
+                </Alert>
+              </Snackbar>
+
             </>
           ) : (
             <>

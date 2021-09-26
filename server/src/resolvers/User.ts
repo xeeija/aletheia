@@ -131,4 +131,33 @@ export class UserResolver {
 
     return { user }
   }
+
+  @Mutation(() => Boolean)
+  async logout(
+    @Ctx() { req, res }: MyContext,
+  ): Promise<boolean> {
+
+    if (!req.session.userId) {
+      // Not logged in
+      return false
+    }
+
+    // Create Promise and resolve it in session destroy callback
+    return new Promise<boolean>((resolve) => {
+      req.session.destroy((err) => {
+        if (err) {
+          console.log("Can't destroy session: ", { err })
+          resolve(false)
+        }
+
+        // If we made it here, it worked
+
+        // Clear cookie in the browser
+        res.clearCookie("asid")
+
+        resolve(true)
+      })
+    })
+
+  }
 }
