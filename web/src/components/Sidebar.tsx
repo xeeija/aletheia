@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import { Alert, Avatar, Badge, Box, Button, GlobalStyles, IconButton, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
-import { TiFlag, TiFlash, TiHome, TiNotes, TiStarFullOutline, TiUser, TiWarning } from "react-icons/ti"
+import { Alert, Avatar, Badge, Box, Button, Divider, GlobalStyles, IconButton, List, ListItem, ListItemIcon, ListItemText, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
+import { TiFlag, TiFlash, TiHome, TiNotes, TiStarFullOutline, TiThMenu, TiUser, TiWarning } from "react-icons/ti"
 import { DrawerItem, MiniDrawer } from "./MiniDrawer"
 import { Navbar } from "./Navbar"
 import Link from "next/link"
@@ -8,6 +8,7 @@ import { useLogoutMutation, useMeQuery } from "../generated/graphql"
 import { theme } from "../theme"
 import { useRouter } from "next/router"
 import { LoadingButton } from "./LoadingButton"
+import { Dropdown } from "./Dropdown"
 
 interface Props {
   noAppbar?: boolean
@@ -42,6 +43,8 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
 
   const [logoutError, setLogoutError] = useState(false)
 
+  const [anchor, setAnchor] = useState<Element | null>(null)
+
   return (
     <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={open} setOpen={setOpen}>
 
@@ -55,9 +58,7 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
             <>
 
               {/* If logged in, show user avatar and dropdown menu (TODO) with profile, logout buttons etc. */}
-              <Typography sx={{ px: 1, fontWeight: "bold", fontSize: "0.875em" }}>
-                {data.me.displayname ?? data.me.username}
-              </Typography>
+
 
               <Badge overlap="circular" variant="dot" color="success"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -69,7 +70,12 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                     border: `2px solid ${theme.palette.background.default}`,
                   }
                 }}>
-                <IconButton color="primary" sx={{ p: 0.5 }}>
+                <IconButton color="primary" sx={{ p: 0.5 }}
+                  onClick={(e) => {
+                    setAnchor(e.currentTarget)
+                  }}
+                >
+
                   <Avatar alt={data.me.username}
                     // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
                     src={`https://avatars.dicebear.com/api/big-smile/${data.me.displayname ?? data.me.username}.svg?flip=1`}
@@ -86,8 +92,48 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                       // border: `2px solid ${theme.palette.primary.main}a0`,
                     }} />
                   </Avatar>
+
                 </IconButton>
               </Badge>
+
+              <Dropdown anchor={anchor} setAnchor={setAnchor} >
+
+                <Box sx={{ m: 1.5 }}>
+
+                  <Box sx={{ pb: 0.5, pt: 0.5 }}>
+                    <Typography sx={{ px: 1, fontWeight: "bold", fontSize: "1em" }}>
+                      {data.me.displayname ?? data.me.username}
+                    </Typography>
+
+                    <Typography variant="subtitle2" sx={{ px: 1, fontWeight: "normal", opacity: 0.65 }}>
+                      Online
+                    </Typography>
+                  </Box>
+
+                  <Divider sx={{ borderBottomWidth: 3, borderRadius: 2, m: 1 }} />
+
+                  <List dense sx={{ p: 0 }}>
+                    {["Profile", "Settings", "Logout"].map(item => {
+                      return (
+                        <ListItem key={item} button sx={{
+                          borderRadius: 1,
+                          mt: 0.75,
+                          py: 0.375,
+                        }}>
+                          <ListItemIcon>
+                            <SvgIcon component={TiThMenu} />
+                          </ListItemIcon>
+                          <ListItemText aria-label={item} primary={item} />
+                        </ListItem>
+                      )
+                    })}
+
+                  </List>
+                </Box>
+
+
+              </Dropdown>
+
 
               {/* TODO: Provisional logout button until dropdown is ready */}
               <LoadingButton variant="outlined" color="primary" sx={{ ml: 2 }}
@@ -141,9 +187,10 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                 <Button variant="outlined" color="primary" sx={{ ml: 1 }}>Login</Button>
               </Link>
             </>
-          )}
+          )
+          }
 
-        </Navbar>
+        </Navbar >
       }
 
       {!noAppbar && bodyStyle}
