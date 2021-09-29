@@ -1,7 +1,7 @@
 import React, { useState } from "react"
-import { Alert, Avatar, Badge, Box, Button, Divider, GlobalStyles, IconButton, List, ListItem, ListItemIcon, ListItemText, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
-import { TiFlag, TiFlash, TiHome, TiNotes, TiStarFullOutline, TiThMenu, TiUser, TiWarning } from "react-icons/ti"
-import { DrawerItem, MiniDrawer } from "./MiniDrawer"
+import { Alert, Avatar, Badge, Box, Button, Divider, GlobalStyles, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
+import { TiFlag, TiFlash, TiHome, TiNotes, TiPower, TiSpanner, TiStarFullOutline, TiUser, TiWarning } from "react-icons/ti"
+import { MiniDrawer } from "./MiniDrawer"
 import { Navbar } from "./Navbar"
 import Link from "next/link"
 import { useLogoutMutation, useMeQuery } from "../generated/graphql"
@@ -9,14 +9,15 @@ import { theme } from "../theme"
 import { useRouter } from "next/router"
 import { LoadingButton } from "./LoadingButton"
 import { Dropdown } from "./Dropdown"
+import { LinkList, LinkListItem, LinkItem } from "./LinkList"
 
 interface Props {
   noAppbar?: boolean
   noPadding?: boolean
 }
 
-const drawerItems: DrawerItem[] = [
-  { name: "Home", icon: <SvgIcon component={TiHome} color="primary" />, href: "/" },
+const drawerItems: LinkItem[] = [
+  { name: "Home", href: "/", icon: <SvgIcon component={TiHome} color="primary" /> },
   { name: "Favorites", icon: <SvgIcon component={TiStarFullOutline} color="secondary" /> },
   { name: "Flag", icon: <SvgIcon component={TiFlag} color="info" /> },
   { divider: true },
@@ -37,19 +38,47 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
   const theme = useTheme()
   const router = useRouter()
 
-  const [open, setOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   const [{ data }] = useMeQuery()
   const [{ fetching: fetchingLogout }, logout] = useLogoutMutation()
-
   const [logoutError, setLogoutError] = useState(false)
 
-  const [anchor, setAnchor] = useState<Element | null>(null)
+  const [dropdownAnchor, setDropdownAnchor] = useState<Element | null>(null)
+
+  const handleLogout = async () => {
+    const response = await logout()
+
+    if (response.error) {
+      console.log({ error: response.error })
+      // Show error snackbar?
+      setLogoutError(true)
+      return
+    }
+
+    if (!response.data?.logout) {
+      console.log("Logout: ", response.data?.logout)
+      setLogoutError(true)
+      return
+    }
+
+    // TODO: Invalidate cache?
+
+    // Hack to reload page without actually reloading
+    router.replace(router.pathname)
+  }
+
+  const userDropdownItems: LinkItem[] = [
+    { name: "Profile", icon: <SvgIcon component={TiUser} /> },
+    { name: "Settings", icon: <SvgIcon component={TiSpanner} /> },
+    { name: "Logout", onClick: handleLogout, icon: <SvgIcon component={TiPower} /> },
+  ]
 
   return (
-    <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={open} setOpen={setOpen}>
+    <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={drawerOpen} setOpen={setDrawerOpen}>
 
       {!noAppbar &&
-        <Navbar drawerWidth={drawerWidth} open={open}>
+        <Navbar drawerWidth={drawerWidth} open={drawerOpen}>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Aletheia
           </Typography>
@@ -59,6 +88,9 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
 
               {/* If logged in, show user avatar and dropdown menu (TODO) with profile, logout buttons etc. */}
 
+              <Typography sx={{ fontWeight: "bold", fontSize: "0.875em" }}>
+                {data.me.displayname ?? data.me.username}
+              </Typography>
 
               <Badge overlap="circular" variant="dot" color="success"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -72,7 +104,7 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                 }}>
                 <IconButton color="primary" sx={{ p: 0.5 }}
                   onClick={(e) => {
-                    setAnchor(e.currentTarget)
+                    setDropdownAnchor(e.currentTarget)
                   }}
                 >
 
@@ -96,71 +128,48 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                 </IconButton>
               </Badge>
 
-              <Dropdown anchor={anchor} setAnchor={setAnchor} >
+              <Dropdown anchor={dropdownAnchor} setAnchor={setDropdownAnchor}>
 
-                <Box sx={{ m: 1.5 }}>
+                <Paper sx={{ p: 1.5, width: 180 }}>
 
-                  <Box sx={{ pb: 0.5, pt: 0.5 }}>
-                    <Typography sx={{ px: 1, fontWeight: "bold", fontSize: "1em" }}>
+                  <Box sx={{ py: 0.5, px: 1.5 }}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "1em" }}>
                       {data.me.displayname ?? data.me.username}
                     </Typography>
 
-                    <Typography variant="subtitle2" sx={{ px: 1, fontWeight: "normal", opacity: 0.65 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: "normal", opacity: 0.65 }}>
                       Online
                     </Typography>
                   </Box>
 
-                  <Divider sx={{ borderBottomWidth: 3, borderRadius: 2, m: 1 }} />
+                  <Divider sx={{ borderBottomWidth: 4, borderRadius: 2, m: 1, mx: 1.5 }} />
 
-                  <List dense sx={{ p: 0 }}>
-                    {["Profile", "Settings", "Logout"].map(item => {
-                      return (
-                        <ListItem key={item} button sx={{
-                          borderRadius: 1,
-                          mt: 0.75,
-                          py: 0.375,
-                        }}>
-                          <ListItemIcon>
-                            <SvgIcon component={TiThMenu} />
-                          </ListItemIcon>
-                          <ListItemText aria-label={item} primary={item} />
-                        </ListItem>
-                      )
-                    })}
+                  <LinkList items={userDropdownItems} dense sx={{ p: 0 }}>
+                    {(item) =>
+                      item.name !== "Logout" ? <LinkListItem {...item} /> :
+                        <LoadingButton variant="text" color="error" fullWidth
+                          loading={fetchingLogout} fade onClick={handleLogout}
+                          sx={{
+                            justifyContent: "start",
+                            textTransform: "inherit",
+                            fontSize: "inherit",
+                            fontWeight: "inherit",
+                            py: 0.5,
+                            opacity: 0.8
+                          }}
+                          startIcon={
+                            <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
+                              <SvgIcon component={TiPower} />
+                            </ListItemIcon>}
+                        >
+                          {item.name}
+                        </LoadingButton>
+                    }
+                  </LinkList>
 
-                  </List>
-                </Box>
-
+                </Paper>
 
               </Dropdown>
-
-
-              {/* TODO: Provisional logout button until dropdown is ready */}
-              <LoadingButton variant="outlined" color="primary" sx={{ ml: 2 }}
-                loading={fetchingLogout} loadingIndicator="" fade onClick={async () => {
-                  const response = await logout()
-
-                  if (response.error) {
-                    console.log({ error: response.error })
-                    // Show error snackbar?
-                    setLogoutError(true)
-                    return
-                  }
-
-                  if (!response.data?.logout) {
-                    console.log("Logout: ", response.data?.logout)
-                    setLogoutError(true)
-                    return
-                  }
-
-                  // TODO: Invalidate cache?
-
-                  // Hack to reload page without actually reloading
-                  router.replace(router.pathname)
-
-                }}>
-                Logout
-              </LoadingButton>
 
               {/* Logout Error Alert */}
               <Snackbar open={logoutError}
@@ -187,8 +196,7 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                 <Button variant="outlined" color="primary" sx={{ ml: 1 }}>Login</Button>
               </Link>
             </>
-          )
-          }
+          )}
 
         </Navbar >
       }

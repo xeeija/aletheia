@@ -1,10 +1,7 @@
 import React from "react"
 import { TiThMenu } from "react-icons/ti"
-import {
-  Box, CSSObject, Divider, Drawer, List, ListItem, ListItemIcon,
-  ListItemText, SvgIcon, Theme, Tooltip, useTheme
-} from "@mui/material"
-import Link from "next/link"
+import { Box, CSSObject, Divider, Drawer, SvgIcon, Theme, Tooltip, useTheme } from "@mui/material"
+import { LinkList, LinkListItem, LinkItem } from "./LinkList"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({
@@ -31,16 +28,8 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 })
 
-export interface DrawerItem {
-  name?: string
-  icon?: JSX.Element
-  divider?: boolean
-  onClick?: React.MouseEventHandler
-  href?: string
-}
-
 interface Props {
-  items: DrawerItem[]
+  items: LinkItem[]
   drawerWidth: number
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -49,6 +38,7 @@ interface Props {
 // #BetterMiniDrawer
 export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open, setOpen }) => {
   const theme = useTheme()
+  const itemWidth = `calc(100% - ${theme.spacing(2)})`
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -65,48 +55,26 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
           "& .MuiDrawer-paper": closedMixin(theme)
         }),
       }}>
-        <List>
-          <Tooltip title="Aletheia" arrow placement="right">
-            <ListItem button onClick={() => setOpen(!open)} sx={{
-              width: `calc(100% - ${theme.spacing(2)})`,
-              borderRadius: 1.5,
-              m: theme.spacing(-0.125, 1, 1.125),
-              p: theme.spacing(1, 1.5),
-            }}>
-              <ListItemIcon>
-                {/* TODO: Replace menu with logo icon? */}
-                <SvgIcon component={TiThMenu} />
-              </ListItemIcon>
-              <ListItemText aria-label="Open sidebar" primary="Aletheia" />
-            </ListItem>
-          </Tooltip>
 
-          <Divider variant="middle" sx={{ mt: -0.25, borderBottomWidth: theme.spacing(0.5) }} />
+        <Tooltip title="Aletheia" arrow placement="right" enterDelay={1000}>
+          <LinkListItem name="Aeltheia" sx={{ width: itemWidth, my: 1, /* py: 1 */ }}
+            onClick={() => setOpen(!open)}
+            icon={<SvgIcon component={TiThMenu} />}
+          />
+        </Tooltip>
 
-          {items.map(({ name = "", icon, divider, onClick, href }, index) => (
+        <Divider variant="middle" sx={{ borderBottomWidth: 4 }} />
+
+        <LinkList items={items} sx={{ p: 0 }}>
+          {({ name = "", divider, ...props }) => (
             divider ?
-              <Divider key={`divider-${index}`} variant="middle" sx={{ borderBottomWidth: theme.spacing(0.25) }} /> :
-              <Tooltip key={name} title={name} arrow placement="right" enterDelay={1000}>
-                {/* Tooltip needs a child that accepts a ref, eg. basic elements, not function components, eg. <Link> */}
-                <span>
-                  <Link href={href ?? ""} passHref={href !== undefined}>
-                    <ListItem button component="a" onClick={onClick} sx={{
-                      width: `calc(100% - ${theme.spacing(2)})`,
-                      borderRadius: 1.5,
-                      m: 1, // theme.spacing(0.75, 1),
-                      p: theme.spacing(0.5, 1.5),
-                    }}>
-                      <ListItemIcon>
-                        {/* <SvgIcon component={icon?.type} /> */}
-                        {icon}
-                      </ListItemIcon>
-                      <ListItemText primary={name} />
-                    </ListItem>
-                  </Link>
-                </span>
+              <LinkListItem divider={divider} /> :
+              <Tooltip title={name} arrow placement="right" enterDelay={1000} >
+                <LinkListItem name={name} {...props} sx={{ width: itemWidth }} />
               </Tooltip>
-          ))}
-        </List>
+          )}
+        </LinkList>
+
       </Drawer>
 
       {children}

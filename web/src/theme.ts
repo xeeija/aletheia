@@ -1,6 +1,6 @@
-import { createTheme } from "@mui/material"
+import { createTheme, Theme } from "@mui/material"
 
-export const theme = createTheme({
+const baseTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
@@ -22,17 +22,19 @@ export const theme = createTheme({
     warning: { main: "#ccc776" },
     error: { main: "#e37568" }, // #d58077, #db776c, #ee7466, #e37568
   },
-  typography: {
-    // root font size 17?
+  typography: () => ({
     fontFamily: "'Product Sans', Roboto",
     button: {
       fontWeight: 700,
     },
-  },
+  }),
   shape: {
     borderRadius: 6
   },
-  // Override style per component 
+})
+
+// Override style per component 
+const componentOverrides: Partial<Theme> = ({
   components: {
     MuiDrawer: {
       styleOverrides: {
@@ -52,7 +54,15 @@ export const theme = createTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          fontSize: 12
+          fontSize: baseTheme.typography.htmlFontSize * 0.75,
+          backgroundColor: baseTheme.palette.background.paper,
+          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2))",
+        },
+        arrow: {
+          "::before": {
+            backgroundColor: baseTheme.palette.background.paper,
+            backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2))",
+          }
         }
       }
     },
@@ -62,15 +72,35 @@ export const theme = createTheme({
           "::before, :hover:not(.Mui-disabled)::before": { borderWidth: 0 },
           "::after": {
             borderWidth: 3,
-            borderRadius: "0 0 6px 6px",
+            borderRadius: `0 0 ${baseTheme.shape.borderRadius}px ${baseTheme.shape.borderRadius}px`,
             opacity: 0.6
           },
-          borderRadius: 6,
+          borderRadius: baseTheme.shape.borderRadius,
         },
       },
       defaultProps: {
         // size: "small",
       },
     },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: baseTheme.shape.borderRadius,
+          margin: baseTheme.spacing(1),
+          padding: baseTheme.spacing(0.5, 1.5),
+        },
+        dense: {
+          margin: baseTheme.spacing(0),
+          marginTop: baseTheme.spacing(0.5),
+          padding: baseTheme.spacing(0.5, 1.5),
+          "& .MuiListItemIcon-root": {
+            minWidth: baseTheme.spacing(6),
+          }
+        }
+      }
+    },
   },
 })
+
+// Merge base theme and style overrides
+export const theme = createTheme(baseTheme, componentOverrides)
