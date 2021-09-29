@@ -71,7 +71,7 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
   const userDropdownItems: LinkItem[] = [
     { name: "Profile", icon: <SvgIcon component={TiUser} /> },
     { name: "Settings", icon: <SvgIcon component={TiSpanner} /> },
-    { name: "Logout", onClick: handleLogout, icon: <SvgIcon component={TiPower} /> },
+    { name: "Logout" }, // added directly in list
   ]
 
   return (
@@ -148,21 +148,22 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
                     {(item) =>
                       item.name !== "Logout" ? <LinkListItem {...item} /> :
                         <LoadingButton variant="text" color="error" fullWidth
-                          loading={fetchingLogout} fade onClick={handleLogout}
+                          loading={fetchingLogout} fade onClick={handleLogout} position="start"
                           sx={{
                             justifyContent: "start",
                             textTransform: "inherit",
-                            fontSize: "inherit",
-                            fontWeight: "inherit",
                             py: 0.5,
-                            opacity: 0.8
+                            mt: 0.5,
                           }}
                           startIcon={
                             <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
                               <SvgIcon component={TiPower} />
                             </ListItemIcon>}
+                          progressProps={{ color: "inherit", sx: { ml: 1, mr: 3.5 } }} // props for position start
                         >
-                          {item.name}
+                          <Typography variant="body2" component="span">
+                            {item.name}
+                          </Typography>
                         </LoadingButton>
                     }
                   </LinkList>

@@ -57,7 +57,7 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
       }}>
 
         <Tooltip title="Aletheia" arrow placement="right" enterDelay={1000}>
-          <LinkListItem name="Aeltheia" sx={{ width: itemWidth, my: 1, /* py: 1 */ }}
+          <LinkListItem name="Aeltheia" sx={{ width: itemWidth, my: 1.5, /* py: 1 */ }}
             onClick={() => setOpen(!open)}
             icon={<SvgIcon component={TiThMenu} />}
           />
@@ -69,7 +69,7 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
           {({ name = "", divider, ...props }) => (
             divider ?
               <LinkListItem divider={divider} /> :
-              <Tooltip title={name} arrow placement="right" enterDelay={1000} >
+              <Tooltip title={name} arrow placement="right" enterDelay={1000}>
                 <LinkListItem name={name} {...props} sx={{ width: itemWidth }} />
               </Tooltip>
           )}

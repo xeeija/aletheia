@@ -82,6 +82,15 @@ const componentOverrides: Partial<Theme> = ({
         // size: "small",
       },
     },
+    MuiList: {
+      styleOverrides: {
+        dense: {
+          "& .MuiListItemIcon-root": {
+            minWidth: baseTheme.spacing(6),
+          }
+        }
+      }
+    },
     MuiListItem: {
       styleOverrides: {
         root: {

@@ -92,7 +92,7 @@ const Login: NextPage = () => {
                   </Alert>
                 </Collapse>
 
-                <InputField name="username" label="Username" variant="filled" size="small" margin="normal" fullWidth />
+                <InputField name="username" label="Username" variant="filled" size="small" margin="normal" fullWidth autoFocus />
 
                 <PasswordField name="password" label="Password" variant="filled" size="small" margin="normal" fullWidth />
 
