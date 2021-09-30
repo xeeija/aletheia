@@ -1,7 +1,7 @@
 import React from "react"
-import { TiThMenu } from "react-icons/ti"
-import { Box, CSSObject, Divider, Drawer, SvgIcon, Theme, Tooltip, useTheme } from "@mui/material"
+import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
 import { LinkList, LinkListItem, LinkItem } from "./LinkList"
+import { LogoIcon } from "./LogoIcon"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({
@@ -57,9 +57,12 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
       }}>
 
         <Tooltip title="Aletheia" arrow placement="right" enterDelay={1000}>
-          <LinkListItem name="Aeltheia" sx={{ width: itemWidth, my: 1.5, /* py: 1 */ }}
+          <LinkListItem name="Aletheia"
             onClick={() => setOpen(!open)}
-            icon={<SvgIcon component={TiThMenu} />}
+            // margin left (px): (width - base size) / 2
+            icon={<LogoIcon sx={{ width: 30, height: "auto", ml: -(3 / 8) }} />}
+            sx={{ width: itemWidth, mt: 1.75, mb: 1.25, }}
+            textProps={{ primaryTypographyProps: { fontWeight: 500 } }}
           />
         </Tooltip>
 

@@ -1,11 +1,10 @@
 import React, { useState } from "react"
-import { Alert, Avatar, Badge, Box, Button, Divider, GlobalStyles, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
+import { Alert, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
 import { TiFlag, TiFlash, TiHome, TiNotes, TiPower, TiSpanner, TiStarFullOutline, TiUser, TiWarning } from "react-icons/ti"
 import { MiniDrawer } from "./MiniDrawer"
 import { Navbar } from "./Navbar"
 import Link from "next/link"
 import { useLogoutMutation, useMeQuery } from "../generated/graphql"
-import { theme } from "../theme"
 import { useRouter } from "next/router"
 import { LoadingButton } from "./LoadingButton"
 import { Dropdown } from "./Dropdown"
@@ -14,6 +13,7 @@ import { LinkList, LinkListItem, LinkItem } from "./LinkList"
 interface Props {
   noAppbar?: boolean
   noPadding?: boolean
+  title?: React.ReactNode
 }
 
 const drawerItems: LinkItem[] = [
@@ -27,13 +27,10 @@ const drawerItems: LinkItem[] = [
 
 const drawerWidth = 200
 
-// Style "hack" for rounded corner below sidebar/navbar to display correctly
-const bodyStyle = <GlobalStyles styles={{ body: { backgroundColor: theme.palette.background.paper } }} />
-
 // [x] TODO: Burger Menu Button to expand sidebar from only icons to icons with text
 // TODO: Add "noAppBar" option and move AppBar here from MiniDrawer
 
-export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
+export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, title }) => {
 
   const theme = useTheme()
   const router = useRouter()
@@ -74,20 +71,28 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
     { name: "Logout" }, // added directly in list
   ]
 
+  const navbarBorderRadius = typeof theme.shape.borderRadius === "number" ?
+    theme.shape.borderRadius * 2 :
+    `calc(${theme.shape.borderRadius} * 2)`
+
   return (
     <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={drawerOpen} setOpen={setDrawerOpen}>
 
       {!noAppbar &&
-        <Navbar drawerWidth={drawerWidth} open={drawerOpen}>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-            Aletheia
-          </Typography>
+        <Navbar drawerWidth={drawerWidth} open={drawerOpen} borderRadius={navbarBorderRadius}>
+
+          {/* Title */}
+          {typeof title === "string" || title === undefined ?
+            <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+              {title}
+            </Typography> :
+            title
+          }
 
           {data?.me ? (
             <>
 
               {/* If logged in, show user avatar and dropdown menu (TODO) with profile, logout buttons etc. */}
-
               <Typography sx={{ fontWeight: "bold", fontSize: "0.875em" }}>
                 {data.me.displayname ?? data.me.username}
               </Typography>
@@ -199,23 +204,14 @@ export const Sidebar: React.FC<Props> = ({ children, noAppbar, noPadding }) => {
             </>
           )}
 
-        </Navbar >
+        </Navbar>
       }
-
-      {!noAppbar && bodyStyle}
 
       <Box component="main" sx={{
         flexGrow: 1,
-        ...(!noAppbar && {
-          mt: 8,
-          borderRadius: theme.spacing(1, 0, 0),
-          backgroundColor: theme.palette.background.default,
-          height: `calc(100vh - ${theme.spacing(8)})`,
-        }),
+        ...(!noAppbar && { mt: 8, }),
         ...(!noPadding && { p: 3 }),
       }}>
-
-        {/* {!noAppbar && <Box sx={{ background: theme.palette.primary.dark, height: theme.spacing(0.75), mb: -1 }} />} */}
 
         {children}
       </Box>

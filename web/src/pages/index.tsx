@@ -1,8 +1,8 @@
 import React from 'react'
-import { Button, Typography, Box, CssBaseline, Container, useTheme } from '@mui/material'
+import { Button, Typography, Box, useTheme } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Sidebar } from '../components/Sidebar'
+import { Navigation } from '../components/Navigation'
 
 const Home: NextPage = () => {
 
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
         <title>Aletheia Home</title>
       </Head>
 
-      <Sidebar>
+      <Navigation title="Dashboard">
         <Box sx={{ "& button": { mr: 1 } }}>
           <Typography variant="h3">Hello world</Typography>
           <Typography paragraph>Would you like to reboot now?</Typography>
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
           </>
 
         </Box>
-      </Sidebar>
+      </Navigation>
     </>
   )
 }

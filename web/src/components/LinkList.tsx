@@ -1,5 +1,5 @@
 import React from "react"
-import { List, ListProps, Divider, ListItem, ListItemIcon, ListItemText, Theme } from "@mui/material"
+import { List, ListProps, Divider, ListItem, ListItemIcon, ListItemText, Theme, ListItemTextProps } from "@mui/material"
 import Link from "next/link"
 import { SxProps } from "@mui/system"
 
@@ -36,22 +36,23 @@ export const LinkList: React.FC<LinkListProps> = ({ children, items, ...listProp
 
 type ItemProps = LinkItem & {
   sx?: SxProps<Theme>
+  textProps?: ListItemTextProps
 }
 
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
-export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, onClick, href, ...props }, ref) => {
+export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, ...props }, ref) => {
   return (
     divider ?
       divider === true ?
         <Divider variant="middle" sx={{ borderBottomWidth: 2 }} /> :
         divider :
       <Link href={href ?? ""} passHref={href !== undefined}>
-        <ListItem ref={ref} button component="a" onClick={onClick} {...props}>
+        <ListItem ref={ref} button component="a" {...props}>
           <ListItemIcon>
             {icon}
           </ListItemIcon>
-          <ListItemText primary={name} />
+          <ListItemText primary={name} {...textProps} />
         </ListItem>
       </Link>
   )

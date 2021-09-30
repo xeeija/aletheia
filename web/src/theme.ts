@@ -23,7 +23,15 @@ const baseTheme = createTheme({
     error: { main: "#e37568" }, // #d58077, #db776c, #ee7466, #e37568
   },
   typography: () => ({
-    fontFamily: "'Product Sans', Roboto",
+    fontFamily: [
+      "Product Sans",
+      // "Roboto",
+      // System default fonts as backup
+      "Segoe UI",
+      "Helvetica Neue",
+      "-apple-system",
+      "sans-serif",
+    ].join(", "),
     button: {
       fontWeight: 700,
     },

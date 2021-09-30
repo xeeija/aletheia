@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { NextPage } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { Sidebar } from "../components/Sidebar"
+import { Navigation } from "../components/Navigation"
 import { Alert, Box, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { InputField } from "../components/InputField"
@@ -24,7 +24,7 @@ const Register: NextPage = () => {
         <title>Register | Aletheia</title>
       </Head>
 
-      <Sidebar>
+      <Navigation>
 
         <Box sx={{ width: 360, mx: "auto" }}>
           <Typography variant="h6" >Register</Typography>
@@ -137,7 +137,7 @@ const Register: NextPage = () => {
 
         </Box>
 
-      </Sidebar>
+      </Navigation>
     </>
   )
 }

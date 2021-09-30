@@ -1,13 +1,14 @@
 import React from "react"
-import { AppBar, Toolbar, Typography, Button, useTheme } from "@mui/material"
+import { AppBar, Toolbar, useTheme } from "@mui/material"
 import { transitionMixin } from "./MiniDrawer"
 
 interface Props {
   drawerWidth?: number
   open?: boolean
+  borderRadius?: number | string
 }
 
-export const Navbar: React.FC<Props> = ({ children, drawerWidth = 0, open = false }) => {
+export const Navbar: React.FC<Props> = ({ children, drawerWidth = 0, open = false, borderRadius }) => {
 
   const theme = useTheme()
 
@@ -26,7 +27,22 @@ export const Navbar: React.FC<Props> = ({ children, drawerWidth = 0, open = fals
             ml: `calc(${theme.spacing(8)} + 1px)`,
           },
         }),
-        ...transitionMixin(theme)
+        ...transitionMixin(theme),
+        ...(borderRadius && {
+          "::before, ::after": {
+            content: `""`,
+            position: "absolute",
+            top: 64,
+            left: 0,
+            width: borderRadius,
+            height: borderRadius,
+            backgroundColor: theme.palette.background.paper,
+          },
+          "::after": {
+            backgroundColor: theme.palette.background.default,
+            borderTopLeftRadius: borderRadius,
+          }
+        })
       }}>
 
         {children}
