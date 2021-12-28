@@ -14,7 +14,8 @@ export const BingoBoard: React.FC<Props> = ({ items }) => {
     <>
       <h3 style={{ marginTop: 0 }}>Bonko! Dimensions: {dimens}x{dimens} ({items.length})</h3>
 
-      <svg viewBox={`-1 -1 ${dimens * cell + 2} ${dimens * cell + 2}`} width="100%" height="100%">
+      {/* height: 75vh */}
+      <svg viewBox={`-1 -1 ${dimens * cell + 2} ${dimens * cell + 2}`} width="auto" height="680px">
         {items.map((item, i) => {
           const x = (i % dimens) * cell
           const y = Math.floor(i / dimens) * cell
