@@ -22,6 +22,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "pretty": true,
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
