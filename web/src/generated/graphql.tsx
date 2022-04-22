@@ -27,6 +27,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
+  updateUser: UserResponse;
 };
 
 
@@ -42,6 +43,11 @@ export type MutationRegisterArgs = {
   username: Scalars['String'];
 };
 
+
+export type MutationUpdateUserArgs = {
+  user: UserInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
@@ -55,6 +61,11 @@ export type User = {
   id: Scalars['Int'];
   updateAt: Scalars['DateTime'];
   username: Scalars['String'];
+};
+
+export type UserInput = {
+  displayname?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
 };
 
 export type UserResponse = {
@@ -86,6 +97,13 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+
+export type UpdateUserMutationVariables = Exact<{
+  user: UserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -141,6 +159,23 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($user: UserInput!) {
+  updateUser(user: $user) {
+    user {
+      ...NormalUser
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    ${NormalUserFragmentDoc}`;
+
+export function useUpdateUserMutation() {
+  return Urql.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
 };
 export const MeDocument = gql`
     query Me {

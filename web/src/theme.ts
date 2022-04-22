@@ -1,4 +1,4 @@
-import { createTheme, Theme } from "@mui/material"
+import { createTheme, ThemeOptions } from "@mui/material"
 
 const baseTheme = createTheme({
   palette: {
@@ -22,6 +22,9 @@ const baseTheme = createTheme({
     warning: { main: "#ccc776" },
     error: { main: "#e37568" }, // #d58077, #db776c, #ee7466, #e37568
   },
+  shape: {
+    borderRadius: 6
+  },
   typography: () => ({
     fontFamily: [
       "Product Sans",
@@ -32,17 +35,39 @@ const baseTheme = createTheme({
       "-apple-system",
       "sans-serif",
     ].join(", "),
+    h1: {
+      fontSize: "2.25rem",
+      fontWeight: 500,
+    },
+    h2: {
+      fontSize: "1.875rem",
+      fontWeight: 500,
+    },
+    h3: {
+      fontSize: "1.5rem",
+      fontWeight: 500,
+      mb: 2 * 8
+    },
+    h4: {
+      fontSize: "1.375rem",
+      fontWeight: 500,
+    },
+    h5: {
+      fontSize: "1.25rem",
+      fontWeight: 500,
+    },
+    h6: {
+      fontSize: "1.125rem",
+      fontWeight: 500,
+    },
     button: {
       fontWeight: 700,
     },
   }),
-  shape: {
-    borderRadius: 6
-  },
 })
 
 // Override style per component 
-const componentOverrides: Partial<Theme> = ({
+const componentOverrides: ThemeOptions = {
   components: {
     MuiDrawer: {
       styleOverrides: {
@@ -117,7 +142,7 @@ const componentOverrides: Partial<Theme> = ({
       }
     },
   },
-})
+}
 
 // Merge base theme and style overrides
 export const theme = createTheme(baseTheme, componentOverrides)

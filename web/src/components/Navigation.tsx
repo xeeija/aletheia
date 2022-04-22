@@ -67,7 +67,7 @@ export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, tit
 
   const userDropdownItems: LinkItem[] = [
     { name: "Profile", icon: <SvgIcon component={TiUser} /> },
-    { name: "Settings", icon: <SvgIcon component={TiSpanner} /> },
+    { name: "Settings", href: "/settings", icon: <SvgIcon component={TiSpanner} /> },
     { name: "Logout" }, // added directly in list
   ]
 

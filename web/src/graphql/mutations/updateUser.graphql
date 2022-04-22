@@ -1,0 +1,11 @@
+mutation UpdateUser($user: UserInput!) {
+  updateUser(user: $user) {
+    user {
+      ...NormalUser
+    }
+    errors {
+      field
+      message
+    }
+  }
+}

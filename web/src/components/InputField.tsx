@@ -17,6 +17,8 @@ export const InputField: React.FC<Props> = (props) => {
   return <TextField
     error={!!error}
     {...field}
+    variant="filled"
+    size="small"
     {...props}
     // show error message over default helper text
     {...(error && { helperText: error })}

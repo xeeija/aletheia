@@ -1,5 +1,5 @@
 import { User } from "../../dist/generated/typegraphql-prisma";
-import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
 import { MyContext } from "src/types";
 
@@ -21,6 +21,15 @@ class UserResponse {
 
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[]
+}
+
+@InputType()
+class UserInput implements Partial<User> {
+  @Field({ nullable: true })
+  username?: string
+
+  @Field({ nullable: true })
+  displayname?: string
 }
 
 @Resolver()
@@ -160,4 +169,40 @@ export class UserResolver {
     })
 
   }
+
+  @Mutation(() => UserResponse)
+  async updateUser(
+    @Arg("user") user: UserInput,
+    @Ctx() { req, prisma }: MyContext
+  ): Promise<UserResponse> {
+
+    let errors: FieldError[] = []
+
+    // Handle field errors
+
+    // if (user.username !== undefined) {
+    if (!user.username) {
+      errors.push({ field: "username", message: "Username may not be empty" })
+    }
+
+    const usernameExists = await prisma.user.count({
+      where: {
+        username: user.username,
+        id: { not: req.session.userId }
+      }
+    })
+
+    if (usernameExists) {
+      errors.push({ field: "username", message: "Username already exists" })
+    }
+    // }
+
+    if (errors.length > 0) return { errors }
+
+    const newUser = await prisma.user.update({ where: { id: req.session.userId }, data: user })
+
+    return { user: newUser }
+
+  }
+
 }
