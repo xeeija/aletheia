@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Alert, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
-import { TiFlag, TiFlash, TiHome, TiNotes, TiPower, TiSpanner, TiStarFullOutline, TiUser, TiWarning } from "react-icons/ti"
-import { MiniDrawer } from "./MiniDrawer"
+import { TiChartPie, TiHome, TiPipette, TiPower, TiScissors, TiSpanner, TiThList, TiUser, TiWarning } from "react-icons/ti"
+import { Sidebar } from "./Sidebar"
 import { Navbar } from "./Navbar"
 import Link from "next/link"
 import { useLogoutMutation, useMeQuery } from "../generated/graphql"
@@ -9,6 +9,7 @@ import { useRouter } from "next/router"
 import { LoadingButton } from "./LoadingButton"
 import { Dropdown } from "./Dropdown"
 import { LinkList, LinkListItem, LinkItem } from "./LinkList"
+import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
 
 interface Props {
   noAppbar?: boolean
@@ -16,16 +17,19 @@ interface Props {
   title?: React.ReactNode
 }
 
-const drawerItems: LinkItem[] = [
+const sidebarItems: LinkItem[] = [
   { name: "Home", href: "/", icon: <SvgIcon component={TiHome} color="primary" /> },
-  { name: "Favorites", icon: <SvgIcon component={TiStarFullOutline} color="secondary" /> },
-  { name: "Flag", icon: <SvgIcon component={TiFlag} color="info" /> },
-  { divider: true },
-  { name: "Lightning", icon: <SvgIcon component={TiFlash} color="warning" /> },
-  { name: "Music", icon: <SvgIcon component={TiNotes} color="error" /> },
+  { name: "Random Wheel", icon: <SvgIcon component={TiChartPie} color="secondary" viewBox="0 1 22 22" /> },
+  { name: "Bingo", href: "/bingo", icon: <SvgIcon component={HiViewGridAdd} color="success" viewBox="0 0 20 20" /> },
+  { name: "Color Palette", icon: <SvgIcon component={TiPipette} color="info" /> },
+  { name: "Pile of Shame", icon: <SvgIcon component={HiDuplicate} color="warning" viewBox="0 0 20 20" />, disabled: true },
+  { name: "Notes", icon: <SvgIcon component={TiThList} color="error" />, disabled: true },
+  { name: "Countdown", icon: <SvgIcon component={HiClock} color="primary" viewBox="0 0 20 20" />, disabled: true },
+  { name: "Rock Paper Scissors", icon: <SvgIcon component={TiScissors} color="secondary" viewBox="2 2 20 20" />, disabled: true },
+  // { divider: true },
 ]
 
-const drawerWidth = 200
+const sidebarWidth = 240
 
 // [x] TODO: Burger Menu Button to expand sidebar from only icons to icons with text
 // TODO: Add "noAppBar" option and move AppBar here from MiniDrawer
@@ -35,7 +39,7 @@ export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, tit
   const theme = useTheme()
   const router = useRouter()
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const [{ data }] = useMeQuery()
   const [{ fetching: fetchingLogout }, logout] = useLogoutMutation()
@@ -76,14 +80,14 @@ export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, tit
     `calc(${theme.shape.borderRadius} * 2)`
 
   return (
-    <MiniDrawer items={drawerItems} drawerWidth={drawerWidth} open={drawerOpen} setOpen={setDrawerOpen}>
+    <Sidebar items={sidebarItems} openedWidth={sidebarWidth} open={sidebarOpen} setOpen={setSidebarOpen}>
 
       {!noAppbar &&
-        <Navbar drawerWidth={drawerWidth} open={drawerOpen} borderRadius={navbarBorderRadius}>
+        <Navbar marginLeft={sidebarWidth} open={sidebarOpen} borderRadius={navbarBorderRadius}>
 
           {/* Title */}
           {typeof title === "string" || title === undefined ?
-            <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+            <Typography variant="h5" noWrap sx={{ flexGrow: 1 }}>
               {title}
             </Typography> :
             title
@@ -216,6 +220,6 @@ export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, tit
         {children}
       </Box>
 
-    </MiniDrawer >
+    </Sidebar>
   )
 }

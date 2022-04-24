@@ -6,7 +6,7 @@ import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography,
 import { BingoBoard } from '../components/BingoBoard'
 import { shuffle } from '../utils/shuffle'
 
-const Bingo: NextPage = () => {
+const BingoPage: NextPage = () => {
 
   const theme = useTheme()
 
@@ -105,4 +105,4 @@ const Bingo: NextPage = () => {
   )
 }
 
-export default Bingo
+export default BingoPage

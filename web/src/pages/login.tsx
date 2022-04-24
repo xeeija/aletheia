@@ -11,7 +11,7 @@ import { useRouter } from "next/router"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { LoadingButton } from "../components/LoadingButton"
 
-const Login: NextPage = () => {
+const LoginPage: NextPage = () => {
 
   const [{ }, login] = useLoginMutation()
   const router = useRouter()
@@ -116,4 +116,4 @@ const Login: NextPage = () => {
   )
 }
 
-export default Login
+export default LoginPage

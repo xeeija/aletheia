@@ -30,13 +30,13 @@ const closedMixin = (theme: Theme): CSSObject => ({
 
 interface Props {
   items: LinkItem[]
-  drawerWidth: number
+  openedWidth: number
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 // #BetterMiniDrawer
-export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open, setOpen }) => {
+export const Sidebar: React.FC<Props> = ({ children, items, openedWidth, open, setOpen }) => {
   const theme = useTheme()
   const itemWidth = `calc(100% - ${theme.spacing(2)})`
 
@@ -47,8 +47,8 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
       <Drawer variant="permanent" open={open} sx={{
         whiteSpace: "nowrap",
         ...(open && {
-          ...openedMixin(theme, drawerWidth),
-          "& .MuiDrawer-paper": openedMixin(theme, drawerWidth)
+          ...openedMixin(theme, openedWidth),
+          "& .MuiDrawer-paper": openedMixin(theme, openedWidth)
         }),
         ...(!open && {
           ...closedMixin(theme),
@@ -61,8 +61,8 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
             onClick={() => setOpen(!open)}
             // margin left (px): (width - base size) / 2
             icon={<LogoIcon sx={{ width: 30, height: "auto", ml: -(3 / 8) }} />}
-            sx={{ width: itemWidth, mt: 1.75, mb: 1.25, }}
-            textProps={{ primaryTypographyProps: { fontWeight: 500 } }}
+            sx={{ width: itemWidth, mt: 1.25, mb: 1.25, }}
+            textProps={{ primaryTypographyProps: { variant: "h6" } }}
           />
         </Tooltip>
 
@@ -73,7 +73,9 @@ export const MiniDrawer: React.FC<Props> = ({ children, items, drawerWidth, open
             divider ?
               <LinkListItem divider={divider} /> :
               <Tooltip title={name} arrow placement="right" enterDelay={1000}>
-                <LinkListItem name={name} {...props} sx={{ width: itemWidth }} />
+                <LinkListItem name={name} {...props} sx={{ width: itemWidth }}
+                  textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
+                />
               </Tooltip>
           )}
         </LinkList>

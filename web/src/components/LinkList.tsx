@@ -9,6 +9,7 @@ export interface LinkItem {
   divider?: boolean | JSX.Element
   onClick?: React.MouseEventHandler
   href?: string
+  disabled?: boolean
 }
 
 type LinkListProps = ListProps & {
@@ -41,15 +42,15 @@ type ItemProps = LinkItem & {
 
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
-export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, ...props }, ref) => {
+export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, disabled, ...props }, ref) => {
   return (
     divider ?
       divider === true ?
         <Divider variant="middle" sx={{ borderBottomWidth: 2 }} /> :
         divider :
       <Link href={href ?? ""} passHref={href !== undefined}>
-        <ListItem ref={ref} button component="a" {...props}>
-          <ListItemIcon>
+        <ListItem ref={ref} button component="a" disabled={disabled} {...props}>
+          <ListItemIcon sx={{ minWidth: 48 }}>
             {icon}
           </ListItemIcon>
           <ListItemText primary={name} {...textProps} />

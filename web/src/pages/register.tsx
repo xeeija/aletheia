@@ -11,7 +11,7 @@ import { useRegisterMutation } from "../generated/graphql"
 import { LoadingButton } from "../components/LoadingButton"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
 
-const Register: NextPage = () => {
+const RegisterPage: NextPage = () => {
   const [{ }, register] = useRegisterMutation()
   const router = useRouter()
 
@@ -142,4 +142,4 @@ const Register: NextPage = () => {
   )
 }
 
-export default Register
+export default RegisterPage
