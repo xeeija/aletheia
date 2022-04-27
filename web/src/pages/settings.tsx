@@ -1,20 +1,24 @@
 import React from "react"
-import { NextPage } from "next"
-import { Navigation } from "../components/Navigation"
 import { Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { InputField } from "../components/InputField"
 import { useMeQuery, useUpdateUserMutation } from "../generated/graphql"
 import { LoadingButton } from "../components/LoadingButton"
+import { defaultLayout, LayoutNextPage } from "./_app"
+import Head from "next/head"
 
-const SettingsPage: NextPage = () => {
+const SettingsPage: LayoutNextPage = () => {
 
   const [{ data }] = useMeQuery()
   const [{ }, updateUser] = useUpdateUserMutation()
 
   return (
-    <Navigation title="Profile Settings" >
-      <Typography variant="h3" mb={2}>Settings</Typography>
+    <>
+      <Head>
+        <title>Settings | Aletheia</title>
+      </Head>
+
+      <Typography variant="h3" mb={2}>Profile Settings</Typography>
 
       {data?.me && (
         <Formik
@@ -64,11 +68,10 @@ const SettingsPage: NextPage = () => {
           )}
         </Formik>
       )}
-
-
-    </Navigation>
-
+    </>
   )
 }
+
+SettingsPage.getLayout = defaultLayout({ title: "Settings" })
 
 export default SettingsPage

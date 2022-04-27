@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { NextPage } from 'next'
 import Head from 'next/head'
-import { Navigation } from '../components/Navigation'
 import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme } from '@mui/material'
 import { BingoBoard } from '../components/BingoBoard'
 import { shuffle } from '../utils/shuffle'
+import { defaultLayout, LayoutNextPage } from './_app'
 
-const BingoPage: NextPage = () => {
+const BingoPage: LayoutNextPage = () => {
 
   const theme = useTheme()
 
@@ -43,66 +42,61 @@ const BingoPage: NextPage = () => {
         <title>Bingo Board | Aletheia</title>
       </Head>
 
-      <Navigation title="Bingo">
+      <Grid container spacing={2} >
 
-        <Grid container spacing={2} >
-
-          <Grid item xs={8}>
-            <Paper sx={{ padding: 2 }}>
-              <BingoBoard items={shuffledEntries} />
-            </Paper>
-          </Grid>
-
-          <Grid item xs={4}>
-
-            <TextField multiline variant="filled" label="Bingo items" minRows={16} maxRows={32} fullWidth
-              value={entries.join("\n")} onChange={ev => {
-                const list = ev.target.value.split("\n")
-                setEntries(list)
-                updateRandomEntries(list, jokerEnabled, jokerText)
-              }}
-            />
-
-            <Typography variant="subtitle2" component="p" sx={{ mt: 2, mb: 0.5 }} >Options:</Typography>
-
-            <FormControlLabel label="Use Joker"
-              control={<Checkbox checked={jokerEnabled} onChange={ev => {
-                setJokerEnabled(ev.target.checked)
-                updateRandomEntries(entries, ev.target.checked, jokerText)
-              }} />}
-            />
-            <TextField variant="filled" label="Joker text" size="small" disabled={!jokerEnabled}
-              value={jokerText} onChange={ev => {
-                setJokerText(ev.target.value)
-              }}
-              sx={{
-                opacity: jokerEnabled ? 1 : 0,
-                transition: theme.transitions.create("opacity", {
-                  duration: theme.transitions.duration.shortest,
-                  easing: theme.transitions.easing.easeInOut
-                }),
-              }} InputLabelProps={{ sx: { fontSize: 14 } }} InputProps={{ sx: { fontSize: 14 } }}
-            />
-
-            <br />
-
-            <Button variant="contained" onClick={() => {
-              updateRandomEntries(entries, jokerEnabled, jokerText)
-            }}
-              sx={{ mt: 1 }}
-            >
-              Generate
-            </Button>
-
-
-
-          </Grid>
+        <Grid item xs={8}>
+          <Paper sx={{ padding: 2 }}>
+            <BingoBoard items={shuffledEntries} />
+          </Paper>
         </Grid>
 
-      </Navigation>
+        <Grid item xs={4}>
 
+          <TextField multiline variant="filled" label="Bingo items" minRows={16} maxRows={32} fullWidth
+            value={entries.join("\n")} onChange={ev => {
+              const list = ev.target.value.split("\n")
+              setEntries(list)
+              updateRandomEntries(list, jokerEnabled, jokerText)
+            }}
+          />
+
+          <Typography variant="subtitle2" component="p" sx={{ mt: 2, mb: 0.5 }} >Options:</Typography>
+
+          <FormControlLabel label="Use Joker"
+            control={<Checkbox checked={jokerEnabled} onChange={ev => {
+              setJokerEnabled(ev.target.checked)
+              updateRandomEntries(entries, ev.target.checked, jokerText)
+            }} />}
+          />
+          <TextField variant="filled" label="Joker text" size="small" disabled={!jokerEnabled}
+            value={jokerText} onChange={ev => {
+              setJokerText(ev.target.value)
+            }}
+            sx={{
+              opacity: jokerEnabled ? 1 : 0,
+              transition: theme.transitions.create("opacity", {
+                duration: theme.transitions.duration.shortest,
+                easing: theme.transitions.easing.easeInOut
+              }),
+            }} InputLabelProps={{ sx: { fontSize: 14 } }} InputProps={{ sx: { fontSize: 14 } }}
+          />
+
+          <br />
+
+          <Button variant="contained" onClick={() => {
+            updateRandomEntries(entries, jokerEnabled, jokerText)
+          }}
+            sx={{ mt: 1 }}
+          >
+            Generate
+          </Button>
+
+        </Grid>
+      </Grid>
     </>
   )
 }
+
+BingoPage.getLayout = defaultLayout({ title: "Bingo" })
 
 export default BingoPage

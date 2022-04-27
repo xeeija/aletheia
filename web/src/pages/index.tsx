@@ -1,10 +1,9 @@
 import React from 'react'
 import { Typography, Box, useTheme } from '@mui/material'
-import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Navigation } from '../components/Navigation'
+import { defaultLayout, LayoutNextPage } from './_app'
 
-const IndexPage: NextPage = () => {
+const IndexPage: LayoutNextPage = () => {
 
   // Next Components 
   // Head: adds meta info in page <head>
@@ -18,15 +17,15 @@ const IndexPage: NextPage = () => {
         <title>Dashboard | Aletheia</title>
       </Head>
 
-      <Navigation title="Dashboard">
-        <Box>
+      <Box>
 
-          <Typography variant="h2">Dashboard</Typography>
+        <Typography variant="h2">Dashboard</Typography>
 
-        </Box>
-      </Navigation>
+      </Box>
     </>
   )
 }
+
+IndexPage.getLayout = defaultLayout({ title: "Dashboard" })
 
 export default IndexPage

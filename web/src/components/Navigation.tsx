@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { FC, ReactNode, useState } from "react"
 import { Alert, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
 import { TiChartPie, TiHome, TiPipette, TiPower, TiScissors, TiSpanner, TiThList, TiUser, TiWarning } from "react-icons/ti"
 import { Sidebar } from "./Sidebar"
@@ -11,10 +11,10 @@ import { Dropdown } from "./Dropdown"
 import { LinkList, LinkListItem, LinkItem } from "./LinkList"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
 
-interface Props {
+export interface NavigationProps {
   noAppbar?: boolean
   noPadding?: boolean
-  title?: React.ReactNode
+  title?: ReactNode
 }
 
 const sidebarItems: LinkItem[] = [
@@ -34,7 +34,7 @@ const sidebarWidth = 240
 // [x] TODO: Burger Menu Button to expand sidebar from only icons to icons with text
 // TODO: Add "noAppBar" option and move AppBar here from MiniDrawer
 
-export const Navigation: React.FC<Props> = ({ children, noAppbar, noPadding, title }) => {
+export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, title }) => {
 
   const theme = useTheme()
   const router = useRouter()
