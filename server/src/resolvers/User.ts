@@ -89,16 +89,17 @@ export class UserResolver {
 
     } catch (ex: any) {
 
-      console.log(ex.message)
-
       // User_username_key
+      // P2002: unique constraint failed
 
-      if ((ex.message as string).includes("User_username_key")) {
+      if (ex.code === "P2002") {
+        const errorFields = ex.meta.target as string[]
+
         return {
-          errors: [{
-            field: "username",
-            message: "Username already exists"
-          }]
+          errors: errorFields.map(field => ({
+            field,
+            message: `${field[0].toUpperCase() + field.slice(1)} already exists`
+          }))
         }
       } else {
         throw ex

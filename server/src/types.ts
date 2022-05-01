@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client"
 // Define custom properties on the session
 declare module "express-session" {
   interface Session {
-    userId: number
+    userId: string
   }
 }
 
