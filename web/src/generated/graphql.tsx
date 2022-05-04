@@ -16,6 +16,13 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type Error = {
+  __typename?: 'Error';
+  errorCode?: Maybe<Scalars['Int']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  fieldErrors?: Maybe<Array<FieldError>>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -24,10 +31,16 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createRandomWheel: RandomWheelUnion;
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
   updateUser: UserResponse;
+};
+
+
+export type MutationCreateRandomWheelArgs = {
+  name?: Maybe<Scalars['String']>;
 };
 
 
@@ -50,17 +63,51 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  getRandomWheelsOfCurrentUser: RandomWheelsResponse;
   hello: Scalars['String'];
   me?: Maybe<User>;
 };
 
+export type RandomWheel = {
+  __typename?: 'RandomWheel';
+  _count?: Maybe<RandomWheelCount>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  ownerId: Scalars['String'];
+  slug: Scalars['String'];
+};
+
+export type RandomWheelCount = {
+  __typename?: 'RandomWheelCount';
+  entries: Scalars['Int'];
+  members: Scalars['Int'];
+  winners: Scalars['Int'];
+};
+
+export type RandomWheelUnion = Error | RandomWheel;
+
+export type RandomWheelsResponse = {
+  __typename?: 'RandomWheelsResponse';
+  error?: Maybe<Error>;
+  randomWheels?: Maybe<Array<RandomWheel>>;
+};
+
 export type User = {
   __typename?: 'User';
+  _count?: Maybe<UserCount>;
   createdAt: Scalars['DateTime'];
   displayname?: Maybe<Scalars['String']>;
-  id: Scalars['Int'];
-  updateAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
+};
+
+export type UserCount = {
+  __typename?: 'UserCount';
+  drawnWinners: Scalars['Int'];
+  randomWheelMember: Scalars['Int'];
+  randomWheels: Scalars['Int'];
 };
 
 export type UserInput = {
@@ -74,7 +121,14 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type NormalUserFragment = { __typename?: 'User', id: number, username: string, displayname?: Maybe<string> };
+export type NormalUserFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
+
+export type CreateRandomWheelMutationVariables = Exact<{
+  name?: Maybe<Scalars['String']>;
+}>;
+
+
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'Error', errorMessage?: Maybe<string>, errorCode?: Maybe<number>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string } };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -82,7 +136,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -96,19 +150,24 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
 export type UpdateUserMutationVariables = Exact<{
   user: UserInput;
 }>;
 
 
-export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+
+export type GetRandomWheelsOfCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRandomWheelsOfCurrentUserQuery = { __typename?: 'Query', getRandomWheelsOfCurrentUser: { __typename?: 'RandomWheelsResponse', randomWheels?: Maybe<Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, ownerId: string, createdAt: any }>>, error?: Maybe<{ __typename?: 'Error', errorCode?: Maybe<number>, errorMessage?: Maybe<string>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> }> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, displayname?: Maybe<string> }> };
+export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }> };
 
 export const NormalUserFragmentDoc = gql`
     fragment NormalUser on User {
@@ -117,6 +176,31 @@ export const NormalUserFragmentDoc = gql`
   displayname
 }
     `;
+export const CreateRandomWheelDocument = gql`
+    mutation CreateRandomWheel($name: String) {
+  createRandomWheel(name: $name) {
+    ... on RandomWheel {
+      id
+      slug
+      name
+      createdAt
+      ownerId
+    }
+    ... on Error {
+      errorMessage
+      errorCode
+      fieldErrors {
+        field
+        message
+      }
+    }
+  }
+}
+    `;
+
+export function useCreateRandomWheelMutation() {
+  return Urql.useMutation<CreateRandomWheelMutation, CreateRandomWheelMutationVariables>(CreateRandomWheelDocument);
+};
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
@@ -176,6 +260,31 @@ export const UpdateUserDocument = gql`
 
 export function useUpdateUserMutation() {
   return Urql.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
+};
+export const GetRandomWheelsOfCurrentUserDocument = gql`
+    query GetRandomWheelsOfCurrentUser {
+  getRandomWheelsOfCurrentUser {
+    randomWheels {
+      id
+      slug
+      name
+      ownerId
+      createdAt
+    }
+    error {
+      errorCode
+      errorMessage
+      fieldErrors {
+        field
+        message
+      }
+    }
+  }
+}
+    `;
+
+export function useGetRandomWheelsOfCurrentUserQuery(options: Omit<Urql.UseQueryArgs<GetRandomWheelsOfCurrentUserQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetRandomWheelsOfCurrentUserQuery>({ query: GetRandomWheelsOfCurrentUserDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {

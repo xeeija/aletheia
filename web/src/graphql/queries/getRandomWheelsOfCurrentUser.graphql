@@ -1,0 +1,19 @@
+query GetRandomWheelsOfCurrentUser {
+  getRandomWheelsOfCurrentUser {
+    randomWheels {
+      id
+      slug
+      name
+      ownerId
+      createdAt
+    }
+    error {
+      errorCode
+      errorMessage
+      fieldErrors {
+        field
+        message
+      }
+    }
+  }
+}

@@ -17,12 +17,71 @@ generator typegraphql {
 }
 
 model User {
-  id          String   @id @default(uuid()) @db.Uuid
-  // id          Int      @id @default(autoincrement()) // Bytes @id @db.Binary(16)
-  username    String   @unique
+  id                String              @id @default(uuid()) @db.Uuid
+  username          String              @unique
   /// @TypeGraphQL.omit(output: true)
-  password    String
-  displayname String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  password          String
+  displayname       String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  randomWheels      RandomWheel[]
+  drawnWinners      RandomWheelWinner[]
+  randomWheelMember RandomWheelMember[]
+}
+
+// Random Wheel
+
+model RandomWheel {
+  id        String              @id @default(uuid()) @db.Uuid
+  slug      String              @unique
+  name      String? // maybe optional
+  createdAt DateTime            @default(now())
+  owner     User                @relation(fields: [ownerId], references: [id])
+  ownerId   String              @db.Uuid
+  entries   RandomWheelEntry[]
+  winners   RandomWheelWinner[]
+  members   RandomWheelMember[]
+  // visibility
+  // settings:
+  // unique entries option
+  // spin duration (# spins based on that, with random factor)
+  // fade out duration (time until it fades out after spin)
+  // rotation of the wheel (or maybe client side based on last winner)
+  // custom url?
+}
+
+model RandomWheelEntry {
+  id            String      @id @default(uuid()) @db.Uuid
+  randomWheel   RandomWheel @relation(fields: [randomWheelId], references: [id])
+  randomWheelId String      @db.Uuid
+  name          String
+  createdAt     DateTime    @default(now())
+}
+
+// maybe combine in "entry" model
+model RandomWheelWinner {
+  id            String      @id @default(uuid()) @db.Uuid
+  randomWheel   RandomWheel @relation(fields: [randomWheelId], references: [id])
+  randomWheelId String      @db.Uuid
+  name          String
+  createdAt     DateTime    @default(now())
+  drawnBy       User        @relation(fields: [drawnById], references: [id])
+  drawnById     String      @db.Uuid
+}
+
+// User or Collaborator or better name?
+model RandomWheelMember {
+  id            String          @id @default(uuid()) @db.Uuid
+  randomWheel   RandomWheel     @relation(fields: [randomWheelId], references: [id])
+  randomWheelId String          @db.Uuid
+  user          User            @relation(fields: [userId], references: [id])
+  userId        String          @db.Uuid
+  role          RandomWheelRole @relation(fields: [roleName], references: [name])
+  roleName      String
+}
+
+model RandomWheelRole {
+  name        String              @unique
+  description String?
+  members     RandomWheelMember[]
 }

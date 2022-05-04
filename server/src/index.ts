@@ -9,6 +9,7 @@ import { PrismaClient } from "@prisma/client"
 import { UserResolver } from "./resolvers/User"
 import { HelloResolver } from "./resolvers/Hello"
 import { MyContext } from "./types"
+import { RandomWheelResolver } from "./resolvers/RandomWheel"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -41,12 +42,13 @@ const main = async () => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24
     },
+    // store: connect-pg-simple
   }))
 
   // # Graphql Server
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [HelloResolver, UserResolver, RandomWheelResolver],
       validate: false
     }),
     context: ({ req, res }): MyContext => ({ req, res, prisma }),
