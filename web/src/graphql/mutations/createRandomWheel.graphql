@@ -7,7 +7,7 @@ mutation CreateRandomWheel($name: String) {
       createdAt
       ownerId
  	 }
-  	... on Error {
+  	... on AppError {
       errorMessage
       errorCode
   		fieldErrors {

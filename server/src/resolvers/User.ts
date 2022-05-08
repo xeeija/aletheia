@@ -2,7 +2,7 @@ import { User } from "../../dist/generated/typegraphql-prisma";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
 import { MyContext } from "src/types";
-import { FieldError } from "./common";
+import { FieldError } from "./common/types";
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
 

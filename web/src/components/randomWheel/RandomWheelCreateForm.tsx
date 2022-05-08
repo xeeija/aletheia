@@ -30,14 +30,20 @@ export const RandomWheelCreateForm: React.FC<Props> = ({ wheelState }) => {
         if (response.error?.networkError) console.warn(response.error.networkError)
         else if (response.error?.graphQLErrors) console.warn(response.error.graphQLErrors)
 
-        if (response.data?.createRandomWheel.__typename === "Error") {
+        switch (response.data?.createRandomWheel.__typename) {
+          case "RandomWheel":
+            resetForm()
+            setWheels([...(wheels ?? []), response.data?.createRandomWheel])
 
-        }
-        if (response.data?.createRandomWheel.__typename === "RandomWheel") {
-          resetForm()
-          setWheels([...(wheels ?? []), response.data?.createRandomWheel])
+            break
+          case "Error":
 
+            break
+          default:
+
+            break
         }
+
 
       }}
     >

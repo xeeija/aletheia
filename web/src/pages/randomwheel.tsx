@@ -2,20 +2,29 @@ import { Typography } from "@mui/material"
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
 import { RandomWheelCreateForm } from "../components/randomWheel/RandomWheelCreateForm"
-import { RandomWheel, Error, useGetRandomWheelsOfCurrentUserQuery } from "../generated/graphql"
+import { RandomWheel, AppError, useMyRandomWheelsQuery } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "./_app"
 
 export const RandomWheelPage: LayoutNextPage = () => {
 
-  const [{ data }] = useGetRandomWheelsOfCurrentUserQuery()
+  const [{ data }] = useMyRandomWheelsQuery()
 
   const [wheels, setWheels] = useState<RandomWheel[] | null | undefined>(undefined)
-  const [error, setError] = useState<Error | null | undefined>(undefined)
+  const [error, setError] = useState<AppError | null | undefined>(undefined)
 
   useEffect(() => {
-    setWheels(data?.getRandomWheelsOfCurrentUser.randomWheels)
-    setError(data?.getRandomWheelsOfCurrentUser.error)
-  }, [data?.getRandomWheelsOfCurrentUser])
+
+    switch (data?.myRandomWheels.__typename) {
+      case "RandomWheelList":
+        setWheels(data?.myRandomWheels.items)
+        setError(null)
+        break
+
+      case "AppError":
+        setError(data?.myRandomWheels)
+        break
+    }
+  }, [data?.myRandomWheels])
 
   return (
     <>

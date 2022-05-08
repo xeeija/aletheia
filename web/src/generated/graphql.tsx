@@ -16,9 +16,9 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type Error = {
-  __typename?: 'Error';
-  errorCode?: Maybe<Scalars['Int']>;
+export type AppError = {
+  __typename?: 'AppError';
+  errorCode: Scalars['Int'];
   errorMessage?: Maybe<Scalars['String']>;
   fieldErrors?: Maybe<Array<FieldError>>;
 };
@@ -31,16 +31,23 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createRandomWheel: RandomWheelUnion;
+  createRandomWheel: RandomWheelResponse;
+  deleteRandomWheel?: Maybe<AppError>;
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
+  updateRandomWheel: RandomWheelResponse;
   updateUser: UserResponse;
 };
 
 
 export type MutationCreateRandomWheelArgs = {
   name?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationDeleteRandomWheelArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -57,15 +64,27 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationUpdateRandomWheelArgs = {
+  id: Scalars['String'];
+  options: RandomWheelInput;
+};
+
+
 export type MutationUpdateUserArgs = {
   user: UserInput;
 };
 
 export type Query = {
   __typename?: 'Query';
-  getRandomWheelsOfCurrentUser: RandomWheelsResponse;
   hello: Scalars['String'];
   me?: Maybe<User>;
+  myRandomWheels: RandomWheelListResponse;
+  randomWwheelBySlug: RandomWheelResponse;
+};
+
+
+export type QueryRandomWwheelBySlugArgs = {
+  slug: Scalars['String'];
 };
 
 export type RandomWheel = {
@@ -85,13 +104,19 @@ export type RandomWheelCount = {
   winners: Scalars['Int'];
 };
 
-export type RandomWheelUnion = Error | RandomWheel;
-
-export type RandomWheelsResponse = {
-  __typename?: 'RandomWheelsResponse';
-  error?: Maybe<Error>;
-  randomWheels?: Maybe<Array<RandomWheel>>;
+export type RandomWheelInput = {
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
 };
+
+export type RandomWheelList = {
+  __typename?: 'RandomWheelList';
+  items: Array<RandomWheel>;
+};
+
+export type RandomWheelListResponse = AppError | RandomWheelList;
+
+export type RandomWheelResponse = AppError | RandomWheel;
 
 export type User = {
   __typename?: 'User';
@@ -128,7 +153,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'Error', errorMessage?: Maybe<string>, errorCode?: Maybe<number>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string } };
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'AppError', errorMessage?: Maybe<string>, errorCode: number, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string } };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -159,15 +184,15 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
-export type GetRandomWheelsOfCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetRandomWheelsOfCurrentUserQuery = { __typename?: 'Query', getRandomWheelsOfCurrentUser: { __typename?: 'RandomWheelsResponse', randomWheels?: Maybe<Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, ownerId: string, createdAt: any }>>, error?: Maybe<{ __typename?: 'Error', errorCode?: Maybe<number>, errorMessage?: Maybe<string>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> }> } };
-
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }> };
+
+export type MyRandomWheelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: { __typename?: 'AppError', errorCode: number, errorMessage?: Maybe<string>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheelList', items: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string }> } };
 
 export const NormalUserFragmentDoc = gql`
     fragment NormalUser on User {
@@ -186,7 +211,7 @@ export const CreateRandomWheelDocument = gql`
       createdAt
       ownerId
     }
-    ... on Error {
+    ... on AppError {
       errorMessage
       errorCode
       fieldErrors {
@@ -261,17 +286,30 @@ export const UpdateUserDocument = gql`
 export function useUpdateUserMutation() {
   return Urql.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
 };
-export const GetRandomWheelsOfCurrentUserDocument = gql`
-    query GetRandomWheelsOfCurrentUser {
-  getRandomWheelsOfCurrentUser {
-    randomWheels {
-      id
-      slug
-      name
-      ownerId
-      createdAt
+export const MeDocument = gql`
+    query Me {
+  me {
+    ...NormalUser
+  }
+}
+    ${NormalUserFragmentDoc}`;
+
+export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+};
+export const MyRandomWheelsDocument = gql`
+    query MyRandomWheels {
+  myRandomWheels {
+    ... on RandomWheelList {
+      items {
+        id
+        slug
+        name
+        createdAt
+        ownerId
+      }
     }
-    error {
+    ... on AppError {
       errorCode
       errorMessage
       fieldErrors {
@@ -283,17 +321,6 @@ export const GetRandomWheelsOfCurrentUserDocument = gql`
 }
     `;
 
-export function useGetRandomWheelsOfCurrentUserQuery(options: Omit<Urql.UseQueryArgs<GetRandomWheelsOfCurrentUserQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<GetRandomWheelsOfCurrentUserQuery>({ query: GetRandomWheelsOfCurrentUserDocument, ...options });
-};
-export const MeDocument = gql`
-    query Me {
-  me {
-    ...NormalUser
-  }
-}
-    ${NormalUserFragmentDoc}`;
-
-export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+export function useMyRandomWheelsQuery(options: Omit<Urql.UseQueryArgs<MyRandomWheelsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<MyRandomWheelsQuery>({ query: MyRandomWheelsDocument, ...options });
 };
