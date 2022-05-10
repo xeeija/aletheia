@@ -10,6 +10,7 @@ import { UserResolver } from "./resolvers/User"
 import { HelloResolver } from "./resolvers/Hello"
 import { MyContext } from "./types"
 import { RandomWheelResolver } from "./resolvers/RandomWheel"
+import PGStore from "connect-pg-simple"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -20,9 +21,7 @@ const main = async () => {
   // # Web Server
   const app = express()
 
-  // TODO: save sessions to db (and convert the requires to imports)
-  // this is any instead of the correct type
-  // const MySQLStore = require("express-mysql-session")(session)
+  const PostgresStore = PGStore(session)
 
   // Set cors globally, Allowed-Origin header can't be '*' if credentials are set to true
   app.use(cors({
@@ -30,10 +29,14 @@ const main = async () => {
     origin: "http://localhost:3000",
   }))
 
+  if (!process.env.SESSION_SECRET) {
+    console.warn("No session secret is set")
+  }
+
   // Session
   app.use(session({
     name: "asid",
-    secret: "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
+    secret: process.env.SESSION_SECRET ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -42,7 +45,11 @@ const main = async () => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24
     },
-    // store: connect-pg-simple
+    store: new PostgresStore({
+      tableName: "_session",
+      createTableIfMissing: true,
+      conString: process.env.DATABASE_URL
+    })
   }))
 
   // # Graphql Server
