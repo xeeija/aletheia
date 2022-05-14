@@ -1,4 +1,5 @@
 import { MyContext } from "src/types";
+import { slugify } from "../utils/slug";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { RandomWheel } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion, ListType } from "./common/types";
@@ -126,18 +127,25 @@ export class RandomWheelResolver {
     }
 
     // TODO: generate slug in base 64 (custom)
-    const slug = `slug-${Date.now()}`
+    const tempSlug = `slug-${Date.now()}`
 
     try {
       const randomWheel = await prisma.randomWheel.create({
         data: {
-          slug: slug,
+          slug: tempSlug,
           ownerId: req.session.userId,
           name: name
         }
       })
 
-      return randomWheel
+      const slug = slugify(randomWheel.id, 6)
+      // TODO: Use default value for slug in schema to avoid a second update? 
+      const newWheel = await prisma.randomWheel.update({
+        where: { id: randomWheel.id },
+        data: { slug: slug }
+      })
+
+      return newWheel
     }
     catch (ex: any) {
       if (ex.code === "P2002") {

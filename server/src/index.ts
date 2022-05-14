@@ -9,6 +9,7 @@ import { PrismaClient } from "@prisma/client"
 import { UserResolver, RandomWheelResolver } from "./resolvers"
 import { MyContext } from "./types"
 import PGStore from "connect-pg-simple"
+import { slugTest } from "./utils/slug"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -64,6 +65,8 @@ const main = async () => {
     ]
   })
 
+  // TODO Test
+  app.get("/slug/:slug", slugTest)
 
   // Known bug, fix for error "must start before applyMiddleware"
   await apolloServer.start()
