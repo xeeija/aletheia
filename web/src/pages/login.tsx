@@ -2,13 +2,11 @@ import React, { useState } from "react"
 import Head from "next/head"
 import { Alert, Box, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { PasswordField } from "../components/PasswordField"
+import { LoadingButton, InputField, PasswordField } from "../components"
 import { useLoginMutation } from "../generated/graphql"
-import { InputField } from "../components/InputField"
 import { useRouter } from "next/router"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
-import { LoadingButton } from "../components/LoadingButton"
-import { LayoutNextPage } from "./_app"
+import { LayoutNextPage } from "../components/layout"
 
 const LoginPage: LayoutNextPage = () => {
 

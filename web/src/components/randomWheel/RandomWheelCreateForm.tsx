@@ -1,9 +1,8 @@
 import { Grid } from "@mui/material"
 import { Formik, Form } from "formik"
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import { RandomWheel, useCreateRandomWheelMutation } from "../../generated/graphql"
-import { InputField } from "../InputField"
-import { LoadingButton } from "../LoadingButton"
+import { InputField, LoadingButton } from "../components"
 
 interface Props {
   wheelState: [
@@ -36,7 +35,7 @@ export const RandomWheelCreateForm: React.FC<Props> = ({ wheelState }) => {
             setWheels([...(wheels ?? []), response.data?.createRandomWheel])
 
             break
-          case "Error":
+          case "AppError":
 
             break
           default:

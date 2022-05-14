@@ -1,7 +1,7 @@
 import React from 'react'
 import { Typography, Box, useTheme } from '@mui/material'
 import Head from 'next/head'
-import { defaultLayout, LayoutNextPage } from './_app'
+import { defaultLayout, LayoutNextPage } from '../components/layout'
 
 const IndexPage: LayoutNextPage = () => {
 

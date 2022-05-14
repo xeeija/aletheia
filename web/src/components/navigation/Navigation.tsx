@@ -1,15 +1,11 @@
 import { FC, ReactNode, useState } from "react"
 import { Alert, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
 import { TiChartPie, TiHome, TiPipette, TiPower, TiScissors, TiSpanner, TiThList, TiUser, TiWarning } from "react-icons/ti"
-import { Sidebar } from "./Sidebar"
-import { Navbar } from "./Navbar"
-import Link from "next/link"
-import { useLogoutMutation, useMeQuery } from "../generated/graphql"
-import { useRouter } from "next/router"
-import { LoadingButton } from "./LoadingButton"
-import { Dropdown } from "./Dropdown"
-import { LinkList, LinkListItem, LinkItem } from "./LinkList"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
+import { Dropdown, LinkList, LinkListItem, LinkItem, LoadingButton, Sidebar, Navbar } from "../components"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useLogoutMutation, useMeQuery } from "../../generated/graphql"
 
 export interface NavigationProps {
   noAppbar?: boolean

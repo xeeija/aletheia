@@ -6,10 +6,8 @@ import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
 import { buildSchema } from "type-graphql"
 import { PrismaClient } from "@prisma/client"
-import { UserResolver } from "./resolvers/User"
-import { HelloResolver } from "./resolvers/Hello"
+import { UserResolver, RandomWheelResolver } from "./resolvers"
 import { MyContext } from "./types"
-import { RandomWheelResolver } from "./resolvers/RandomWheel"
 import PGStore from "connect-pg-simple"
 
 // Database client
@@ -26,7 +24,7 @@ const main = async () => {
   // Set cors globally, Allowed-Origin header can't be '*' if credentials are set to true
   app.use(cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    origin: process.env.ORIGIN_URL,
   }))
 
   if (!process.env.SESSION_SECRET) {
@@ -55,7 +53,7 @@ const main = async () => {
   // # Graphql Server
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver, RandomWheelResolver],
+      resolvers: [UserResolver, RandomWheelResolver],
       validate: false
     }),
     context: ({ req, res }): MyContext => ({ req, res, prisma }),
@@ -71,10 +69,11 @@ const main = async () => {
   await apolloServer.start()
   apolloServer.applyMiddleware({ app, cors: false })
 
+  const APP_PORT = process.env.APP_PORT ?? 4000
 
   // # Start server (listen)
-  app.listen(4000, () => {
-    console.log(`Server started at http${process.env.NODE_ENV === "production" ? "s" : ""}://localhost:4000`)
+  app.listen(APP_PORT, () => {
+    console.log(`Server started at http://localhost:${APP_PORT}`)
   })
 }
 

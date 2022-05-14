@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme } from '@mui/material'
-import { BingoBoard } from '../components/BingoBoard'
+import { BingoBoard } from '../components/bingo'
 import { shuffle } from '../utils/shuffle'
-import { defaultLayout, LayoutNextPage } from './_app'
+import { defaultLayout, LayoutNextPage } from '../components/layout'
 
 const BingoPage: LayoutNextPage = () => {
 

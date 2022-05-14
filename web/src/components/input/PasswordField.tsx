@@ -1,7 +1,7 @@
 import { IconButton, InputAdornment, TextFieldProps } from "@mui/material"
 import React, { useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
-import { InputField } from "./InputField"
+import { InputField } from "../components"
 
 type Props = TextFieldProps
 

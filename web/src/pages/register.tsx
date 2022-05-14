@@ -3,12 +3,10 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import { Alert, Box, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { InputField } from "../components/InputField"
-import { PasswordField } from "../components/PasswordField"
+import { LoadingButton, InputField, PasswordField } from "../components"
 import { useRegisterMutation } from "../generated/graphql"
-import { LoadingButton } from "../components/LoadingButton"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
-import { LayoutNextPage } from "./_app"
+import { LayoutNextPage } from "../components/layout"
 
 const RegisterPage: LayoutNextPage = () => {
   const [{ }, register] = useRegisterMutation()

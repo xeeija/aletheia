@@ -1,7 +1,6 @@
 import React from "react"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
-import { LinkList, LinkListItem, LinkItem } from "./LinkList"
-import { LogoIcon } from "./LogoIcon"
+import { LinkList, LinkListItem, LinkItem, LogoIcon } from "../components"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({

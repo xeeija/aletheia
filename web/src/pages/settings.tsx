@@ -1,10 +1,9 @@
 import React from "react"
 import { Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { InputField } from "../components/InputField"
+import { LoadingButton, InputField } from "../components"
 import { useMeQuery, useUpdateUserMutation } from "../generated/graphql"
-import { LoadingButton } from "../components/LoadingButton"
-import { defaultLayout, LayoutNextPage } from "./_app"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 import Head from "next/head"
 
 const SettingsPage: LayoutNextPage = () => {

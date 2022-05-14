@@ -4,24 +4,18 @@ import type { AppProps } from 'next/app'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { theme } from '../theme'
 import { createClient, Provider as UrqlProvider } from 'urql'
-import { NextPage } from 'next'
-import { ReactElement, ReactNode } from 'react'
-import { Navigation, NavigationProps } from '../components/Navigation'
-
-export type LayoutNextPage = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode
-}
+import { defaultLayout, LayoutNextPage } from '../components/layout'
 
 type LayoutAppProps = AppProps & {
   Component: LayoutNextPage
 }
 
-function MyApp({ Component, pageProps }: LayoutAppProps) {
+function App({ Component, pageProps }: LayoutAppProps) {
 
   const getLayout = Component.getLayout ?? defaultLayout()
 
   const urqlClient = createClient({
-    url: "http://localhost:4000/graphql",
+    url: process.env.GRAPHQL_SERVER_URL ?? `${process.env.SERVER_URL ?? "http://localhost:4000"}/graphql`,
     fetchOptions: {
       credentials: "include"
     }
@@ -37,10 +31,4 @@ function MyApp({ Component, pageProps }: LayoutAppProps) {
   )
 }
 
-// Helper to pass props to Navigation
-// eslint-disable-next-line react/display-name
-export const defaultLayout = (navProps?: NavigationProps) => (page: ReactElement) => (
-  <Navigation {...navProps}>{page}</Navigation>
-)
-
-export default MyApp
+export default App

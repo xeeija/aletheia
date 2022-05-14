@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material"
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
-import { RandomWheelCreateForm } from "../components/randomWheel/RandomWheelCreateForm"
+import { RandomWheelCreateForm } from "../components/randomWheel"
 import { RandomWheel, AppError, useMyRandomWheelsQuery } from "../generated/graphql"
-import { defaultLayout, LayoutNextPage } from "./_app"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 
 export const RandomWheelPage: LayoutNextPage = () => {
 
