@@ -31,7 +31,7 @@ export const LinkList: React.FC<LinkListProps> = ({ children, items, ...listProp
           {children(item, index)}
         </li>
       })}
-    </List >
+    </List>
   )
 }
 
@@ -43,18 +43,43 @@ type ItemProps = LinkItem & {
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
 export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, disabled, ...props }, ref) => {
+
+  const linkItem = (
+    <ListItem ref={ref} button component={href ? "a" : "button"} disabled={disabled} {...props}>
+      <ListItemIcon sx={{ minWidth: 48 }}>
+        {icon}
+      </ListItemIcon>
+      <ListItemText primary={name} {...textProps} />
+    </ListItem>
+  )
+
+  const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2 }} />
+
+  if (divider) {
+    return divider === true ? defaultDivider : divider
+  }
+
   return (
-    divider ?
-      divider === true ?
-        <Divider variant="middle" sx={{ borderBottomWidth: 2 }} /> :
-        divider :
-      <Link href={href ?? ""} passHref={href !== undefined}>
-        <ListItem ref={ref} button component="a" disabled={disabled} {...props}>
-          <ListItemIcon sx={{ minWidth: 48 }}>
-            {icon}
-          </ListItemIcon>
-          <ListItemText primary={name} {...textProps} />
-        </ListItem>
+    !href ? linkItem :
+      <Link href={href} passHref>
+        {linkItem}
       </Link>
   )
+
+  // return (
+  //   divider ?
+  //     divider === true ?
+  //       <Divider variant="middle" sx={{ borderBottomWidth: 2 }} /> :
+  //       divider :
+  //     <Link href={href ?? ""} passHref={href !== undefined}>
+  //       {/*
+  //       <ListItem ref={ref} button component="a" disabled={disabled} {...props}>
+  //         <ListItemIcon sx={{ minWidth: 48 }}>
+  //           {icon}
+  //         </ListItemIcon>
+  //         <ListItemText primary={name} {...textProps} />
+  //       </ListItem>
+  //     */}
+  //     </Link>
+  // )
 })

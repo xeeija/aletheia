@@ -1,11 +1,12 @@
-import { Typography } from "@mui/material"
+import { Box, Button, Typography } from "@mui/material"
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
 import { RandomWheelCreateForm } from "../components/randomWheel"
 import { RandomWheel, AppError, useMyRandomWheelsQuery } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
+import Link from "next/link"
 
-export const RandomWheelPage: LayoutNextPage = () => {
+const RandomWheelPage: LayoutNextPage = () => {
 
   const [{ data }] = useMyRandomWheelsQuery()
 
@@ -32,15 +33,25 @@ export const RandomWheelPage: LayoutNextPage = () => {
         <title>Random Wheel | Aletheia</title>
       </Head>
 
+      <Typography variant="h3">Create wheel</Typography>
+      <Box sx={{ pb: 2 }}>
+        <RandomWheelCreateForm wheelState={[wheels, setWheels]} />
+      </Box>
+
       <Typography variant="h2">My Wheels</Typography>
       <div>
         {wheels && (
           <>
             {wheels?.map(wheel => (
-              <p key={wheel.slug}>
-                Name: {wheel.name ?? "-"}<br />
-                Slug: {wheel.slug}
-              </p>
+              <Box key={wheel.id} sx={{ pb: 1 }}>
+                <div>Name: {wheel.name ?? "-"}</div>
+                <span>Slug </span>
+                <Link href={`randomwheel/${wheel.slug}`} passHref>
+                  <Button sx={{ textTransform: "none" }}>
+                    {wheel.slug}
+                  </Button>
+                </Link>
+              </Box>
             ))}
 
             {wheels.length === 0 && (
@@ -52,13 +63,6 @@ export const RandomWheelPage: LayoutNextPage = () => {
         {error && (
           <p>You made an Oopsie! {error.errorMessage}</p>
         )}
-      </div>
-
-      <Typography variant="h3" sx={{ pt: 2 }}>Create wheel</Typography>
-      <div>
-
-        <RandomWheelCreateForm wheelState={[wheels, setWheels]} />
-
       </div>
     </>
   )

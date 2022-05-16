@@ -76,7 +76,6 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String'];
   me?: Maybe<User>;
   myRandomWheels: RandomWheelListResponse;
   randomWwheelBySlug: RandomWheelResponse;
@@ -193,6 +192,13 @@ export type MyRandomWheelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: { __typename?: 'AppError', errorCode: number, errorMessage?: Maybe<string>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheelList', items: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string }> } };
+
+export type RandomWheelBySlugQueryVariables = Exact<{
+  slug: Scalars['String'];
+}>;
+
+
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWwheelBySlug: { __typename?: 'AppError', errorCode: number, errorMessage?: Maybe<string>, fieldErrors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } | { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, ownerId: string } };
 
 export const NormalUserFragmentDoc = gql`
     fragment NormalUser on User {
@@ -323,4 +329,29 @@ export const MyRandomWheelsDocument = gql`
 
 export function useMyRandomWheelsQuery(options: Omit<Urql.UseQueryArgs<MyRandomWheelsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MyRandomWheelsQuery>({ query: MyRandomWheelsDocument, ...options });
+};
+export const RandomWheelBySlugDocument = gql`
+    query RandomWheelBySlug($slug: String!) {
+  randomWwheelBySlug(slug: $slug) {
+    ... on RandomWheel {
+      id
+      slug
+      name
+      createdAt
+      ownerId
+    }
+    ... on AppError {
+      errorCode
+      errorMessage
+      fieldErrors {
+        field
+        message
+      }
+    }
+  }
+}
+    `;
+
+export function useRandomWheelBySlugQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<RandomWheelBySlugQuery>({ query: RandomWheelBySlugDocument, ...options });
 };

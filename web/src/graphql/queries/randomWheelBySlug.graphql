@@ -1,0 +1,19 @@
+query RandomWheelBySlug($slug: String!) {
+  randomWwheelBySlug(slug: $slug) {
+    ... on RandomWheel {
+      id
+      slug
+      name
+      createdAt
+      ownerId
+    }
+    ... on AppError {
+      errorCode
+      errorMessage
+      fieldErrors {
+        field
+        message
+      }
+    }
+  }
+}
