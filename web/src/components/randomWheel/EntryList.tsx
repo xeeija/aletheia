@@ -1,7 +1,8 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, ReactElement, ReactNode, SetStateAction, useState } from "react";
 import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material";
 import { HiTrash } from "react-icons/hi";
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "../../generated/graphql";
+import { AlertPopup } from "../components";
 
 interface Props {
   entries: RandomWheelEntryFragment[]
@@ -57,6 +58,7 @@ export const EntryList: FC<Props> = ({ entries, setEntries }) => {
   ))
 
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
+  const [showError, setShowError] = useState<JSX.Element | string | null>(null)
 
   const onDelete = async (entry: RandomWheelEntryFragment) => {
     const { data } = await deleteEntry({ id: entry.id })
@@ -65,12 +67,16 @@ export const EntryList: FC<Props> = ({ entries, setEntries }) => {
       setEntries(entries.filter(e => e.id !== entry.id))
     }
 
-    // TODO: Proper message and error handling
-    console.log(`Deleted entry '${entry.name}'`)
+    setShowError(`Deleted entry '${entry.name}'`)
+
   }
 
   return (
     <List role="list" sx={{ maxHeight: 490, pt: 0 }}>
+
+      {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them */}
+      <AlertPopup messageState={[showError, setShowError]} />
+
       {entries.map((entry) => (
         <ListItem key={entry.id} role="listitem" dense button sx={{
           "&:hover + .hoverItem, &:hover .hoverItem, &:focus-within + .hoverItem, &:focus-within .hoverItem": {

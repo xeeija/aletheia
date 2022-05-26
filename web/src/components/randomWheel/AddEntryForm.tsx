@@ -33,12 +33,18 @@ export const AddEntryForm: FC<Props> = ({ wheelId, entries, setEntries }) => {
         resetForm()
       }}
     >
-      {({ values }) => (
+      {({ values, isSubmitting }) => (
         <Form>
           <InputField name="entry" label="Add name" fullWidth
             InputProps={{
               endAdornment: <InputAdornment position="end">
-                <IconButton type="submit" disabled={!values.entry.trim()} aria-label="Add name" edge="end" sx={{ mr: -0.75 }}>
+                <IconButton
+                  type="submit"
+                  disabled={!values.entry.trim() || isSubmitting}
+                  aria-label="Add name"
+                  edge="end"
+                  sx={{ mr: -0.75 }}
+                >
                   <SvgIcon component={HiPaperAirplane} viewBox="0 0 20 20" sx={{ transform: "rotate(90deg)" }} />
                 </IconButton>
               </InputAdornment>

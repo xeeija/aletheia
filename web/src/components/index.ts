@@ -1,6 +1,7 @@
 // Export components here from subfolders
 
 export * from "./common/CollapsedAlert"
+export * from "./common/AlertPopup"
 export * from "./common/Dropdown"
 export * from "./common/LinkList"
 export * from "./common/LoadingButton"
