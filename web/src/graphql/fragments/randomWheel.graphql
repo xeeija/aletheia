@@ -8,7 +8,6 @@ fragment RandomWheelDetails on RandomWheel {
 fragment RandomWheelEntry on RandomWheelEntry {
   id
   name
-  createdAt
 }
 
 fragment RandomWheelWinner on RandomWheelWinner {

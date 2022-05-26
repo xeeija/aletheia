@@ -1,0 +1,5 @@
+mutation AddRandomWheelEntry($randomWheelId: String!, $name: String!) {
+  addRandomWheelEntry(randomWheelId: $randomWheelId, name: $name) {
+    ...RandomWheelEntry
+  }
+}

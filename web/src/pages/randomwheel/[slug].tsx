@@ -1,12 +1,11 @@
-import { Box, IconButton, InputAdornment, Paper, SvgIcon, Tab, Tabs, TextField, Typography } from "@mui/material";
+import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { HiPaperAirplane } from "react-icons/hi";
+import { useEffect, useState } from "react";
 import { TabPanel } from "../../components";
 import { LayoutNextPage } from "../../components/layout";
-import { EntryList, WinnerList } from "../../components/randomWheel";
-import { useRandomWheelBySlugQuery } from "../../generated/graphql";
+import { AddEntryForm, EntryList, WinnerList } from "../../components/randomWheel";
+import { RandomWheelEntryFragment, useRandomWheelBySlugQuery } from "../../generated/graphql";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
@@ -22,6 +21,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [entriesTab, setEntriesTab] = useState(0)
 
   const wheel = data?.randomWheelBySlug
+
+  const [entries, setEntries] = useState<RandomWheelEntryFragment[]>([])
+
+  useEffect(() => {
+    setEntries(data?.randomWheelBySlug?.entries ?? [])
+  }, [data?.randomWheelBySlug?.entries])
 
   if (!wheel) {
     // TODO: Proper error pages
@@ -107,52 +112,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               <TabPanel index={0} activeTab={entriesTab}>
 
-                <EntryList entries={wheel.entries.map(e => e.name)} />
-
-                {/* TOOO: Form for add names, in own component */}
-
-                <TextField
-                  label="Add name"
-                  variant="filled"
-                  size="small"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">
-                      <IconButton aria-label="Add name" edge="end" sx={{ mr: -0.75 }}>
-                        <SvgIcon component={HiPaperAirplane} viewBox="0 0 20 20" sx={{ transform: "rotate(90deg)" }} />
-                      </IconButton>
-                    </InputAdornment>
-                  }}
-                  sx={{
-                    mt: 1
-                  }}
-                />
-
-                {/* <TextField className={cl.mart}
-                  variant="filled"
-                  color="primary"
-                  size="small"
-                  label="Add name"
-                  fullWidth
-                  // disabled={spinning}
-                  onKeyPress={e => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      // e.preventDefault()
-                      addName(addNameRef.current?.value ?? "")
-                    }
-                  }}
-                  InputProps={{
-                    inputRef: addNameRef,
-                    disableUnderline: true,
-                    endAdornment: (
-                      <InputAdornment className={cl.endAdornment} position="end">
-                        <IconButton aria-label="Add name" edge="end" disabled={spinning}
-                          onClick={() => addName(addNameRef.current?.value ?? "")}>
-                          <SendRounded />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }} /> */}
+                <EntryList entries={entries} setEntries={setEntries} />
+                <AddEntryForm wheelId={wheel.id} entries={entries} setEntries={setEntries} />
 
               </TabPanel>
 
