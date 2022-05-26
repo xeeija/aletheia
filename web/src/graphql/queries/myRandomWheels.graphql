@@ -1,21 +1,5 @@
 query MyRandomWheels {
   myRandomWheels {
-    ... on RandomWheelList {
-      items {
-        id
-        slug
-        name
-        createdAt
-        ownerId
-      }
-    }
-    ... on AppError {
-      errorCode
-      errorMessage
-      fieldErrors {
-        field
-        message
-      }
-    }
+    ...RandomWheelDetails
   }
 }

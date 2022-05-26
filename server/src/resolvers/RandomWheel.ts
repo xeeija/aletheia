@@ -1,8 +1,11 @@
 import { MyContext } from "src/types";
 import { slugify } from "../utils/slug";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { RandomWheel } from "../../dist/generated/typegraphql-prisma";
+import { Arg, Ctx, Field, Info, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion, ListType } from "./common/types";
+import { GraphQLResolveInfo } from "graphql";
+import { parseResolveInfo } from "graphql-parse-resolve-info";
+import { Prisma } from "@prisma/client";
 
 /*
   @ObjectType()
@@ -36,7 +39,7 @@ const RandomWheelResponse = createAppErrorUnion(RandomWheel)
 class RandomWheelList extends ListType(RandomWheel) { }
 
 // workaround: generic RandomWheelList type: with "items" property that is the list
-const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
+// const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
 
 @InputType()
 class RandomWheelInput implements Partial<RandomWheel> {
@@ -46,6 +49,44 @@ class RandomWheelInput implements Partial<RandomWheel> {
   @Field(() => String, { nullable: true })
   slug?: string | undefined;
 }
+
+const includeRandomWheel = (info: GraphQLResolveInfo) => {
+  const resolveInfo = parseResolveInfo(info)
+  const fields = resolveInfo?.fieldsByTypeName.RandomWheel ?? {}
+
+  const include: Prisma.RandomWheelInclude = {
+    entries: "entries" in fields,
+    winners: "winners" in fields && {
+      orderBy: { createdAt: "desc" }
+    },
+    members: "members" in fields,
+    owner: "owner" in fields,
+    _count: "_count" in fields,
+  }
+
+  return { include }
+}
+
+@ObjectType("RandomWheel")
+class RandomWheelFull extends RandomWheel {
+  @Field(() => [RandomWheelEntry])
+  entries: RandomWheelEntry[]
+
+  @Field(() => [RandomWheelWinner])
+  winners: RandomWheelWinner[]
+
+  @Field(() => [RandomWheelMember])
+  members: RandomWheelMember[]
+
+  @Field(() => User)
+  owner: User
+}
+
+// @ObjectType()
+// class RandomWheelEntryResponse extends BaseResponse {
+//   @Field(() => RandomWheelEntry, { nullable: true })
+//   entries?: RandomWheelEntry
+// }
 
 @Resolver()
 export class RandomWheelResolver {
@@ -62,10 +103,11 @@ export class RandomWheelResolver {
 
   // Wheel
 
-  @Query(() => RandomWheelListResponse)
+  @Query(() => [RandomWheelFull])
   async myRandomWheels(
-    @Ctx() { req, prisma }: MyContext
-  ): Promise<typeof RandomWheelListResponse> {
+    @Ctx() { req, prisma }: MyContext,
+    @Info() info: GraphQLResolveInfo
+  ) { //: Promise<typeof RandomWheelListResponse> {
 
     if (!req.session.userId) {
       return {
@@ -78,31 +120,50 @@ export class RandomWheelResolver {
       where: {
         ownerId: req.session.userId
       },
+      ...includeRandomWheel(info)
     })
 
-    return { items: randomWheels }
+    return randomWheels
+
+    // return { items: randomWheels }
 
   }
 
   // TODO: Only allowed if logged in? (or if private?)
-  @Query(() => RandomWheelResponse)
-  async randomWwheelBySlug(
+  @Query(() => RandomWheelFull, { nullable: true })
+  async randomWheelBySlug(
     @Ctx() { prisma }: MyContext,
-    @Arg("slug") slug: string
-  ): Promise<typeof RandomWheelResponse> {
+    @Arg("slug") slug: string,
+    @Info() info: GraphQLResolveInfo
+  ) { //: Promise<typeof RandomWheelResponse> {
     try {
+      // console.log(JSON.stringify(info))
+      // info.fieldNodes[0].selectionSet?.selections.forEach(sel => console.log(sel))
+
+      // const resolveInfo = parseResolveInfo(info)
+      // const fields = resolveInfo?.fieldsByTypeName.RandomWheelFull ?? {}
+
+      // console.log(fields)
+
       const wheel = await prisma.randomWheel.findUnique({
-        where: { slug: slug }
+        where: { slug: slug },
+        ...includeRandomWheel(info),
+        // TODO: Maybe select only the requested fields
+        // select: {
+        //   id: true,
+        //   entries: { select: { name: true } },
+        //   owner: { select: { username: true } }
+        // }
       })
 
-      if (wheel) {
-        return wheel
-      }
+      // if (wheel) {
+      return wheel
+      // }
 
-      return {
-        errorCode: 404,
-        errorMessage: "Not found"
-      }
+      // return {
+      //   errorCode: 404,
+      //   errorMessage: "Not found"
+      // }
 
     } catch (ex: any) {
       console.error(ex)
@@ -114,7 +175,8 @@ export class RandomWheelResolver {
     }
   }
 
-  @Mutation(() => RandomWheelResponse)
+  // FIX return type
+  @Mutation(() => RandomWheelFull)
   async createRandomWheel(
     @Ctx() { req, prisma }: MyContext,
     @Arg("name", { nullable: true }) name?: string
@@ -171,7 +233,8 @@ export class RandomWheelResolver {
 
   }
 
-  @Mutation(() => RandomWheelResponse)
+  // FIX return type
+  @Mutation(() => RandomWheelFull)
   async updateRandomWheel(
     @Ctx() { prisma, req }: MyContext,
     @Arg("id") id: string,
@@ -234,6 +297,8 @@ export class RandomWheelResolver {
     @Arg("id") id: string
   ): Promise<AppError | null> {
     // TODO: isUuid utility function
+    // const uuidRegex = /^[0-9a-f]{8}-?(?:[0-9a-f]{4}-?){3}[0-9a-f]{12}$/i
+
     if (id.length !== 36 && id.length !== 32) {
       return {
         errorCode: 400,
@@ -274,6 +339,52 @@ export class RandomWheelResolver {
 
   // Entry
 
-  // TODO
+  // TODO: Error Handling with Middleware
+
+  @Mutation(() => RandomWheelEntry)
+  async addRandomWheelEntry(
+    @Ctx() { prisma }: MyContext,
+    @Arg("randomWheelId") randomWheelId: string,
+    @Arg("name") name: string,
+  ) {
+
+    const entry = await prisma.randomWheelEntry.create({
+      data: {
+        randomWheelId,
+        name
+      }
+    })
+
+    return entry
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async deleteRandomWheelEntry(
+    @Ctx() { prisma }: MyContext,
+    @Arg("id") id: string
+  ) {
+    await prisma.randomWheelEntry.delete({
+      where: { id }
+    })
+
+    return true
+  }
+
+  @Mutation(() => RandomWheelWinner)
+  async addWinner(
+    @Ctx() { prisma, req }: MyContext
+    @Arg("randommWheelId") randomWwheelId: string
+    @Arg("name") name: string
+  ) {
+    const newWinner = await prisma.randomWheelWinner.create({
+      data: {
+        name: name,
+        randomWheelId: randomWwheelId,
+        drawnById: req.session.userId
+      }
+    })
+
+    return newWinner
+  }
 
 }

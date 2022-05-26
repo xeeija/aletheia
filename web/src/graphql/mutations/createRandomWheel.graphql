@@ -1,19 +1,15 @@
 mutation CreateRandomWheel($name: String) {
   createRandomWheel(name: $name) {
   	... on RandomWheel {
-    	id
-      slug
-      name
-      createdAt
-      ownerId
+			...RandomWheelDetails
  	 }
-  	... on AppError {
-      errorMessage
-      errorCode
-  		fieldErrors {
-    		field
-    		message
-  		}
-		}
+  	# ... on AppError {
+    #   errorMessage
+    #   errorCode
+  	# 	fieldErrors {
+    # 		field
+    # 		message
+  	# 	}
+		# }
   }
 }

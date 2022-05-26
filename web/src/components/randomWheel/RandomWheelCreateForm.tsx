@@ -1,13 +1,13 @@
 import { Grid } from "@mui/material"
 import { Formik, Form } from "formik"
 import React, { Dispatch, SetStateAction } from "react"
-import { RandomWheel, useCreateRandomWheelMutation } from "../../generated/graphql"
+import { RandomWheel, RandomWheelDetailsFragment, useCreateRandomWheelMutation } from "../../generated/graphql"
 import { InputField, LoadingButton } from "../components"
 
 interface Props {
   wheelState: [
-    RandomWheel[] | null | undefined,
-    Dispatch<SetStateAction<RandomWheel[] | null | undefined>>
+    RandomWheelDetailsFragment[] | undefined,
+    Dispatch<SetStateAction<RandomWheelDetailsFragment[] | undefined>>
   ]
 }
 
@@ -29,19 +29,24 @@ export const RandomWheelCreateForm: React.FC<Props> = ({ wheelState }) => {
         if (response.error?.networkError) console.warn(response.error.networkError)
         else if (response.error?.graphQLErrors) console.warn(response.error.graphQLErrors)
 
-        switch (response.data?.createRandomWheel.__typename) {
-          case "RandomWheel":
-            resetForm()
-            setWheels([...(wheels ?? []), response.data?.createRandomWheel])
-
-            break
-          case "AppError":
-
-            break
-          default:
-
-            break
+        if (response.data?.createRandomWheel) {
+          resetForm()
+          setWheels([...(wheels ?? []), response.data?.createRandomWheel])
         }
+
+        // switch (response.data?.createRandomWheel.__typename) {
+        //   case "RandomWheel":
+        //     resetForm()
+        //     setWheels([...(wheels ?? []), response.data?.createRandomWheel])
+
+        //     break
+        //   case "AppError":
+
+        //     break
+        //   default:
+
+        //     break
+        // }
 
 
       }}

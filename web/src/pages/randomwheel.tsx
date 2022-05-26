@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material"
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
 import { RandomWheelCreateForm } from "../components/randomWheel"
-import { RandomWheel, AppError, useMyRandomWheelsQuery } from "../generated/graphql"
+import { RandomWheel, AppError, useMyRandomWheelsQuery, RandomWheelDetailsFragment } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
 import Link from "next/link"
 
@@ -10,22 +10,24 @@ const RandomWheelPage: LayoutNextPage = () => {
 
   const [{ data }] = useMyRandomWheelsQuery()
 
-  const [wheels, setWheels] = useState<RandomWheel[] | null | undefined>(undefined)
-  const [error, setError] = useState<AppError | null | undefined>(undefined)
+  const [wheels, setWheels] = useState<RandomWheelDetailsFragment[] | undefined>(data?.myRandomWheels)
+  // const [error, setError] = useState<AppError | null | undefined>(undefined)
 
   useEffect(() => {
+    setWheels(data?.myRandomWheels)
+    //   switch (data?.myRandomWheels.__typename) {
+    //     case "RandomWheelList":
+    //       setWheels(data?.myRandomWheels.items)
+    //       setError(null)
+    //       break
 
-    switch (data?.myRandomWheels.__typename) {
-      case "RandomWheelList":
-        setWheels(data?.myRandomWheels.items)
-        setError(null)
-        break
-
-      case "AppError":
-        setError(data?.myRandomWheels)
-        break
-    }
+    //     case "AppError":
+    //       setError(data?.myRandomWheels)
+    //       break
+    //   }
   }, [data?.myRandomWheels])
+
+  // const wheels = data?.myRandomWheels
 
   return (
     <>
@@ -38,7 +40,7 @@ const RandomWheelPage: LayoutNextPage = () => {
         <RandomWheelCreateForm wheelState={[wheels, setWheels]} />
       </Box>
 
-      <Typography variant="h2">My Wheels</Typography>
+      <Typography variant="h3">My Wheels</Typography>
       <div>
         {wheels && (
           <>
@@ -60,8 +62,8 @@ const RandomWheelPage: LayoutNextPage = () => {
           </>
         )}
 
-        {error && (
-          <p>You made an Oopsie! {error.errorMessage}</p>
+        {(!wheels || wheels.length === 0) && (
+          <p>You dont have any RandomWheels yet.</p>
         )}
       </div>
     </>

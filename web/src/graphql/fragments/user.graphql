@@ -3,3 +3,9 @@ fragment NormalUser on User {
   username
   displayname
 }
+
+fragment UserName on User {
+  id
+  username
+  displayname
+}

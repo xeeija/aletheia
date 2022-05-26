@@ -4,7 +4,7 @@ import { HiSpeakerphone } from "react-icons/hi";
 
 interface Winner {
   name: string
-  createdAt: string
+  createdAt: Date
 }
 
 interface Props {
@@ -19,7 +19,7 @@ export const WinnerList: FC<Props> = ({ winners }) => {
       <>
         <Box sx={{ px: 1.5, pb: 1.5 }}>
           <Typography variant="overline" color="textSecondary">
-            Latest winner &nbsp;&bull;&nbsp; {winners[0]?.createdAt}
+            Latest winner &nbsp;&bull;&nbsp; {winners[0]?.createdAt.toLocaleString()}
           </Typography>
           <Typography variant="h4" noWrap>
             {winners[0]?.name}
@@ -30,7 +30,7 @@ export const WinnerList: FC<Props> = ({ winners }) => {
         <List sx={{ pb: 0, }}>
           {winners.slice(1).map(({ name, createdAt }, i) => (
             <ListItem key={i} role="listitem" dense sx={{ mt: 0 }}>
-              <ListItemText primary={name} secondary={createdAt} primaryTypographyProps={{
+              <ListItemText primary={name} secondary={createdAt.toLocaleString()} primaryTypographyProps={{
                 fontSize: "1rem",
                 fontWeight: 500,
               }} />

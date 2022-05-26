@@ -1,0 +1,18 @@
+fragment RandomWheelDetails on RandomWheel {
+  id
+  slug
+  name
+  createdAt
+}
+
+fragment RandomWheelEntry on RandomWheelEntry {
+  id
+  name
+  createdAt
+}
+
+fragment RandomWheelWinner on RandomWheelWinner {
+  id
+  name
+  createdAt
+}

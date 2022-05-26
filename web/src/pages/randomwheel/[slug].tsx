@@ -21,7 +21,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const [entriesTab, setEntriesTab] = useState(0)
 
-  if (data?.randomWwheelBySlug.__typename === "AppError") {
+  const wheel = data?.randomWheelBySlug
+
+  if (!wheel) {
     // TODO: Proper error pages
     return (
       <Typography variant="h3">404 Not found</Typography>
@@ -34,14 +36,14 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         <title>Random Wheel | Aletheia</title>
       </Head>
 
-      {data?.randomWwheelBySlug.__typename === "RandomWheel" && (<>
+      {wheel && (<>
 
         <Typography variant="h3">Random Wheel</Typography>
 
-        <div>{data.randomWwheelBySlug.name}</div>
+        <div>{wheel.name}</div>
         <div>
           {"Erstellt am "}
-          {new Date(data.randomWwheelBySlug.createdAt).toLocaleString()}
+          {new Date(wheel.createdAt).toLocaleString()}
         </div>
 
         <Box sx={{
@@ -105,7 +107,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               <TabPanel index={0} activeTab={entriesTab}>
 
-                <EntryList entries={["Alice", "Bob", "Charlie"]} />
+                <EntryList entries={wheel.entries.map(e => e.name)} />
 
                 {/* TOOO: Form for add names, in own component */}
 
@@ -155,11 +157,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               </TabPanel>
 
               <TabPanel index={1} activeTab={entriesTab}>
-                <WinnerList winners={[
-                  { name: "Mallory", createdAt: "today" },
-                  { name: "Dave", createdAt: "16.5.2022" },
-                  { name: "Eve", createdAt: "15.6.2022" },
-                ]} />
+                <WinnerList winners={
+                  wheel.winners.map(winner => ({
+                    ...winner,
+                    createdAt: new Date(winner.createdAt)
+                  }))
+                } />
               </TabPanel>
 
             </Paper>
