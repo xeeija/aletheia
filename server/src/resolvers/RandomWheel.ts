@@ -372,8 +372,8 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelWinner)
   async addWinner(
-    @Ctx() { prisma, req }: MyContext
-    @Arg("randommWheelId") randomWwheelId: string
+    @Ctx() { prisma, req }: MyContext,
+    @Arg("randommWheelId") randomWwheelId: string,
     @Arg("name") name: string
   ) {
     const newWinner = await prisma.randomWheelWinner.create({

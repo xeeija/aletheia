@@ -11,7 +11,7 @@ interface Props {
   ]
 }
 
-export const RandomWheelCreateForm: React.FC<Props> = ({ wheelState }) => {
+export const CreateWheelForm: React.FC<Props> = ({ wheelState }) => {
 
   const [{ }, createRandomWheel] = useCreateRandomWheelMutation()
   const [wheels, setWheels] = wheelState

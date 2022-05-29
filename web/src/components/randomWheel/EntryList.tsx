@@ -72,10 +72,10 @@ export const EntryList: FC<Props> = ({ entries, setEntries }) => {
   }
 
   return (
-    <List role="list" sx={{ maxHeight: 490, pt: 0 }}>
+    <List role="list" sx={{ py: 0, overflowY: "auto", maxHeight: 490 }}>
 
-      {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them */}
-      <AlertPopup messageState={[showError, setShowError]} />
+      {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
+      <AlertPopup severity="success" messageState={[showError, setShowError]} />
 
       {entries.map((entry) => (
         <ListItem key={entry.id} role="listitem" dense button sx={{

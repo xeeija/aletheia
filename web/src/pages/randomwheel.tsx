@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from "@mui/material"
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
-import { RandomWheelCreateForm } from "../components/randomWheel"
+import { CreateWheelForm } from "../components/randomWheel"
 import { RandomWheel, AppError, useMyRandomWheelsQuery, RandomWheelDetailsFragment } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
 import Link from "next/link"
@@ -37,7 +37,7 @@ const RandomWheelPage: LayoutNextPage = () => {
 
       <Typography variant="h3">Create wheel</Typography>
       <Box sx={{ pb: 2 }}>
-        <RandomWheelCreateForm wheelState={[wheels, setWheels]} />
+        <CreateWheelForm wheelState={[wheels, setWheels]} />
       </Box>
 
       <Typography variant="h3">My Wheels</Typography>

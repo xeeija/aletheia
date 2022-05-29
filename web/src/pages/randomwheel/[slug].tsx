@@ -1,10 +1,12 @@
-import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
+import { Badge, Box, Button, IconButton, Paper, Tab, Tabs, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { HiExternalLink, HiOutlineShare, HiShare, HiTrash } from "react-icons/hi";
+import { TiArrowForward, TiArrowSync, TiExport, TiTrash } from "react-icons/ti";
 import { TabPanel } from "../../components";
-import { LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, EntryList, WinnerList } from "../../components/randomWheel";
+import { defaultLayout, LayoutNextPage } from "../../components/layout";
+import { AddEntryForm, EntryList, Wheel, WinnerList } from "../../components/randomWheel";
 import { RandomWheelEntryFragment, useRandomWheelBySlugQuery } from "../../generated/graphql";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
@@ -65,26 +67,18 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         }}>
 
           <Box sx={{ gridArea: "wheel" }}>
-            <Paper sx={{ p: 2, height: "20rem" }}>
+            <Paper sx={{ p: 2, height: "100%" }}>
 
-              <div>Wheel</div>
-
-              <Box sx={{ fontFamily: "Consolas" }}>
-                <Box>&nbsp;&nbsp;________</Box>
-                <Box>&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\</Box>
-                <Box>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\</Box>
-                <Box>\&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</Box>
-                <Box>&nbsp;{"\\________/"}</Box>
-              </Box>
+              <Wheel diameter={600} entries={entries} />
 
             </Paper>
           </Box>
           <Box sx={{ gridArea: "controls" }}>
-            <Paper sx={{ p: 2 }}>
+            {/* <Paper sx={{ p: 2 }}>
 
               <div>Controls</div>
 
-            </Paper>
+            </Paper> */}
           </Box>
           <Box sx={{ gridArea: "share" }}>
             <Paper sx={{ p: 2 }}>
@@ -131,9 +125,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
           </Box>
         </Box>
 
-      </>)}
+      </>)
+      }
     </>
   )
 }
 
 export default RandomWheelDetailPage
+
+RandomWheelDetailPage.getLayout = defaultLayout({ title: "Random Wheel" })
