@@ -87,7 +87,7 @@ const componentOverrides: ThemeOptions = {
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          fontSize: baseTheme.typography.htmlFontSize * 0.75,
+          fontSize: baseTheme.typography.htmlFontSize * 0.8125,
           backgroundColor: baseTheme.palette.background.paper,
           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2))",
         },
@@ -137,7 +137,10 @@ const componentOverrides: ThemeOptions = {
           padding: baseTheme.spacing(0.5, 1.5),
           "& .MuiListItemIcon-root": {
             minWidth: baseTheme.spacing(6),
-          }
+          },
+          "& .MuiListItemText-primary": {
+            fontSize: "0.925rem",
+          },
         }
       }
     },

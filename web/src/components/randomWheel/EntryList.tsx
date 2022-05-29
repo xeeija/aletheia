@@ -72,7 +72,7 @@ export const EntryList: FC<Props> = ({ entries, setEntries }) => {
   }
 
   return (
-    <List role="list" sx={{ py: 0, overflowY: "auto", maxHeight: 490 }}>
+    <List role="list" sx={{ py: 0, overflowY: "auto", maxHeight: 480 }}>
 
       {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
       <AlertPopup severity="success" messageState={[showError, setShowError]} />

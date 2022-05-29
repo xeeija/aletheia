@@ -45,7 +45,8 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade }) 
     arcPos -> creates an arc from current position (like a cursor) to given arcPos */
   return (
     <Box sx={{
-      mx: "auto",
+      display: "flex",
+      justifyContent: "center",
       "&:not($fadeIn)": {
         opacity: 0,
         visibility: "hidden",
@@ -53,7 +54,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade }) 
       }
     }}>
       <svg
-        width={diameter}
+        width={diameter + arrowHeight * 1.5}
         height={diameter}
         viewBox={`0 0 ${diameter + arrowHeight * 1.5} ${diameter}`}
       // ref={wheelRef}
