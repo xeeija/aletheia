@@ -3,6 +3,7 @@ fragment RandomWheelDetails on RandomWheel {
   slug
   name
   createdAt
+  rotation
 }
 
 fragment RandomWheelEntry on RandomWheelEntry {

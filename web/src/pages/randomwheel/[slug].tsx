@@ -7,7 +7,7 @@ import { TiArrowSync, TiRefresh } from "react-icons/ti";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, EntryList, Wheel, WinnerList } from "../../components/randomWheel";
-import { RandomWheelEntryFragment, useRandomWheelBySlugQuery } from "../../generated/graphql";
+import { RandomWheelEntryFragment, useRandomWheelBySlugQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
@@ -20,11 +20,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     }
   })
 
+  const [, spinRandomWheel] = useSpinRandomWheelMutation()
+
   const [entriesTab, setEntriesTab] = useState(0)
 
   const wheel = data?.randomWheelBySlug
 
   const [entries, setEntries] = useState<RandomWheelEntryFragment[]>([])
+  const [wheelRotation, setWheelRotation] = useState(0)
+  const [spinning, setSpinning] = useState(false)
 
   const [optionsAnchor, setOptionsAnchor] = useState<Element | null>(null)
   const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
@@ -33,9 +37,58 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
   }
 
+  const spinHandler: MouseEventHandler<HTMLButtonElement> = async () => {
+
+    const rotations = ~~(Math.random() * (6 - 5 + 1) + 5)
+    console.log(rotations)
+
+    if (!wheel) {
+      return
+    }
+
+    const { data, error } = await spinRandomWheel({
+      wheelId: wheel?.id
+    })
+
+    if (!data) {
+      // error handling
+      console.warn(error)
+      return
+    }
+
+    // TODO REMOVE
+    const sectorDeg = 360 / entries.length
+    const winnerIndex = data.spinRandomWheel.winnerIndex ?? 0
+    const winnerDeg = 0.5 // a bit of now, as its random in backend
+    // -
+
+    const newRotation = (rotations * 360) + (360 - winnerIndex * sectorDeg) - (sectorDeg * winnerDeg) + 90
+
+    // TODO: from socket
+    // const newRotation = socket.rotation + (rotations * 360)
+    // console.log(newRotation)
+
+    setSpinning(true)
+    setWheelRotation(newRotation)
+
+    setTimeout(() => {
+      setSpinning(false)
+      setWheelRotation(newRotation % 360)
+      console.log(data.spinRandomWheel)
+    }, 6500 + 10)
+  }
+
+  // TODO: Refactor to not useEffect
   useEffect(() => {
     setEntries(data?.randomWheelBySlug?.entries ?? [])
   }, [data?.randomWheelBySlug?.entries])
+
+  // TODO: Refactor to not useEffect
+  useEffect(() => {
+    if (!spinning) {
+      setWheelRotation(data?.randomWheelBySlug?.rotation ?? 0)
+    }
+  }, [spinning, data?.randomWheelBySlug?.rotation])
 
   if (!wheel) {
     // TODO: Proper error pages
@@ -169,7 +222,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             <Box sx={{ gridArea: "wheel" }}>
               <Paper sx={{ p: 2, height: "100%" }}>
 
-                <Wheel diameter={677} entries={entries} />
+                <Wheel diameter={677} entries={entries} rotation={wheelRotation} spinning={spinning} />
 
               </Paper>
             </Box>
@@ -182,7 +235,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     variant="contained"
                     disabled={entries.length === 0}
                     startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
-                  // onClick={handleSpin}
+                    onClick={spinHandler}
                   >
                     Spin
                   </Button>
@@ -264,7 +317,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       ...winner,
                       createdAt: new Date(winner.createdAt)
                     }))
-                  } />
+                  }
+                    spinning={spinning}
+                  />
                 </TabPanel>
 
               </Paper>

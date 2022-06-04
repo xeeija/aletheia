@@ -1,0 +1,10 @@
+mutation SpinRandomWheel($wheelId: String!) {
+  spinRandomWheel(randommWheelId: $wheelId) {
+    id
+    name
+    createdAt
+    drawnById
+    randomWheelId
+    winnerIndex
+  }
+}

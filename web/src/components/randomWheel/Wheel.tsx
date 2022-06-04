@@ -8,12 +8,12 @@ interface Props {
   entries?: RandomWheelEntryFragment[],
   colors?: string[]
   fade?: boolean
+  rotation?: number,
+  spinning?: boolean
   // wheelRef?: React.RefObject<SVGSVGElement>
 }
 
-export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade }) => {
-
-  const cl: any = ""
+export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade, rotation = 0, spinning }) => {
 
   const theme = useTheme()
 
@@ -65,7 +65,17 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade }) 
             strokeWidth: 4,
             fill: "#8195a833",
           }} />
-        <g id="wheel-g" style={{ transformOrigin: "48.51% 50%" }} >
+        <g id="wheel-g" style={{
+          transformOrigin: "48.51% 50%",
+          transform: `rotate(${rotation}deg)`,
+          ...(spinning && {
+            transition: theme.transitions.create("transform", {
+              duration: 6000,
+              easing: "cubic-bezier(0.12, 0, 0.25, 1)",
+              delay: 500,
+            })
+          }),
+        }} >
 
           {entries.map((entry, i) => {
 
@@ -78,7 +88,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade }) 
             // const baseFontsize = logistic(name.length / 1.3, diameter / 240, diameter / 440, 1.7, 0.22)
             //#endregion
 
-            // Adjust textpath baseline, so names are better drawn in the middle
+            // Adjust textpath baseline, so names are better drawn in the middle - 0.0 max
             const adjustTextBaseline = logistic({ x: entries.length, max: 1.5, min: 0.4, a: 0.9, b: 30, inverse: true })
 
             const startPos = pointOnCircle(d.center, d.radius, d.endAngle, i * d.endAngle)

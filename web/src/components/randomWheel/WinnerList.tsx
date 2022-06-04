@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Typography, List, ListItem, ListItemText, SvgIcon, Box } from "@mui/material";
+import { Typography, List, ListItem, ListItemText, SvgIcon, Box, Skeleton } from "@mui/material";
 import { HiSpeakerphone } from "react-icons/hi";
 
 interface Winner {
@@ -9,9 +9,10 @@ interface Winner {
 
 interface Props {
   winners: Winner[]
+  spinning?: boolean
 }
 
-export const WinnerList: FC<Props> = ({ winners }) => {
+export const WinnerList: FC<Props> = ({ winners, spinning }) => {
 
   return (
     winners.length > 0 ?
@@ -22,12 +23,12 @@ export const WinnerList: FC<Props> = ({ winners }) => {
             Latest winner &nbsp;&bull;&nbsp; {winners[0]?.createdAt.toLocaleString()}
           </Typography>
           <Typography variant="h4" noWrap>
-            {winners[0]?.name}
+            {!spinning ? winners[0]?.name : <Skeleton width="40%" />}
           </Typography>
         </Box>
 
         {/* Maybe toggle previous winners */}
-        <List sx={{ pb: 0, }}>
+        <List sx={{ pb: 0, overflowY: "auto", maxHeight: 472, }}>
           {winners.slice(1).map(({ name, createdAt }, i) => (
             <ListItem key={i} role="listitem" dense sx={{ mt: 0 }}>
               <ListItemText primary={name} secondary={createdAt.toLocaleString()} primaryTypographyProps={{

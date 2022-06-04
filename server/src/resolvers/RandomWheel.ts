@@ -1,11 +1,12 @@
 import { MyContext } from "src/types";
 import { slugify } from "../utils/slug";
 import { Arg, Ctx, Field, Info, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User } from "../../dist/generated/typegraphql-prisma";
-import { AppError, createAppErrorUnion, ListType } from "./common/types";
-import { GraphQLResolveInfo } from "graphql";
+import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, VisibilityType } from "../../dist/generated/typegraphql-prisma";
+import { AppError, createAppErrorUnion } from "./common/types";
+import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import { parseResolveInfo } from "graphql-parse-resolve-info";
 import { Prisma } from "@prisma/client";
+import { random, randomNumber } from "../utils/math";
 
 /*
   @ObjectType()
@@ -35,8 +36,8 @@ import { Prisma } from "@prisma/client";
 
 const RandomWheelResponse = createAppErrorUnion(RandomWheel)
 
-@ObjectType("RandomWheelList")
-class RandomWheelList extends ListType(RandomWheel) { }
+// @ObjectType("RandomWheelList")
+// class RandomWheelList extends ListType(RandomWheel) { }
 
 // workaround: generic RandomWheelList type: with "items" property that is the list
 // const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
@@ -61,6 +62,7 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
     },
     members: "members" in fields,
     owner: "owner" in fields,
+    visibility: "visibility" in fields,
     _count: "_count" in fields,
   }
 
@@ -77,6 +79,9 @@ class RandomWheelFull extends RandomWheel {
 
   @Field(() => [RandomWheelMember])
   members: RandomWheelMember[]
+
+  @Field(() => [VisibilityType])
+  visibility: VisibilityType
 
   @Field(() => User)
   owner: User
@@ -368,6 +373,61 @@ export class RandomWheelResolver {
     })
 
     return true
+  }
+
+  @Mutation(() => RandomWheelWinner)
+  async spinRandomWheel(
+    @Ctx() { prisma, req }: MyContext,
+    @Arg("randommWheelId") randomWheelId: string,
+  ) {
+
+    const wheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWheelId },
+      include: {
+        entries: true,
+      }
+    })
+
+    if (!wheel || wheel.entries.length === 0) {
+      throw new GraphQLError("Wheel entries may not be empty")
+    }
+
+    const winnerIndex = await randomNumber(0, wheel.entries.length)
+    const winnerEntry = wheel.entries[winnerIndex]
+
+    const winner = await prisma.randomWheelWinner.create({
+      data: {
+        randomWheelId,
+        name: winnerEntry.name,
+        drawnById: req.session.userId,
+        winnerIndex,
+      }
+    })
+
+    // const rotateDuration = Math.round(wheel.spinDuration / 1000)
+    // const rotations = ~~random(rotateDuration - 1, rotateDuration + 1)
+
+    const sectorDeg = 360 / wheel.entries.length
+    const winnerDeg = random(0.1, 0.9)
+
+    const newRotation = (360 - winnerIndex * sectorDeg) - (sectorDeg * winnerDeg) + 90
+    // console.warn({ winnerIndex, rotateDuration, rotations, sectorDeg, winnerDeg, newRotation })
+
+    await prisma.randomWheel.update({
+      where: { id: wheel.id },
+      data: { rotation: newRotation % 360 },
+    })
+
+    // console.log({ winnerIndex, newRotation: newRotation % 360 })
+
+    // TODO: Fire websocket event here
+    // Maybe add win chance (1 / entries) to winner?
+    // Fix Max width winner tab
+
+    // TODO: Add winner index to Winner?
+    // Add currentRotation to RandomWheel (and other wheelOptions, like spinDuration)
+
+    return winner
   }
 
   @Mutation(() => RandomWheelWinner)
