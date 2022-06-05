@@ -6,8 +6,8 @@ import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } fr
 import { TiArrowSync, TiRefresh } from "react-icons/ti";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, EntryList, Wheel, WinnerList } from "../../components/randomWheel";
-import { RandomWheelEntryFragment, useRandomWheelBySlugQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { AddEntryForm, ClearEntriesDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { RandomWheelEntryFragment, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
@@ -21,6 +21,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   })
 
   const [, spinRandomWheel] = useSpinRandomWheelMutation()
+  const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
+  const [, clearRandomWheel] = useClearRandomWheelMutation()
 
   const [entriesTab, setEntriesTab] = useState(0)
 
@@ -32,6 +34,40 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const [optionsAnchor, setOptionsAnchor] = useState<Element | null>(null)
   const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
+
+  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
+  const onRemoveWinnerDialog = async () => {
+    const winnerIndex = wheel?.winners[0].winnerIndex
+    console.log(winnerIndex)
+    if (!(winnerIndex || winnerIndex === 0)) return
+
+    const { data } = await deleteEntry({ id: entries[winnerIndex].id })
+
+    if (data?.deleteRandomWheelEntry) {
+      setEntries(entries.filter(e => e.id !== entries[winnerIndex].id))
+    } else {
+      // TODO: Error
+    }
+
+  }
+
+  const [clearDialogOpen, setClearDialogOpen] = useState(false)
+  const onClearDialog = async () => {
+    if (!wheel) {
+      return
+    }
+
+    const { data } = await clearRandomWheel({
+      id: wheel?.id
+    })
+
+    setEntries([])
+    setWheelRotation(0)
+
+    console.log(`deleted ${data?.clearRandomWheel} entries`)
+    // TODO: Alerts and error handling
+
+  }
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
@@ -71,9 +107,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     setSpinning(true)
     setWheelRotation(newRotation)
 
+    // Move to socket event
     setTimeout(() => {
       setSpinning(false)
       setWheelRotation(newRotation % 360)
+      setWinnerDialogOpen(true)
       console.log(data.spinRandomWheel)
     }, 6500 + 10)
   }
@@ -241,6 +279,13 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   </Button>
                 </Badge>
 
+                <WinnerDialog
+                  open={[winnerDialogOpen, setWinnerDialogOpen]}
+                  description={wheel.winners[0].name}
+                  onClose={() => setWinnerDialogOpen(false)}
+                  onRemove={onRemoveWinnerDialog}
+                />
+
                 {/* <Button
                 color="primary"
                 variant="outlined"
@@ -256,26 +301,20 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Button
                   color="error"
                   variant="outlined"
-                  // className={cl.errorOutlined}
                   disabled={entries.length === 0}
                   startIcon={<HiTrash />}
-                  // onClick={() => setClearDialogOpen(true)}
+                  onClick={() => setClearDialogOpen(true)}
                   sx={{ ml: 2 }}
                 >
-                  {/* <HiTrash /> */}
                   Clear
                 </Button>
 
-                {/* <IconButton
-                color="error"
-                // variant="outlined"
-                // className={cl.errorOutlined}
-                disabled={entries.length === 0}
-              // startIcon={<HiTrash />}
-              // onClick={() => setClearDialogOpen(true)}
-              >
-                <HiTrash />
-              </IconButton> */}
+                <ClearEntriesDialog
+                  open={clearDialogOpen}
+                  onClose={() => setClearDialogOpen(false)}
+                  onClear={onClearDialog}
+                />
+
 
               </Paper>
             </Box>

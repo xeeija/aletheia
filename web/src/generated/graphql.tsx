@@ -33,6 +33,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addRandomWheelEntry: RandomWheelEntry;
   addWinner: RandomWheelWinner;
+  clearRandomWheel: Scalars['Int'];
   createRandomWheel: RandomWheel;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
@@ -54,6 +55,11 @@ export type MutationAddRandomWheelEntryArgs = {
 export type MutationAddWinnerArgs = {
   name: Scalars['String'];
   randommWheelId: Scalars['String'];
+};
+
+
+export type MutationClearRandomWheelArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -123,11 +129,12 @@ export type RandomWheel = {
   name?: Maybe<Scalars['String']>;
   owner: User;
   ownerId: Scalars['String'];
-  rotation: Scalars['Int'];
+  rotation: Scalars['Float'];
   slug: Scalars['String'];
   spinDuration: Scalars['Int'];
   uniqueEntries: Scalars['Boolean'];
-  visibilityType?: Maybe<Scalars['String']>;
+  visibility: Array<VisibilityType>;
+  visibilityType: Scalars['String'];
   winners: Array<RandomWheelWinner>;
 };
 
@@ -197,11 +204,22 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type VisibilityType = {
+  __typename?: 'VisibilityType';
+  _count?: Maybe<VisibilityTypeCount>;
+  type: Scalars['String'];
+};
+
+export type VisibilityTypeCount = {
+  __typename?: 'VisibilityTypeCount';
+  randomWheel: Scalars['Int'];
+};
+
 export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string };
 
-export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any };
+export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> };
 
 export type NormalUserFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
 
@@ -214,6 +232,13 @@ export type AddRandomWheelEntryMutationVariables = Exact<{
 
 
 export type AddRandomWheelEntryMutation = { __typename?: 'Mutation', addRandomWheelEntry: { __typename?: 'RandomWheelEntry', id: string, name: string } };
+
+export type ClearRandomWheelMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ClearRandomWheelMutation = { __typename?: 'Mutation', clearRandomWheel: number };
 
 export type CreateRandomWheelMutationVariables = Exact<{
   name?: Maybe<Scalars['String']>;
@@ -280,7 +305,7 @@ export type RandomWheelBySlugQueryVariables = Exact<{
 }>;
 
 
-export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, entries: Array<{ __typename?: 'RandomWheelEntry', id: string, name: string }>, winners: Array<{ __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any }>, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }> }> };
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, entries: Array<{ __typename?: 'RandomWheelEntry', id: string, name: string }>, winners: Array<{ __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> }>, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }> }> };
 
 export const RandomWheelDetailsFragmentDoc = gql`
     fragment RandomWheelDetails on RandomWheel {
@@ -302,6 +327,7 @@ export const RandomWheelWinnerFragmentDoc = gql`
   id
   name
   createdAt
+  winnerIndex
 }
     `;
 export const NormalUserFragmentDoc = gql`
@@ -328,6 +354,15 @@ export const AddRandomWheelEntryDocument = gql`
 
 export function useAddRandomWheelEntryMutation() {
   return Urql.useMutation<AddRandomWheelEntryMutation, AddRandomWheelEntryMutationVariables>(AddRandomWheelEntryDocument);
+};
+export const ClearRandomWheelDocument = gql`
+    mutation ClearRandomWheel($id: String!) {
+  clearRandomWheel(id: $id)
+}
+    `;
+
+export function useClearRandomWheelMutation() {
+  return Urql.useMutation<ClearRandomWheelMutation, ClearRandomWheelMutationVariables>(ClearRandomWheelDocument);
 };
 export const CreateRandomWheelDocument = gql`
     mutation CreateRandomWheel($name: String) {

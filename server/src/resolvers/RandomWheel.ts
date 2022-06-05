@@ -1,6 +1,6 @@
 import { MyContext } from "src/types";
 import { slugify } from "../utils/slug";
-import { Arg, Ctx, Field, Info, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, Info, InputType, Int, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, VisibilityType } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion } from "./common/types";
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
@@ -342,39 +342,6 @@ export class RandomWheelResolver {
     }
   }
 
-  // Entry
-
-  // TODO: Error Handling with Middleware
-
-  @Mutation(() => RandomWheelEntry)
-  async addRandomWheelEntry(
-    @Ctx() { prisma }: MyContext,
-    @Arg("randomWheelId") randomWheelId: string,
-    @Arg("name") name: string,
-  ) {
-
-    const entry = await prisma.randomWheelEntry.create({
-      data: {
-        randomWheelId,
-        name
-      }
-    })
-
-    return entry
-  }
-
-  @Mutation(() => Boolean, { nullable: true })
-  async deleteRandomWheelEntry(
-    @Ctx() { prisma }: MyContext,
-    @Arg("id") id: string
-  ) {
-    await prisma.randomWheelEntry.delete({
-      where: { id }
-    })
-
-    return true
-  }
-
   @Mutation(() => RandomWheelWinner)
   async spinRandomWheel(
     @Ctx() { prisma, req }: MyContext,
@@ -428,6 +395,56 @@ export class RandomWheelResolver {
     // Add currentRotation to RandomWheel (and other wheelOptions, like spinDuration)
 
     return winner
+  }
+
+  // Entry
+
+  // TODO: Error Handling with Middleware
+
+  @Mutation(() => RandomWheelEntry)
+  async addRandomWheelEntry(
+    @Ctx() { prisma }: MyContext,
+    @Arg("randomWheelId") randomWheelId: string,
+    @Arg("name") name: string,
+  ) {
+
+    const entry = await prisma.randomWheelEntry.create({
+      data: {
+        randomWheelId,
+        name
+      }
+    })
+
+    return entry
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async deleteRandomWheelEntry(
+    @Ctx() { prisma }: MyContext,
+    @Arg("id") id: string
+  ) {
+    await prisma.randomWheelEntry.delete({
+      where: { id }
+    })
+
+    return true
+  }
+
+  @Mutation(() => Int)
+  async clearRandomWheel(
+    @Ctx() { prisma }: MyContext,
+    @Arg("id") id: string
+  ) {
+    const res = await prisma.randomWheelEntry.deleteMany({
+      where: { randomWheelId: id },
+    })
+
+    await prisma.randomWheel.update({
+      where: { id: id },
+      data: { rotation: 0 },
+    })
+
+    return res.count
   }
 
   @Mutation(() => RandomWheelWinner)

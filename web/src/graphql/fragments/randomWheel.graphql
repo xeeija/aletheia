@@ -15,4 +15,5 @@ fragment RandomWheelWinner on RandomWheelWinner {
   id
   name
   createdAt
+  winnerIndex
 }

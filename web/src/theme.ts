@@ -89,13 +89,20 @@ const componentOverrides: ThemeOptions = {
         tooltip: {
           fontSize: baseTheme.typography.htmlFontSize * 0.8125,
           backgroundColor: baseTheme.palette.background.paper,
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2))",
+          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))",
         },
         arrow: {
           "::before": {
             backgroundColor: baseTheme.palette.background.paper,
-            backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2))",
+            backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))",
           }
+        }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"
         }
       }
     },

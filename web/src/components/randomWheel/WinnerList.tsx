@@ -22,7 +22,7 @@ export const WinnerList: FC<Props> = ({ winners, spinning }) => {
           <Typography variant="overline" color="textSecondary">
             Latest winner &nbsp;&bull;&nbsp; {winners[0]?.createdAt.toLocaleString()}
           </Typography>
-          <Typography variant="h4" noWrap>
+          <Typography variant="h3" noWrap>
             {!spinning ? winners[0]?.name : <Skeleton width="40%" />}
           </Typography>
         </Box>

@@ -1,0 +1,3 @@
+mutation ClearRandomWheel($id: String!) {
+  clearRandomWheel(id:$id)
+}
