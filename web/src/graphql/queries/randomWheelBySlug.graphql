@@ -1,12 +1,6 @@
 query RandomWheelBySlug($slug: String!) {
   randomWheelBySlug(slug: $slug) {
     ...RandomWheelDetails
-    entries {
-      ...RandomWheelEntry
-    }
-    winners {
-      ...RandomWheelWinner
-    }
     owner {
       ...UserName
     }

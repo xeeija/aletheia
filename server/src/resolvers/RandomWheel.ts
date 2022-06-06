@@ -101,10 +101,10 @@ export class RandomWheelResolver {
   // [x] update wheel (how exactly? -> split in multiple mutations)
   // [x] delete wheel
 
-  // [ ] spin (draw a winner)
-  // [ ] add entry
-  // [ ] remove entry
-  // [ ] clear all entries
+  // [x] spin (draw a winner)
+  // [x] add entry
+  // [x] remove entry
+  // [x] clear all entries
 
   // Wheel
 
@@ -344,7 +344,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelWinner)
   async spinRandomWheel(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req, socketIo }: MyContext,
     @Arg("randommWheelId") randomWheelId: string,
   ) {
 
@@ -385,6 +385,14 @@ export class RandomWheelResolver {
       data: { rotation: newRotation % 360 },
     })
 
+    socketIo.to(`wheel/${wheel.id}`).emit("wheel:spin", {
+      winner: winner,
+      entry: winnerEntry,
+      rotation: newRotation % 360,
+    })
+
+    console.log(`emit to wheel/${wheel.id.substring(0, 6)} (${socketIo.in(`wheel/${wheel.id}`).allSockets.length}) wheel:spin`)
+
     // console.log({ winnerIndex, newRotation: newRotation % 360 })
 
     // TODO: Fire websocket event here
@@ -403,7 +411,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelEntry)
   async addRandomWheelEntry(
-    @Ctx() { prisma }: MyContext,
+    @Ctx() { prisma, socketIo }: MyContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("name") name: string,
   ) {
@@ -415,24 +423,30 @@ export class RandomWheelResolver {
       }
     })
 
+    socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
+    // console.log(`emit to wheel:entries`)
+
     return entry
   }
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteRandomWheelEntry(
-    @Ctx() { prisma }: MyContext,
+    @Ctx() { prisma, socketIo }: MyContext,
     @Arg("id") id: string
   ) {
-    await prisma.randomWheelEntry.delete({
+    const entry = await prisma.randomWheelEntry.delete({
       where: { id }
     })
+
+    socketIo.to(`wheel/${entry.randomWheelId}`).emit("wheel:entries", "delete")
+    // console.log(`emit wheel:entries`)
 
     return true
   }
 
   @Mutation(() => Int)
   async clearRandomWheel(
-    @Ctx() { prisma }: MyContext,
+    @Ctx() { prisma, socketIo }: MyContext,
     @Arg("id") id: string
   ) {
     const res = await prisma.randomWheelEntry.deleteMany({
@@ -443,6 +457,9 @@ export class RandomWheelResolver {
       where: { id: id },
       data: { rotation: 0 },
     })
+
+    socketIo.to(`wheel/${id}`).emit("wheel:entries", "clear")
+    // console.log(`emit to wheel:entries c`)
 
     return res.count
   }

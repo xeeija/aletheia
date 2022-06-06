@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactElement, ReactNode, SetStateAction, useState } from "react";
+import { FC, useState } from "react";
 import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material";
 import { HiTrash } from "react-icons/hi";
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "../../generated/graphql";
@@ -6,10 +6,9 @@ import { AlertPopup } from "../components";
 
 interface Props {
   entries: RandomWheelEntryFragment[]
-  setEntries: Dispatch<SetStateAction<RandomWheelEntryFragment[]>>
 }
 
-export const EntryList: FC<Props> = ({ entries, setEntries }) => {
+export const EntryList: FC<Props> = ({ entries }) => {
 
   const theme = useTheme()
 
@@ -61,10 +60,12 @@ export const EntryList: FC<Props> = ({ entries, setEntries }) => {
   const [showError, setShowError] = useState<JSX.Element | string | null>(null)
 
   const onDelete = async (entry: RandomWheelEntryFragment) => {
-    const { data } = await deleteEntry({ id: entry.id })
+    const { data } = await deleteEntry({ id: entry.id }, {
+      additionalTypenames: ["RandomWheelEntry"]
+    })
 
     if (data?.deleteRandomWheelEntry) {
-      setEntries(entries.filter(e => e.id !== entry.id))
+      // setEntries(entries.filter(e => e.id !== entry.id))
     }
 
     setShowError(`Deleted entry '${entry.name}'`)

@@ -7,9 +7,12 @@ import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGra
 import { buildSchema } from "type-graphql"
 import { PrismaClient } from "@prisma/client"
 import { UserResolver, RandomWheelResolver } from "./resolvers"
-import { MyContext } from "./types"
+import { ClientToServerEvents, MyContext, ServerToClientEvents } from "./types"
 import PGStore from "connect-pg-simple"
 import { slugTest } from "./utils/slug"
+import { Server } from "socket.io"
+import { createServer } from "http"
+import { randomWheelHandlers } from "./socket"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -19,6 +22,7 @@ const main = async () => {
 
   // # Web Server
   const app = express()
+  const httpServer = createServer(app)
 
   const PostgresStore = PGStore(session)
 
@@ -51,13 +55,27 @@ const main = async () => {
     })
   }))
 
+  // Websocket
+
+  // TODO: Add typescript hints as type params
+  const socketIo = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+    path: process.env.WEBSOCKET_PATH,
+    cors: {
+      origin: process.env.ORIGIN_URL,
+    },
+  })
+
+  socketIo.on("connection", (socket) => {
+    randomWheelHandlers(socket, socketIo)
+  })
+
   // # Graphql Server
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver, RandomWheelResolver],
       validate: false
     }),
-    context: ({ req, res }): MyContext => ({ req, res, prisma }),
+    context: ({ req, res }): MyContext => ({ req, res, prisma, socketIo }),
     plugins: [
       process.env.NODE_ENV === "production"
         ? ApolloServerPluginLandingPageDisabled()
@@ -72,10 +90,11 @@ const main = async () => {
   await apolloServer.start()
   apolloServer.applyMiddleware({ app, cors: false })
 
+  // # Start server (listen)
+
   const APP_PORT = process.env.APP_PORT ?? 4000
 
-  // # Start server (listen)
-  app.listen(APP_PORT, () => {
+  httpServer.listen(APP_PORT, () => {
     console.log(`Server started at http://localhost:${APP_PORT}`)
   })
 }

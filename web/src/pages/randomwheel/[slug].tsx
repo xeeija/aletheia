@@ -4,10 +4,11 @@ import { useRouter } from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
 import { TiArrowSync, TiRefresh } from "react-icons/ti";
+import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
-import { RandomWheelEntryFragment, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
@@ -20,6 +21,18 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     }
   })
 
+  const [{ data: winnersData }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
+    variables: {
+      slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
+    }
+  })
+
+  const [{ data: entriesData }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
+    variables: {
+      slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
+    }
+  })
+
   const [, spinRandomWheel] = useSpinRandomWheelMutation()
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
   const [, clearRandomWheel] = useClearRandomWheelMutation()
@@ -27,8 +40,17 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [entriesTab, setEntriesTab] = useState(0)
 
   const wheel = data?.randomWheelBySlug
+  const winners = winnersData?.randomWheelBySlug?.winners
+  const entries = entriesData?.randomWheelBySlug?.entries
 
-  const [entries, setEntries] = useState<RandomWheelEntryFragment[]>([])
+  // const [winners, setWinners] = useState<RandomWheelWinnerFragment[]>([])
+  // useEffect(() => {
+  //   if (winnersData?.randomWheelBySlug?.winners) {
+  //     setWinners(winnersData?.randomWheelBySlug?.winners)
+  //   }
+  // }, [winnersData?.randomWheelBySlug?.winners])
+  // const [entries, setEntries] = useState<RandomWheelEntryFragment[]>([])
+
   const [wheelRotation, setWheelRotation] = useState(0)
   const [spinning, setSpinning] = useState(false)
 
@@ -37,14 +59,19 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
   const onRemoveWinnerDialog = async () => {
-    const winnerIndex = wheel?.winners[0].winnerIndex
+
+    // TODO: use entry from socket wheel:spin
+    const winnerIndex = winners?.[0].winnerIndex
+
     console.log(winnerIndex)
     if (!(winnerIndex || winnerIndex === 0)) return
 
-    const { data } = await deleteEntry({ id: entries[winnerIndex].id })
+    const { data } = await deleteEntry({ id: entries?.[winnerIndex].id ?? "" }, {
+      additionalTypenames: ["RandomWheelEntry"]
+    })
 
     if (data?.deleteRandomWheelEntry) {
-      setEntries(entries.filter(e => e.id !== entries[winnerIndex].id))
+      // setEntries(entries.filter(e => e.id !== entries[winnerIndex].id))
     } else {
       // TODO: Error
     }
@@ -61,7 +88,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       id: wheel?.id
     })
 
-    setEntries([])
+    // setEntries([])
     setWheelRotation(0)
 
     console.log(`deleted ${data?.clearRandomWheel} entries`)
@@ -75,10 +102,13 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const spinHandler: MouseEventHandler<HTMLButtonElement> = async () => {
 
-    const rotations = ~~(Math.random() * (6 - 5 + 1) + 5)
-    console.log(rotations)
-
     if (!wheel) {
+      console.log("no wheel to spin")
+      return
+    }
+
+    if (spinning) {
+      console.log("already spinning")
       return
     }
 
@@ -92,41 +122,64 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       return
     }
 
-    // TODO REMOVE
-    const sectorDeg = 360 / entries.length
-    const winnerIndex = data.spinRandomWheel.winnerIndex ?? 0
-    const winnerDeg = 0.5 // a bit of now, as its random in backend
-    // -
-
-    const newRotation = (rotations * 360) + (360 - winnerIndex * sectorDeg) - (sectorDeg * winnerDeg) + 90
-
-    // TODO: from socket
-    // const newRotation = socket.rotation + (rotations * 360)
-    // console.log(newRotation)
-
-    setSpinning(true)
-    setWheelRotation(newRotation)
-
-    // Move to socket event
     setTimeout(() => {
-      setSpinning(false)
-      setWheelRotation(newRotation % 360)
       setWinnerDialogOpen(true)
-      console.log(data.spinRandomWheel)
     }, 6500 + 10)
+
   }
 
-  // TODO: Refactor to not useEffect
+  // socket
   useEffect(() => {
-    setEntries(data?.randomWheelBySlug?.entries ?? [])
-  }, [data?.randomWheelBySlug?.entries])
-
-  // TODO: Refactor to not useEffect
-  useEffect(() => {
-    if (!spinning) {
-      setWheelRotation(data?.randomWheelBySlug?.rotation ?? 0)
+    if (!wheel?.id) {
+      console.log("no wheel")
+      return
     }
-  }, [spinning, data?.randomWheelBySlug?.rotation])
+
+    const socket = io(process.env.SOCKET_SERVER_URL ?? process.env.SERVER_URL ?? "http://localhost:4000", {
+      path: process.env.SOCKET_SERVER_PATH ?? "/socket",
+    })
+
+    socket.on("connect", () => {
+      console.log("connect")
+      socket.emit("wheel:join", wheel.id)
+      console.log(`join ${wheel.id.substring(0, 6)}`)
+    })
+
+    socket.on("wheel:spin", ({ rotation, winner, entry }) => {
+      console.log("wheel:spin", { rotation, winner, entry })
+
+      const revolutions = ~~(Math.random() * (6 - 5 + 1) + 5)
+      console.log(revolutions)
+
+      setSpinning(true)
+      setWheelRotation(rotation + (360 * revolutions))
+
+      // TODO: Refactor to update the "local" winners with winner from socket?
+      fetchWinners({ requestPolicy: "cache-and-network" })
+
+      setTimeout(() => {
+        setSpinning(false)
+        setWheelRotation(rotation)
+      }, 6500 + 10)
+
+    })
+
+    socket.on("wheel:entries", () => {
+      console.log("wheel:entries")
+
+      // TODO: Refactor to update the "local" entries with entry from socket?
+      // Depending on type, add/delete/clear
+      fetchEntries({
+        requestPolicy: "cache-and-network",
+      })
+    })
+
+    return () => {
+      socket.off("wheel:spin")
+      socket.disconnect()
+      console.log(`disconnect ${wheel.id.substring(0, 6)}`)
+    }
+  }, [wheel?.id, fetchEntries, fetchWinners])
 
   if (!wheel) {
     // TODO: Proper error pages
@@ -207,10 +260,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     onFocus={(ev) => {
                       ev.currentTarget.select()
                     }}
-                    onClick={(ev) => {
-                      // console.log("click")
-                      // navigator.clipboard.writeText(`${window.location.host}/r/${slug}`)
-                    }}
+                  // onClick={(ev) => {
+                  //   // console.log("click")
+                  //   // navigator.clipboard.writeText(`${window.location.host}/r/${slug}`)
+                  // }}
                   />
 
                 </Paper>
@@ -260,18 +313,18 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             <Box sx={{ gridArea: "wheel" }}>
               <Paper sx={{ p: 2, height: "100%" }}>
 
-                <Wheel diameter={677} entries={entries} rotation={wheelRotation} spinning={spinning} />
+                <Wheel diameter={677} entries={entries} rotation={wheelRotation || wheel.rotation} spinning={spinning} />
 
               </Paper>
             </Box>
             <Box sx={{ gridArea: "controls" }}>
               <Paper sx={{ p: 2 }}>
 
-                <Badge badgeContent={entries.length} color="success">
+                <Badge badgeContent={entries?.length} color="success">
                   <Button
                     color="primary"
                     variant="contained"
-                    disabled={entries.length === 0}
+                    disabled={!entries?.length}
                     startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
                     onClick={spinHandler}
                   >
@@ -281,7 +334,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
                 <WinnerDialog
                   open={[winnerDialogOpen, setWinnerDialogOpen]}
-                  description={wheel.winners[0].name}
+                  description={winners?.[0]?.name}
                   onClose={() => setWinnerDialogOpen(false)}
                   onRemove={onRemoveWinnerDialog}
                 />
@@ -301,7 +354,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Button
                   color="error"
                   variant="outlined"
-                  disabled={entries.length === 0}
+                  disabled={!entries?.length}
                   startIcon={<HiTrash />}
                   onClick={() => setClearDialogOpen(true)}
                   sx={{ ml: 2 }}
@@ -344,15 +397,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries} setEntries={setEntries} />
-                    <AddEntryForm wheelId={wheel.id} entries={entries} setEntries={setEntries} />
+                    <EntryList entries={entries ?? []} />
+                    <AddEntryForm wheelId={wheel.id} />
 
                   </Box>
                 </TabPanel>
 
                 <TabPanel index={1} activeTab={entriesTab} fullHeight>
                   <WinnerList winners={
-                    wheel.winners.map(winner => ({
+                    (winners ?? []).map(winner => ({
                       ...winner,
                       createdAt: new Date(winner.createdAt)
                     }))

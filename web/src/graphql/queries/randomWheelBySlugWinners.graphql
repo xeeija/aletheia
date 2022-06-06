@@ -1,0 +1,7 @@
+query RandomWheelBySlugWinners($slug: String!) {
+  randomWheelBySlug(slug: $slug) {
+    winners {
+      ...RandomWheelWinner
+    }
+  }
+}

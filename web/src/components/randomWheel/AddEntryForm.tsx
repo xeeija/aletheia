@@ -1,17 +1,15 @@
 import { InputAdornment, IconButton, SvgIcon, Tooltip } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, Dispatch, SetStateAction } from "react"
+import { FC } from "react"
 import { HiPaperAirplane } from "react-icons/hi"
-import { RandomWheelEntryFragment, useAddRandomWheelEntryMutation } from "../../generated/graphql"
+import { useAddRandomWheelEntryMutation } from "../../generated/graphql"
 import { InputField } from "../components"
 
 interface Props {
   wheelId: string
-  entries: RandomWheelEntryFragment[]
-  setEntries: Dispatch<SetStateAction<RandomWheelEntryFragment[]>>
 }
 
-export const AddEntryForm: FC<Props> = ({ wheelId, entries, setEntries }) => {
+export const AddEntryForm: FC<Props> = ({ wheelId }) => {
 
   const [, addEntry] = useAddRandomWheelEntryMutation()
 
@@ -27,7 +25,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, entries, setEntries }) => {
         })
 
         if (data?.addRandomWheelEntry) {
-          setEntries([...entries, data?.addRandomWheelEntry])
+          // setEntries([...entries, data?.addRandomWheelEntry])
         }
 
         resetForm()
