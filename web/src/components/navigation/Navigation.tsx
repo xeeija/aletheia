@@ -4,8 +4,8 @@ import { TiChartPie, TiHome, TiPipette, TiPower, TiScissors, TiSpanner, TiThList
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
 import { Dropdown, LinkList, LinkListItem, LinkItem, LoadingButton, Sidebar, Navbar } from "../components"
 import Link from "next/link"
-import { useRouter } from "next/router"
-import { useLogoutMutation, useMeQuery } from "../../generated/graphql"
+import { useLogoutMutation } from "../../generated/graphql"
+import { useAuth } from "../../hooks"
 
 export interface NavigationProps {
   noAppbar?: boolean
@@ -33,18 +33,23 @@ const sidebarWidth = 240
 export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, title }) => {
 
   const theme = useTheme()
-  const router = useRouter()
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const [{ data }] = useMeQuery()
-  const [{ fetching: fetchingLogout }, logout] = useLogoutMutation()
+  const { user } = useAuth()
+  const [, logout] = useLogoutMutation()
   const [logoutError, setLogoutError] = useState(false)
+  // fetching from logout mutation doesnt work (button is forever in "loading" state and disabled)
+  const [fetchingLogout, setFetchingLogout] = useState(false)
 
   const [dropdownAnchor, setDropdownAnchor] = useState<Element | null>(null)
 
   const handleLogout = async () => {
-    const response = await logout()
+    setFetchingLogout(true)
+
+    const response = await logout({}, {
+      additionalTypenames: ["User"],
+    })
 
     if (response.error) {
       console.log({ error: response.error })
@@ -59,10 +64,11 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
       return
     }
 
-    // TODO: Invalidate cache?
+    setDropdownAnchor(null)
+    setTimeout(() => {
+      setFetchingLogout(false)
+    }, 500)
 
-    // Hack to reload page without actually reloading
-    router.replace(router.pathname)
   }
 
   const userDropdownItems: LinkItem[] = [
@@ -89,12 +95,12 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
             title
           }
 
-          {data?.me ? (
+          {user ? (
             <>
 
               {/* If logged in, show user avatar and dropdown menu (TODO) with profile, logout buttons etc. */}
               <Typography sx={{ fontWeight: "bold", fontSize: "0.875em" }}>
-                {data.me.displayname ?? data.me.username}
+                {user.displayname ?? user.username}
               </Typography>
 
               <Badge overlap="circular" variant="dot" color="success"
@@ -113,9 +119,9 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
                   }}
                 >
 
-                  <Avatar alt={data.me.username}
+                  <Avatar alt={user.username}
                     // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
-                    src={`https://avatars.dicebear.com/api/big-smile/${data.me.displayname ?? data.me.username}.svg?flip=1`}
+                    src={`https://avatars.dicebear.com/api/big-smile/${user.displayname ?? user.username}.svg?flip=1`}
                     sx={{
                       width: 36, height: 36,
                       backgroundColor: "transparent",
@@ -139,7 +145,7 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
 
                   <Box sx={{ py: 0.5, px: 1.5 }}>
                     <Typography sx={{ fontWeight: "bold", fontSize: "1em" }}>
-                      {data.me.displayname ?? data.me.username}
+                      {user.displayname ?? user.username}
                     </Typography>
 
                     <Typography variant="subtitle2" sx={{ fontWeight: "normal", opacity: 0.65 }}>

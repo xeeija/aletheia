@@ -4,6 +4,8 @@ fragment RandomWheelDetails on RandomWheel {
   name
   createdAt
   rotation
+  accessType
+  editable
 }
 
 fragment RandomWheelEntry on RandomWheelEntry {

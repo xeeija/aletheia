@@ -16,6 +16,17 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type AccessType = {
+  __typename?: 'AccessType';
+  _count?: Maybe<AccessTypeCount>;
+  type: Scalars['String'];
+};
+
+export type AccessTypeCount = {
+  __typename?: 'AccessTypeCount';
+  randomWheel: Scalars['Int'];
+};
+
 export type AppError = {
   __typename?: 'AppError';
   errorCode: Scalars['Int'];
@@ -121,7 +132,10 @@ export type QueryRandomWheelBySlugArgs = {
 export type RandomWheel = {
   __typename?: 'RandomWheel';
   _count?: Maybe<RandomWheelCount>;
+  access: Array<AccessType>;
+  accessType: Scalars['String'];
   createdAt: Scalars['DateTime'];
+  editable: Scalars['Boolean'];
   entries: Array<RandomWheelEntry>;
   fadeDuration: Scalars['Int'];
   id: Scalars['String'];
@@ -133,8 +147,6 @@ export type RandomWheel = {
   slug: Scalars['String'];
   spinDuration: Scalars['Int'];
   uniqueEntries: Scalars['Boolean'];
-  visibility: Array<VisibilityType>;
-  visibilityType: Scalars['String'];
   winners: Array<RandomWheelWinner>;
 };
 
@@ -204,18 +216,7 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type VisibilityType = {
-  __typename?: 'VisibilityType';
-  _count?: Maybe<VisibilityTypeCount>;
-  type: Scalars['String'];
-};
-
-export type VisibilityTypeCount = {
-  __typename?: 'VisibilityTypeCount';
-  randomWheel: Scalars['Int'];
-};
-
-export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number };
+export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, accessType: string, editable: boolean };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string };
 
@@ -245,7 +246,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number } };
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, accessType: string, editable: boolean } };
 
 export type DeleteRandomWheelEntryMutationVariables = Exact<{
   id: Scalars['String'];
@@ -298,14 +299,14 @@ export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', 
 export type MyRandomWheelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number }> };
+export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, accessType: string, editable: boolean }> };
 
 export type RandomWheelBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
 
 
-export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }> }> };
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, accessType: string, editable: boolean, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }> }> };
 
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -328,6 +329,8 @@ export const RandomWheelDetailsFragmentDoc = gql`
   name
   createdAt
   rotation
+  accessType
+  editable
 }
     `;
 export const RandomWheelEntryFragmentDoc = gql`

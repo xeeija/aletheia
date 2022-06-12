@@ -9,11 +9,14 @@ import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { useAuth } from "../../hooks";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const router = useRouter()
   const { slug } = router.query
+
+  const { user } = useAuth()
 
   const [{ data }] = useRandomWheelBySlugQuery({
     variables: {
@@ -188,6 +191,20 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     )
   }
 
+  // TODO: Use members, server-side
+  // https://nextjs.org/docs/advanced-features/middleware
+  // TODO: Remove
+  if (
+    wheel.accessType === "PRIVATE" &&
+    !(
+      wheel.owner.id === user?.id ||
+      wheel.members.some(member => member.userId === user?.id && member.roleName === "VIEW")
+    )) {
+    return (
+      <Typography variant="h3">404 Not Found</Typography>
+    )
+  }
+
   return (
     <>
       <Head>
@@ -208,6 +225,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
             <Box>
 
+              {/* {wheel.editable && ( */}
               <Tooltip arrow placement="bottom" title="Popout">
                 <IconButton color="secondary"
                   href={`${window.location.href}/popout`}
@@ -217,6 +235,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <SvgIcon component={HiExternalLink} viewBox="1 1 18 18" />
                 </IconButton>
               </Tooltip>
+              {/* )} */}
 
               <Tooltip arrow placement="bottom" title="Share">
                 <IconButton color="secondary" onClick={(ev) => setShareAnchor(ev.currentTarget)}>
@@ -271,6 +290,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               <Tooltip arrow placement="bottom-end" title="More options">
                 <IconButton color="secondary"
+                  disabled={!wheel.editable}
                   onClick={(ev) => setOptionsAnchor(ev.currentTarget)}
                 >
                   <HiDotsVertical />
@@ -304,7 +324,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             gridTemplateColumns: "2fr 1fr",
             gridTemplateRows: "min-content 1fr",
             gridTemplateAreas: `
-              "wheel controls"
+              "wheel ${wheel.editable ? "controls" : "names"}"
               "wheel names"
             `,
             // "wheel wheel names"
@@ -313,33 +333,34 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             <Box sx={{ gridArea: "wheel" }}>
               <Paper sx={{ p: 2, height: "100%" }}>
 
-                <Wheel diameter={677} entries={entries} rotation={wheelRotation || wheel.rotation} spinning={spinning} />
+                <Wheel diameter={677} entries={entries} rotation={wheelRotation || wheel.rotation} spinning={spinning && wheel.editable} />
 
               </Paper>
             </Box>
-            <Box sx={{ gridArea: "controls" }}>
-              <Paper sx={{ p: 2 }}>
+            {wheel.editable && (
+              <Box sx={{ gridArea: "controls" }}>
+                <Paper sx={{ p: 2 }}>
 
-                <Badge badgeContent={entries?.length} color="success">
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disabled={!entries?.length}
-                    startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
-                    onClick={spinHandler}
-                  >
-                    Spin
-                  </Button>
-                </Badge>
+                  <Badge badgeContent={entries?.length} color="success">
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disabled={!entries?.length}
+                      startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
+                      onClick={spinHandler}
+                    >
+                      Spin
+                    </Button>
+                  </Badge>
 
-                <WinnerDialog
-                  open={[winnerDialogOpen, setWinnerDialogOpen]}
-                  description={winners?.[0]?.name}
-                  onClose={() => setWinnerDialogOpen(false)}
-                  onRemove={onRemoveWinnerDialog}
-                />
+                  <WinnerDialog
+                    open={[winnerDialogOpen, setWinnerDialogOpen]}
+                    description={winners?.[0]?.name}
+                    onClose={() => setWinnerDialogOpen(false)}
+                    onRemove={onRemoveWinnerDialog}
+                  />
 
-                {/* <Button
+                  {/* <Button
                 color="primary"
                 variant="outlined"
                 // className={cl.errorOutlined}
@@ -351,26 +372,27 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 Test
               </Button> */}
 
-                <Button
-                  color="error"
-                  variant="outlined"
-                  disabled={!entries?.length}
-                  startIcon={<HiTrash />}
-                  onClick={() => setClearDialogOpen(true)}
-                  sx={{ ml: 2 }}
-                >
-                  Clear
-                </Button>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    disabled={!entries?.length}
+                    startIcon={<HiTrash />}
+                    onClick={() => setClearDialogOpen(true)}
+                    sx={{ ml: 2 }}
+                  >
+                    Clear
+                  </Button>
 
-                <ClearEntriesDialog
-                  open={clearDialogOpen}
-                  onClose={() => setClearDialogOpen(false)}
-                  onClear={onClearDialog}
-                />
+                  <ClearEntriesDialog
+                    open={clearDialogOpen}
+                    onClose={() => setClearDialogOpen(false)}
+                    onClear={onClearDialog}
+                  />
 
 
-              </Paper>
-            </Box>
+                </Paper>
+              </Box>
+            )}
             <Box sx={{ gridArea: "names" }}>
 
               <Paper sx={{ height: "100%" }}>
@@ -397,8 +419,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries ?? []} />
-                    <AddEntryForm wheelId={wheel.id} />
+                    <EntryList entries={entries ?? []} editable={wheel.editable} />
+
+                    {wheel.editable && <AddEntryForm wheelId={wheel.id} />}
 
                   </Box>
                 </TabPanel>

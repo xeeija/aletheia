@@ -1,7 +1,7 @@
 import { MyContext } from "src/types";
 import { slugify } from "../utils/slug";
-import { Arg, Ctx, Field, Info, InputType, Int, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, VisibilityType } from "../../dist/generated/typegraphql-prisma";
+import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
+import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion } from "./common/types";
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import { parseResolveInfo } from "graphql-parse-resolve-info";
@@ -62,7 +62,7 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
     },
     members: "members" in fields,
     owner: "owner" in fields,
-    visibility: "visibility" in fields,
+    access: "access" in fields,
     _count: "_count" in fields,
   }
 
@@ -80,8 +80,8 @@ class RandomWheelFull extends RandomWheel {
   @Field(() => [RandomWheelMember])
   members: RandomWheelMember[]
 
-  @Field(() => [VisibilityType])
-  visibility: VisibilityType
+  @Field(() => [AccessType])
+  access: AccessType
 
   @Field(() => User)
   owner: User
@@ -93,7 +93,7 @@ class RandomWheelFull extends RandomWheel {
 //   entries?: RandomWheelEntry
 // }
 
-@Resolver()
+@Resolver(() => RandomWheelFull)
 export class RandomWheelResolver {
   // [x] get my wheels
   // [x] get wheel by slug
@@ -105,6 +105,23 @@ export class RandomWheelResolver {
   // [x] add entry
   // [x] remove entry
   // [x] clear all entries
+
+  @FieldResolver(() => Boolean)
+  async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: MyContext) {
+    if (randomWheel.ownerId === req.session.userId) {
+      return true
+    }
+
+    const member = await prisma.randomWheelMember.findFirst({
+      where: {
+        randomWheelId: randomWheel.id,
+        userId: req.session.userId,
+        roleName: "EDIT",
+      },
+    })
+
+    return member !== null
+  }
 
   // Wheel
 
@@ -137,7 +154,7 @@ export class RandomWheelResolver {
   // TODO: Only allowed if logged in? (or if private?)
   @Query(() => RandomWheelFull, { nullable: true })
   async randomWheelBySlug(
-    @Ctx() { prisma }: MyContext,
+    @Ctx() { req, prisma }: MyContext,
     @Arg("slug") slug: string,
     @Info() info: GraphQLResolveInfo
   ) { //: Promise<typeof RandomWheelResponse> {
@@ -150,8 +167,20 @@ export class RandomWheelResolver {
 
       // console.log(fields)
 
-      const wheel = await prisma.randomWheel.findUnique({
-        where: { slug: slug },
+      const wheel = await prisma.randomWheel.findFirst({
+        where: {
+          slug: slug,
+          accessType: !req.session.userId ? "PUBLIC" : undefined,
+          OR: [
+            { accessType: "PUBLIC" },
+            { ownerId: req.session.userId },
+            {
+              members: {
+                some: { userId: req.session.userId },
+              },
+            },
+          ],
+        },
         ...includeRandomWheel(info),
         // TODO: Maybe select only the requested fields
         // select: {

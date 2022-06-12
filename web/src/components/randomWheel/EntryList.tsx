@@ -6,9 +6,10 @@ import { AlertPopup } from "../components";
 
 interface Props {
   entries: RandomWheelEntryFragment[]
+  editable?: boolean
 }
 
-export const EntryList: FC<Props> = ({ entries }) => {
+export const EntryList: FC<Props> = ({ entries, editable }) => {
 
   const theme = useTheme()
 
@@ -93,35 +94,38 @@ export const EntryList: FC<Props> = ({ entries }) => {
             fontSize: "0.925rem",
             fontWeight: 500,
           }} />
-          <ListItemSecondaryAction className="hoverItem" sx={{
-            transition: itemTransition[0],
-            opacity: 0,
-            visibility: "hidden",
-            // transform: "scale(0) translateY(-100%)",
-            "&:hover, &:focus-within": {
-              transition: itemTransition[1],
-              opacity: 1,
-              visibility: "visible",
-              // visibility: deleteEnabled ? "visible" : "hidden",
-              // transform: "scale(1) translateY(-50%)",
-            }
-          }}>
-            <IconButton
-              onClick={() => onDelete(entry)}
-              role="button"
-              aria-label={`Delete entry '${entry.name}'`}
-            >
-              <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
-              {/* <TiDelete fontSize="small" color="error" /> */}
-            </IconButton>
+          {editable && (
+            <ListItemSecondaryAction className="hoverItem" sx={{
+              transition: itemTransition[0],
+              opacity: 0,
+              visibility: "hidden",
+              // transform: "scale(0) translateY(-100%)",
+              "&:hover, &:focus-within": {
+                transition: itemTransition[1],
+                opacity: 1,
+                visibility: "visible",
+                // visibility: deleteEnabled ? "visible" : "hidden",
+                // transform: "scale(1) translateY(-50%)",
+              }
+            }}>
+              <IconButton
+                onClick={() => onDelete(entry)}
+                role="button"
+                aria-label={`Delete entry '${entry.name}'`}
+              >
+                <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                {/* <TiDelete fontSize="small" color="error" /> */}
+              </IconButton>
 
-            {/* <Checkbox edge="end"
+              {/* <Checkbox edge="end"
               inputProps={{
                 'aria-labelledby': `entry-${entry}`
               }}
             /> */}
 
-          </ListItemSecondaryAction>
+            </ListItemSecondaryAction>
+          )}
+
         </ListItem>
       ))}
     </List>

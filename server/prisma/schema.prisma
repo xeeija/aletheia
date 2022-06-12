@@ -42,7 +42,7 @@ model Session {
 
 // Common
 
-model VisibilityType {
+model AccessType {
   type        String        @unique
   randomWheel RandomWheel[]
 }
@@ -50,21 +50,21 @@ model VisibilityType {
 // Random Wheel
 
 model RandomWheel {
-  id             String              @id @default(uuid()) @db.Uuid
-  slug           String              @unique
-  name           String? // maybe optional
-  createdAt      DateTime            @default(now())
-  uniqueEntries  Boolean             @default(false)
-  visibility     VisibilityType      @relation(fields: [visibilityType], references: [type])
-  visibilityType String              @default("PRIVATE")
-  rotation       Float               @default(0)
-  spinDuration   Int                 @default(6000)
-  fadeDuration   Int                 @default(6000)
-  owner          User                @relation(fields: [ownerId], references: [id])
-  ownerId        String              @db.Uuid
-  entries        RandomWheelEntry[]
-  winners        RandomWheelWinner[]
-  members        RandomWheelMember[]
+  id            String              @id @default(uuid()) @db.Uuid
+  slug          String              @unique
+  name          String? // maybe optional
+  createdAt     DateTime            @default(now())
+  uniqueEntries Boolean             @default(false)
+  access        AccessType          @relation(fields: [accessType], references: [type])
+  accessType    String              @default("PRIVATE")
+  rotation      Float               @default(0)
+  spinDuration  Int                 @default(6000)
+  fadeDuration  Int                 @default(6000)
+  owner         User                @relation(fields: [ownerId], references: [id])
+  ownerId       String              @db.Uuid
+  entries       RandomWheelEntry[]
+  winners       RandomWheelWinner[]
+  members       RandomWheelMember[]
   // visibility
   // settings:
   // unique entries option
