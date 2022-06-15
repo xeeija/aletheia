@@ -48,6 +48,9 @@ model AccessType {
 }
 
 // Random Wheel
+// TODO: rename name to title
+// rename slug to tag (?)
+// rename RandomWheel to Wheel in Graphql (?)
 
 model RandomWheel {
   id            String              @id @default(uuid()) @db.Uuid

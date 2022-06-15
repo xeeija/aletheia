@@ -4,16 +4,17 @@ import { RandomWheelEntryFragment } from "../../generated/graphql"
 import { logistic, pointOnCircle, Sector } from "../../utils/math"
 
 interface Props {
-  diameter: number,
-  entries?: RandomWheelEntryFragment[],
+  diameter: number
+  entries?: RandomWheelEntryFragment[]
   colors?: string[]
   fade?: boolean
-  rotation?: number,
+  rotation?: number
   spinning?: boolean
+  spinDuration?: number
   // wheelRef?: React.RefObject<SVGSVGElement>
 }
 
-export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade, rotation = 0, spinning }) => {
+export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade, rotation = 0, spinning, spinDuration = 6000 }) => {
 
   const theme = useTheme()
 
@@ -70,7 +71,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade, ro
           transform: `rotate(${rotation}deg)`,
           ...(spinning && {
             transition: theme.transitions.create("transform", {
-              duration: 6000,
+              duration: spinDuration,
               easing: "cubic-bezier(0.12, 0, 0.25, 1)",
               delay: 500,
             })

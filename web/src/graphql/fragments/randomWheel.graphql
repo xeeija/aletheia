@@ -4,6 +4,8 @@ fragment RandomWheelDetails on RandomWheel {
   name
   createdAt
   rotation
+  spinDuration
+  fadeDuration
   accessType
   editable
 }

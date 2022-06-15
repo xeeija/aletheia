@@ -10,6 +10,8 @@ export * from "./common/TabPanel"
 
 export * from "./input/InputField"
 export * from "./input/PasswordField"
+export * from "./input/SliderField"
+export * from "./input/RadioGroupField"
 
 export * from "./navigation/Navbar"
 export * from "./navigation/Navigation"

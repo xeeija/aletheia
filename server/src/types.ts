@@ -36,6 +36,7 @@ export interface ServerToClientEvents {
     entry: RandomWheelEntry,
     rotation: number,
   }) => void
+  "wheel:update": (type: string) => void
 }
 
 export interface ClientToServerEvents {

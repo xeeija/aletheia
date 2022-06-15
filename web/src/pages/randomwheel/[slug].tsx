@@ -7,7 +7,7 @@ import { TiArrowSync, TiRefresh } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { AddEntryForm, ClearEntriesDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 
@@ -18,7 +18,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const { user } = useAuth()
 
-  const [{ data }] = useRandomWheelBySlugQuery({
+  const [{ data }, fetchWheel] = useRandomWheelBySlugQuery({
     variables: {
       slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
     }
@@ -99,6 +99,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   }
 
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
   }
@@ -127,7 +129,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
     setTimeout(() => {
       setWinnerDialogOpen(true)
-    }, 6500 + 10)
+    }, wheel.spinDuration + 500 + 10)
 
   }
 
@@ -151,7 +153,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     socket.on("wheel:spin", ({ rotation, winner, entry }) => {
       console.log("wheel:spin", { rotation, winner, entry })
 
-      const revolutions = ~~(Math.random() * (6 - 5 + 1) + 5)
+      const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
       console.log(revolutions)
 
       setSpinning(true)
@@ -163,7 +165,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       setTimeout(() => {
         setSpinning(false)
         setWheelRotation(rotation)
-      }, 6500 + 10)
+      }, wheel.spinDuration + 500 + 10)
 
     })
 
@@ -177,12 +179,20 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       })
     })
 
+    socket.on("wheel:update", () => {
+      console.log("wheel")
+
+      fetchWheel({
+        requestPolicy: "cache-and-network",
+      })
+    })
+
     return () => {
       socket.off("wheel:spin")
       socket.disconnect()
       console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
-  }, [wheel?.id, fetchEntries, fetchWinners])
+  }, [wheel?.id, wheel?.spinDuration, fetchEntries, fetchWinners, fetchWheel])
 
   if (!wheel) {
     // TODO: Proper error pages
@@ -220,7 +230,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
             <Typography variant="h2" sx={{}}>
-              {wheel.name}
+              {wheel.name || `Wheel #${slug}`}
             </Typography>
 
             <Box>
@@ -302,12 +312,23 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
                   <List dense sx={{ py: 0 }}>
                     <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="3 3 20 20" />} />
-                    <LinkListItem name="Edit" icon={<SvgIcon component={HiPencil} viewBox="0 0 20 20" />} />
+                    <LinkListItem
+                      name="Edit"
+                      icon={<SvgIcon component={HiPencil} viewBox="0 0 20 20" />}
+                      // href={`${window.location.href}/edit`}
+                      onClick={() => {
+                        // TODO: Make default option in Dropdown or LinkListItem or so to close on clicking a button
+                        setOptionsAnchor(null)
+                        setEditDialogOpen(true)
+                      }}
+                    />
                     <LinkListItem name="Delete" icon={<SvgIcon component={HiTrash} />} />
                   </List>
 
                 </Paper>
               </Dropdown>
+
+              <EditWheelDialog open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
 
             </Box>
 
@@ -333,7 +354,13 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             <Box sx={{ gridArea: "wheel" }}>
               <Paper sx={{ p: 2, height: "100%" }}>
 
-                <Wheel diameter={677} entries={entries} rotation={wheelRotation || wheel.rotation} spinning={spinning && wheel.editable} />
+                <Wheel
+                  diameter={677}
+                  entries={entries}
+                  rotation={wheel.editable ? (wheelRotation || wheel.rotation) : 0}
+                  spinning={spinning && wheel.editable}
+                  spinDuration={wheel.spinDuration}
+                />
 
               </Paper>
             </Box>
@@ -345,7 +372,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     <Button
                       color="primary"
                       variant="contained"
-                      disabled={!entries?.length}
+                      disabled={!entries?.length || spinning}
                       startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
                       onClick={spinHandler}
                     >

@@ -25,7 +25,7 @@ export const LoadingButton: React.FC<Props> = ({ children, loading, position = "
     children
 
   return (
-    <Button disabled={loading} {...props}>
+    <Button {...props} disabled={loading || props.disabled}>
       {loading && !noProgress && position === "start" ? loadingSpinner : startIcon}
 
       {loading && loadingIndicator ? loadingIndicator : childrenWrapper}

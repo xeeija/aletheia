@@ -45,10 +45,16 @@ const RandomWheelResponse = createAppErrorUnion(RandomWheel)
 @InputType()
 class RandomWheelInput implements Partial<RandomWheel> {
   @Field(() => String, { nullable: true })
+  name?: string | null
 
-  name?: string | null | undefined;
   @Field(() => String, { nullable: true })
-  slug?: string | undefined;
+  accessType?: string
+
+  @Field(() => Int, { nullable: true })
+  spinDuration?: number
+
+  @Field(() => Int, { nullable: true })
+  fadeDuration?: number
 }
 
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
@@ -270,7 +276,7 @@ export class RandomWheelResolver {
   // FIX return type
   @Mutation(() => RandomWheelFull)
   async updateRandomWheel(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req, socketIo }: MyContext,
     @Arg("id") id: string,
     @Arg("options") wheelOptions: RandomWheelInput
   ): Promise<typeof RandomWheelResponse> {
@@ -287,10 +293,11 @@ export class RandomWheelResolver {
       }
     }
 
-    if (randomWheel.ownerId !== req.session.userId) {
+    if (randomWheel?.ownerId !== req.session.userId || !req.session.userId) {
+      // TODO: Proper Error
       return {
-        errorCode: 403,
-        errorMessage: "Forbidden"
+        errorCode: 404,
+        errorMessage: "Not found"
       }
     }
 
@@ -300,8 +307,11 @@ export class RandomWheelResolver {
         data: wheelOptions
       })
 
+      socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "")
+
       return newWheel
     }
+
     catch (ex: any) {
       if (ex.code === "P2002") {
         const errorFields = ex.meta.target as string[]
@@ -493,21 +503,82 @@ export class RandomWheelResolver {
     return res.count
   }
 
-  @Mutation(() => RandomWheelWinner)
-  async addWinner(
+  @Mutation(() => RandomWheelMember, { nullable: true })
+  async updateRandomWheelMember(
     @Ctx() { prisma, req }: MyContext,
     @Arg("randommWheelId") randomWwheelId: string,
-    @Arg("name") name: string
+    @Arg("username") username: string,
+    @Arg("role") role: string,
   ) {
-    const newWinner = await prisma.randomWheelWinner.create({
-      data: {
-        name: name,
-        randomWheelId: randomWwheelId,
-        drawnById: req.session.userId
-      }
+    // TODO: Validate username input
+
+    const wheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWwheelId },
+      select: { ownerId: true },
     })
 
-    return newWinner
+    if (wheel?.ownerId !== req.session.userId || !req.session.userId) {
+      return null
+    }
+
+    // TODO: Move wheel auth to middleware or @Auth or so
+    const member = await prisma.randomWheelMember.findFirst({
+      where: {
+        randomWheelId: randomWwheelId,
+        user: { username: username },
+      },
+    })
+
+    if (member?.roleName === role) {
+      return member
+    }
+
+    const userToUpdate = await prisma.user.findUnique({
+      where: { username: username },
+    })
+
+    const newMember = member
+      ? await prisma.randomWheelMember.update({
+        where: { id: member.id },
+        data: { roleName: role },
+      })
+      : await prisma.randomWheelMember.create({
+        data: {
+          randomWheelId: randomWwheelId,
+          userId: userToUpdate?.id ?? "",
+          roleName: role,
+        }
+      })
+
+    return newMember
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async deleteRandomWheelMember(
+    @Ctx() { prisma, req }: MyContext,
+    @Arg("id") id: string
+  ) {
+
+    const member = await prisma.randomWheelMember.findUnique({
+      where: { id: id },
+      include: {
+        randomWheel: {
+          select: { ownerId: true },
+        },
+      },
+    })
+
+    if (member?.randomWheel.ownerId !== req.session.userId || !req.session.userId) {
+      return false
+    }
+
+    await prisma.randomWheelMember.delete({
+      where: { id },
+    })
+
+    // TODO: Realtime update with socket?
+
+    return true
   }
 
 }
