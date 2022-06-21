@@ -2,11 +2,11 @@ import React from "react"
 import { TextField, TextFieldProps } from "@mui/material"
 import { useField } from "formik"
 
-type Props = TextFieldProps & {
+export type InputFieldProps = TextFieldProps & {
   name: string // make name required
 }
 
-export const InputField: React.FC<Props> = (props) => {
+export const InputField: React.FC<InputFieldProps> = ({ children, ...props }) => {
   // const { errors } = useFormikContext<{ [name: string]: string }>()
   // setup formiks handlers on text field
 
@@ -22,5 +22,7 @@ export const InputField: React.FC<Props> = (props) => {
     {...props}
     // show error message over default helper text
     {...(error && { helperText: error })}
-  />
+  >
+    {children}
+  </TextField>
 }
