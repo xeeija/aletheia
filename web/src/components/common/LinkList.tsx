@@ -53,7 +53,7 @@ export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ na
     </ListItem>
   )
 
-  const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2 }} />
+  const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
 
   if (divider) {
     return divider === true ? defaultDivider : divider

@@ -53,7 +53,7 @@ export type Mutation = {
   register: UserResponse;
   spinRandomWheel: RandomWheelWinner;
   updateRandomWheel: RandomWheel;
-  updateRandomWheelMember?: Maybe<RandomWheelMember>;
+  updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
   updateUser: UserResponse;
 };
 
@@ -113,10 +113,9 @@ export type MutationUpdateRandomWheelArgs = {
 };
 
 
-export type MutationUpdateRandomWheelMemberArgs = {
-  randommWheelId: Scalars['String'];
-  role: Scalars['String'];
-  username: Scalars['String'];
+export type MutationUpdateRandomWheelMembersArgs = {
+  members: Array<RandomWheelMemberInput>;
+  randomWheelId: Scalars['String'];
 };
 
 
@@ -183,8 +182,29 @@ export type RandomWheelMember = {
   __typename?: 'RandomWheelMember';
   id: Scalars['String'];
   randomWheelId: Scalars['String'];
+  role: RandomWheelRole;
   roleName: Scalars['String'];
+  user: User;
   userId: Scalars['String'];
+};
+
+export type RandomWheelMemberInput = {
+  delete?: Maybe<Scalars['Boolean']>;
+  id?: Maybe<Scalars['String']>;
+  role: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type RandomWheelRole = {
+  __typename?: 'RandomWheelRole';
+  _count?: Maybe<RandomWheelRoleCount>;
+  description?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+export type RandomWheelRoleCount = {
+  __typename?: 'RandomWheelRoleCount';
+  members: Scalars['Int'];
 };
 
 export type RandomWheelWinner = {
@@ -230,6 +250,8 @@ export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: strin
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string };
 
 export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> };
+
+export type RandomWheelMemberFragment = { __typename?: 'RandomWheelMember', id: string, roleName: string, user: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> } };
 
 export type NormalUserFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
 
@@ -301,6 +323,14 @@ export type UpdateRandomWheelMutationVariables = Exact<{
 
 export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean } };
 
+export type UpdateRandomWheelMembersMutationVariables = Exact<{
+  randomWheelId: Scalars['String'];
+  members: Array<RandomWheelMemberInput> | RandomWheelMemberInput;
+}>;
+
+
+export type UpdateRandomWheelMembersMutation = { __typename?: 'Mutation', updateRandomWheelMembers?: Maybe<Array<{ __typename?: 'RandomWheelMember', id: string }>> };
+
 export type UpdateUserMutationVariables = Exact<{
   user: UserInput;
 }>;
@@ -331,6 +361,13 @@ export type RandomWheelBySlugEntriesQueryVariables = Exact<{
 
 
 export type RandomWheelBySlugEntriesQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', entries: Array<{ __typename?: 'RandomWheelEntry', id: string, name: string }> }> };
+
+export type RandomWheelBySlugMembersQueryVariables = Exact<{
+  slug: Scalars['String'];
+}>;
+
+
+export type RandomWheelBySlugMembersQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, members: Array<{ __typename?: 'RandomWheelMember', id: string, roleName: string, user: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> } }> }> };
 
 export type RandomWheelBySlugWinnersQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -366,15 +403,24 @@ export const RandomWheelWinnerFragmentDoc = gql`
   winnerIndex
 }
     `;
-export const NormalUserFragmentDoc = gql`
-    fragment NormalUser on User {
+export const UserNameFragmentDoc = gql`
+    fragment UserName on User {
   id
   username
   displayname
 }
     `;
-export const UserNameFragmentDoc = gql`
-    fragment UserName on User {
+export const RandomWheelMemberFragmentDoc = gql`
+    fragment RandomWheelMember on RandomWheelMember {
+  id
+  roleName
+  user {
+    ...UserName
+  }
+}
+    ${UserNameFragmentDoc}`;
+export const NormalUserFragmentDoc = gql`
+    fragment NormalUser on User {
   id
   username
   displayname
@@ -492,6 +538,17 @@ export const UpdateRandomWheelDocument = gql`
 export function useUpdateRandomWheelMutation() {
   return Urql.useMutation<UpdateRandomWheelMutation, UpdateRandomWheelMutationVariables>(UpdateRandomWheelDocument);
 };
+export const UpdateRandomWheelMembersDocument = gql`
+    mutation UpdateRandomWheelMembers($randomWheelId: String!, $members: [RandomWheelMemberInput!]!) {
+  updateRandomWheelMembers(randomWheelId: $randomWheelId, members: $members) {
+    id
+  }
+}
+    `;
+
+export function useUpdateRandomWheelMembersMutation() {
+  return Urql.useMutation<UpdateRandomWheelMembersMutation, UpdateRandomWheelMembersMutationVariables>(UpdateRandomWheelMembersDocument);
+};
 export const UpdateUserDocument = gql`
     mutation UpdateUser($user: UserInput!) {
   updateUser(user: $user) {
@@ -562,6 +619,20 @@ export const RandomWheelBySlugEntriesDocument = gql`
 
 export function useRandomWheelBySlugEntriesQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugEntriesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<RandomWheelBySlugEntriesQuery>({ query: RandomWheelBySlugEntriesDocument, ...options });
+};
+export const RandomWheelBySlugMembersDocument = gql`
+    query RandomWheelBySlugMembers($slug: String!) {
+  randomWheelBySlug(slug: $slug) {
+    id
+    members {
+      ...RandomWheelMember
+    }
+  }
+}
+    ${RandomWheelMemberFragmentDoc}`;
+
+export function useRandomWheelBySlugMembersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugMembersQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<RandomWheelBySlugMembersQuery>({ query: RandomWheelBySlugMembersDocument, ...options });
 };
 export const RandomWheelBySlugWinnersDocument = gql`
     query RandomWheelBySlugWinners($slug: String!) {

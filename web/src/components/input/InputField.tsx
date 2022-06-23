@@ -15,13 +15,13 @@ export const InputField: React.FC<InputFieldProps> = ({ children, ...props }) =>
 
   // TODO: Show green checkmark as end icon if valid
   return <TextField
-    error={!!error}
+    error={error !== undefined}
     {...field}
     variant="filled"
     size="small"
     {...props}
     // show error message over default helper text
-    {...(error && { helperText: error })}
+    {...(error !== undefined && { helperText: error })}
   >
     {children}
   </TextField>

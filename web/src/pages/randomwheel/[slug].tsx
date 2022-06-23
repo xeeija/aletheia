@@ -3,11 +3,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowSync, TiRefresh } from "react-icons/ti";
+import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { AddEntryForm, ClearEntriesDialog, EditMembersDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 
@@ -100,6 +100,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   }
 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
+
+  const [membersDialogOpen, setMembersDialogOpen] = useState(false)
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
@@ -203,13 +205,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   // TODO: Use members, server-side
   // https://nextjs.org/docs/advanced-features/middleware
-  // TODO: Remove
-  if (
-    wheel.accessType === "PRIVATE" &&
-    !(
-      wheel.owner.id === user?.id ||
-      wheel.members.some(member => member.userId === user?.id && member.roleName === "VIEW")
-    )) {
+
+  const viewable = wheel.accessType === "PUBLIC"
+    || wheel.owner.id === user?.id
+    || wheel.members.some(member => member.userId === user?.id)
+
+  if (!viewable) {
     return (
       <Typography variant="h3">404 Not Found</Typography>
     )
@@ -322,13 +323,29 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         setEditDialogOpen(true)
                       }}
                     />
-                    <LinkListItem name="Delete" icon={<SvgIcon component={HiTrash} />} />
+                    {user?.id === wheel.owner.id && (
+                      <>
+                        <LinkListItem
+                          name="Members"
+                          icon={<SvgIcon component={TiUser} />}
+                          onClick={() => {
+                            setOptionsAnchor(null)
+                            setMembersDialogOpen(true)
+                          }}
+                        />
+                        <LinkListItem divider />
+                        {/* TODO: Add List item color prop */}
+                        <LinkListItem name="Delete" icon={<SvgIcon component={HiTrash} />} />
+                      </>
+                    )}
                   </List>
 
                 </Paper>
               </Dropdown>
 
               <EditWheelDialog open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
+
+              <EditMembersDialog open={membersDialogOpen} slug={wheel.slug} onClose={() => setMembersDialogOpen(false)} />
 
             </Box>
 

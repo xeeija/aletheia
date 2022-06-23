@@ -21,3 +21,11 @@ fragment RandomWheelWinner on RandomWheelWinner {
   createdAt
   winnerIndex
 }
+
+fragment RandomWheelMember on RandomWheelMember {
+  id
+  roleName
+  user {
+    ...UserName
+  }
+}
