@@ -279,6 +279,13 @@ export type CreateRandomWheelMutationVariables = Exact<{
 
 export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean } };
 
+export type DeleteRandomWheelMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteRandomWheelMutation = { __typename?: 'Mutation', deleteRandomWheel?: Maybe<{ __typename?: 'AppError', errorMessage?: Maybe<string>, errorCode: number }> };
+
 export type DeleteRandomWheelEntryMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -458,6 +465,18 @@ export const CreateRandomWheelDocument = gql`
 
 export function useCreateRandomWheelMutation() {
   return Urql.useMutation<CreateRandomWheelMutation, CreateRandomWheelMutationVariables>(CreateRandomWheelDocument);
+};
+export const DeleteRandomWheelDocument = gql`
+    mutation DeleteRandomWheel($id: String!) {
+  deleteRandomWheel(id: $id) {
+    errorMessage
+    errorCode
+  }
+}
+    `;
+
+export function useDeleteRandomWheelMutation() {
+  return Urql.useMutation<DeleteRandomWheelMutation, DeleteRandomWheelMutationVariables>(DeleteRandomWheelDocument);
 };
 export const DeleteRandomWheelEntryDocument = gql`
     mutation DeleteRandomWheelEntry($id: String!) {

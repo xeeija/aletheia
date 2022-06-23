@@ -9,4 +9,5 @@ export * from "./EditWheelDialog"
 export * from "./EditWheelForm"
 export * from "./EditMembersDialog"
 export * from "./EditMembersForm"
+export * from "./DeleteWheelDialog"
 

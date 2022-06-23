@@ -1,0 +1,6 @@
+mutation DeleteRandomWheel($id:String!) {
+  deleteRandomWheel(id:$id) {
+    errorMessage
+    errorCode
+  }
+}

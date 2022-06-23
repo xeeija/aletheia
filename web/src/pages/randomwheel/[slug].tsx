@@ -7,8 +7,8 @@ import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, EditMembersDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
-import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
@@ -39,6 +39,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [, spinRandomWheel] = useSpinRandomWheelMutation()
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
   const [, clearRandomWheel] = useClearRandomWheelMutation()
+  const [, deleteRandomWheel] = useDeleteRandomWheelMutation()
 
   const [entriesTab, setEntriesTab] = useState(0)
 
@@ -102,6 +103,27 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
 
   const [membersDialogOpen, setMembersDialogOpen] = useState(false)
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const onDeleteDialog = async () => {
+    if (!wheel) {
+      return
+    }
+
+    console.log("delete wheel")
+
+    const { data } = await deleteRandomWheel({
+      id: wheel?.id
+    })
+
+    // TODO: Proper error handling
+    if (data?.deleteRandomWheel !== null) {
+      console.log("delete error", data?.deleteRandomWheel)
+    }
+
+    router.push("/randomwheel")
+
+  }
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
@@ -334,8 +356,14 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                           }}
                         />
                         <LinkListItem divider />
-                        {/* TODO: Add List item color prop */}
-                        <LinkListItem name="Delete" color="error" icon={<SvgIcon component={HiTrash} viewBox="-2 -2 24 24" />} />
+                        <LinkListItem
+                          name="Delete"
+                          color="error"
+                          icon={<SvgIcon component={HiTrash} viewBox="-2 -2 24 24" />}
+                          onClick={() => {
+                            setOptionsAnchor(null)
+                            setDeleteDialogOpen(true)
+                          }} />
                       </>
                     )}
                   </List>
@@ -343,9 +371,21 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 </Paper>
               </Dropdown>
 
-              <EditWheelDialog open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
+              {wheel.editable && (
+                <EditWheelDialog open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
+              )}
 
-              <EditMembersDialog open={membersDialogOpen} slug={wheel.slug} onClose={() => setMembersDialogOpen(false)} />
+              {wheel.owner.id === user?.id && (
+                <>
+                  <EditMembersDialog open={membersDialogOpen} slug={wheel.slug} onClose={() => setMembersDialogOpen(false)} />
+
+                  <DeleteWheelDialog
+                    open={deleteDialogOpen}
+                    onClose={() => setDeleteDialogOpen(false)}
+                    onDelete={onDeleteDialog}
+                  />
+                </>
+              )}
 
             </Box>
 

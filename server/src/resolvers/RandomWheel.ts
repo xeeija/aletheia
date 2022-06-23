@@ -391,13 +391,6 @@ export class RandomWheelResolver {
     // TODO: isUuid utility function
     // const uuidRegex = /^[0-9a-f]{8}-?(?:[0-9a-f]{4}-?){3}[0-9a-f]{12}$/i
 
-    if (id.length !== 36 && id.length !== 32) {
-      return {
-        errorCode: 400,
-        fieldErrors: [{ field: "id", message: "Must be a valid UUID" }]
-      }
-    }
-
     const randomWheel = await prisma.randomWheel.findUnique({
       where: { id: id }
     })
@@ -416,17 +409,19 @@ export class RandomWheelResolver {
       }
     }
 
-    try {
-      await prisma.randomWheel.delete({ where: { id: id } })
+    // try {
+    const deleted = await prisma.randomWheel.delete({ where: { id: id } })
 
-      return null
-    }
-    catch {
-      return {
-        errorCode: 500,
-        errorMessage: "Unknown error"
-      }
-    }
+    console.log(deleted)
+
+    return null
+    // }
+    // catch {
+    //   return {
+    //     errorCode: 500,
+    //     errorMessage: "Unknown error"
+    //   }
+    // }
   }
 
   @Mutation(() => RandomWheelWinner)
