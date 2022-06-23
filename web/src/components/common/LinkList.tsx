@@ -1,36 +1,43 @@
-import React from "react"
-import { List, ListProps, Divider, ListItem, ListItemIcon, ListItemText, Theme, ListItemTextProps } from "@mui/material"
+import { FC, forwardRef, MouseEventHandler, ReactNode } from "react"
+import { List, ListProps, Divider, ListItem, ListItemIcon, ListItemText, Theme, ListItemTextProps, useTheme } from "@mui/material"
 import Link from "next/link"
 import { SxProps } from "@mui/system"
+import { ThemeColor } from "../../types"
 
 export interface LinkItem {
   name?: string
   icon?: JSX.Element
   divider?: boolean | JSX.Element
-  onClick?: React.MouseEventHandler
+  onClick?: MouseEventHandler
   href?: string
   disabled?: boolean
+  color?: ThemeColor
 }
 
 type LinkListProps = ListProps & {
   items: LinkItem[]
-  children: (item: LinkItem, index: number) => React.ReactNode
+  children?: ((item: LinkItem, index: number) => ReactNode) | ReactNode
 }
 
-export const LinkList: React.FC<LinkListProps> = ({ children, items, ...listProps }) => {
+export const LinkList: FC<LinkListProps> = ({ children, items, ...listProps }) => {
+  const childrenFn = typeof children === "function" || typeof children === "undefined"
+
   return (
     <List {...listProps}>
-      {items.map((item, index) => {
+      <>
+        {items.map((item, index) => {
 
-        // When all of them are met, you may safely use the index as a key.
-        // 1. the list and items are static
-        // 2. the items in the list have no ids
-        // 3. the list is never reordered or filtered
+          // When all of them are met, you may safely use the index as a key.
+          // 1. the list and items are static
+          // 2. the items in the list have no ids
+          // 3. the list is never reordered or filtered
 
-        return <li key={item.name || index}>
-          {children(item, index)}
-        </li>
-      })}
+          return <li key={item.name || index}>
+            {(childrenFn ? children?.(item, index) : null) ?? <LinkListItem {...item} />}
+          </li>
+        })}
+        {!childrenFn && children}
+      </>
     </List>
   )
 }
@@ -42,11 +49,27 @@ type ItemProps = LinkItem & {
 
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
-export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, disabled, ...props }, ref) => {
+export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
+
+  const theme = useTheme()
+  const themeColor = color ? theme.palette[color].main : undefined
 
   const linkItem = (
-    <ListItem ref={ref} button component={href ? "a" : "button"} disabled={disabled} {...props}>
-      <ListItemIcon sx={{ minWidth: 48 }}>
+    <ListItem button
+      ref={ref}
+      component={href ? "a" : "button"}
+      disabled={disabled}
+      sx={{
+        color: themeColor,
+        "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined, },
+        ...sx,
+      }}
+      {...props}
+    >
+      <ListItemIcon sx={{
+        minWidth: 48,
+        color: "inherit",
+      }}>
         {icon}
       </ListItemIcon>
       <ListItemText primary={name} {...textProps} />
@@ -65,21 +88,4 @@ export const LinkListItem = React.forwardRef<HTMLAnchorElement, ItemProps>(({ na
         {linkItem}
       </Link>
   )
-
-  // return (
-  //   divider ?
-  //     divider === true ?
-  //       <Divider variant="middle" sx={{ borderBottomWidth: 2 }} /> :
-  //       divider :
-  //     <Link href={href ?? ""} passHref={href !== undefined}>
-  //       {/*
-  //       <ListItem ref={ref} button component="a" disabled={disabled} {...props}>
-  //         <ListItemIcon sx={{ minWidth: 48 }}>
-  //           {icon}
-  //         </ListItemIcon>
-  //         <ListItemText primary={name} {...textProps} />
-  //       </ListItem>
-  //     */}
-  //     </Link>
-  // )
 })

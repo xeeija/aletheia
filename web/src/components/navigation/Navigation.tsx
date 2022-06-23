@@ -2,7 +2,7 @@ import { FC, ReactNode, useState } from "react"
 import { Alert, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Paper, Snackbar, SvgIcon, Typography, useTheme } from "@mui/material"
 import { TiChartPie, TiHome, TiPipette, TiPower, TiScissors, TiSpanner, TiThList, TiUser, TiWarning } from "react-icons/ti"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
-import { Dropdown, LinkList, LinkListItem, LinkItem, LoadingButton, Sidebar, Navbar } from "../components"
+import { Dropdown, LinkList, LinkItem, LoadingButton, Sidebar, Navbar } from "../components"
 import Link from "next/link"
 import { useLogoutMutation } from "../../generated/graphql"
 import { useAuth } from "../../hooks"
@@ -23,6 +23,12 @@ const sidebarItems: LinkItem[] = [
   { name: "Countdown", icon: <SvgIcon component={HiClock} color="primary" viewBox="0 0 20 20" />, disabled: true },
   { name: "Rock Paper Scissors", icon: <SvgIcon component={TiScissors} color="secondary" viewBox="2 2 20 20" />, disabled: true },
   // { divider: true },
+]
+
+const userDropdownItems: LinkItem[] = [
+  { name: "Profile", icon: <SvgIcon component={TiUser} /> },
+  { name: "Settings", href: "/settings", icon: <SvgIcon component={TiSpanner} /> },
+  // Logout added seperately
 ]
 
 const sidebarWidth = 240
@@ -70,12 +76,6 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
     }, 500)
 
   }
-
-  const userDropdownItems: LinkItem[] = [
-    { name: "Profile", icon: <SvgIcon component={TiUser} /> },
-    { name: "Settings", href: "/settings", icon: <SvgIcon component={TiSpanner} /> },
-    { name: "Logout" }, // added directly in list
-  ]
 
   const navbarBorderRadius = typeof theme.shape.borderRadius === "number" ?
     theme.shape.borderRadius * 2 :
@@ -156,27 +156,26 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
                   <Divider sx={{ borderBottomWidth: 4, borderRadius: 2, m: 1, mx: 1.5 }} />
 
                   <LinkList items={userDropdownItems} dense sx={{ p: 0 }}>
-                    {(item) =>
-                      item.name !== "Logout" ? <LinkListItem {...item} /> :
-                        <LoadingButton variant="text" color="error" fullWidth
-                          loading={fetchingLogout} fade onClick={handleLogout} position="start"
-                          sx={{
-                            justifyContent: "start",
-                            textTransform: "inherit",
-                            py: 0.5,
-                            mt: 0.5,
-                          }}
-                          startIcon={
-                            <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
-                              <SvgIcon component={TiPower} />
-                            </ListItemIcon>}
-                          progressProps={{ color: "inherit", sx: { ml: 1, mr: 3.5 } }} // props for position start
-                        >
-                          <Typography variant="body2" component="span">
-                            {item.name}
-                          </Typography>
-                        </LoadingButton>
-                    }
+                    <li>
+                      <LoadingButton variant="text" color="error" fullWidth
+                        loading={fetchingLogout} fade onClick={handleLogout} position="start"
+                        sx={{
+                          justifyContent: "start",
+                          textTransform: "inherit",
+                          py: 0.5,
+                          mt: 0.5,
+                        }}
+                        startIcon={
+                          <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
+                            <SvgIcon component={TiPower} />
+                          </ListItemIcon>}
+                        progressProps={{ color: "inherit", sx: { ml: 1, mr: 3.5 } }} // props for position start
+                      >
+                        <Typography variant="body1" component="span">
+                          Logout
+                        </Typography>
+                      </LoadingButton>
+                    </li>
                   </LinkList>
 
                 </Paper>

@@ -312,7 +312,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Paper sx={{ p: 1.5, width: 180 }}>
 
                   <List dense sx={{ py: 0 }}>
-                    <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="3 3 20 20" />} />
+                    <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} />
                     <LinkListItem
                       name="Edit"
                       icon={<SvgIcon component={HiPencil} viewBox="0 0 20 20" />}
@@ -335,7 +335,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         />
                         <LinkListItem divider />
                         {/* TODO: Add List item color prop */}
-                        <LinkListItem name="Delete" icon={<SvgIcon component={HiTrash} />} />
+                        <LinkListItem name="Delete" color="error" icon={<SvgIcon component={HiTrash} viewBox="-2 -2 24 24" />} />
                       </>
                     )}
                   </List>
@@ -390,7 +390,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       color="primary"
                       variant="contained"
                       disabled={!entries?.length || spinning}
-                      startIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
+                      endIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
                       onClick={spinHandler}
                     >
                       Spin
@@ -404,23 +404,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     onRemove={onRemoveWinnerDialog}
                   />
 
-                  {/* <Button
-                color="primary"
-                variant="outlined"
-                // className={cl.errorOutlined}
-                disabled={entries.length === 0}
-                startIcon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />}
-                // onClick={() => setClearDialogOpen(true)}
-                sx={{ ml: 2 }}
-              >
-                Test
-              </Button> */}
-
                   <Button
                     color="error"
                     variant="outlined"
                     disabled={!entries?.length}
-                    startIcon={<HiTrash />}
+                    endIcon={<HiTrash />}
                     onClick={() => setClearDialogOpen(true)}
                     sx={{ ml: 2 }}
                   >
