@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { Alert, Box, Collapse, SvgIcon, Typography } from "@mui/material"
@@ -7,6 +7,7 @@ import { LoadingButton, InputField, PasswordField } from "../components"
 import { useRegisterMutation } from "../generated/graphql"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { LayoutNextPage } from "../components/layout"
+import { passwordStrength } from "../utils/passwordStrength"
 
 const RegisterPage: LayoutNextPage = () => {
   const [{ }, register] = useRegisterMutation()
@@ -42,6 +43,10 @@ const RegisterPage: LayoutNextPage = () => {
 
             if (password !== confirmPassword && password !== "" && confirmPassword !== "")
               errors.confirmPassword = "Passwords must match"
+
+            if (password && passwordStrength(password) <= 40) {
+              errors.password = "Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
+            }
 
             return errors
           }}
@@ -94,7 +99,7 @@ const RegisterPage: LayoutNextPage = () => {
             router.push("/")
 
           }}>
-          {({ isSubmitting }) => (
+          {({ isSubmitting, values }) => (
             <Form>
 
               {/* Error Alert */}
@@ -107,15 +112,19 @@ const RegisterPage: LayoutNextPage = () => {
                 </Alert>
               </Collapse>
 
-              <InputField name="username" variant="filled" label="Username" size="small" margin="normal" fullWidth />
+              <InputField name="username" label="Username" margin="normal" fullWidth />
 
-              <InputField name="displayname" variant="filled" label="Display name (optional)" size="small" margin="normal" fullWidth />
+              <InputField name="displayname" label="Display name (optional)" margin="normal" fullWidth />
 
               {/* width: calc(100% - 36px) */}
               {/* Password Strength Meter: transition width input::after, border-width: 6-8px, border-bottom-right-radius 0 if 100% width */}
-              <PasswordField name="password" label="Password" variant="filled" size="small" margin="normal" fullWidth />
+              <PasswordField name="password" label="Password" margin="normal" fullWidth
+                // TODO: passworStrength is called in every render, maybe useMemo?
+                strength={passwordStrength(values.password)}
+              // helperText="Min. length 8, a-z, A-Z, 0-9 and special characters"
+              />
 
-              <InputField name="confirmPassword" label="Confirm password" type="password" variant="filled" size="small" margin="normal" fullWidth />
+              <InputField name="confirmPassword" label="Confirm password" type="password" margin="normal" fullWidth />
 
               <p />
 
