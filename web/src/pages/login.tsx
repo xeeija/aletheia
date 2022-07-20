@@ -23,7 +23,7 @@ const LoginPage: LayoutNextPage = () => {
       </Head>
 
       <Box sx={{ width: 360, mx: "auto" }}>
-        <Typography variant="h6" >Login</Typography>
+        <Typography variant="h4" sx={{ mb: 1 }}>Login</Typography>
 
         <Formik
           // Idea: Add shake animation to each field when it displays an error
@@ -91,11 +91,10 @@ const LoginPage: LayoutNextPage = () => {
 
               <PasswordField name="password" label="Password" variant="filled" size="small" margin="normal" fullWidth />
 
-              <p />
-
               <LoadingButton type="submit" variant="contained" fullWidth
                 loading={isSubmitting} position="end"
                 endIcon={<SvgIcon component={TiArrowRight} />}
+                sx={{ mt: 2 }}
               >
                 Login
               </LoadingButton>

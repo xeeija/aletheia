@@ -43,9 +43,3 @@ export class FieldError {
   message: string = ""
 }
 
-// TODO remove
-@ObjectType()
-export class BaseResponse {
-  @Field(() => AppError, { nullable: true })
-  error?: AppError
-}

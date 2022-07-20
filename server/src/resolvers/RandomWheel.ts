@@ -276,7 +276,6 @@ export class RandomWheelResolver {
       }
     }
 
-    // TODO: generate slug in base 64 (custom)
     const tempSlug = `slug-${Date.now()}`
 
     try {
@@ -321,7 +320,6 @@ export class RandomWheelResolver {
 
   }
 
-  // FIX return type
   @Mutation(() => RandomWheelFull)
   async updateRandomWheel(
     @Ctx() { prisma, req, socketIo }: MyContext,

@@ -23,7 +23,7 @@ const RegisterPage: LayoutNextPage = () => {
       </Head>
 
       <Box sx={{ width: 360, mx: "auto" }}>
-        <Typography variant="h6" >Register</Typography>
+        <Typography variant="h4" sx={{ mb: 1 }}>Register</Typography>
 
         <Formik
           initialValues={{
@@ -126,11 +126,10 @@ const RegisterPage: LayoutNextPage = () => {
 
               <InputField name="confirmPassword" label="Confirm password" type="password" margin="normal" fullWidth />
 
-              <p />
-
               <LoadingButton type="submit" variant="contained" fullWidth
                 loading={isSubmitting} position="end"
                 endIcon={<SvgIcon component={TiArrowRight} />}
+                sx={{ mt: 2 }}
               >
                 Register
               </LoadingButton>
