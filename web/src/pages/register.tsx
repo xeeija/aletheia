@@ -8,10 +8,14 @@ import { useRegisterMutation } from "../generated/graphql"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { LayoutNextPage } from "../components/layout"
 import { passwordStrength } from "../utils/passwordStrength"
+import { useUsernameValidator } from "../hooks/useUsernameValidator"
 
 const RegisterPage: LayoutNextPage = () => {
   const [{ }, register] = useRegisterMutation()
   const router = useRouter()
+
+  // TODO: One useValidator hook with all (or almost/most common) validators?
+  const [validateUsername] = useUsernameValidator()
 
   const [generalError, setGeneralError] = useState<string | null>(null)
   const [showError, setShowError] = useState(false)
@@ -33,24 +37,17 @@ const RegisterPage: LayoutNextPage = () => {
             confirmPassword: "",
           }}
           validateOnChange={false}
+          validateOnBlur={false}
           validate={({ password, confirmPassword }) => {
 
             const errors: any = {}
 
-            // Make sure user confirms
-            if (confirmPassword === "" && password)
-              errors.confirmPassword = "Please confirm your password"
-
-            if (password !== confirmPassword && password !== "" && confirmPassword !== "")
+            if (password !== confirmPassword) // && password !== "" && confirmPassword !== "")
               errors.confirmPassword = "Passwords must match"
-
-            if (password && passwordStrength(password) <= 40) {
-              errors.password = "Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
-            }
 
             return errors
           }}
-          onSubmit={async (values, { setFieldError }) => {
+          onSubmit={async (values, { setFieldError, setFieldTouched }) => {
 
             // Reset error message (so same error shows again)
             setShowError(false)
@@ -90,6 +87,8 @@ const RegisterPage: LayoutNextPage = () => {
               // Reset password
               values.password = ""
               values.confirmPassword = ""
+              setFieldTouched("password", false)
+              setFieldTouched("confirmPassword", false)
 
               return
             }
@@ -112,19 +111,41 @@ const RegisterPage: LayoutNextPage = () => {
                 </Alert>
               </Collapse>
 
-              <InputField name="username" label="Username" margin="normal" fullWidth />
+              <InputField name="username" label="Username" margin="normal" fullWidth required icon
+                validate={validateUsername}
+              />
 
-              <InputField name="displayname" label="Display name (optional)" margin="normal" fullWidth />
+              <InputField name="displayname" label="Display name" margin="normal" fullWidth />
 
               {/* width: calc(100% - 36px) */}
               {/* Password Strength Meter: transition width input::after, border-width: 6-8px, border-bottom-right-radius 0 if 100% width */}
-              <PasswordField name="password" label="Password" margin="normal" fullWidth
+              <PasswordField name="password" label="Password" margin="normal" fullWidth required icon
                 // TODO: passworStrength is called in every render, maybe useMemo?
                 strength={passwordStrength(values.password)}
-              // helperText="Min. length 8, a-z, A-Z, 0-9 and special characters"
+                helperText="Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
+                validate={(value: string) => {
+                  if (!value) {
+                    return "Please enter a password"
+                  }
+
+                  if (passwordStrength(value) <= 40) {
+                    return "Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
+                  }
+
+                  return undefined
+                }}
               />
 
-              <InputField name="confirmPassword" label="Confirm password" type="password" margin="normal" fullWidth />
+              <InputField name="confirmPassword" label="Confirm password" type="password" margin="normal" fullWidth required
+                validate={(value) => {
+                  if (!value) {
+                    return "Please confirm your password"
+                  }
+                  // TODO: Fix (no context where the hook is initialized)
+                  // return matchField("password", value, "Passwords have to match")
+                  return undefined
+                }}
+              />
 
               <LoadingButton type="submit" variant="contained" fullWidth
                 loading={isSubmitting} position="end"
