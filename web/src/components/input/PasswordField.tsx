@@ -1,18 +1,21 @@
-import { IconButton, InputAdornment, TextFieldProps, useTheme } from "@mui/material"
+import { IconButton, InputAdornment, useTheme } from "@mui/material"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
-import { InputField } from "../components"
+import { InputField, InputFieldProps } from "../components"
 import { passwordStrengthColor } from "../../utils/passwordStrength"
+import { useFormikContext } from "formik"
 
-type Props = TextFieldProps & {
-  strength?: number
+type Props = InputFieldProps & {
+  strength?: number | ((value: any) => number)
 }
 
-// Add eye icon at the end to show/hide password
-export const PasswordField: FC<Props> = ({ strength, InputProps, ...props }) => {
+export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, ...props }) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const theme = useTheme()
+  const { values } = useFormikContext<any>()
+
+  const strength = typeof strengthInput === "number" ? strengthInput : strengthInput?.(values[props.name])
   const strengthColor = passwordStrengthColor(strength ?? 0)
 
   return (
@@ -54,7 +57,6 @@ export const PasswordField: FC<Props> = ({ strength, InputProps, ...props }) => 
         }),
         ...InputProps
       }}
-      name={props.name ?? ""}
       {...strength !== undefined && {
         color: strengthColor,
       }}
