@@ -198,4 +198,22 @@ export class UserResolver {
 
   }
 
+  // Actually could be a query, because it doesnt mutate anything,
+  // but queries can't easily be executed imperatively with urql 
+  @Mutation(() => Boolean)
+  async usernameExists(
+    @Ctx() { prisma }: MyContext,
+    @Arg("username") username: string,
+  ) {
+    const userExists = await prisma.user.count({
+      where: {
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
+      },
+    })
+
+    return userExists > 0
+  }
 }

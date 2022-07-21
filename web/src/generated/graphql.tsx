@@ -55,6 +55,7 @@ export type Mutation = {
   updateRandomWheel: RandomWheel;
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
   updateUser: UserResponse;
+  usernameExists: Scalars['Boolean'];
 };
 
 
@@ -121,6 +122,11 @@ export type MutationUpdateRandomWheelMembersArgs = {
 
 export type MutationUpdateUserArgs = {
   user: UserInput;
+};
+
+
+export type MutationUsernameExistsArgs = {
+  username: Scalars['String'];
 };
 
 export type Query = {
@@ -382,6 +388,13 @@ export type RandomWheelBySlugWinnersQueryVariables = Exact<{
 
 
 export type RandomWheelBySlugWinnersQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', winners: Array<{ __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> }> }> };
+
+export type UsernameExistsMutationVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type UsernameExistsMutation = { __typename?: 'Mutation', usernameExists: boolean };
 
 export const RandomWheelDetailsFragmentDoc = gql`
     fragment RandomWheelDetails on RandomWheel {
@@ -665,4 +678,13 @@ export const RandomWheelBySlugWinnersDocument = gql`
 
 export function useRandomWheelBySlugWinnersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugWinnersQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<RandomWheelBySlugWinnersQuery>({ query: RandomWheelBySlugWinnersDocument, ...options });
+};
+export const UsernameExistsDocument = gql`
+    mutation UsernameExists($username: String!) {
+  usernameExists(username: $username)
+}
+    `;
+
+export function useUsernameExistsMutation() {
+  return Urql.useMutation<UsernameExistsMutation, UsernameExistsMutationVariables>(UsernameExistsDocument);
 };

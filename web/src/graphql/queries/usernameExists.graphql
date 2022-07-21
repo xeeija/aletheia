@@ -1,0 +1,3 @@
+mutation UsernameExists($username: String!) {
+  usernameExists(username: $username)
+}
