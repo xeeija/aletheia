@@ -7,7 +7,7 @@ import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 
@@ -374,7 +374,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               </Dropdown>
 
               {wheel.editable && (
-                <EditWheelDialog open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
+                <CreateEditWheelDialog type="edit" open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
               )}
 
               {wheel.owner.id === user?.id && (

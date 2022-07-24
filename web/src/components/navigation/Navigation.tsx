@@ -121,7 +121,7 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
 
                   <Avatar alt={user.username}
                     // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
-                    src={`https://avatars.dicebear.com/api/big-smile/${user.displayname ?? user.username}.svg?flip=1`}
+                    src={`https://avatars.dicebear.com/api/big-smile/${user.displayname ?? user.username}.svg?flip=true`}
                     sx={{
                       width: 36, height: 36,
                       backgroundColor: "transparent",

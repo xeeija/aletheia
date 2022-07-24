@@ -2,14 +2,16 @@ import { FC, useRef } from "react"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { EditWheelForm } from "./EditWheelForm"
 import { FormikProps, FormikValues } from "formik"
+import { CreateWheelForm } from "./CreateWheelForm"
 
 interface Props {
   open: boolean
   onClose: () => void
-  slug: string
+  slug?: string
+  type: "create" | "edit"
 }
 
-export const EditWheelDialog: FC<Props> = ({ open, onClose, slug }) => {
+export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) => {
 
   const actionsRef = useRef(null)
   const formRef = useRef<FormikProps<FormikValues>>(null)
@@ -23,6 +25,11 @@ export const EditWheelDialog: FC<Props> = ({ open, onClose, slug }) => {
 
   // TODO: Dialog Provider
   // for dialogActionsRef, 
+
+  if (type === "edit" && !slug) {
+    console.error("Wheel dialog: slug is required when type is 'edit'")
+    return null
+  }
 
   return (
     <>
@@ -39,13 +46,22 @@ export const EditWheelDialog: FC<Props> = ({ open, onClose, slug }) => {
         }}
         aria-labelledby="edit-dialog-title"
         aria-describedby="edit-dialog-description">
-        <DialogTitle id="edit-dialog-title">Edit Random Wheel</DialogTitle>
+        <DialogTitle id="edit-dialog-title">
+          {type === "create" && "Create Random Wheel"}
+          {type === "edit" && "Edit Random Wheel"}
+        </DialogTitle>
         <DialogContent>
-          <EditWheelForm slug={slug} dialogActionsRef={actionsRef} formRef={formRef} />
+          {type === "edit" && slug &&
+            <EditWheelForm slug={slug} dialogActionsRef={actionsRef} formRef={formRef} />
+          }
+          {type === "create" &&
+            <CreateWheelForm dialogActionsRef={actionsRef} formRef={formRef} />
+          }
         </DialogContent>
         <DialogActions ref={actionsRef}>
           <Button color="secondary" variant="outlined" onClick={closeHandler}>
-            Close
+            {type === "create" && "Cancel"}
+            {type === "edit" && "Close"}
           </Button>
 
         </DialogActions>
