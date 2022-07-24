@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material"
 import { NextPage } from "next"
 import Head from "next/head"
 import Image from "next/image"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 
 interface Props { }
 
@@ -41,6 +42,7 @@ const NotFoundPage: NextPage<Props> = () => {
       </Box>
     </>
   )
-}
+
+NotFoundPage.getLayout = defaultLayout({ title: "Not Found" })
 
 export default NotFoundPage

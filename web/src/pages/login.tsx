@@ -1,7 +1,7 @@
 import React from "react"
 import Head from "next/head"
 import { Box, Typography } from "@mui/material"
-import { LayoutNextPage } from "../components/layout"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 import { LoginForm } from "../components/user/LoginForm"
 
 const LoginPage: LayoutNextPage = () => {
@@ -21,6 +21,7 @@ const LoginPage: LayoutNextPage = () => {
 
     </>
   )
-}
+
+LoginPage.getLayout = defaultLayout({ title: "Login" })
 
 export default LoginPage

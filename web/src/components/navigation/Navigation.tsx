@@ -10,7 +10,7 @@ import { useAuth } from "../../hooks"
 export interface NavigationProps {
   noAppbar?: boolean
   noPadding?: boolean
-  title?: ReactNode
+  navTitle?: ReactNode
 }
 
 const sidebarItems: LinkItem[] = [
@@ -36,7 +36,7 @@ const sidebarWidth = 240
 // [x] TODO: Burger Menu Button to expand sidebar from only icons to icons with text
 // TODO: Add "noAppBar" option and move AppBar here from MiniDrawer
 
-export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, title }) => {
+export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, navTitle }) => {
 
   const theme = useTheme()
 
@@ -88,11 +88,11 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
         <Navbar marginLeft={sidebarWidth} open={sidebarOpen} borderRadius={navbarBorderRadius}>
 
           {/* Title */}
-          {typeof title === "string" || title === undefined ?
+          {typeof navTitle === "string" || navTitle === undefined ?
             <Typography variant="h5" noWrap sx={{ flexGrow: 1 }}>
-              {title}
+              {navTitle}
             </Typography> :
-            title
+            navTitle
           }
 
           {user ? (

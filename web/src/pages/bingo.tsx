@@ -97,6 +97,6 @@ const BingoPage: LayoutNextPage = () => {
   )
 }
 
-BingoPage.getLayout = defaultLayout({ title: "Bingo" })
+BingoPage.getLayout = defaultLayout({ title: "Bingo", navTitle: "Bingo" })
 
 export default BingoPage

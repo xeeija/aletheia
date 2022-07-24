@@ -50,4 +50,4 @@ const RandomWheelEditPage: LayoutNextPage = () => {
 
 export default RandomWheelEditPage
 
-RandomWheelEditPage.getLayout = defaultLayout({ title: "Random Wheel" })
+RandomWheelEditPage.getLayout = defaultLayout({ navTitle: "Random Wheel" })

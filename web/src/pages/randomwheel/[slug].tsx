@@ -6,7 +6,7 @@ import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } fr
 import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
-import { defaultLayout, LayoutNextPage } from "../../components/layout";
+import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, EditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
@@ -520,6 +520,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   )
 }
 
-export default RandomWheelDetailPage
+RandomWheelDetailPage.getLayout = defaultLayout({ navTitle: "Random Wheel" })
 
-RandomWheelDetailPage.getLayout = defaultLayout({ title: "Random Wheel" })
+export default RandomWheelDetailPage

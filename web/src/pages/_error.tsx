@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Box, Typography } from "@mui/material"
 import { NextPage } from "next"
 import NotFoundPage from "./404"
+import { getTitle } from "../components/layout"
 
 interface ErrorConfig {
   title: string
@@ -35,7 +36,7 @@ const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
   return (
     <>
       <Head>
-        <title>{statusMessage} &bull; Aletheia</title>
+        <title>{getTitle(statusMessage)}</title>
       </Head>
       <Box sx={{
         display: "flex",

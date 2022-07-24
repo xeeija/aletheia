@@ -71,6 +71,6 @@ const SettingsPage: LayoutNextPage = () => {
   )
 }
 
-SettingsPage.getLayout = defaultLayout({ title: "Settings" })
+SettingsPage.getLayout = defaultLayout({ title: "Settings", navTitle: "Settings" })
 
 export default SettingsPage

@@ -70,6 +70,6 @@ const RandomWheelPage: LayoutNextPage = () => {
   )
 }
 
-RandomWheelPage.getLayout = defaultLayout({ title: "Random Wheel" })
+RandomWheelPage.getLayout = defaultLayout({ title: "Random Wheel", navTitle: "Random Wheel" })
 
 export default RandomWheelPage

@@ -26,6 +26,6 @@ const IndexPage: LayoutNextPage = () => {
   )
 }
 
-IndexPage.getLayout = defaultLayout({ title: "Dashboard" })
+IndexPage.getLayout = defaultLayout({ title: "Dashboard", navTitle: "Dashboard" })
 
 export default IndexPage
