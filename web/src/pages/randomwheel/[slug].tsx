@@ -247,11 +247,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       </Head>
 
       {wheel && (
-        <Box sx={{
-          maxWidth: "85rem",
-          mx: "auto",
-        }}>
-
+        <>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
             <Typography variant="h2" sx={{}}>
@@ -516,12 +512,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             </Box>
           </Box>
 
-        </Box>
+        </>
       )}
     </>
   )
 }
 
-RandomWheelDetailPage.getLayout = defaultLayout({ navTitle: "Random Wheel" })
+RandomWheelDetailPage.getLayout = defaultLayout({ navTitle: "Random Wheel", fullWidth: false })
 
 export default RandomWheelDetailPage

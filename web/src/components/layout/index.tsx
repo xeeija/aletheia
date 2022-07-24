@@ -1,6 +1,7 @@
 import { NextPage } from "next"
 import Head from "next/head"
 import { ReactElement, ReactNode } from "react"
+import { Box } from "@mui/material"
 import { NavigationProps, Navigation } from "../components"
 
 export type LayoutNextPage<P = {}, IP = P> = NextPage<P, IP> & {
@@ -12,19 +13,28 @@ export const getTitle = (title?: string) => `${title ? `${title} - ` : ""}Alethe
 
 type Props = NavigationProps & {
   title?: string
+  fullWidth?: boolean
 }
 
 // Helper to pass props to Navigation
 // eslint-disable-next-line react/display-name
 export const defaultLayout = (props?: Props) => (page: ReactElement) => {
-  const { title, ...navProps } = props ?? {}
+  const { title, fullWidth = true, ...navProps } = props ?? {}
   return (
     <>
       <Head>
-        {/* <Title>{title}</Title> */}
         <title>{getTitle(title)}</title>
       </Head>
-      <Navigation {...navProps}>{page}</Navigation>
+      <Navigation {...navProps}>
+        <Box sx={{
+          ...(!fullWidth && {
+            maxWidth: "85rem",
+            mx: "auto",
+          })
+        }}>
+          {page}
+        </Box>
+      </Navigation>
     </>
   )
 }
