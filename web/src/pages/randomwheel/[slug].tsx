@@ -238,10 +238,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     )
   }
 
+  const title = wheel.name || `Wheel #${slug}`
+
   return (
     <>
       <Head>
-        <title>Random Wheel | Aletheia</title>
+        <title>{getTitle(title)}</title>
       </Head>
 
       {wheel && (
@@ -253,7 +255,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
             <Typography variant="h2" sx={{}}>
-              {wheel.name || `Wheel #${slug}`}
+              {title}
             </Typography>
 
             <Box>

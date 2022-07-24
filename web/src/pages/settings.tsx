@@ -4,7 +4,6 @@ import { Form, Formik } from "formik"
 import { LoadingButton, InputField } from "../components"
 import { useMeQuery, useUpdateUserMutation } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
-import Head from "next/head"
 
 const SettingsPage: LayoutNextPage = () => {
 
@@ -13,10 +12,6 @@ const SettingsPage: LayoutNextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Settings | Aletheia</title>
-      </Head>
-
       <Typography variant="h3" mb={2}>Profile Settings</Typography>
 
       {data?.me && (
@@ -25,7 +20,7 @@ const SettingsPage: LayoutNextPage = () => {
             username: data?.me?.username ?? "",
             displayname: data?.me?.displayname ?? "",
           }}
-          onSubmit={async (values, { setSubmitting }) => {
+          onSubmit={async (values) => {
             const response = await updateUser({
               user: {
                 username: values.username,

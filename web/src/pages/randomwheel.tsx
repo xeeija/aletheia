@@ -1,8 +1,7 @@
 import { Box, Button, Typography } from "@mui/material"
-import Head from "next/head"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { CreateWheelForm } from "../components/randomWheel"
-import { RandomWheel, AppError, useMyRandomWheelsQuery, RandomWheelDetailsFragment } from "../generated/graphql"
+import { useMyRandomWheelsQuery, RandomWheelDetailsFragment } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
 import Link from "next/link"
 
@@ -13,28 +12,8 @@ const RandomWheelPage: LayoutNextPage = () => {
   const [wheels, setWheels] = useState<RandomWheelDetailsFragment[] | undefined>(data?.myRandomWheels)
   // const [error, setError] = useState<AppError | null | undefined>(undefined)
 
-  useEffect(() => {
-    setWheels(data?.myRandomWheels)
-    //   switch (data?.myRandomWheels.__typename) {
-    //     case "RandomWheelList":
-    //       setWheels(data?.myRandomWheels.items)
-    //       setError(null)
-    //       break
-
-    //     case "AppError":
-    //       setError(data?.myRandomWheels)
-    //       break
-    //   }
-  }, [data?.myRandomWheels])
-
-  // const wheels = data?.myRandomWheels
-
   return (
     <>
-      <Head>
-        <title>Random Wheel | Aletheia</title>
-      </Head>
-
       <Typography variant="h3">Create wheel</Typography>
       <Box sx={{ pb: 2 }}>
         <CreateWheelForm wheelState={[wheels, setWheels]} />
