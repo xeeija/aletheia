@@ -1,4 +1,4 @@
-import { Badge, Box, Button, IconButton, InputAdornment, List, Paper, SvgIcon, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
+import { Badge, Box, Button, IconButton, InputAdornment, List, Paper, Skeleton, SvgIcon, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
+import NotFoundPage from "../404";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
 
@@ -18,7 +19,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const { user } = useAuth()
 
-  const [{ data }, fetchWheel] = useRandomWheelBySlugQuery({
+  const [{ data, fetching }, fetchWheel] = useRandomWheelBySlugQuery({
     variables: {
       slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
     }
@@ -218,11 +219,27 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     }
   }, [wheel?.id, wheel?.spinDuration, fetchEntries, fetchWinners, fetchWheel])
 
+  if (fetching || !slug) {
+    return <Box>
+      <Typography variant="h1" width="42%"><Skeleton /></Typography>
+      <Typography width="32%"><Skeleton /></Typography>
+      <Box sx={{
+        mt: 2,
+        display: "grid",
+        gap: "1em 1em",
+        gridTemplateColumns: "2fr 1fr",
+        gridTemplateRows: "min-content 1fr",
+      }}>
+        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ borderRadius: 1 }} />
+        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ borderRadius: 1 }} />
+      </Box>
+
+    </Box>
+  }
+
   if (!wheel) {
     // TODO: Proper error pages
-    return (
-      <Typography variant="h3">404 Not found</Typography>
-    )
+    return <NotFoundPage />
   }
 
   // TODO: Use members, server-side
@@ -233,9 +250,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
     || wheel.members.some(member => member.userId === user?.id)
 
   if (!viewable) {
-    return (
-      <Typography variant="h3">404 Not Found</Typography>
-    )
+    return <NotFoundPage />
   }
 
   const title = wheel.name || `Wheel #${slug}`
