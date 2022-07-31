@@ -48,7 +48,7 @@ const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
         // minHeight: "50vh",
       }}>
 
-        <Image src={error.imageSrc} alt="" width={300} height={240} />
+        <Image src={error.imageSrc} alt="" width={300} height={240} draggable="false" />
 
         <Box>
           <Typography variant="h4" className="muted" >

@@ -20,7 +20,7 @@ export const WheelFormFields: FC<Props> = () => {
 
       <Grid item xs={12}>
         <RadioGroupField name="accessType" label="Access type" row options={[
-          { value: "PRIVATE", label: "Private" },
+          { value: "PRIVATE", label: "Private", color: "secondary" },
           { value: "PUBLIC", label: "Public", color: "success" },
         ]} />
       </Grid>

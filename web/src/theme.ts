@@ -151,6 +151,13 @@ const componentOverrides: ThemeOptions = {
         }
       }
     },
+    MuiSkeleton: {
+      styleOverrides: {
+        rectangular: {
+          borderRadius: baseTheme.shape.borderRadius,
+        }
+      }
+    },
   },
 }
 

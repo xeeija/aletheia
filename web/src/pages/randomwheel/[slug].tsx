@@ -222,7 +222,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   if (fetching || !slug) {
     return <Box>
       <Typography variant="h1" width="42%"><Skeleton /></Typography>
-      <Typography width="32%"><Skeleton /></Typography>
+      <Typography width="32%"><Skeleton sx={{ animationDelay: 50 }} /></Typography>
       <Box sx={{
         mt: 2,
         display: "grid",
@@ -230,8 +230,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         gridTemplateColumns: "2fr 1fr",
         gridTemplateRows: "min-content 1fr",
       }}>
-        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ borderRadius: 1 }} />
-        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ borderRadius: 1 }} />
+        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
+        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
       </Box>
 
     </Box>
