@@ -1,6 +1,11 @@
-import { FC } from "react"
-import { Mark, Grid } from "@mui/material"
+import { FC, ReactNode } from "react"
+import { Grid } from "@mui/material"
 import { InputField, RadioGroupField, SliderField } from "../components"
+
+interface Mark {
+  value: number
+  label?: ReactNode
+}
 
 const durationScale = (x: number) => x / 1000
 const durationLabelFormat = (x: number) => `${x}s`
