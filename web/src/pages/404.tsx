@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material"
+import Head from "next/head"
 import Image from "next/image"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
+import { defaultLayout, getTitle, LayoutNextPage } from "../components/layout"
 
 const NotFoundPage: LayoutNextPage = () => (
   <Box sx={{
@@ -12,6 +13,10 @@ const NotFoundPage: LayoutNextPage = () => (
     px: 2,
     // minHeight: "50vh",
   }}>
+
+    <Head>
+      <title>{getTitle("Not Found")}</title>
+    </Head>
 
     <Image src="/img/mathematics.svg" alt="" width={300} height={240} />
 
