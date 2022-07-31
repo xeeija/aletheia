@@ -8,6 +8,9 @@ fragment RandomWheelDetails on RandomWheel {
   fadeDuration
   accessType
   editable
+  _count {
+    entries
+  }
 }
 
 fragment RandomWheelEntry on RandomWheelEntry {

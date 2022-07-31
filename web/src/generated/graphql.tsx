@@ -12,7 +12,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
   DateTime: any;
 };
 
@@ -251,7 +250,7 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean };
+export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string };
 
@@ -283,7 +282,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean } };
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
 
 export type DeleteRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
@@ -334,7 +333,7 @@ export type UpdateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean } };
+export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
 
 export type UpdateRandomWheelMembersMutationVariables = Exact<{
   randomWheelId: Scalars['String'];
@@ -359,14 +358,14 @@ export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', 
 export type MyRandomWheelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean }> };
+export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
 
 
-export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }> }> };
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, owner: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -407,6 +406,9 @@ export const RandomWheelDetailsFragmentDoc = gql`
   fadeDuration
   accessType
   editable
+  _count {
+    entries
+  }
 }
     `;
 export const RandomWheelEntryFragmentDoc = gql`
@@ -606,8 +608,8 @@ export const MeDocument = gql`
 }
     ${NormalUserFragmentDoc}`;
 
-export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
+  return Urql.useQuery<MeQuery, MeQueryVariables>({ query: MeDocument, ...options });
 };
 export const MyRandomWheelsDocument = gql`
     query MyRandomWheels {
@@ -617,8 +619,8 @@ export const MyRandomWheelsDocument = gql`
 }
     ${RandomWheelDetailsFragmentDoc}`;
 
-export function useMyRandomWheelsQuery(options: Omit<Urql.UseQueryArgs<MyRandomWheelsQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<MyRandomWheelsQuery>({ query: MyRandomWheelsDocument, ...options });
+export function useMyRandomWheelsQuery(options?: Omit<Urql.UseQueryArgs<MyRandomWheelsQueryVariables>, 'query'>) {
+  return Urql.useQuery<MyRandomWheelsQuery, MyRandomWheelsQueryVariables>({ query: MyRandomWheelsDocument, ...options });
 };
 export const RandomWheelBySlugDocument = gql`
     query RandomWheelBySlug($slug: String!) {
@@ -636,8 +638,8 @@ export const RandomWheelBySlugDocument = gql`
     ${RandomWheelDetailsFragmentDoc}
 ${UserNameFragmentDoc}`;
 
-export function useRandomWheelBySlugQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<RandomWheelBySlugQuery>({ query: RandomWheelBySlugDocument, ...options });
+export function useRandomWheelBySlugQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugQueryVariables>, 'query'>) {
+  return Urql.useQuery<RandomWheelBySlugQuery, RandomWheelBySlugQueryVariables>({ query: RandomWheelBySlugDocument, ...options });
 };
 export const RandomWheelBySlugEntriesDocument = gql`
     query RandomWheelBySlugEntries($slug: String!) {
@@ -649,8 +651,8 @@ export const RandomWheelBySlugEntriesDocument = gql`
 }
     ${RandomWheelEntryFragmentDoc}`;
 
-export function useRandomWheelBySlugEntriesQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugEntriesQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<RandomWheelBySlugEntriesQuery>({ query: RandomWheelBySlugEntriesDocument, ...options });
+export function useRandomWheelBySlugEntriesQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugEntriesQueryVariables>, 'query'>) {
+  return Urql.useQuery<RandomWheelBySlugEntriesQuery, RandomWheelBySlugEntriesQueryVariables>({ query: RandomWheelBySlugEntriesDocument, ...options });
 };
 export const RandomWheelBySlugMembersDocument = gql`
     query RandomWheelBySlugMembers($slug: String!) {
@@ -663,8 +665,8 @@ export const RandomWheelBySlugMembersDocument = gql`
 }
     ${RandomWheelMemberFragmentDoc}`;
 
-export function useRandomWheelBySlugMembersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugMembersQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<RandomWheelBySlugMembersQuery>({ query: RandomWheelBySlugMembersDocument, ...options });
+export function useRandomWheelBySlugMembersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugMembersQueryVariables>, 'query'>) {
+  return Urql.useQuery<RandomWheelBySlugMembersQuery, RandomWheelBySlugMembersQueryVariables>({ query: RandomWheelBySlugMembersDocument, ...options });
 };
 export const RandomWheelBySlugWinnersDocument = gql`
     query RandomWheelBySlugWinners($slug: String!) {
@@ -676,8 +678,8 @@ export const RandomWheelBySlugWinnersDocument = gql`
 }
     ${RandomWheelWinnerFragmentDoc}`;
 
-export function useRandomWheelBySlugWinnersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugWinnersQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<RandomWheelBySlugWinnersQuery>({ query: RandomWheelBySlugWinnersDocument, ...options });
+export function useRandomWheelBySlugWinnersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugWinnersQueryVariables>, 'query'>) {
+  return Urql.useQuery<RandomWheelBySlugWinnersQuery, RandomWheelBySlugWinnersQueryVariables>({ query: RandomWheelBySlugWinnersDocument, ...options });
 };
 export const UsernameExistsDocument = gql`
     mutation UsernameExists($username: String!) {
