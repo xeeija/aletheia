@@ -16,3 +16,6 @@ export * from "./input/RadioGroupField"
 export * from "./navigation/Navbar"
 export * from "./navigation/Navigation"
 export * from "./navigation/Sidebar"
+
+export * from "./user/UserMenu"
+export * from "./user/UserAvatar"
