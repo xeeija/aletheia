@@ -6,9 +6,11 @@ interface Props {
   description: ReactNode
   onClose?: () => void //(event: {}, reason: "backdropClick" | "escapeKeyDown" | "closeButtonClick") => void
   onRemove?: () => void
+  hideClose?: boolean
+  hideRemove?: boolean
 }
 
-export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose = () => { }, onRemove = () => { } }) => {
+export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose = () => { }, onRemove = () => { }, hideClose, hideRemove }) => {
   const [open, setOpen] = openState
 
   return (
@@ -28,19 +30,23 @@ export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose 
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="secondary" onClick={() => {
-          setOpen(false)
-          onClose()
-        }}>
-          Close
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => {
-          setOpen(false)
-          onClose()
-          onRemove()
-        }}>
-          Remove
-        </Button>
+        {!hideClose && (
+          <Button variant="outlined" color="secondary" onClick={() => {
+            setOpen(false)
+            onClose()
+          }}>
+            Close
+          </Button>
+        )}
+        {!hideRemove && (
+          <Button variant="contained" color="primary" onClick={() => {
+            setOpen(false)
+            onClose()
+            onRemove()
+          }}>
+            Remove
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   )

@@ -265,7 +265,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         <>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
-            <Typography variant="h2" sx={{}}>
+            <Typography variant="h2">
               {title}
             </Typography>
 
@@ -404,7 +404,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
           </Box>
 
-          <Typography variant="body2" sx={{ mt: 0.5, opacity: 0.7 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             {`von ${wheel.owner.displayname} • ${new Date(wheel.createdAt).toLocaleString()}`}
           </Typography>
 
