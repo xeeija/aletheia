@@ -7,7 +7,7 @@ import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
 import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 import NotFoundPage from "../404";
@@ -265,9 +265,13 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         <>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
-            <Typography variant="h2">
-              {title}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "baseline", gap: 1.5 }}>
+              <Typography variant="h2">
+                {title}
+              </Typography>
+
+              <AccessTypeBadge type={wheel.accessType} />
+            </Box>
 
             <Box>
 

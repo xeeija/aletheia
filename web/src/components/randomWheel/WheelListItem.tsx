@@ -1,9 +1,9 @@
 import { FC } from "react"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
-import { HiGlobe, HiLockClosed } from "react-icons/hi"
 import { TiThList } from "react-icons/ti"
 import { RandomWheelDetailsFragment } from "../../generated/graphql"
 import Link from "next/link"
+import { AccessTypeBadge } from "./AccessTypeBadge"
 
 interface Props {
   wheel: RandomWheelDetailsFragment
@@ -23,18 +23,7 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
             </Typography>
 
             <Box sx={{ display: "flex", gap: 0.5, mt: 1 }}>
-              <Chip
-                label={wheel.accessType.toLowerCase()}
-                component="div"
-                size="small"
-                variant="outlined"
-                sx={{ textTransform: "capitalize", opacity: 1, fontWeight: 500 }}
-                color={wheel.accessType === "PRIVATE" ? "secondary" : "success"}
-                icon={<SvgIcon
-                  component={wheel.accessType === "PRIVATE" ? HiLockClosed : HiGlobe}
-                  viewBox="0 0 20 20"
-                />}
-              />
+              <AccessTypeBadge type={wheel.accessType} />
 
               <Chip
                 component="div"
