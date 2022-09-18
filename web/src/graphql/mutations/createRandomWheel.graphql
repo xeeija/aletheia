@@ -1,15 +1,10 @@
-mutation CreateRandomWheel($name: String) {
-  createRandomWheel(name: $name) {
-  	... on RandomWheel {
-			...RandomWheelDetails
- 	 }
-  	# ... on AppError {
-    #   errorMessage
-    #   errorCode
-  	# 	fieldErrors {
-    # 		field
-    # 		message
-  	# 	}
-		# }
+mutation CreateRandomWheel($name: String, $accessType: String, $spinDuration: Int, $fadeDuration: Int) {
+  createRandomWheel(
+    name: $name, 
+    accessType: $accessType, 
+    spinDuration: $spinDuration, 
+    fadeDuration: $fadeDuration
+  ) {
+		...RandomWheelDetails
   }
 }

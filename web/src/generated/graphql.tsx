@@ -70,7 +70,10 @@ export type MutationClearRandomWheelArgs = {
 
 
 export type MutationCreateRandomWheelArgs = {
+  accessType?: Maybe<Scalars['String']>;
+  fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
+  spinDuration?: Maybe<Scalars['Int']>;
 };
 
 
@@ -279,6 +282,9 @@ export type ClearRandomWheelMutation = { __typename?: 'Mutation', clearRandomWhe
 
 export type CreateRandomWheelMutationVariables = Exact<{
   name?: Maybe<Scalars['String']>;
+  accessType?: Maybe<Scalars['String']>;
+  spinDuration?: Maybe<Scalars['Int']>;
+  fadeDuration?: Maybe<Scalars['Int']>;
 }>;
 
 
@@ -469,11 +475,14 @@ export function useClearRandomWheelMutation() {
   return Urql.useMutation<ClearRandomWheelMutation, ClearRandomWheelMutationVariables>(ClearRandomWheelDocument);
 };
 export const CreateRandomWheelDocument = gql`
-    mutation CreateRandomWheel($name: String) {
-  createRandomWheel(name: $name) {
-    ... on RandomWheel {
-      ...RandomWheelDetails
-    }
+    mutation CreateRandomWheel($name: String, $accessType: String, $spinDuration: Int, $fadeDuration: Int) {
+  createRandomWheel(
+    name: $name
+    accessType: $accessType
+    spinDuration: $spinDuration
+    fadeDuration: $fadeDuration
+  ) {
+    ...RandomWheelDetails
   }
 }
     ${RandomWheelDetailsFragmentDoc}`;

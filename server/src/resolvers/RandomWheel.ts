@@ -267,7 +267,10 @@ export class RandomWheelResolver {
   @Mutation(() => RandomWheelFull)
   async createRandomWheel(
     @Ctx() { req, prisma }: MyContext,
-    @Arg("name", { nullable: true }) name?: string
+    @Arg("name", { nullable: true }) name?: string,
+    @Arg("accessType", { nullable: true }) accessType?: string,
+    @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
+    @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
   ): Promise<typeof RandomWheelResponse> {
     if (!req.session.userId) {
       return {
@@ -283,7 +286,10 @@ export class RandomWheelResolver {
         data: {
           slug: tempSlug,
           ownerId: req.session.userId,
-          name: name
+          name: name,
+          accessType,
+          spinDuration,
+          fadeDuration
         }
       })
 
