@@ -162,6 +162,12 @@ export class RandomWheelResolver {
       return true
     }
 
+    // if session.userId is undefined in the prisma query
+    // it is treated as not beeing in the query, so any user with edit is found - fix with this if
+    if (req.session.userId === undefined) {
+      return false
+    }
+
     const member = await prisma.randomWheelMember.findFirst({
       where: {
         randomWheelId: randomWheel.id,

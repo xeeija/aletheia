@@ -54,7 +54,7 @@ export const UserMenu: FC<Props> = () => {
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      {fetchingUser &&
+      {fetchingUser && !user &&
         <>
           <Typography width={64}><Skeleton /></Typography>
           <Skeleton variant="circular" height={36} width={36} />
