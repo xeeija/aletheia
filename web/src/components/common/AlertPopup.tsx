@@ -29,8 +29,8 @@ export const AlertPopup: FC<Props> = ({ severity, hideDuration = 6000, messageSt
     }
   }, [message])
 
-  const onClose: (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => void =
-    (ev, reason) => {
+  const onClose: (event: Event | SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => void =
+    (_ev, reason) => {
       if (reason === "clickaway") {
         return
       }

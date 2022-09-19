@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { Box, Typography } from "@mui/material";
 import { defaultLayout, LayoutNextPage } from "../../../components/layout";
 import { useRandomWheelBySlugQuery } from "../../../generated/graphql";
-import { useAuth } from "../../../hooks";
 import { EditWheelForm } from "../../../components/randomWheel";
 
 const RandomWheelEditPage: LayoutNextPage = () => {
@@ -11,7 +10,7 @@ const RandomWheelEditPage: LayoutNextPage = () => {
   const router = useRouter()
   const { slug } = router.query
 
-  const { user } = useAuth()
+  // const { user } = useAuth()
 
   const [{ data }] = useRandomWheelBySlugQuery({
     variables: {

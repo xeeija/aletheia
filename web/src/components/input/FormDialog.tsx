@@ -10,7 +10,8 @@ interface Props {
   // actionsRef?: RefObject<FormikProps<FormikValues>>
 }
 
-export const FormDialog: FC<Props> = ({ open, onClose, id, form, title, children }) => {
+// onClose, id, form, title, children
+export const FormDialog: FC<Props> = ({ open }) => {
   return (
     <Dialog
       keepMounted

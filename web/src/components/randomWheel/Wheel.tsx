@@ -14,7 +14,7 @@ interface Props {
   // wheelRef?: React.RefObject<SVGSVGElement>
 }
 
-export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], fade, rotation = 0, spinning, spinDuration = 6000 }) => {
+export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation = 0, spinning, spinDuration = 6000 }) => {
 
   const theme = useTheme()
 
