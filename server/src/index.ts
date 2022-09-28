@@ -76,6 +76,7 @@ const main = async () => {
       validate: false
     }),
     context: ({ req, res }): MyContext => ({ req, res, prisma, socketIo }),
+    cache: "bounded",
     plugins: [
       process.env.NODE_ENV === "production"
         ? ApolloServerPluginLandingPageDisabled()
