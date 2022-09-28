@@ -431,8 +431,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Wheel
                   diameter={677}
                   entries={entries}
-                  rotation={wheel.editable ? (wheelRotation || wheel.rotation) : 0}
-                  spinning={spinning && wheel.editable}
+                  // rotation={wheel.editable ? (wheelRotation || wheel.rotation) : 0}
+                  // spinning={spinning && wheel.editable}
+                  rotation={wheelRotation || wheel.rotation}
+                  spinning={spinning}
                   spinDuration={wheel.spinDuration}
                 />
 
