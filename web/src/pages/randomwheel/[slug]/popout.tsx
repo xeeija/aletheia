@@ -37,7 +37,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
   // socket
   useEffect(() => {
     if (!wheel?.id) {
-      console.log("no wheel")
+      // console.log("no wheel")
       return
     }
 
@@ -46,16 +46,16 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     })
 
     socket.on("connect", () => {
-      console.log("connect")
+      // console.log("connect")
       socket.emit("wheel:join", wheel.id)
-      console.log(`join ${wheel.id.substring(0, 6)}`)
+      // console.log(`join ${wheel.id.substring(0, 6)}`)
     })
 
-    socket.on("wheel:spin", ({ rotation, winner, entry }) => {
-      console.log("wheel:spin", { rotation, winner, entry })
+    socket.on("wheel:spin", ({ rotation }) => {
+      // console.log("wheel:spin", { rotation, winner, entry })
 
       const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
-      console.log(revolutions)
+      // console.log(revolutions)
 
       setSpinning(true)
       setWheelRotation(rotation + (360 * revolutions))
@@ -68,7 +68,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     })
 
     socket.on("wheel:entries", () => {
-      console.log("wheel:entries")
+      // console.log("wheel:entries")
 
       // TODO: Refactor to update the "local" entries with entry from socket?
       // Depending on type, add/delete/clear
@@ -78,7 +78,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     })
 
     socket.on("wheel:update", () => {
-      console.log("wheel")
+      // console.log("wheel")
 
       fetchWheel({
         requestPolicy: "cache-and-network",
@@ -88,7 +88,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     return () => {
       socket.off("wheel:spin")
       socket.disconnect()
-      console.log(`disconnect ${wheel.id.substring(0, 6)}`)
+      // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
   }, [wheel?.id, wheel?.spinDuration, fetchEntries, fetchWheel])
 

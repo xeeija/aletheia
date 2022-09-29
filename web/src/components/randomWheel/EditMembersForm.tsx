@@ -66,8 +66,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) 
         const mappedMembers = Object.values(values.members).map(({ id, displayname, ...member }) => member)
         const members = values.draft ? [...mappedMembers, values.draft] : mappedMembers
 
-        console.log(members)
-
         const { error } = await updateMembers({
           randomWheelId: wheel.id,
           members: members,
@@ -131,7 +129,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) 
                           onClick={() => {
                             // setDeletedMembers([...deletedMembers, member.id])
                             setFieldValue(`members.${key}.delete`, true)
-                            console.log("delete", key)
                           }}
                           role="button"
                           aria-label={`Delete member '${member.username}'`}

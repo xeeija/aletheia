@@ -431,9 +431,7 @@ export class RandomWheelResolver {
     }
 
     // try {
-    const deleted = await prisma.randomWheel.delete({ where: { id: id } })
-
-    console.log(deleted)
+    await prisma.randomWheel.delete({ where: { id: id } })
 
     return null
     // }

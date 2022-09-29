@@ -92,7 +92,6 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
             const adjustTextBaseline = logistic({ x: entries.length, max: 1.2, min: 0.4, a: 0.9, b: 30, inverse: true })
 
             const largeArcFlag = (d.endAngle * entry.weight) - d.startAngle <= 180 ? 0 : 1
-            console.log("arc", largeArcFlag)
 
             const angleOffset = segmentPos[i] * d.endAngle
 

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme, Checkbox, TextField, Box, Tooltip } from "@mui/material";
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material";
 import { HiTrash } from "react-icons/hi";
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation, useUpdateRandomWheelEntryMutation } from "../../generated/graphql";
 import { AlertPopup, InputField } from "../components";
@@ -126,9 +126,9 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
                   onSubmit={({ weight }, { resetForm }) => {
 
                     // TODO: Replace with proper number validation (pattern or so)
-                    if (parseInt(`${weight}`))
-
-                      console.log("submit", weight)
+                    if (!Number.isInteger(weight)) {
+                      resetForm()
+                    }
 
                     updateEntry({
                       id: entry.id,
@@ -151,15 +151,13 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
                           },
                           min: 1,
                           onKeyPress: (ev) => {
-                            console.log("key", ev.key, ev.code)
-
                             if (!"012345679".includes(ev.key)) {
                               ev.preventDefault()
                             }
                           }
                         }}
-                        onBlur={(ev) => {
-                          if (dirty && ev.target.value) {
+                        onBlur={() => {
+                          if (dirty) {
                             submitForm()
                           }
                         }}
