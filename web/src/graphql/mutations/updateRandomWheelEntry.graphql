@@ -1,0 +1,5 @@
+mutation UpdateRandomWheelEntry($id: String!, $entry: RandomWheelEntryInput!) {
+  updateRandomWheelEntry(id: $id, entry: $entry) {
+    ...RandomWheelEntry
+  }
+}

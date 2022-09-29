@@ -16,6 +16,7 @@ fragment RandomWheelDetails on RandomWheel {
 fragment RandomWheelEntry on RandomWheelEntry {
   id
   name
+  weight
 }
 
 fragment RandomWheelWinner on RandomWheelWinner {

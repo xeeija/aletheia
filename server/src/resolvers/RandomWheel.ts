@@ -72,12 +72,23 @@ class RandomWheelMemberInput {
   delete?: boolean
 }
 
+@InputType()
+class RandomWheelEntryInput {
+  @Field(() => String, { nullable: true })
+  name?: string
+
+  @Field(() => Int, { nullable: true })
+  weight?: number
+}
+
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
   const fields = resolveInfo?.fieldsByTypeName.RandomWheel ?? {}
 
   const include: Prisma.RandomWheelInclude = {
-    entries: "entries" in fields,
+    entries: "entries" in fields && {
+      orderBy: { createdAt: "asc" }
+    },
     winners: "winners" in fields && {
       orderBy: { createdAt: "desc" }
     },
@@ -443,7 +454,9 @@ export class RandomWheelResolver {
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
       include: {
-        entries: true,
+        entries: {
+          orderBy: { createdAt: "asc" }
+        },
       }
     })
 
@@ -451,7 +464,18 @@ export class RandomWheelResolver {
       throw new GraphQLError("Wheel entries may not be empty")
     }
 
-    const winnerIndex = await randomNumber(0, wheel.entries.length)
+    const totalWeight = wheel.entries.reduce((acc, entry) => acc + entry.weight || 1, 0)
+
+    const winnerNumber = await randomNumber(0, totalWeight)
+    let winnerAcc = 0
+    const winnerIndex = wheel.entries.findIndex(((entry) => {
+      if (winnerNumber >= winnerAcc && winnerNumber < (winnerAcc + entry.weight)) {
+        return true
+      }
+      winnerAcc += entry.weight
+      return false
+    }))
+
     const winnerEntry = wheel.entries[winnerIndex]
 
     const winner = await prisma.randomWheelWinner.create({
@@ -466,10 +490,10 @@ export class RandomWheelResolver {
     // const rotateDuration = Math.round(wheel.spinDuration / 1000)
     // const rotations = ~~random(rotateDuration - 1, rotateDuration + 1)
 
-    const sectorDeg = 360 / wheel.entries.length
+    const sectorDeg = 360 / totalWeight
     const winnerDeg = random(0.1, 0.9)
 
-    const newRotation = (360 - winnerIndex * sectorDeg) - (sectorDeg * winnerDeg) + 90
+    const newRotation = (360 - winnerNumber * sectorDeg) - (sectorDeg * winnerDeg) + 90
     // console.warn({ winnerIndex, rotateDuration, rotations, sectorDeg, winnerDeg, newRotation })
 
     await prisma.randomWheel.update({
@@ -519,6 +543,22 @@ export class RandomWheelResolver {
     // console.log(`emit to wheel:entries`)
 
     return entry
+  }
+
+  @Mutation(() => RandomWheelEntry)
+  async updateRandomWheelEntry(
+    @Ctx() { prisma, socketIo }: MyContext,
+    @Arg("id") id: string,
+    @Arg("entry") entry: RandomWheelEntryInput
+  ) {
+    const updatedEntry = await prisma.randomWheelEntry.update({
+      where: { id },
+      data: entry,
+    })
+
+    socketIo.to(`wheel/${updatedEntry.randomWheelId}`).emit("wheel:entries", "update")
+
+    return updatedEntry
   }
 
   @Mutation(() => Boolean, { nullable: true })

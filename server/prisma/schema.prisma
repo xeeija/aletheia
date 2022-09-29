@@ -83,6 +83,7 @@ model RandomWheelEntry {
   randomWheelId String      @db.Uuid
   name          String
   createdAt     DateTime    @default(now())
+  weight        Int         @default(1)
 }
 
 // maybe combine in "entry" model

@@ -29,7 +29,7 @@ export type SocketHandler = (
 ) => void
 
 export interface ServerToClientEvents {
-  "wheel:entries": (type: "add" | "delete" | "clear") => void
+  "wheel:entries": (type: "add" | "delete" | "update" | "clear") => void
   // "wheel:winners": (winner: RandomWheelWinner) => void
   "wheel:spin": (spinResult: {
     winner: RandomWheelWinner,

@@ -27,7 +27,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
     // theme.palette.warning.main,
   ]
 
-  const segments = entries.length
+  const segments = entries.reduce((acc, entry) => acc + entry.weight, 0)
 
   const d: Sector = {
     center: { x: diameter / 2, y: diameter / 2 },
@@ -36,10 +36,9 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
     endAngle: segments > 1 ? 360 / segments : 359.99 // 360° angle would be the same as 0°
   }
 
-  const largeArcFlag = d.endAngle - d.startAngle <= 180 ? 0 : 1
-
   const arrowHeight = diameter * 0.02
 
+  const segmentPos = entries.reduce<number[]>((acc, entry, i) => [...acc, (acc[i] ?? 0) + entry.weight], [0])
 
   /* M   200       0         A   200     200     0 1        0 400     200     L    200  200  Z
     Move startPosX startPosY Arc radiusX radiusY ? largeArc ? arcPosX arcPosY Line posX posY Close path
@@ -90,11 +89,16 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
             //#endregion
 
             // Adjust textpath baseline, so names are better drawn in the middle - 0.0 max
-            const adjustTextBaseline = logistic({ x: entries.length, max: 1.5, min: 0.4, a: 0.9, b: 30, inverse: true })
+            const adjustTextBaseline = logistic({ x: entries.length, max: 1.2, min: 0.4, a: 0.9, b: 30, inverse: true })
 
-            const startPos = pointOnCircle(d.center, d.radius, d.endAngle, i * d.endAngle)
-            const endPos = pointOnCircle(d.center, d.radius, d.startAngle, i * d.endAngle)
-            const middlePos = pointOnCircle(d.center, d.radius, (d.endAngle / 2) + adjustTextBaseline, i * d.endAngle) // for text path
+            const largeArcFlag = (d.endAngle * entry.weight) - d.startAngle <= 180 ? 0 : 1
+            console.log("arc", largeArcFlag)
+
+            const angleOffset = segmentPos[i] * d.endAngle
+
+            const startPos = pointOnCircle(d.center, d.radius, (d.endAngle * entry.weight), angleOffset)
+            const endPos = pointOnCircle(d.center, d.radius, d.startAngle, angleOffset)
+            const middlePos = pointOnCircle(d.center, d.radius, ((d.endAngle * entry.weight) / 2) + adjustTextBaseline, angleOffset) // for text path
 
             // Base fontsize based on length of the name (characters), longer names are smaller
             const baseFontsize = logistic({ x: entry.name.length, max: 2.3, min: 1.2, a: 0.65, b: 15.0, inverse: true }) * (diameter / 600)
@@ -102,9 +106,11 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
             // Scale names based on number of names in the wheel, size is smaller with more entries 
             const fontSizeNamesMultiplier = logistic({ x: entries.length, max: 1, min: 0.6, a: 0.8, b: 34, inverse: true })
 
+            const fontSizeWeightMultiplier = logistic({ x: segments / entry.weight, max: 1, min: 0.7, a: 0.8, b: 32, inverse: true })
+
             // replace with different color, if last color is the same as the first
             const colorIndex = i % colors.length
-            const color = (colorIndex === 0 && i === segments - 1) ? colors[colors.length / 2] : colors[colorIndex]
+            const color = (colorIndex === 0 && i === entries.length - 1) ? colors[colors.length / 2] : colors[colorIndex]
 
             return (
               <g key={`wheel-g-${i}`}>
@@ -137,7 +143,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
                     textAnchor="end"
                     dominantBaseline="middle"
                     startOffset="92%"
-                    fontSize={`${baseFontsize * fontSizeNamesMultiplier}em`}
+                    fontSize={`${baseFontsize * fontSizeNamesMultiplier * fontSizeWeightMultiplier}em`}
                     xlinkHref={`#wheel-text-path-${i}`} >
                     {entry.name.length <= 22 ? entry.name : entry.name.substring(0, 21) + "..."}
                   </textPath>

@@ -1,8 +1,9 @@
 import { FC, useState } from "react";
-import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material";
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme, Checkbox, TextField, Box, Tooltip } from "@mui/material";
 import { HiTrash } from "react-icons/hi";
-import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "../../generated/graphql";
-import { AlertPopup } from "../components";
+import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation, useUpdateRandomWheelEntryMutation } from "../../generated/graphql";
+import { AlertPopup, InputField } from "../components";
+import { Form, Formik } from "formik";
 
 interface Props {
   entries: RandomWheelEntryFragment[]
@@ -58,6 +59,7 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
   ))
 
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
+  const [, updateEntry] = useUpdateRandomWheelEntryMutation()
   const [showError, setShowError] = useState<JSX.Element | string | null>(null)
 
   const onDelete = async (entry: RandomWheelEntryFragment) => {
@@ -72,6 +74,8 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
     setShowError(`Deleted entry '${entry.name}'`)
 
   }
+
+  const totalWeight = entries.reduce((acc, entry) => acc + entry.weight, 0)
 
   return (
     <List role="list" sx={{ py: 0, overflowY: "auto", maxHeight: 480 }}>
@@ -95,40 +99,90 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
             fontWeight: 500,
           }} />
           {editable && (
-            <ListItemSecondaryAction className="hoverItem" sx={{
-              transition: itemTransition[0],
-              opacity: 0,
-              visibility: "hidden",
-              // transform: "scale(0) translateY(-100%)",
-              "&:hover, &:focus-within": {
-                transition: itemTransition[1],
-                opacity: 1,
-                visibility: "visible",
-                // visibility: deleteEnabled ? "visible" : "hidden",
-                // transform: "scale(1) translateY(-50%)",
-              }
-            }}>
-              <IconButton
-                onClick={() => onDelete(entry)}
-                role="button"
-                aria-label={`Delete entry '${entry.name}'`}
-              >
-                <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
-                {/* <TiDelete fontSize="small" color="error" /> */}
-              </IconButton>
+            <>
+              <ListItemSecondaryAction className="hoverItem" sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "right",
+                gap: 1,
+                transition: itemTransition[0],
+                opacity: 0,
+                visibility: "hidden",
+                // transform: "scale(0) translateY(-100%)",
+                "&:hover, &:focus-within": {
+                  transition: itemTransition[1],
+                  opacity: 1,
+                  visibility: "visible",
+                  // visibility: deleteEnabled ? "visible" : "hidden",
+                  // transform: "scale(1) translateY(-50%)",
+                }
+              }}>
 
-              {/* <Checkbox edge="end"
-              inputProps={{
-                'aria-labelledby': `entry-${entry}`
-              }}
-            /> */}
+                <Formik
+                  initialValues={{
+                    weight: entry.weight ?? null,
+                  }}
+                  enableReinitialize
+                  onSubmit={({ weight }, { resetForm }) => {
 
-            </ListItemSecondaryAction>
+                    // TODO: Replace with proper number validation (pattern or so)
+                    if (parseInt(`${weight}`))
+
+                      console.log("submit", weight)
+
+                    updateEntry({
+                      id: entry.id,
+                      entry: { weight },
+                    })
+                  }}
+                >
+                  {({ submitForm, dirty }) => (
+                    <Form>
+                      <InputField
+                        name="weight"
+                        type="number"
+                        hiddenArrows
+                        tooltip={`${entry.weight}:${totalWeight} (${Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format((entry.weight / totalWeight) * 100)}%)`}
+                        tooltipProps={{ placement: "left" }}
+                        sx={{ width: 48 }}
+                        inputProps={{
+                          style: {
+                            textAlign: "right", padding: "0.25em 0.5em"
+                          },
+                          min: 1,
+                          onKeyPress: (ev) => {
+                            console.log("key", ev.key, ev.code)
+
+                            if (!"012345679".includes(ev.key)) {
+                              ev.preventDefault()
+                            }
+                          }
+                        }}
+                        onBlur={(ev) => {
+                          if (dirty && ev.target.value) {
+                            submitForm()
+                          }
+                        }}
+                      />
+                    </Form>
+                  )}
+                </Formik>
+
+                <IconButton
+                  onClick={() => onDelete(entry)}
+                  role="button"
+                  aria-label={`Delete entry '${entry.name}'`}
+                >
+                  <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                  {/* <TiDelete fontSize="small" color="error" /> */}
+                </IconButton>
+
+              </ListItemSecondaryAction>
+            </>
           )}
 
         </ListItem>
       ))}
     </List>
-
   )
 }
