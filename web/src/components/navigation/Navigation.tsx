@@ -2,7 +2,7 @@ import { FC, ReactNode, useState } from "react"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"
 import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
-import { LinkItem, Sidebar, Navbar, UserMenu } from "../components"
+import { LinkItem, Sidebar, Navbar, UserMenu, Footer } from "../components"
 
 export interface NavigationProps {
   noAppbar?: boolean
@@ -56,13 +56,20 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
         </Navbar>
       }
 
-      <Box component="main" sx={{
+      <Box sx={{
+        display: "flex",
+        flexDirection: "column",
         flexGrow: 1,
         ...(!noAppbar && { mt: 8, }),
-        ...(!noPadding && { p: 3 }),
+        ...(!noPadding && { p: 3, pb: 2 }),
+        minHeight: "calc(100vh - 64px)",
+        gap: 2,
       }}>
+        <Box component="main" sx={{ height: "100%" }}>
+          {children}
+        </Box>
+        <Footer />
 
-        {children}
       </Box>
 
     </Sidebar>

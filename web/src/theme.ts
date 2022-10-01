@@ -10,7 +10,7 @@ const baseTheme = createTheme({
     text: {
       primary: "hsl(210, 18%, 92%)",
       secondary: "hsla(210, 18%, 92%, 0.7)",
-      disabled: "hsla(210, 18%, 92%, 0.5)",
+      disabled: "hsla(210, 18%, 92%, 0.51)",
     },
     // "hsl(200, 90%, 75%)",
     // "hsl(150, 50%, 60%)",
