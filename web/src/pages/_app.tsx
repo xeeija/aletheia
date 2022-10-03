@@ -15,7 +15,7 @@ function App({ Component, pageProps }: LayoutAppProps) {
   const getLayout = Component.getLayout ?? defaultLayout()
 
   const urqlClient = createClient({
-    url: process.env.GRAPHQL_SERVER_URL ?? `${process.env.SERVER_URL ?? "http://localhost:4000"}/graphql`,
+    url: `/api/graphql`,
     fetchOptions: {
       credentials: "include"
     }
