@@ -59,7 +59,7 @@ const main = async () => {
 
   // TODO: Add typescript hints as type params
   const socketIo = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
-    path: process.env.WEBSOCKET_PATH,
+    path: process.env.WEBSOCKET_PATH ?? "/socket",
     cors: {
       origin: process.env.ORIGIN_URL,
     },

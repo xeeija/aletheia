@@ -162,8 +162,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       return
     }
 
-    const socket = io(process.env.SOCKET_SERVER_URL ?? process.env.SERVER_URL ?? "http://localhost:4000", {
-      path: process.env.SOCKET_SERVER_PATH ?? "/socket",
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL ?? process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:4000", {
+      path: process.env.NEXT_PUBLIC_SOCKET_SERVER_PATH ?? "/socket",
     })
 
     socket.on("connect", () => {
