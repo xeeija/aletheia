@@ -124,7 +124,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   }
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    navigator.clipboard.writeText(`https://${window.location.host}/r/${slug}`)
+    navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/r/${slug}`)
   }
 
   const spinHandler: MouseEventHandler<HTMLButtonElement> = async () => {
@@ -292,7 +292,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               </Tooltip>
 
               <Dropdown anchor={shareAnchor} setAnchor={setShareAnchor} >
-                <Paper sx={{ p: 1.5, width: "20rem" }}>
+                <Paper sx={{ p: 1.5, width: "18rem" }}>
 
                   <Typography variant="h6" sx={{ mb: 1 }}>
                     Share
