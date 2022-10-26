@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
-import { useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { RandomWheelEntry, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 import NotFoundPage from "../404";
 
@@ -63,14 +63,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
 
   const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
+  const [lastWinningEntry, setLastWinningEntry] = useState<RandomWheelEntry>()
+
   const onRemoveWinnerDialog = async () => {
 
-    // TODO: use entry from socket wheel:spin
-    const winnerIndex = winners?.[0].winnerIndex
-
-    if (!(winnerIndex || winnerIndex === 0)) return
-
-    const { data } = await deleteEntry({ id: entries?.[winnerIndex].id ?? "" }, {
+    const { data } = await deleteEntry({ id: lastWinningEntry?.id ?? "" }, {
       additionalTypenames: ["RandomWheelEntry"]
     })
 
@@ -172,7 +169,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       // console.log(`join ${wheel.id.substring(0, 6)}`)
     })
 
-    socket.on("wheel:spin", ({ rotation }) => {
+    socket.on("wheel:spin", ({ rotation, entry }) => {
       // console.log("wheel:spin", { rotation, winner, entry })
 
       const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
@@ -180,6 +177,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
       setSpinning(true)
       setWheelRotation(rotation + (360 * revolutions))
+      setWinnerDialogOpen(false)
 
       // TODO: Refactor to update the "local" winners with winner from socket?
       fetchWinners({ requestPolicy: "cache-and-network" })
@@ -187,7 +185,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       setTimeout(() => {
         setSpinning(false)
         setWheelRotation(rotation)
-      }, wheel.spinDuration + 500 + 10)
+        setLastWinningEntry(entry)
+
+        setWinnerDialogOpen(true)
+      }, wheel.spinDuration + 500 + 20)
 
     })
 
@@ -453,13 +454,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     </Button>
                   </Badge>
 
-                  <WinnerDialog
-                    open={[winnerDialogOpen, setWinnerDialogOpen]}
-                    description={winners?.[0]?.name}
-                    onClose={() => setWinnerDialogOpen(false)}
-                    onRemove={onRemoveWinnerDialog}
-                  />
-
                   <Button
                     color="error"
                     variant="outlined"
@@ -481,6 +475,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 </Paper>
               </Box>
             )}
+
+            <WinnerDialog
+              open={[winnerDialogOpen, setWinnerDialogOpen]}
+              description={winners?.[0]?.name}
+              onClose={() => setWinnerDialogOpen(false)}
+              onRemove={onRemoveWinnerDialog}
+              hideRemove={!wheel.editable}
+            />
+
             <Box sx={{ gridArea: "names" }}>
 
               <Paper sx={{ height: "100%" }}>
