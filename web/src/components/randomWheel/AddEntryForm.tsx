@@ -7,9 +7,10 @@ import { InputField } from "../components"
 
 interface Props {
   wheelId: string
+  spinning?: boolean
 }
 
-export const AddEntryForm: FC<Props> = ({ wheelId }) => {
+export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
 
   const [, addEntry] = useAddRandomWheelEntryMutation()
 
@@ -39,7 +40,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId }) => {
                 <Tooltip arrow placement="top" title="Add">
                   <IconButton
                     type="submit"
-                    disabled={!values.entry.trim() || isSubmitting}
+                    disabled={!values.entry.trim() || isSubmitting || spinning}
                     aria-label="Add name"
                     edge="end"
                     sx={{ mr: -0.75 }}

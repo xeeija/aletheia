@@ -5,6 +5,7 @@ import { TiUser, TiSpanner, TiPower, TiWarning } from "react-icons/ti"
 import { useLogoutMutation } from "../../generated/graphql"
 import { useAuth } from "../../hooks"
 import { LinkItem, Dropdown, LinkList, LoadingButton, UserAvatar } from "../components"
+import { useRouter } from "next/router"
 
 const userDropdownItems: LinkItem[] = [
   { name: "Profile", icon: <SvgIcon component={TiUser} /> },
@@ -15,6 +16,8 @@ const userDropdownItems: LinkItem[] = [
 interface Props { }
 
 export const UserMenu: FC<Props> = () => {
+
+  const router = useRouter()
 
   const { user, fetchingUser } = useAuth()
 
@@ -50,6 +53,10 @@ export const UserMenu: FC<Props> = () => {
       setFetchingLogout(false)
     }, 500)
 
+    // TODO: Show snackbar "Logged out successfully"
+
+    // Redirect to home
+    router.push("/")
   }
 
   return (

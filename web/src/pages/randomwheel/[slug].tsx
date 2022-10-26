@@ -463,7 +463,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <Button
                     color="error"
                     variant="outlined"
-                    disabled={!entries?.length}
+                    disabled={!entries?.length || spinning}
                     endIcon={<HiTrash />}
                     onClick={() => setClearDialogOpen(true)}
                     sx={{ ml: 2 }}
@@ -507,9 +507,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries ?? []} editable={wheel.editable} />
+                    <EntryList entries={entries ?? []} editable={wheel.editable} spinning={spinning} />
 
-                    {wheel.editable && <AddEntryForm wheelId={wheel.id} />}
+                    {wheel.editable && <AddEntryForm wheelId={wheel.id} spinning={spinning} />}
 
                   </Box>
                 </TabPanel>

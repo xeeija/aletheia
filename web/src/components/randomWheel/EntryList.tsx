@@ -8,9 +8,10 @@ import { Form, Formik } from "formik";
 interface Props {
   entries: RandomWheelEntryFragment[]
   editable?: boolean
+  spinning?: boolean
 }
 
-export const EntryList: FC<Props> = ({ entries, editable }) => {
+export const EntryList: FC<Props> = ({ entries, editable, spinning }) => {
 
   const theme = useTheme()
 
@@ -142,6 +143,7 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
                         name="weight"
                         type="number"
                         hiddenArrows
+                        disabled={spinning}
                         tooltip={`${entry.weight}:${totalWeight} (${Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format((entry.weight / totalWeight) * 100)}%)`}
                         tooltipProps={{ placement: "left" }}
                         sx={{ width: 48 }}
@@ -169,9 +171,10 @@ export const EntryList: FC<Props> = ({ entries, editable }) => {
                 <IconButton
                   onClick={() => onDelete(entry)}
                   role="button"
+                  disabled={spinning}
                   aria-label={`Delete entry '${entry.name}'`}
                 >
-                  <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                  <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color={spinning ? "disabled" : "error"} />
                   {/* <TiDelete fontSize="small" color="error" /> */}
                 </IconButton>
 
