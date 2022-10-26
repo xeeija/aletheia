@@ -376,7 +376,7 @@ export class RandomWheelResolver {
         data: wheelOptions
       })
 
-      socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "")
+      socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")
 
       return newWheel
     }
@@ -596,7 +596,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => [RandomWheelMemberFull], { nullable: true })
   async updateRandomWheelMembers(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req, socketIo }: MyContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("randomWheelId") randomWwheelId: string,
     @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[],
@@ -605,7 +605,10 @@ export class RandomWheelResolver {
 
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWwheelId },
-      select: { ownerId: true },
+      select: {
+        id: true,
+        ownerId: true,
+      },
     })
 
     if (wheel?.ownerId !== req.session.userId || !req.session.userId) {
@@ -658,6 +661,8 @@ export class RandomWheelResolver {
         })
       }
     })
+
+    socketIo.to(`wheel/${wheel.id}`).emit("wheel:update", "members")
 
     return (await Promise.all(newMembers)).filter(member => member)
   }

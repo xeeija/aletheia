@@ -87,7 +87,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) 
       }}
     >
       {({ isSubmitting, values, initialValues, setFieldValue, isValid }) => (
-        <Form id="editMembersForm">
+        <Form id="editMembersForm" autoComplete="off">
 
           <Grid container spacing={2}>
 

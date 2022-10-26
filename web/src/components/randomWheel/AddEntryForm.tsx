@@ -34,7 +34,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
     >
       {({ values, isSubmitting }) => (
         <Form autoComplete="off">
-          <InputField name="entry" label="Add name" fullWidth autoComplete="false"
+          <InputField name="entry" label="Add name" fullWidth
             InputProps={{
               endAdornment: <InputAdornment position="end">
                 <Tooltip arrow placement="top" title="Add">
