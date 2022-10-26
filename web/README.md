@@ -22,7 +22,7 @@ The frontend is deplyoed as Docker container.
 
 **Build the container**
 ```
-docker build . -t xeeija/aletheia-web:latest -t xeeija/aletheia-web:<major.minor>
+docker build . -t xeeija/aletheia-web:latest -t xeeija/aletheia-web:<major.minor>.<patch>
 ```
 
 **Run the container**

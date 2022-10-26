@@ -44,7 +44,7 @@ The backend is deplyoed as Docker container.
 
 **Build the container**
 ```
-docker build . -t xeeija/aletheia-server:latest -t xeeija/aletheia-server:<major.minor>
+docker build . -t xeeija/aletheia-server:latest -t xeeija/aletheia-server:<major.minor>.<patch>
 ```
 
 **Run the container**

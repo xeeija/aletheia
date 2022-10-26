@@ -12,7 +12,7 @@ export const Footer: FC<Props> = () => {
       <Typography variant="subtitle2" color="text.disabled"
         sx={{
           fontSize: "0.8125rem",
-          "& > *:not(:first-child)::before": {
+          "& > *:not(:first-of-type)::before": {
             content: "'•'",
             px: 0.5,
           }
