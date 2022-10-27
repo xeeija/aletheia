@@ -9,7 +9,7 @@ import { PrismaClient } from "@prisma/client"
 import { UserResolver, RandomWheelResolver } from "./resolvers"
 import { ClientToServerEvents, MyContext, ServerToClientEvents } from "./types"
 import PGStore from "connect-pg-simple"
-import { slugTest } from "./utils/slug"
+// import { slugTest } from "./utils/slug"
 import { Server } from "socket.io"
 import { createServer } from "http"
 import { randomWheelHandlers } from "./socket"
@@ -26,10 +26,12 @@ const main = async () => {
 
   const PostgresStore = PGStore(session)
 
+  const originUrl = (process.env.ORIGIN_URL)?.split(" ").filter(o => o)
+
   // Set cors globally, Allowed-Origin header can't be '*' if credentials are set to true
   app.use(cors({
     credentials: true,
-    origin: process.env.ORIGIN_URL,
+    origin: originUrl,
   }))
 
   if (!process.env.SESSION_SECRET) {
@@ -39,11 +41,11 @@ const main = async () => {
   // Session
   app.use(session({
     name: "asid",
-    secret: process.env.SESSION_SECRET ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
+    secret: process.env.SESSION_SECRET?.split(" ").filter(s => s) ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // sameSite: "lax" // for csrf?
+      sameSite: "lax",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24
@@ -51,7 +53,7 @@ const main = async () => {
     store: new PostgresStore({
       tableName: "_session",
       createTableIfMissing: true,
-      conString: process.env.DATABASE_URL
+      conString: process.env.DATABASE_URL,
     })
   }))
 
@@ -61,7 +63,7 @@ const main = async () => {
   const socketIo = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     path: process.env.WEBSOCKET_PATH ?? "/socket",
     cors: {
-      origin: process.env.ORIGIN_URL,
+      origin: originUrl,
     },
   })
 
@@ -85,7 +87,7 @@ const main = async () => {
   })
 
   // TODO Test
-  app.get("/slug/:slug", slugTest)
+  // app.get("/slug/:slug", slugTest)
 
   // Known bug, fix for error "must start before applyMiddleware"
   await apolloServer.start()
