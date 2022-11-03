@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { Box, useTheme } from "@mui/material"
 import { RandomWheelEntryFragment } from "../../generated/graphql"
 import { logistic, pointOnCircle, Sector } from "../../utils/math"
@@ -15,6 +15,40 @@ interface Props {
 }
 
 export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation = 0, spinning, spinDuration = 6000 }) => {
+
+  // const spinClickSounds = useMemo(() => Array(10).fill(0).map((v) => new Audio(`/audio/boob6-${v}.wav`)), [])
+
+  useEffect(() => {
+    const spinClickSound = new Audio("/audio/boob.wav")
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        // TODO: Fix initial sound when starting, and sound when adding/removing
+        // getSpinning() function instead, so spinning is evaluated only once the callback is executed?
+        if (!spinning) {
+          return
+        }
+
+        if (entry.isIntersecting && !entry.target.classList.contains("item-intersect")) {
+          entry.target.classList.add("item-intersect")
+          spinClickSound.play()
+
+        } else if (!entry.isIntersecting && entry.target.classList.contains("item-intersect")) {
+          entry.target.classList.remove("item-intersect")
+        }
+      })
+    },
+      {
+        root: document.querySelector("#wheel-svg"),
+        // top right bottom left
+        rootMargin: "-50% 0px 0px -50%",
+        threshold: 0.5,
+      })
+
+    document.querySelectorAll(".wheel-item-start").forEach((target) => observer.observe(target))
+
+    return () => observer.disconnect()
+  })
 
   const theme = useTheme()
 
@@ -57,7 +91,8 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
         width={diameter + arrowHeight * 1.5}
         height={diameter}
         viewBox={`0 0 ${diameter + arrowHeight * 1.5} ${diameter}`}
-      // ref={wheelRef}
+        // ref={wheelRef}
+        id="wheel-svg"
       >
         <circle cx={d.center.x} cy={d.center.y} r={d.radius}
           style={{
@@ -75,7 +110,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
               delay: 500,
             })
           }),
-        }} >
+        }}>
 
           {entries.map((entry, i) => {
 
@@ -148,6 +183,9 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
                   </textPath>
                 </text>
 
+                {/* Trigger Element for "clack" sound when spinning */}
+                <circle className={`wheel-item-start start-${i}`} cx={startPos.x} cy={startPos.y} r="5" fill={color} stroke="#000" visibility="hidden" />
+
                 {/* <circle cx={middlePos.x} cy={middlePos.y} r="5" fill={color} /> */}
                 {/* <circle cx={startPos.x} cy={startPos.y} r="5" /> */}
                 {/* <circle cx={endPos.x} cy={endPos.y} r="5" /> */}
@@ -168,7 +206,9 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
           }}
         />
 
+        {/* Winner marker trinagle */}
         <path
+          id="winner-marker"
           style={{
             fill: theme.palette.primary.dark,
             stroke: theme.palette.background.default, //"#191d21",
