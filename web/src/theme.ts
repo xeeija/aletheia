@@ -158,6 +158,21 @@ const componentOverrides: ThemeOptions = {
         }
       }
     },
+    MuiTab: {
+      // "artificial" new variant, because there is no variant prop
+      variants: [
+        {
+          props: {
+            itemType: "capitalize"
+          },
+          style: {
+            textTransform: "none",
+            fontSize: baseTheme.typography.htmlFontSize,
+            paddingBottom: baseTheme.spacing(2)
+          }
+        }
+      ]
+    }
   },
 }
 

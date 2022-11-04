@@ -6,15 +6,16 @@ interface Props {
   activeTab: number
   keepMounted?: boolean
   fullHeight?: boolean
+  noPadding?: boolean
 }
 
-export const TabPanel: FC<Props> = ({ index, activeTab, keepMounted, children, fullHeight }) => {
+export const TabPanel: FC<Props> = ({ index, activeTab, keepMounted, children, fullHeight, noPadding }) => {
   return (
     <Box
       role="tabpanel"
       hidden={activeTab !== index}
       sx={{
-        p: 2,
+        ...(!noPadding && { p: 2 }),
         ...(fullHeight && { height: "calc(100% - 48px)" }),
       }}
     >

@@ -195,19 +195,28 @@ export class RandomWheelResolver {
   @Query(() => [RandomWheelFull])
   async myRandomWheels(
     @Ctx() { req, prisma }: MyContext,
-    @Info() info: GraphQLResolveInfo
-  ) { //: Promise<typeof RandomWheelListResponse> {
+    @Info() info: GraphQLResolveInfo,
+    @Arg("type", { defaultValue: "my" }) type: string // "should" be: "my" | "shared" | "favorite"
+  ) {
 
+    // TODO: FIX so it throws a proper Graphql Error or so
     if (!req.session.userId) {
-      return {
-        errorCode: 401,
-        errorMessage: "Not logged in",
-      }
+      return []
+    }
+
+    if (!["my", "shared", "favorite"].includes(type)) {
+      // TODO: unsupported type, maybe use enum instead and throw proper Graphql Error
+      return []
     }
 
     const randomWheels = await prisma.randomWheel.findMany({
       where: {
-        ownerId: req.session.userId
+        ownerId: type === "my" ? req.session.userId : undefined,
+        members: type === "shared" ? {
+          some: {
+            userId: req.session.userId,
+          }
+        } : undefined
       },
       include: {
         ...includeRandomWheel(info)
@@ -215,9 +224,6 @@ export class RandomWheelResolver {
     })
 
     return randomWheels
-
-    // return { items: randomWheels }
-
   }
 
   // TODO: Only allowed if logged in? (or if private?)

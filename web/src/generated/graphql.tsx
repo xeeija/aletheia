@@ -146,6 +146,11 @@ export type Query = {
 };
 
 
+export type QueryMyRandomWheelsArgs = {
+  type?: Maybe<Scalars['String']>;
+};
+
+
 export type QueryRandomWheelBySlugArgs = {
   slug: Scalars['String'];
 };
@@ -382,7 +387,9 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }> };
 
-export type MyRandomWheelsQueryVariables = Exact<{ [key: string]: never; }>;
+export type MyRandomWheelsQueryVariables = Exact<{
+  type?: Maybe<Scalars['String']>;
+}>;
 
 
 export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
@@ -654,8 +661,8 @@ export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, '
   return Urql.useQuery<MeQuery, MeQueryVariables>({ query: MeDocument, ...options });
 };
 export const MyRandomWheelsDocument = gql`
-    query MyRandomWheels {
-  myRandomWheels {
+    query MyRandomWheels($type: String) {
+  myRandomWheels(type: $type) {
     ...RandomWheelDetails
   }
 }

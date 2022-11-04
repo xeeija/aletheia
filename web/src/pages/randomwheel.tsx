@@ -1,20 +1,26 @@
-import { Box, Button, IconButton, Skeleton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import React, { useState } from "react"
-import { CreateEditWheelDialog, WheelListItem } from "../components/randomWheel"
+import { CreateEditWheelDialog, WheelList } from "../components/randomWheel"
 import { useMyRandomWheelsQuery } from "../generated/graphql"
 import { defaultLayout, LayoutNextPage } from "../components/layout"
-import Image from "next/image"
 import { TiPlus } from "react-icons/ti"
 import { HiDotsVertical } from "react-icons/hi"
+import { NoData, TabPanel } from "../components"
+
+const wheelsTypes = ["my", "shared", "favorite"]
 
 const RandomWheelPage: LayoutNextPage = () => {
 
-  const [{ data, fetching }] = useMyRandomWheelsQuery()
-
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [wheelsTab, setWheelsTab] = useState(0)
+
+  const [{ data, fetching }] = useMyRandomWheelsQuery({
+    variables: {
+      type: wheelsTypes[wheelsTab]
+    },
+  })
 
   const wheels = data?.myRandomWheels
-
   const wheelsEmpty = (wheels?.length ?? 0) === 0
 
   return (
@@ -23,7 +29,18 @@ const RandomWheelPage: LayoutNextPage = () => {
         display: "flex",
         justifyContent: "space-between"
       }}>
-        <Typography variant="h2">My Wheels</Typography>
+        {/* <Typography variant="h2">My Wheels</Typography> */}
+
+        <Tabs
+          value={wheelsTab}
+          onChange={(_, value) => setWheelsTab(value)}
+        >
+          {/* itemType prop for new variant, because there is no variant prop */}
+          <Tab label="My Wheels" itemType="capitalize" />
+          <Tab label="Shared Wheels" itemType="capitalize" />
+          <Tab label="Favorites" disabled itemType="capitalize" />
+        </Tabs>
+
         <Box>
           <Button variant="outlined" color="success"
             endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
@@ -41,38 +58,16 @@ const RandomWheelPage: LayoutNextPage = () => {
         </Box>
       </Box>
 
-      {(!wheelsEmpty || fetching) && (
-        <Box sx={{
-          gap: 2,
-          mt: 2,
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
-        }}>
-          {!wheelsEmpty && wheels?.map(wheel => (
-            <WheelListItem wheel={wheel} key={wheel.id} />
-          ))}
-
-          {fetching && [1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} height={100} variant="rectangular" sx={{ animationDelay: `${i * 50}ms` }} />
-          ))}
-        </Box>
-      )}
+      {[0, 1, 2].map((i) => (
+        <TabPanel key={i} index={i} activeTab={wheelsTab} fullHeight noPadding>
+          <WheelList items={wheels} loading={fetching} />
+        </TabPanel>
+      ))}
 
       {wheelsEmpty && !fetching && (
-        <Box sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 3,
-          mt: 2,
-        }}>
-          <Image src="/img/void.svg" alt="" width={120} height={120} draggable="false" />
-
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            {"You don't have any Random Wheels yet."}
-          </Typography>
-        </Box>
+        <NoData>
+          {"You don't have any Random Wheels yet."}
+        </NoData>
       )}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
