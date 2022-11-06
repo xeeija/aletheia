@@ -27,6 +27,7 @@ model User {
   randomWheels      RandomWheel[]
   drawnWinners      RandomWheelWinner[]
   randomWheelMember RandomWheelMember[]
+  likes             RandomWheelLike[]
 }
 
 // Session store table
@@ -68,6 +69,7 @@ model RandomWheel {
   entries       RandomWheelEntry[]
   winners       RandomWheelWinner[]
   members       RandomWheelMember[]
+  likes         RandomWheelLike[]
   // visibility
   // settings:
   // unique entries option
@@ -113,4 +115,15 @@ model RandomWheelRole {
   name        String              @unique
   description String?
   members     RandomWheelMember[]
+}
+
+model RandomWheelLike {
+  id            String      @id @default(uuid()) @db.Uuid
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String      @db.Uuid
+  randomWheel   RandomWheel @relation(fields: [randomWheelId], references: [id])
+  randomWheelId String      @db.Uuid
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, randomWheelId])
 }
