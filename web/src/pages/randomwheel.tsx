@@ -38,7 +38,7 @@ const RandomWheelPage: LayoutNextPage = () => {
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="My Wheels" itemType="capitalize" />
           <Tab label="Shared Wheels" itemType="capitalize" />
-          <Tab label="Favorites" disabled itemType="capitalize" />
+          <Tab label="Favorites" itemType="capitalize" />
         </Tabs>
 
         <Box>

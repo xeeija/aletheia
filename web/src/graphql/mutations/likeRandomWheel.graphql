@@ -1,0 +1,8 @@
+mutation LikeRandomWheel($randomWheelId: String!, $like: Boolean!) {
+  likeRandomWheel(randomWheelId: $randomWheelId, like: $like) {
+    id
+    userId
+    randomWheelId
+    createdAt
+  }
+}

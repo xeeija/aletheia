@@ -1,7 +1,7 @@
 import { MyContext } from "src/types";
 import { slugify } from "../utils/slug";
 import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
-import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole } from "../../dist/generated/typegraphql-prisma";
+import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole, RandomWheelLike } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion } from "./common/types";
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import { parseResolveInfo, ResolveTree } from "graphql-parse-resolve-info";
@@ -190,6 +190,25 @@ export class RandomWheelResolver {
     return member !== null
   }
 
+  @FieldResolver(() => Boolean)
+  async liked(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: MyContext) {
+
+    if (req.session.userId === undefined) {
+      return false
+    }
+
+    const like = await prisma.randomWheelLike.findUnique({
+      where: {
+        userId_randomWheelId: {
+          userId: req.session.userId,
+          randomWheelId: randomWheel.id,
+        }
+      }
+    })
+
+    return like !== null
+  }
+
   // Wheel
 
   @Query(() => [RandomWheelFull])
@@ -216,7 +235,12 @@ export class RandomWheelResolver {
           some: {
             userId: req.session.userId,
           }
-        } : undefined
+        } : undefined,
+        likes: type === "favorite" ? {
+          some: {
+            userId: req.session.userId
+          }
+        } : undefined,
       },
       include: {
         ...includeRandomWheel(info)
@@ -699,6 +723,52 @@ export class RandomWheelResolver {
     // TODO: Realtime update with socket?
 
     return true
+  }
+
+  @Mutation(() => RandomWheelLike, { nullable: true })
+  async likeRandomWheel(
+    @Ctx() { prisma, req }: MyContext,
+    @Arg("randomWheelId") randomWheelId: string,
+    @Arg("like") like: boolean,
+  ) {
+    // TODO
+    if (!req.session.userId) {
+      return null
+    }
+
+    const wheelLike = await prisma.randomWheelLike.findUnique({
+      where: {
+        userId_randomWheelId: {
+          userId: req.session.userId,
+          randomWheelId,
+        }
+      }
+    })
+
+    if (like === (wheelLike !== null)) {
+      return wheelLike
+    }
+
+    if (like) {
+      const newLike = await prisma.randomWheelLike.create({
+        data: {
+          userId: req.session.userId,
+          randomWheelId,
+        }
+      })
+      return newLike
+    } else {
+      await prisma.randomWheelLike.delete({
+        where: {
+          userId_randomWheelId: {
+            userId: req.session.userId,
+            randomWheelId,
+          }
+        }
+      })
+      return null
+    }
+
   }
 
 }

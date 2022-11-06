@@ -8,10 +8,14 @@ fragment RandomWheelDetails on RandomWheel {
   fadeDuration
   accessType
   editable
+  liked
   _count {
     entries
   }
 }
+
+# TODO: Maybe RandomWheelOverview 
+# only whats relevant for list view, then _count could be removed from details
 
 fragment RandomWheelEntry on RandomWheelEntry {
   id

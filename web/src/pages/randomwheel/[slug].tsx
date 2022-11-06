@@ -3,12 +3,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowSync, TiRefresh, TiUser } from "react-icons/ti";
+import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUser } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
-import { RandomWheelEntry, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
+import { RandomWheelEntry, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useLikeRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
 import { useAuth } from "../../hooks";
 import NotFoundPage from "../404";
 
@@ -58,6 +58,13 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const [wheelRotation, setWheelRotation] = useState(0)
   const [spinning, setSpinning] = useState(false)
+
+  const [wheelLiked, setWheelLiked] = useState(false)
+  const [, likeRandomWheel] = useLikeRandomWheelMutation()
+
+  useEffect(() => {
+    setWheelLiked(wheel?.liked ?? false)
+  }, [wheel?.liked])
 
   const [optionsAnchor, setOptionsAnchor] = useState<Element | null>(null)
   const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
@@ -272,6 +279,45 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             </Box>
 
             <Box>
+
+              <Tooltip arrow placement="bottom" title="Favorite">
+                <IconButton color={wheelLiked ? "error" : "secondary"}
+                  disabled={!user}
+                  sx={{ ml: 1 }}
+                  onClick={async () => {
+                    setWheelLiked(!wheelLiked)
+                    const res = await likeRandomWheel({
+                      randomWheelId: wheel.id,
+                      like: !wheelLiked
+                    })
+                    // TODO: Error when undefined?
+                    setWheelLiked(Boolean(res.data?.likeRandomWheel))
+                  }}
+                >
+                  <SvgIcon component={wheelLiked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
+                </IconButton>
+              </Tooltip>
+
+              {/* <Tooltip arrow placement="bottom" title="Favorite">
+                <IconButton color={wheelLiked ? "error" : "secondary"}
+                  disabled={!user}
+                  sx={{ ml: 1 }}
+                  onClick={async () => {
+                    const res = await likeRandomWheel({
+                      randomWheelId: wheel.id,
+                      like: !wheelLiked
+                    })
+                    // TODO: Error when undefined?
+                    setWheelLiked(Boolean(res.data?.likeRandomWheel))
+                  }}
+                >
+                  {wheelLiked ?
+                    <SvgIcon component={TiHeart} viewBox="2.5 2.5 19 19" /> :
+                    // <SvgIcon component={TiHeartFullOutline} viewBox="1 0.5 21 21" /> :
+                    <SvgIcon component={TiHeartOutline} viewBox="1 0.5 21 21" />
+                  }
+                </IconButton>
+              </Tooltip> */}
 
               {/* {wheel.editable && ( */}
               <Tooltip arrow placement="bottom" title="Popout">
