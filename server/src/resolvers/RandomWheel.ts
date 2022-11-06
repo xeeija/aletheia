@@ -373,31 +373,39 @@ export class RandomWheelResolver {
 
   }
 
-  @Mutation(() => RandomWheelFull)
+  @Mutation(() => RandomWheelFull, { nullable: true })
   async updateRandomWheel(
     @Ctx() { prisma, req, socketIo }: MyContext,
     @Arg("id") id: string,
     @Arg("options") wheelOptions: RandomWheelInput
-  ): Promise<typeof RandomWheelResponse> {
+  ) {
 
     // TODO: Middleware to get randomWheel (or any other entity) or return a not found error/permission error
     const randomWheel = await prisma.randomWheel.findUnique({
-      where: { id: id }
+      where: { id: id },
+      include: {
+        members: true
+      }
     })
 
     if (!randomWheel) {
-      return {
-        errorCode: 404,
-        errorMessage: "Not found"
-      }
+      return null
+      // return {
+      //   errorCode: 404,
+      //   errorMessage: "Not found"
+      // }
     }
 
-    if (randomWheel?.ownerId !== req.session.userId || !req.session.userId) {
+    const isOwner = randomWheel?.ownerId === req.session.userId
+    const isEditable = randomWheel.members.some((r) => r.userId === req.session.userId)
+
+    if (!req.session.userId || (!isOwner && !isEditable)) {
       // TODO: Proper Error
-      return {
-        errorCode: 404,
-        errorMessage: "Not found"
-      }
+      return null
+      // return {
+      //   errorCode: 404,
+      //   errorMessage: "Not found"
+      // }
     }
 
     try {
@@ -692,14 +700,17 @@ export class RandomWheelResolver {
       }
     })
 
+
+    const finishedMembers = (await Promise.all(newMembers)).filter(member => member)
+
     socketIo.to(`wheel/${wheel.id}`).emit("wheel:update", "members")
 
-    return (await Promise.all(newMembers)).filter(member => member)
+    return finishedMembers
   }
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteRandomWheelMember(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req, socketIo }: MyContext,
     @Arg("id") id: string
   ) {
 
@@ -720,7 +731,7 @@ export class RandomWheelResolver {
       where: { id },
     })
 
-    // TODO: Realtime update with socket?
+    socketIo.to(`wheel/${member.randomWheelId}`).emit("wheel:update", "members")
 
     return true
   }
