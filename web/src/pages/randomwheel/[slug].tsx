@@ -194,7 +194,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         setWheelRotation(rotation)
         setLastWinningEntry(entry)
 
-        setWinnerDialogOpen(true)
+        if (wheel.editable) {
+          setWinnerDialogOpen(true)
+        }
       }, wheel.spinDuration + 500 + 20)
 
     })
@@ -222,7 +224,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       socket.disconnect()
       // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
-  }, [wheel?.id, wheel?.spinDuration, fetchEntries, fetchWinners, fetchWheel])
+  }, [wheel?.id, wheel?.spinDuration, wheel?.editable, fetchEntries, fetchWinners, fetchWheel])
 
   if (fetching || !slug) {
     return <Box>

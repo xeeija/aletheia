@@ -10,6 +10,8 @@ interface Props {
   hideRemove?: boolean
 }
 
+// TODO: Add autoHide duration property
+
 export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose = () => { }, onRemove = () => { }, hideClose, hideRemove }) => {
   const [open, setOpen] = openState
 
