@@ -408,16 +408,16 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         setEditDialogOpen(true)
                       }}
                     />
+                    <LinkListItem
+                      name="Members"
+                      icon={<SvgIcon component={TiUser} />}
+                      onClick={() => {
+                        setOptionsAnchor(null)
+                        setMembersDialogOpen(true)
+                      }}
+                    />
                     {user?.id === wheel.owner.id && (
                       <>
-                        <LinkListItem
-                          name="Members"
-                          icon={<SvgIcon component={TiUser} />}
-                          onClick={() => {
-                            setOptionsAnchor(null)
-                            setMembersDialogOpen(true)
-                          }}
-                        />
                         <LinkListItem divider />
                         <LinkListItem
                           name="Delete"
@@ -438,17 +438,22 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <CreateEditWheelDialog type="edit" open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
               )}
 
-              {wheel.owner.id === user?.id && (
-                <>
-                  <EditMembersDialog open={membersDialogOpen} slug={wheel.slug} onClose={() => setMembersDialogOpen(false)} />
+              {wheel.editable &&
+                <EditMembersDialog
+                  open={membersDialogOpen}
+                  slug={wheel.slug}
+                  onClose={() => setMembersDialogOpen(false)}
+                  readonly={wheel.owner.id !== user?.id}
+                />
+              }
 
-                  <DeleteWheelDialog
-                    open={deleteDialogOpen}
-                    onClose={() => setDeleteDialogOpen(false)}
-                    onDelete={onDeleteDialog}
-                  />
-                </>
-              )}
+              {wheel.owner.id === user?.id &&
+                <DeleteWheelDialog
+                  open={deleteDialogOpen}
+                  onClose={() => setDeleteDialogOpen(false)}
+                  onDelete={onDeleteDialog}
+                />
+              }
 
             </Box>
 

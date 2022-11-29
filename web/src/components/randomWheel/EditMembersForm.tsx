@@ -24,9 +24,10 @@ interface Props {
   slug: string
   dialogActionsRef?: RefObject<Element>
   formRef?: RefObject<FormikProps<InitialValues>>
+  readonly?: boolean
 }
 
-export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
+export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, readonly }) => {
 
   const [{ data, fetching: fetchingWheel }, refetchWheel] = useRandomWheelBySlugMembersQuery({
     variables: { slug: slug },
@@ -123,86 +124,93 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) 
                           ]}
                           required
                           hiddenLabel
+                          disabled={readonly}
                           sx={{ width: "7rem" }}
                         />
-                        <IconButton
-                          onClick={() => {
-                            // setDeletedMembers([...deletedMembers, member.id])
-                            setFieldValue(`members.${key}.delete`, true)
-                          }}
-                          role="button"
-                          aria-label={`Delete member '${member.username}'`}
-                        >
-                          <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
-                        </IconButton>
+                        {!readonly && (
+                          <IconButton
+                            onClick={() => {
+                              // setDeletedMembers([...deletedMembers, member.id])
+                              setFieldValue(`members.${key}.delete`, true)
+                            }}
+                            role="button"
+                            aria-label={`Delete member '${member.username}'`}
+                          >
+                            <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                          </IconButton>
+                        )}
 
                       </ListItemSecondaryAction>
 
                     </ListItem>
                   ))}
 
-                {values.draft ? (
-                  <ListItem role="listitem" dense>
-                    <InputField name="draft.username" required hiddenLabel placeholder="Username *" sx={{ width: "13rem", ml: -1 }} />
+                {!readonly &&
+                  (values.draft ? (
+                    <ListItem role="listitem" dense>
+                      <InputField name="draft.username" required hiddenLabel placeholder="Username *" sx={{ width: "13rem", ml: -1 }} />
 
-                    <ListItemSecondaryAction sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}>
+                      <ListItemSecondaryAction sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}>
 
-                      <SelectField
-                        name="draft.role"
-                        options={[
-                          { value: "VIEW", label: "View" },
-                          { value: "EDIT", label: "Edit" },
-                        ]}
-                        required
-                        hiddenLabel
-                        sx={{ width: "7rem" }}
-                      />
-                      <IconButton
-                        role="button"
-                        aria-label={`Delete draft member`}
-                        onClick={() => {
-                          setFieldValue("draft", initialValues.draft)
-                        }}
-                      >
-                        <SvgIcon component={TiTimes} fontSize="small" viewBox="3 2 20 20" color="error" />
-                      </IconButton>
+                        <SelectField
+                          name="draft.role"
+                          options={[
+                            { value: "VIEW", label: "View" },
+                            { value: "EDIT", label: "Edit" },
+                          ]}
+                          required
+                          hiddenLabel
+                          sx={{ width: "7rem" }}
+                        />
+                        <IconButton
+                          role="button"
+                          aria-label={`Delete draft member`}
+                          onClick={() => {
+                            setFieldValue("draft", initialValues.draft)
+                          }}
+                        >
+                          <SvgIcon component={TiTimes} fontSize="small" viewBox="3 2 20 20" color="error" />
+                        </IconButton>
 
-                    </ListItemSecondaryAction>
+                      </ListItemSecondaryAction>
 
-                  </ListItem>
-                ) : (
-                  <Button
-                    color="success"
-                    variant="outlined"
-                    sx={{ ml: 0.5, mt: 1.25 }}
-                    endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                    onClick={() => {
-                      setFieldValue("draft", { username: "", role: "VIEW" })
-                    }}>
-                    Add
-                  </Button>
-                )}
+                    </ListItem>
+                  ) : (
+                    <Button
+                      color="success"
+                      variant="outlined"
+                      sx={{ ml: 0.5, mt: 1.25 }}
+                      endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
+                      onClick={() => {
+                        setFieldValue("draft", { username: "", role: "VIEW" })
+                      }}>
+                      Add
+                    </Button>
+                  ))
+                }
 
               </List>
             </Grid>
 
             <Portal container={dialogActionsRef?.current}>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={isSubmitting || fetchingWheel}
-                disabled={
-                  !isValid || JSON.stringify(values) === JSON.stringify(initialValues)
-                  || values.draft?.username === ""
-                }
-                form="editMembersForm"
-              >
-                Update
-              </LoadingButton>
+              {!readonly && (
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting || fetchingWheel}
+                  disabled={
+                    !isValid || JSON.stringify(values) === JSON.stringify(initialValues)
+                    || values.draft?.username === ""
+                  }
+                  form="editMembersForm"
+                >
+                  Update
+                </LoadingButton>
+              )}
             </Portal>
 
           </Grid>

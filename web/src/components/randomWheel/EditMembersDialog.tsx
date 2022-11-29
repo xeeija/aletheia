@@ -7,9 +7,10 @@ interface Props {
   open: boolean
   onClose: () => void
   slug: string
+  readonly?: boolean
 }
 
-export const EditMembersDialog: FC<Props> = ({ open, onClose, slug }) => {
+export const EditMembersDialog: FC<Props> = ({ open, onClose, slug, readonly }) => {
 
   const actionsRef = useRef(null)
   const formRef = useRef<FormikProps<any>>(null)
@@ -33,9 +34,11 @@ export const EditMembersDialog: FC<Props> = ({ open, onClose, slug }) => {
         }}
         aria-labelledby="edit-dialog-title"
         aria-describedby="edit-dialog-description">
-        <DialogTitle id="edit-dialog-title">Edit Members</DialogTitle>
+        <DialogTitle id="edit-dialog-title">
+          {readonly ? "Members" : "Edit Members"}
+        </DialogTitle>
         <DialogContent>
-          <EditMembersForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
+          <EditMembersForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} readonly={readonly} />
 
         </DialogContent>
         <DialogActions ref={actionsRef}>
