@@ -134,13 +134,19 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
             const endPos = pointOnCircle(d.center, d.radius, d.startAngle, angleOffset)
             const middlePos = pointOnCircle(d.center, d.radius, ((d.endAngle * entry.weight) / 2) + adjustTextBaseline, angleOffset) // for text path
 
+            // Note: logistic values come from trial and error
+
             // Base fontsize based on length of the name (characters), longer names are smaller
             const baseFontsize = logistic({ x: entry.name.length, max: 2.3, min: 1.2, a: 0.65, b: 15.0, inverse: true }) * (diameter / 600)
 
             // Scale names based on number of names in the wheel, size is smaller with more entries 
-            const fontSizeNamesMultiplier = logistic({ x: entries.length, max: 1, min: 0.6, a: 0.8, b: 34, inverse: true })
+            const fontSizeNamesMultiplier = logistic({ x: entries.length, max: 1, min: 0.75, a: 0.8, b: 36, inverse: true })
 
             const fontSizeWeightMultiplier = logistic({ x: segments / entry.weight, max: 1, min: 0.7, a: 0.8, b: 32, inverse: true })
+
+            const textLengthMultiplier = logistic({ x: entries.length, max: 1.5, min: 1, a: 0.8, b: 32 })
+
+            const fontSizeNamesLengthAdjust = logistic({ x: Math.sqrt(entries.length * entry.name.length), max: 1.33, min: 1, a: 0.7, b: 27 })
 
             // replace with different color, if last color is the same as the first
             const colorIndex = i % colors.length
@@ -176,10 +182,10 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
                     // TODO: make text as big as possiblee
                     textAnchor="end"
                     dominantBaseline="middle"
-                    startOffset="92%"
-                    fontSize={`${baseFontsize * fontSizeNamesMultiplier * fontSizeWeightMultiplier}em`}
+                    startOffset="93%"
+                    fontSize={`${baseFontsize * fontSizeNamesMultiplier * fontSizeWeightMultiplier * fontSizeNamesLengthAdjust}em`}
                     xlinkHref={`#wheel-text-path-${i}`} >
-                    {entry.name.length <= 22 ? entry.name : entry.name.substring(0, 21) + "..."}
+                    {entry.name.length <= 22 * textLengthMultiplier ? entry.name : entry.name.substring(0, 21) + "..."}
                   </textPath>
                 </text>
 
