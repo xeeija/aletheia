@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import { Box, useTheme } from "@mui/material"
 import { RandomWheelEntryFragment } from "../../generated/graphql"
 import { logistic, pointOnCircle, Sector } from "../../utils/math"
@@ -18,37 +18,40 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
 
   // const spinClickSounds = useMemo(() => Array(10).fill(0).map((v) => new Audio(`/audio/boob6-${v}.wav`)), [])
 
-  useEffect(() => {
-    const spinClickSound = new Audio("/audio/boob.wav")
+  // TODO: Use WebAPI instead
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        // TODO: Fix initial sound when starting, and sound when adding/removing
-        // getSpinning() function instead, so spinning is evaluated only once the callback is executed?
-        if (!spinning) {
-          return
-        }
+  // useEffect(() => {
+  //   const spinClickSound = new Audio("/audio/boob.wav")
 
-        if (entry.isIntersecting && !entry.target.classList.contains("item-intersect")) {
-          entry.target.classList.add("item-intersect")
-          spinClickSound.play()
+  //   const observer = new IntersectionObserver((entries) => {
+  //     entries.forEach((entry) => {
+  //       // TODO: Fix initial sound when starting, and sound when adding/removing
+  //       // getSpinning() function instead, so spinning is evaluated only once the callback is executed?
+  //       if (!spinning) {
+  //         return
+  //       }
 
-        } else if (!entry.isIntersecting && entry.target.classList.contains("item-intersect")) {
-          entry.target.classList.remove("item-intersect")
-        }
-      })
-    },
-      {
-        root: document.querySelector("#wheel-svg"),
-        // top right bottom left
-        rootMargin: "-50% 0px 0px -50%",
-        threshold: 0.5,
-      })
+  //       if (entry.isIntersecting && !entry.target.classList.contains("item-intersect")) {
+  //         entry.target.classList.add("item-intersect")
+  //         spinClickSound.play()
 
-    document.querySelectorAll(".wheel-item-start").forEach((target) => observer.observe(target))
+  //       } else if (!entry.isIntersecting && entry.target.classList.contains("item-intersect")) {
+  //         entry.target.classList.remove("item-intersect")
+  //       }
+  //     })
+  //   },
+  //     {
+  //       root: document.querySelector("#wheel-svg"),
+  //       // top right bottom left
+  //       rootMargin: "-50% 0px 0px -50%",
+  //       threshold: 0.5,
+  //     })
 
-    return () => observer.disconnect()
-  })
+  //   document.querySelectorAll(".wheel-item-start").forEach((target) => observer.observe(target))
+
+  //   return () => observer.disconnect()
+  // })
 
   const theme = useTheme()
 
