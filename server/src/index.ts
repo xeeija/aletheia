@@ -68,7 +68,10 @@ const main = async () => {
   })
 
   socketIo.on("connection", (socket) => {
-    randomWheelHandlers(socket, socketIo)
+    randomWheelHandlers(socket, {
+      socketIo,
+      prisma
+    })
   })
 
   // # Graphql Server

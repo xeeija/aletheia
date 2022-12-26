@@ -25,7 +25,10 @@ export type Socket = SocketDefault<ClientToServerEvents, ServerToClientEvents, I
 
 export type SocketHandler = (
   socket: Socket, //Socket<ClientToServerEvents, ServerToClientEvents>,
-  socketIo: SocketServer //Server<ClientToServerEvents, ServerToClientEvents>
+  options: {
+    socketIo: SocketServer //Server<ClientToServerEvents, ServerToClientEvents>
+    prisma: PrismaClient
+  }
 ) => void
 
 export interface ServerToClientEvents {
@@ -41,6 +44,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
+  "wheel:entries": (type: "add" | "update", wheelId: string,) => void
 }
 
 export interface InterServerEvents { }
