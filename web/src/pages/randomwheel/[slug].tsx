@@ -565,7 +565,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
                     <EntryList entries={entries ?? []} editable={wheel.editable} spinning={spinning} autoScroll />
 
-                    {wheel.editable && <AddEntryForm wheelId={wheel.id} spinning={spinning} />}
+                    {wheel.editable &&
+                      <AddEntryForm wheelId={wheel.id} spinning={spinning} />
+                    }
 
                   </Box>
                 </TabPanel>

@@ -19,6 +19,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
       entry: ""
     }}
       onSubmit={async ({ entry }, { resetForm }) => {
+        resetForm()
 
         const { data } = await addEntry({
           randomWheelId: wheelId,
@@ -29,10 +30,9 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
           // setEntries([...entries, data?.addRandomWheelEntry])
         }
 
-        resetForm()
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values }) => (
         <Form autoComplete="off">
           <InputField name="entry" label="Add name" fullWidth
             InputProps={{
@@ -40,7 +40,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
                 <Tooltip arrow placement="top" title="Add">
                   <IconButton
                     type="submit"
-                    disabled={!values.entry.trim() || isSubmitting || spinning}
+                    disabled={!values.entry.trim() || spinning}
                     aria-label="Add name"
                     edge="end"
                     sx={{ mr: -0.75 }}
