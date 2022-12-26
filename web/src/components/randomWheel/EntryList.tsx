@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material";
 import { HiTrash } from "react-icons/hi";
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation, useUpdateRandomWheelEntryMutation } from "../../generated/graphql";
@@ -9,9 +9,11 @@ interface Props {
   entries: RandomWheelEntryFragment[]
   editable?: boolean
   spinning?: boolean
+  autoScroll?: boolean
+  autoScrollThreshold?: number
 }
 
-export const EntryList: FC<Props> = ({ entries, editable, spinning }) => {
+export const EntryList: FC<Props> = ({ entries, editable, spinning, id, autoScroll, autoScrollThreshold = 50 }) => {
 
   const theme = useTheme()
 
@@ -76,10 +78,21 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning }) => {
 
   }
 
+  // auto scroll
+  const listRef = useRef<HTMLUListElement>(null)
+  useEffect(() => {
+    const list = listRef?.current
+
+    // scrollHeight - clientHeight = scrollTopMax
+    if (autoScroll && list && (list.scrollHeight - list.clientHeight - list.scrollTop < autoScrollThreshold)) {
+      list?.scrollTo({ top: list.scrollHeight - list.clientHeight })
+    }
+  }, [entries, listRef, autoScroll, autoScrollThreshold])
+
   const totalWeight = entries.reduce((acc, entry) => acc + entry.weight, 0)
 
   return (
-    <List role="list" sx={{ py: 0, overflowY: "auto", maxHeight: 480 }}>
+    <List role="list" ref={listRef} sx={{ py: 0, overflowY: "auto", maxHeight: 480 }} >
 
       {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
       <AlertPopup severity="success" messageState={[showError, setShowError]} />

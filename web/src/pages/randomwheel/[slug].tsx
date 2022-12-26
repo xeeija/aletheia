@@ -563,7 +563,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries ?? []} editable={wheel.editable} spinning={spinning} />
+                    <EntryList entries={entries ?? []} editable={wheel.editable} spinning={spinning} autoScroll />
 
                     {wheel.editable && <AddEntryForm wheelId={wheel.id} spinning={spinning} />}
 
