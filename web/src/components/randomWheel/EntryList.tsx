@@ -13,7 +13,7 @@ interface Props {
   autoScrollThreshold?: number
 }
 
-export const EntryList: FC<Props> = ({ entries, editable, spinning, id, autoScroll, autoScrollThreshold = 50 }) => {
+export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 50 }) => {
 
   const theme = useTheme()
 
