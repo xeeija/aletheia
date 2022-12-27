@@ -9,6 +9,7 @@ COPY prisma ./prisma
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+
 RUN npm ci
 
 # Prisma
@@ -17,12 +18,12 @@ RUN npm ci
 
 
 # Rebuild the source code only when needed
-FROM node:16-alpine AS builder
+FROM node:16-alpine3.16 AS builder
 WORKDIR /server
 COPY --from=deps /server/node_modules ./node_modules
 COPY . .
 
-# RUN npx prisma generate
+RUN npx prisma generate
 
 RUN npm run build
 
