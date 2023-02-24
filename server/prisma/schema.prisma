@@ -62,10 +62,10 @@ model RandomWheel {
   access        AccessType          @relation(fields: [accessType], references: [type])
   accessType    String              @default("PRIVATE")
   rotation      Float               @default(0)
-  spinDuration  Int                 @default(6000)
-  fadeDuration  Int                 @default(6000)
-  owner         User                @relation(fields: [ownerId], references: [id])
-  ownerId       String              @db.Uuid
+  spinDuration  Int                 @default(8000)
+  fadeDuration  Int                 @default(8000)
+  owner         User?               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId       String?             @db.Uuid
   entries       RandomWheelEntry[]
   winners       RandomWheelWinner[]
   members       RandomWheelMember[]

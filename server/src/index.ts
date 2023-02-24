@@ -18,6 +18,11 @@ import { randomWheelHandlers } from "./socket"
 // Create one instance and pass it around is the best practice for prisma
 const prisma = new PrismaClient()
 
+prisma.$on("beforeExit", async () => {
+  await prisma.$disconnect()
+  console.log("Prisma disconnected")
+})
+
 const main = async () => {
 
   // # Web Server
@@ -48,7 +53,7 @@ const main = async () => {
       sameSite: "lax",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24
+      //maxAge: 1000 * 60 * 60 * 24
     },
     store: new PostgresStore({
       tableName: "_session",
@@ -106,6 +111,6 @@ const main = async () => {
 }
 
 main()
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  // .finally(async () => {
+  //   await prisma.$disconnect()
+  // })

@@ -2,10 +2,12 @@ import { FC, ReactNode } from "react"
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { useField } from "formik"
 
-interface RadioOption {
+export interface RadioOption {
   value: string
   label: ReactNode
   color?: "primary" | "secondary" | "error" | "info" | "success" | "warning" | "default"
+  disabled?: boolean
+  hidden?: boolean
 }
 
 interface Props {
@@ -33,8 +35,8 @@ export const RadioGroupField: FC<Props> = ({ name, label, row, options, children
         aria-labelledby={hasLabel ? `${name}Label` : undefined}
         {...field}
       >
-        {(options ?? []).map(({ value, label, color }) => (
-          <FormControlLabel key={value} value={value} control={<Radio color={color} />} label={label} />
+        {(options ?? []).filter(option => !option.hidden).map(({ value, label, color, disabled }) => (
+          <FormControlLabel key={value} value={value} control={<Radio color={color} />} label={label} disabled={disabled} />
         ))}
 
         {children}

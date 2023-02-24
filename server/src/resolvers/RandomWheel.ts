@@ -132,11 +132,11 @@ class RandomWheelFull extends RandomWheel {
   @Field(() => [RandomWheelMemberFull])
   members: RandomWheelMember[]
 
-  @Field(() => [AccessType])
+  @Field(() => AccessType)
   access: AccessType
 
-  @Field(() => User)
-  owner: User
+  @Field(() => User, { nullable: true })
+  owner?: User
 }
 
 @ObjectType("RandomWheelMember")
@@ -169,13 +169,17 @@ export class RandomWheelResolver {
 
   @FieldResolver(() => Boolean)
   async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: MyContext) {
-    if (randomWheel.ownerId === req.session.userId) {
+    // TODO: Option to make public wheels editable anonymously
+
+    if (randomWheel.ownerId === req.session.userId ||
+      randomWheel.ownerId === null ||
+      (randomWheel.accessType === "PUBLIC")) {
       return true
     }
 
     // if session.userId is undefined in the prisma query
     // it is treated as not beeing in the query, so any user with edit is found - fix with this if
-    if (req.session.userId === undefined) {
+    if (req.session.userId === undefined && randomWheel.ownerId) {
       return false
     }
 
@@ -319,12 +323,6 @@ export class RandomWheelResolver {
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
   ): Promise<typeof RandomWheelResponse> {
-    if (!req.session.userId) {
-      return {
-        errorCode: 401,
-        errorMessage: "Not logged in",
-      }
-    }
 
     const tempSlug = `slug-${Date.now()}`
 
@@ -332,7 +330,7 @@ export class RandomWheelResolver {
       const randomWheel = await prisma.randomWheel.create({
         data: {
           slug: tempSlug,
-          ownerId: req.session.userId,
+          ownerId: req.session.userId || null,
           name: name,
           accessType,
           spinDuration,

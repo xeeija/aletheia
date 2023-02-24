@@ -8,9 +8,9 @@ import { useRouter } from "next/router"
 
 const wheelDraft = {
   name: "",
-  accessType: "PRIVATE",
-  spinDuration: 6000,
-  fadeDuration: 6000,
+  accessType: "PUBLIC",
+  spinDuration: 8000,
+  fadeDuration: 8000,
 }
 
 interface Props {

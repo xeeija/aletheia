@@ -10,7 +10,7 @@ export function ListType<C>(itemClass: ClassType<C>) {
   return ListTypeClass
 }
 
-export function createAppErrorUnion<C>(classType: ClassType<C>, name?: string) {
+export function createAppErrorUnion<C extends object>(classType: ClassType<C>, name?: string) {
   const union = createUnionType({
     name: `${classType.name ?? name}Response`,
     types: () => [classType, AppError] as const,

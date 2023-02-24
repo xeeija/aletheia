@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUser } from "react-icons/ti";
+import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
 import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
@@ -253,7 +253,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   // https://nextjs.org/docs/advanced-features/middleware
 
   const viewable = wheel.accessType === "PUBLIC"
-    || wheel.owner.id === user?.id
+    || wheel.owner === null
+    || wheel.owner?.id === user?.id
     || wheel.members.some(member => member.userId === user?.id)
 
   if (!viewable) {
@@ -408,15 +409,17 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         setEditDialogOpen(true)
                       }}
                     />
-                    <LinkListItem
-                      name="Members"
-                      icon={<SvgIcon component={TiUser} />}
-                      onClick={() => {
-                        setOptionsAnchor(null)
-                        setMembersDialogOpen(true)
-                      }}
-                    />
-                    {user?.id === wheel.owner.id && (
+                    {wheel.editable && wheel.owner &&
+                      <LinkListItem
+                        name="Members"
+                        icon={<SvgIcon component={TiUserAdd} />}
+                        onClick={() => {
+                          setOptionsAnchor(null)
+                          setMembersDialogOpen(true)
+                        }}
+                      />
+                    }
+                    {wheel.owner && user?.id === wheel.owner.id && (
                       <>
                         <LinkListItem divider />
                         <LinkListItem
@@ -438,7 +441,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <CreateEditWheelDialog type="edit" open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
               )}
 
-              {wheel.editable &&
+              {wheel.editable && wheel.owner &&
                 <EditMembersDialog
                   open={membersDialogOpen}
                   slug={wheel.slug}
@@ -447,7 +450,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 />
               }
 
-              {wheel.owner.id === user?.id &&
+              {wheel.owner && wheel.owner?.id === user?.id &&
                 <DeleteWheelDialog
                   open={deleteDialogOpen}
                   onClose={() => setDeleteDialogOpen(false)}
@@ -460,7 +463,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
           </Box>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {`von ${wheel.owner.displayname} • ${new Date(wheel.createdAt).toLocaleString()}`}
+            {`${wheel.owner ? `von ${wheel.owner.displayname}` : "anonymous"} • `}
+            {new Date(wheel.createdAt).toLocaleString()}
           </Typography>
 
           <Box sx={{

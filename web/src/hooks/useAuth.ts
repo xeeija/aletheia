@@ -1,11 +1,12 @@
-import { useMeQuery } from "../generated/graphql"
+import { useMeQuery, UserNameFragment } from "../generated/graphql"
 
 export const useAuth = () => {
   const [{ data, error, fetching }] = useMeQuery()
 
   return {
-    user: data?.me,
+    user: <UserNameFragment>data?.me,
     error,
-    fetchingUser: fetching
+    fetchingUser: fetching,
+    authenticated: !!data?.me
   }
 }
