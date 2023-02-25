@@ -1,4 +1,4 @@
-import { MyContext } from "src/types";
+import { GraphqlContext } from "src/types";
 import { slugify } from "../utils/slug";
 import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
 import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole, RandomWheelLike } from "../../dist/generated/typegraphql-prisma";
@@ -168,7 +168,7 @@ export class RandomWheelResolver {
   // [x] clear all entries
 
   @FieldResolver(() => Boolean)
-  async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: MyContext) {
+  async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously
 
     if (randomWheel.ownerId === req.session.userId ||
@@ -195,7 +195,7 @@ export class RandomWheelResolver {
   }
 
   @FieldResolver(() => Boolean)
-  async liked(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: MyContext) {
+  async liked(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
 
     if (req.session.userId === undefined) {
       return false
@@ -217,7 +217,7 @@ export class RandomWheelResolver {
 
   @Query(() => [RandomWheelFull])
   async myRandomWheels(
-    @Ctx() { req, prisma }: MyContext,
+    @Ctx() { req, prisma }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("type", { defaultValue: "my" }) type: string // "should" be: "my" | "shared" | "favorite"
   ) {
@@ -257,7 +257,7 @@ export class RandomWheelResolver {
   // TODO: Only allowed if logged in? (or if private?)
   @Query(() => RandomWheelFull, { nullable: true })
   async randomWheelBySlug(
-    @Ctx() { req, prisma }: MyContext,
+    @Ctx() { req, prisma }: GraphqlContext,
     @Arg("slug") slug: string,
     @Info() info: GraphQLResolveInfo
   ) { //: Promise<typeof RandomWheelResponse> {
@@ -317,7 +317,7 @@ export class RandomWheelResolver {
   // FIX return type
   @Mutation(() => RandomWheelFull)
   async createRandomWheel(
-    @Ctx() { req, prisma }: MyContext,
+    @Ctx() { req, prisma }: GraphqlContext,
     @Arg("name", { nullable: true }) name?: string,
     @Arg("accessType", { nullable: true }) accessType?: string,
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
@@ -373,7 +373,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelFull, { nullable: true })
   async updateRandomWheel(
-    @Ctx() { prisma, req, socketIo }: MyContext,
+    @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("options") wheelOptions: RandomWheelInput
   ) {
@@ -442,7 +442,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => AppError, { nullable: true })
   async deleteRandomWheel(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req }: GraphqlContext,
     @Arg("id") id: string
   ): Promise<AppError | null> {
     // TODO: isUuid utility function
@@ -481,7 +481,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelWinner)
   async spinRandomWheel(
-    @Ctx() { prisma, req, socketIo }: MyContext,
+    @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Arg("randommWheelId") randomWheelId: string,
   ) {
 
@@ -561,7 +561,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelEntry)
   async addRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: MyContext,
+    @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("name") name: string,
   ) {
@@ -581,7 +581,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelEntry)
   async updateRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: MyContext,
+    @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("entry") entry: RandomWheelEntryInput
   ) {
@@ -597,7 +597,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: MyContext,
+    @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("id") id: string
   ) {
     const entry = await prisma.randomWheelEntry.delete({
@@ -612,7 +612,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => Int)
   async clearRandomWheel(
-    @Ctx() { prisma, socketIo }: MyContext,
+    @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("id") id: string
   ) {
     const res = await prisma.randomWheelEntry.deleteMany({
@@ -632,7 +632,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => [RandomWheelMemberFull], { nullable: true })
   async updateRandomWheelMembers(
-    @Ctx() { prisma, req, socketIo }: MyContext,
+    @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("randomWheelId") randomWwheelId: string,
     @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[],
@@ -708,7 +708,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteRandomWheelMember(
-    @Ctx() { prisma, req, socketIo }: MyContext,
+    @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Arg("id") id: string
   ) {
 
@@ -736,7 +736,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelLike, { nullable: true })
   async likeRandomWheel(
-    @Ctx() { prisma, req }: MyContext,
+    @Ctx() { prisma, req }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("like") like: boolean,
   ) {

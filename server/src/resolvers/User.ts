@@ -1,7 +1,7 @@
 import { User } from "../../dist/generated/typegraphql-prisma";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2"
-import { MyContext } from "src/types";
+import { GraphqlContext } from "src/types";
 import { FieldError } from "./common/types";
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
@@ -29,7 +29,7 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async me(
-    @Ctx() { req, prisma }: MyContext
+    @Ctx() { req, prisma }: GraphqlContext
   ) {
     // Not logged in
     if (!req.session.userId) {
@@ -48,7 +48,7 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("displayname", { nullable: true }) displayname: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: MyContext,
+    @Ctx() { req, prisma }: GraphqlContext,
   ): Promise<UserResponse> {
 
     let errors: FieldError[] = []
@@ -104,7 +104,7 @@ export class UserResolver {
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: MyContext,
+    @Ctx() { req, prisma }: GraphqlContext,
   ): Promise<UserResponse> {
 
     let errors: FieldError[] = []
@@ -136,7 +136,7 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   async logout(
-    @Ctx() { req, res }: MyContext,
+    @Ctx() { req, res }: GraphqlContext,
   ): Promise<boolean> {
 
     if (!req.session.userId) {
@@ -166,7 +166,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async updateUser(
     @Arg("user") user: UserInput,
-    @Ctx() { req, prisma }: MyContext
+    @Ctx() { req, prisma }: GraphqlContext
   ): Promise<UserResponse> {
 
     let errors: FieldError[] = []
@@ -202,7 +202,7 @@ export class UserResolver {
   // but queries can't easily be executed imperatively with urql 
   @Mutation(() => Boolean)
   async usernameExists(
-    @Ctx() { prisma }: MyContext,
+    @Ctx() { prisma }: GraphqlContext,
     @Arg("username") username: string,
   ) {
     const userExists = await prisma.user.count({

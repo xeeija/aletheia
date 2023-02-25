@@ -11,7 +11,7 @@ declare module "express-session" {
 
 // TODO: Need a better name
 // Needed for GraphQL resolvers
-export type MyContext = {
+export type GraphqlContext = {
   req: Request
   res: Response
   prisma: PrismaClient
