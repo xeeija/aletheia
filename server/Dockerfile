@@ -23,6 +23,9 @@ WORKDIR /server
 COPY --from=deps /server/node_modules ./node_modules
 COPY . .
 
+# Prisma error with node:16-alpine (fixed in prisma@4.8.0) https://github.com/prisma/prisma/issues/16834#issuecomment-1355195025
+# RUN apk add --no-cache openssl1.1-compat
+
 RUN npx prisma generate
 
 RUN npm run build
@@ -33,7 +36,7 @@ RUN npm ci --omit=dev
 
 
 # Production image, copy all the files and run
-FROM node:16-alpine AS runner
+FROM node:16-alpine3.16 AS runner
 WORKDIR /server
 
 # ENV NODE_ENV production
