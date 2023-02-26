@@ -256,7 +256,7 @@ export type RandomWheelRoleCount = {
 export type RandomWheelWinner = {
   __typename?: 'RandomWheelWinner';
   createdAt: Scalars['DateTime'];
-  drawnById: Scalars['String'];
+  drawnById?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
   randomWheelId: Scalars['String'];
@@ -324,6 +324,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
   accessType?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
   fadeDuration?: Maybe<Scalars['Int']>;
+  editAnonymous?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -378,7 +379,7 @@ export type SpinRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type SpinRandomWheelMutation = { __typename?: 'Mutation', spinRandomWheel: { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, drawnById: string, randomWheelId: string, winnerIndex?: Maybe<number> } };
+export type SpinRandomWheelMutation = { __typename?: 'Mutation', spinRandomWheel: { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, drawnById?: Maybe<string>, randomWheelId: string, winnerIndex?: Maybe<number> } };
 
 export type UpdateRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
@@ -535,12 +536,13 @@ export function useClearRandomWheelMutation() {
   return Urql.useMutation<ClearRandomWheelMutation, ClearRandomWheelMutationVariables>(ClearRandomWheelDocument);
 };
 export const CreateRandomWheelDocument = gql`
-    mutation CreateRandomWheel($name: String, $accessType: String, $spinDuration: Int, $fadeDuration: Int) {
+    mutation CreateRandomWheel($name: String, $accessType: String, $spinDuration: Int, $fadeDuration: Int, $editAnonymous: Boolean) {
   createRandomWheel(
     name: $name
     accessType: $accessType
     spinDuration: $spinDuration
     fadeDuration: $fadeDuration
+    editAnonymous: $editAnonymous
   ) {
     ...RandomWheelDetails
   }

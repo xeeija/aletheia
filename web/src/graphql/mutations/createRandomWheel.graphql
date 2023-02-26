@@ -1,10 +1,17 @@
-mutation CreateRandomWheel($name: String, $accessType: String, $spinDuration: Int, $fadeDuration: Int) {
+mutation CreateRandomWheel(
+  $name: String
+  $accessType: String
+  $spinDuration: Int
+  $fadeDuration: Int
+  $editAnonymous: Boolean
+) {
   createRandomWheel(
-    name: $name, 
-    accessType: $accessType, 
-    spinDuration: $spinDuration, 
+    name: $name
+    accessType: $accessType
+    spinDuration: $spinDuration
     fadeDuration: $fadeDuration
+    editAnonymous: $editAnonymous
   ) {
-		...RandomWheelDetails
+    ...RandomWheelDetails
   }
 }

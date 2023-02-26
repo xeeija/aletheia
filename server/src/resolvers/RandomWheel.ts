@@ -401,7 +401,7 @@ export class RandomWheelResolver {
     const isOwner = randomWheel?.ownerId === req.session.userId
     const isEditable = randomWheel.editAnonymous || randomWheel.members.some((member) => member.userId === req.session.userId)
 
-    if ((!req.session.userId && randomWheel.ownerId) || !(isOwner || isEditable)) {
+    if ((!req.session.userId && !randomWheel.editAnonymous) || !(isOwner || isEditable)) {
       // TODO: Proper Error
       return null
       // return {
