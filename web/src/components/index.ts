@@ -14,6 +14,7 @@ export * from "./input/InputField"
 export * from "./input/PasswordField"
 export * from "./input/SliderField"
 export * from "./input/RadioGroupField"
+export * from "./input/CheckboxField"
 
 export * from "./navigation/Navbar"
 export * from "./navigation/Navigation"
