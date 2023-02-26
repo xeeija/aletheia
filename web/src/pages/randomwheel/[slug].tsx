@@ -481,10 +481,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
           }}>
 
             <Box sx={{ gridArea: "wheel" }}>
-              <Paper sx={{ p: 2, height: "100%" }}>
+              <Paper sx={{ p: 1, height: "100%" }}>
 
                 <Wheel
-                  diameter={677}
+                  diameter={688}
                   entries={entries}
                   // rotation={wheel.editable ? (wheelRotation || wheel.rotation) : 0}
                   // spinning={spinning && wheel.editable}
@@ -584,6 +584,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     }))
                   }
                     spinning={spinning}
+                    editable={wheel.editable || wheel.editAnonymous}
                   />
                 </TabPanel>
 

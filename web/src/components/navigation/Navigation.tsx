@@ -61,7 +61,7 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
         flexDirection: "column",
         flexGrow: 1,
         ...(!noAppbar && { mt: 8, }),
-        ...(!noPadding && { p: 3, pb: 2 }),
+        ...(!noPadding && { p: 2 }),
         minHeight: "calc(100vh - 64px)",
         gap: 2,
       }}>

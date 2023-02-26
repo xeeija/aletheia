@@ -16,6 +16,7 @@ interface Props {
 export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 50 }) => {
 
   const theme = useTheme()
+  const maxHeight = 474 + (!editable ? 84 + 64 : 0)
 
   // const [deleteEnabled, setDeleteEnabled] = useState(false)
 
@@ -92,7 +93,7 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
   const totalWeight = entries.reduce((acc, entry) => acc + entry.weight, 0)
 
   return (
-    <List role="list" ref={listRef} sx={{ py: 0, overflowY: "auto", maxHeight: 480 }} >
+    <List role="list" ref={listRef} sx={{ py: 0, overflowY: "auto", maxHeight: maxHeight }} >
 
       {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
       <AlertPopup severity="success" messageState={[showError, setShowError]} />

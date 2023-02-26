@@ -10,9 +10,12 @@ interface Winner {
 interface Props {
   winners: Winner[]
   spinning?: boolean
+  editable?: boolean
 }
 
-export const WinnerList: FC<Props> = ({ winners, spinning }) => {
+export const WinnerList: FC<Props> = ({ winners, spinning, editable }) => {
+
+  const maxHeight = 468 + (!editable ? 84 : 0)
 
   return (
     winners.length > 0 ?
@@ -28,7 +31,7 @@ export const WinnerList: FC<Props> = ({ winners, spinning }) => {
         </Box>
 
         {/* Maybe toggle previous winners */}
-        <List sx={{ pb: 0, overflowY: "auto", maxHeight: 472, }}>
+        <List sx={{ pb: 0, overflowY: "auto", maxHeight: maxHeight, }}>
           {winners.slice(1).map(({ name, createdAt }, i) => (
             <ListItem key={i} role="listitem" dense sx={{ mt: 0 }}>
               <ListItemText primary={name} secondary={createdAt.toLocaleString()} primaryTypographyProps={{
