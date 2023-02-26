@@ -13,7 +13,7 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
   return (
     <Card>
       <Link href={`randomwheel/${wheel.slug}`} passHref>
-        <CardActionArea>
+        <CardActionArea sx={{ height: "100%" }}>
           <CardContent>
             <Typography variant="h6">
               {wheel.name || `Wheel #${wheel.slug}`}
