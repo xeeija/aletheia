@@ -59,6 +59,7 @@ model RandomWheel {
   name          String? // maybe optional
   createdAt     DateTime            @default(now())
   uniqueEntries Boolean             @default(false)
+  editAnonymous Boolean             @default(false)
   access        AccessType          @relation(fields: [accessType], references: [type])
   accessType    String              @default("PRIVATE")
   rotation      Float               @default(0)
@@ -95,8 +96,8 @@ model RandomWheelWinner {
   randomWheelId String      @db.Uuid
   name          String
   createdAt     DateTime    @default(now())
-  drawnBy       User        @relation(fields: [drawnById], references: [id])
-  drawnById     String      @db.Uuid
+  drawnBy       User?       @relation(fields: [drawnById], references: [id])
+  drawnById     String?     @db.Uuid
   winnerIndex   Int?
 }
 

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react"
 import { Grid } from "@mui/material"
-import { InputField, RadioGroupField, SliderField } from "../components"
+import { CheckboxField, InputField, RadioGroupField, SliderField } from "../components"
 import { useAuth } from "../../hooks"
 
 interface Mark {
@@ -28,11 +28,13 @@ export const WheelFormFields: FC<Props> = () => {
         <InputField name="name" label="Title" fullWidth />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} container sx={{ flexDirection: "column" }}>
         <RadioGroupField name="accessType" label="Access type" row options={[
           { value: "PUBLIC", label: "Public", color: "success" },
           { value: "PRIVATE", label: "Private", color: "secondary", disabled: !authenticated },
         ]} />
+
+        <CheckboxField name="editAnonymous" label="Everyone can edit the wheel" disabled={!authenticated} />
       </Grid>
 
       <Grid item xs={12}>

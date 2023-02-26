@@ -33,6 +33,7 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
           accessType: wheel.accessType,
           spinDuration: wheel.spinDuration,
           fadeDuration: wheel.fadeDuration,
+          editAnonymous: wheel.editAnonymous,
         }}
         enableReinitialize
         onSubmit={async (values) => {

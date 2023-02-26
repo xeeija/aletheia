@@ -194,7 +194,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
         setWheelRotation(rotation)
         setLastWinningEntry(entry)
 
-        if (wheel.editable) {
+        if (wheel.editable || wheel.editAnonymous) {
           setWinnerDialogOpen(true)
         }
       }, wheel.spinDuration + 500 + 20)
@@ -224,7 +224,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       socket.disconnect()
       // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
-  }, [wheel?.id, wheel?.spinDuration, wheel?.editable, fetchEntries, fetchWinners, fetchWheel])
+  }, [wheel?.id, wheel?.spinDuration, wheel?.editable, wheel?.editAnonymous, fetchEntries, fetchWinners, fetchWheel])
 
   if (fetching || !slug) {
     return <Box>
@@ -387,7 +387,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               <Tooltip arrow placement="bottom-end" title="More options">
                 <IconButton color="secondary"
-                  disabled={!wheel.editable}
+                  disabled={!wheel.editable && !wheel.editAnonymous}
                   onClick={(ev) => setOptionsAnchor(ev.currentTarget)}
                 >
                   <HiDotsVertical />
@@ -398,7 +398,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Paper sx={{ p: 1.5, width: 180 }}>
 
                   <List dense sx={{ py: 0 }}>
-                    <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} />
+                    <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} disabled />
                     <LinkListItem
                       name="Edit"
                       icon={<SvgIcon component={HiPencil} viewBox="0 0 20 20" />}
@@ -409,7 +409,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         setEditDialogOpen(true)
                       }}
                     />
-                    {wheel.editable && wheel.owner &&
+                    {(wheel.editable || wheel.editAnonymous) && wheel.owner &&
                       <LinkListItem
                         name="Members"
                         icon={<SvgIcon component={TiUserAdd} />}
@@ -437,11 +437,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 </Paper>
               </Dropdown>
 
-              {wheel.editable && (
+              {(wheel.editable || wheel.editAnonymous) && (
                 <CreateEditWheelDialog type="edit" open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
               )}
 
-              {wheel.editable && wheel.owner &&
+              {(wheel.editable || wheel.editAnonymous) && wheel.owner &&
                 <EditMembersDialog
                   open={membersDialogOpen}
                   slug={wheel.slug}
@@ -474,7 +474,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             gridTemplateColumns: "2fr 1fr",
             gridTemplateRows: "min-content 1fr",
             gridTemplateAreas: `
-              "wheel ${wheel.editable ? "controls" : "names"}"
+              "wheel ${(wheel.editable || wheel.editAnonymous) ? "controls" : "names"}"
               "wheel names"
             `,
             // "wheel wheel names"
@@ -495,7 +495,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               </Paper>
             </Box>
-            {wheel.editable && (
+            {(wheel.editable || wheel.editAnonymous) && (
               <Box sx={{ gridArea: "controls" }}>
                 <Paper sx={{ p: 2 }}>
 
@@ -538,7 +538,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               description={winners?.[0]?.name}
               onClose={() => setWinnerDialogOpen(false)}
               onRemove={onRemoveWinnerDialog}
-              hideRemove={!wheel.editable}
+              hideRemove={!wheel.editable && !wheel.editAnonymous}
             />
 
             <Box sx={{ gridArea: "names" }}>
@@ -567,9 +567,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries ?? []} editable={wheel.editable} spinning={spinning} autoScroll />
+                    <EntryList entries={entries ?? []} editable={wheel.editable || wheel.editAnonymous} spinning={spinning} autoScroll />
 
-                    {wheel.editable &&
+                    {(wheel.editable || wheel.editAnonymous) &&
                       <AddEntryForm wheelId={wheel.id} spinning={spinning} />
                     }
 

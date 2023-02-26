@@ -55,6 +55,9 @@ class RandomWheelInput implements Partial<RandomWheel> {
 
   @Field(() => Int, { nullable: true })
   fadeDuration?: number
+
+  @Field(() => Boolean, { nullable: true })
+  editAnonymous?: boolean
 }
 
 @InputType()
@@ -172,8 +175,7 @@ export class RandomWheelResolver {
     // TODO: Option to make public wheels editable anonymously
 
     if (randomWheel.ownerId === req.session.userId ||
-      randomWheel.ownerId === null ||
-      (randomWheel.accessType === "PUBLIC")) {
+      randomWheel.ownerId === null) {
       return true
     }
 
@@ -322,6 +324,7 @@ export class RandomWheelResolver {
     @Arg("accessType", { nullable: true }) accessType?: string,
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
+    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
   ): Promise<typeof RandomWheelResponse> {
 
     const tempSlug = `slug-${Date.now()}`
@@ -334,7 +337,8 @@ export class RandomWheelResolver {
           name: name,
           accessType,
           spinDuration,
-          fadeDuration
+          fadeDuration,
+          editAnonymous,
         }
       })
 
@@ -395,9 +399,9 @@ export class RandomWheelResolver {
     }
 
     const isOwner = randomWheel?.ownerId === req.session.userId
-    const isEditable = randomWheel.members.some((r) => r.userId === req.session.userId)
+    const isEditable = randomWheel.editAnonymous || randomWheel.members.some((member) => member.userId === req.session.userId)
 
-    if (!req.session.userId || (!isOwner && !isEditable)) {
+    if ((!req.session.userId && randomWheel.ownerId) || !(isOwner || isEditable)) {
       // TODO: Proper Error
       return null
       // return {
@@ -516,7 +520,7 @@ export class RandomWheelResolver {
       data: {
         randomWheelId,
         name: winnerEntry.name,
-        drawnById: req.session.userId,
+        drawnById: req.session.userId ?? null,
         winnerIndex,
       }
     })

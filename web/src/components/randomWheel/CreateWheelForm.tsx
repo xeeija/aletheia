@@ -11,6 +11,7 @@ const wheelDraft = {
   accessType: "PUBLIC",
   spinDuration: 8000,
   fadeDuration: 8000,
+  editAnonymous: true
 }
 
 interface Props {

@@ -73,6 +73,7 @@ export type MutationClearRandomWheelArgs = {
 
 export type MutationCreateRandomWheelArgs = {
   accessType?: Maybe<Scalars['String']>;
+  editAnonymous?: Maybe<Scalars['Boolean']>;
   fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
@@ -168,6 +169,7 @@ export type RandomWheel = {
   access: AccessType;
   accessType: Scalars['String'];
   createdAt: Scalars['DateTime'];
+  editAnonymous: Scalars['Boolean'];
   editable: Scalars['Boolean'];
   entries: Array<RandomWheelEntry>;
   fadeDuration: Scalars['Int'];
@@ -208,6 +210,7 @@ export type RandomWheelEntryInput = {
 
 export type RandomWheelInput = {
   accessType?: Maybe<Scalars['String']>;
+  editAnonymous?: Maybe<Scalars['Boolean']>;
   fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
@@ -289,7 +292,7 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
+export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string, weight: number };
 
@@ -324,7 +327,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
 
 export type DeleteRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
@@ -383,7 +386,7 @@ export type UpdateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type UpdateRandomWheelEntryMutationVariables = Exact<{
   id: Scalars['String'];
@@ -418,14 +421,14 @@ export type MyRandomWheelsQueryVariables = Exact<{
 }>;
 
 
-export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
 
 
-export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, liked: boolean, owner?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, owner?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -466,6 +469,7 @@ export const RandomWheelDetailsFragmentDoc = gql`
   fadeDuration
   accessType
   editable
+  editAnonymous
   liked
   _count {
     entries

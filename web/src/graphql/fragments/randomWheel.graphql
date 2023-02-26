@@ -8,6 +8,7 @@ fragment RandomWheelDetails on RandomWheel {
   fadeDuration
   accessType
   editable
+  editAnonymous
   liked
   _count {
     entries
