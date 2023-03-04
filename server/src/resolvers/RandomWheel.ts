@@ -1,12 +1,13 @@
 import { GraphqlContext } from "src/types";
 import { slugify } from "../utils/slug";
 import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
-import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole, RandomWheelLike } from "../../dist/generated/typegraphql-prisma";
+import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole, RandomWheelLike, ColorTheme } from "../../dist/generated/typegraphql-prisma";
 import { AppError, createAppErrorUnion } from "./common/types";
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import { parseResolveInfo, ResolveTree } from "graphql-parse-resolve-info";
 import { Prisma } from "@prisma/client";
 import { random, randomNumber } from "../utils/math";
+import { ColorThemeInput } from "./ColorTheme";
 
 /*
   @ObjectType()
@@ -58,6 +59,9 @@ class RandomWheelInput implements Partial<RandomWheel> {
 
   @Field(() => Boolean, { nullable: true })
   editAnonymous?: boolean
+
+  @Field(() => ColorThemeInput, { nullable: true })
+  theme?: ColorTheme | null // ColorThemeInput
 }
 
 @InputType()
@@ -100,6 +104,7 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
     },
     owner: "owner" in fields,
     access: "access" in fields,
+    theme: "theme" in fields,
     _count: "_count" in fields,
   }
 
@@ -140,6 +145,9 @@ class RandomWheelFull extends RandomWheel {
 
   @Field(() => User, { nullable: true })
   owner?: User
+
+  @Field(() => ColorTheme, { nullable: true })
+  theme?: ColorTheme
 }
 
 @ObjectType("RandomWheelMember")
@@ -378,15 +386,16 @@ export class RandomWheelResolver {
   @Mutation(() => RandomWheelFull, { nullable: true })
   async updateRandomWheel(
     @Ctx() { prisma, req, socketIo }: GraphqlContext,
+    @Info() info: GraphQLResolveInfo,
     @Arg("id") id: string,
-    @Arg("options") wheelOptions: RandomWheelInput
+    @Arg("options") { theme, ...wheelOptions }: RandomWheelInput
   ) {
 
     // TODO: Middleware to get randomWheel (or any other entity) or return a not found error/permission error
     const randomWheel = await prisma.randomWheel.findUnique({
       where: { id: id },
       include: {
-        members: true
+        members: true,
       }
     })
 
@@ -411,9 +420,36 @@ export class RandomWheelResolver {
     }
 
     try {
+
+      // extra query as workaround, because theme and wheeloptions are not compatible somehow idk
+      if (theme) {
+        await prisma.randomWheel.update({
+          where: { id },
+          data: {
+            theme: {
+              upsert: {
+                update: {
+                  name: theme?.name,
+                  colors: theme?.colors,
+                  // Creator User? how to handle changing the theme?
+                },
+                create: {
+                  name: theme?.name,
+                  colors: theme?.colors,
+                  creatorId: req.session.userId,
+                }
+              },
+            }
+          }
+        })
+      }
+
       const newWheel = await prisma.randomWheel.update({
-        where: { id: id },
-        data: wheelOptions
+        where: { id },
+        data: wheelOptions,
+        include: {
+          ...includeRandomWheel(info),
+        }
       })
 
       socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")

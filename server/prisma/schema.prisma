@@ -24,10 +24,13 @@ model User {
   displayname       String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+  standardTheme     ColorTheme?         @relation(name: "fk_standardTheme", fields: [standardThemeId], references: [id])
+  standardThemeId   String?             @db.Uuid
   randomWheels      RandomWheel[]
   drawnWinners      RandomWheelWinner[]
   randomWheelMember RandomWheelMember[]
   likes             RandomWheelLike[]
+  colorThemes       ColorTheme[]        @relation(name: "fk_creator")
 }
 
 // Session store table
@@ -67,6 +70,8 @@ model RandomWheel {
   fadeDuration  Int                 @default(8000)
   owner         User?               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId       String?             @db.Uuid
+  theme         ColorTheme?         @relation(fields: [themeId], references: [id])
+  themeId       String?             @db.Uuid
   entries       RandomWheelEntry[]
   winners       RandomWheelWinner[]
   members       RandomWheelMember[]
@@ -87,6 +92,7 @@ model RandomWheelEntry {
   name          String
   createdAt     DateTime    @default(now())
   weight        Int         @default(1)
+  color         String?
 }
 
 // maybe combine in "entry" model
@@ -127,4 +133,15 @@ model RandomWheelLike {
   createdAt     DateTime    @default(now())
 
   @@unique([userId, randomWheelId])
+}
+
+model ColorTheme {
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String?
+  colors        String[]
+  creator       User?         @relation(name: "fk_creator", fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId     String?       @db.Uuid
+  global        Boolean       @default(false)
+  randomWheels  RandomWheel[]
+  usersStandard User[]        @relation(name: "fk_standardTheme")
 }
