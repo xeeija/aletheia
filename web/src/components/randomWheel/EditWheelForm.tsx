@@ -34,15 +34,19 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
           spinDuration: wheel.spinDuration,
           fadeDuration: wheel.fadeDuration,
           editAnonymous: wheel.editAnonymous,
+          theme: wheel.theme?.id ?? "",
         }}
         enableReinitialize
-        onSubmit={async (values) => {
+        onSubmit={async ({ theme, ...values }) => {
 
           const { error } = await updateWheel({
             id: wheel.id,
             options: {
               ...values,
               name: values.name || null,
+              theme: {
+                id: theme
+              }
             },
           })
           if (error) {

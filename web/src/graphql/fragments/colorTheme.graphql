@@ -1,0 +1,7 @@
+fragment ColorTheme on ColorTheme {
+  id
+  name
+  colors
+  creatorId
+  global
+}

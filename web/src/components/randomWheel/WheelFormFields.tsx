@@ -1,7 +1,8 @@
 import { FC, ReactNode } from "react"
 import { Grid } from "@mui/material"
-import { CheckboxField, InputField, RadioGroupField, SliderField } from "../components"
+import { CheckboxField, ColorMenuItem, InputField, RadioGroupField, SliderField, SelectField } from "../components"
 import { useAuth } from "../../hooks"
+import { useColorThemesQuery } from "../../generated/graphql"
 
 interface Mark {
   value: number
@@ -20,6 +21,7 @@ interface Props { }
 export const WheelFormFields: FC<Props> = () => {
 
   const { authenticated } = useAuth()
+  const [{ data }] = useColorThemesQuery()
 
   return (
     <Grid container spacing={2}>
@@ -35,6 +37,15 @@ export const WheelFormFields: FC<Props> = () => {
         ]} />
 
         <CheckboxField name="editAnonymous" label="Everyone can edit the wheel" disabled={!authenticated} />
+      </Grid>
+
+      <Grid item xs={12}>
+        <SelectField name="theme" label="Color theme" sx={{ width: "16rem" }}
+          options={data?.colorThemes?.map(option => ({
+            value: option.id,
+            label: <ColorMenuItem noMenuItem name={option.name} colors={option.colors} />
+          }))}>
+        </SelectField>
       </Grid>
 
       <Grid item xs={12}>

@@ -10,6 +10,11 @@ fragment RandomWheelDetails on RandomWheel {
   editable
   editAnonymous
   liked
+  theme {
+      id
+      name
+      colors
+    }
   _count {
     entries
   }

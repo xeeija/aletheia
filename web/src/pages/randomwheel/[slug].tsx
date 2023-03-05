@@ -491,6 +491,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   rotation={wheelRotation || wheel.rotation}
                   spinning={spinning}
                   spinDuration={wheel.spinDuration}
+                  colors={wheel.theme?.colors}
                 />
 
               </Paper>

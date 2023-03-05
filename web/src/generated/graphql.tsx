@@ -33,6 +33,28 @@ export type AppError = {
   fieldErrors?: Maybe<Array<FieldError>>;
 };
 
+export type ColorTheme = {
+  __typename?: 'ColorTheme';
+  _count?: Maybe<ColorThemeCount>;
+  colors: Array<Scalars['String']>;
+  creatorId?: Maybe<Scalars['String']>;
+  global: Scalars['Boolean'];
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+};
+
+export type ColorThemeCount = {
+  __typename?: 'ColorThemeCount';
+  randomWheels: Scalars['Int'];
+  usersStandard: Scalars['Int'];
+};
+
+export type ColorThemeInput = {
+  colors?: Maybe<Array<Scalars['String']>>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -148,9 +170,15 @@ export type MutationUsernameExistsArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  colorThemes: Array<ColorTheme>;
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
+};
+
+
+export type QueryColorThemesArgs = {
+  type?: Maybe<Scalars['String']>;
 };
 
 
@@ -182,6 +210,8 @@ export type RandomWheel = {
   rotation: Scalars['Float'];
   slug: Scalars['String'];
   spinDuration: Scalars['Int'];
+  theme?: Maybe<ColorTheme>;
+  themeId?: Maybe<Scalars['String']>;
   uniqueEntries: Scalars['Boolean'];
   winners: Array<RandomWheelWinner>;
 };
@@ -196,6 +226,7 @@ export type RandomWheelCount = {
 
 export type RandomWheelEntry = {
   __typename?: 'RandomWheelEntry';
+  color?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -214,6 +245,7 @@ export type RandomWheelInput = {
   fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
+  theme?: Maybe<ColorThemeInput>;
 };
 
 export type RandomWheelLike = {
@@ -269,12 +301,14 @@ export type User = {
   createdAt: Scalars['DateTime'];
   displayname?: Maybe<Scalars['String']>;
   id: Scalars['String'];
+  standardThemeId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
 };
 
 export type UserCount = {
   __typename?: 'UserCount';
+  colorThemes: Scalars['Int'];
   drawnWinners: Scalars['Int'];
   likes: Scalars['Int'];
   randomWheelMember: Scalars['Int'];
@@ -292,7 +326,9 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
+export type ColorThemeFragment = { __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string>, creatorId?: Maybe<string>, global: boolean };
+
+export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string, weight: number };
 
@@ -328,7 +364,7 @@ export type CreateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
+export type CreateRandomWheelMutation = { __typename?: 'Mutation', createRandomWheel: { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> } };
 
 export type DeleteRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
@@ -387,7 +423,7 @@ export type UpdateRandomWheelMutationVariables = Exact<{
 }>;
 
 
-export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type UpdateRandomWheelMutation = { __typename?: 'Mutation', updateRandomWheel?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type UpdateRandomWheelEntryMutationVariables = Exact<{
   id: Scalars['String'];
@@ -412,6 +448,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
+export type ColorThemesQueryVariables = Exact<{
+  type?: Maybe<Scalars['String']>;
+}>;
+
+
+export type ColorThemesQuery = { __typename?: 'Query', colorThemes: Array<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string>, creatorId?: Maybe<string>, global: boolean }> };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -422,14 +465,14 @@ export type MyRandomWheelsQueryVariables = Exact<{
 }>;
 
 
-export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type MyRandomWheelsQuery = { __typename?: 'Query', myRandomWheels: Array<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
 
 
-export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, owner?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
+export type RandomWheelBySlugQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, owner?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, members: Array<{ __typename?: 'RandomWheelMember', userId: string, roleName: string }>, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> }> };
 
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -459,6 +502,15 @@ export type UsernameExistsMutationVariables = Exact<{
 
 export type UsernameExistsMutation = { __typename?: 'Mutation', usernameExists: boolean };
 
+export const ColorThemeFragmentDoc = gql`
+    fragment ColorTheme on ColorTheme {
+  id
+  name
+  colors
+  creatorId
+  global
+}
+    `;
 export const RandomWheelDetailsFragmentDoc = gql`
     fragment RandomWheelDetails on RandomWheel {
   id
@@ -472,6 +524,11 @@ export const RandomWheelDetailsFragmentDoc = gql`
   editable
   editAnonymous
   liked
+  theme {
+    id
+    name
+    colors
+  }
   _count {
     entries
   }
@@ -695,6 +752,17 @@ export const UpdateUserDocument = gql`
 
 export function useUpdateUserMutation() {
   return Urql.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
+};
+export const ColorThemesDocument = gql`
+    query ColorThemes($type: String) {
+  colorThemes(type: $type) {
+    ...ColorTheme
+  }
+}
+    ${ColorThemeFragmentDoc}`;
+
+export function useColorThemesQuery(options?: Omit<Urql.UseQueryArgs<ColorThemesQueryVariables>, 'query'>) {
+  return Urql.useQuery<ColorThemesQuery, ColorThemesQueryVariables>({ query: ColorThemesDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {
