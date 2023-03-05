@@ -427,18 +427,26 @@ export class RandomWheelResolver {
           where: { id },
           data: {
             theme: {
-              upsert: {
-                update: {
-                  name: theme?.name,
-                  colors: theme?.colors,
-                  // Creator User? how to handle changing the theme?
-                },
+              // upsert: {
+              //   update: {
+              //     name: theme?.name,
+              //     colors: theme?.colors,
+              //     // Creator User? how to handle changing the theme?
+              //   },
+              //   create: {
+              //     name: theme?.name,
+              //     colors: theme?.colors,
+              //     creatorId: req.session.userId,
+              //   }
+              // },
+              connectOrCreate: {
+                where: { id: theme.id },
                 create: {
-                  name: theme?.name,
-                  colors: theme?.colors,
+                  name: theme.name,
+                  colors: theme.colors,
                   creatorId: req.session.userId,
                 }
-              },
+              }
             }
           }
         })

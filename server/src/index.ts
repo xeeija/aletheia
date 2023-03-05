@@ -6,7 +6,7 @@ import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
 import { buildSchema } from "type-graphql"
 import { PrismaClient } from "@prisma/client"
-import { UserResolver, RandomWheelResolver } from "./resolvers"
+import { UserResolver, RandomWheelResolver, ColorThemeResolver } from "./resolvers"
 import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
 import PGStore from "connect-pg-simple"
 // import { slugTest } from "./utils/slug"
@@ -82,7 +82,11 @@ const main = async () => {
   // # Graphql Server
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, RandomWheelResolver],
+      resolvers: [
+        UserResolver,
+        RandomWheelResolver,
+        ColorThemeResolver
+      ],
       validate: false
     }),
     context: ({ req, res }): GraphqlContext => ({ req, res, prisma, socketIo }),
