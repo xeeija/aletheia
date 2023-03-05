@@ -11,17 +11,18 @@ type Props = InputFieldProps & {
   options?: SelectOption[]
 }
 
+// TODO: Rework with Autocomplete
+// TODO: Doesnt work with custom MenuItem's as children yet, only with options prop
+
 export const SelectField: FC<Props> = ({ options, children, ...props }) => {
   return (
     <InputField select {...props}>
-      {
-        options?.map(option => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))
-        ?? children
-      }
+      {children}
+      {options?.map(option => (
+        <MenuItem key={option.value} value={option.value}>
+          {option.label}
+        </MenuItem>
+      ))}
     </InputField>
   )
 }
