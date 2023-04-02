@@ -4,7 +4,7 @@ import { Formik, Form } from "formik"
 import { useRouter } from "next/router"
 import { TiWarning, TiArrowRight } from "react-icons/ti"
 import { useRegisterMutation } from "../../generated/graphql"
-import { useUsernameValidator } from "../../hooks/useUsernameValidator"
+import { useUsernameValidator } from "../../hooks"
 import { passwordStrength } from "../../utils/passwordStrength"
 import { InputField, PasswordField, LoadingButton } from "../components"
 

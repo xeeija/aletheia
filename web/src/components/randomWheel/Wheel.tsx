@@ -153,7 +153,7 @@ export const Wheel: FC<Props> = ({ diameter, entries = [], colors = [], rotation
 
             // replace with different color, if last color is the same as the first
             const colorIndex = i % colors.length
-            const color = (colorIndex === 0 && i === entries.length - 1) ? colors[colors.length / 2] : colors[colorIndex]
+            const color = (colorIndex === 0 && i === entries.length - 1) ? colors[~~(colors.length / 2)] : colors[colorIndex]
 
             return (
               <g key={`wheel-g-${i}`}>
