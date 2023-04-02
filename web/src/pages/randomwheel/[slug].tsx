@@ -1,15 +1,14 @@
 import { Badge, Box, Button, IconButton, InputAdornment, List, Paper, Skeleton, SvgIcon, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { MouseEventHandler, useEffect, useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
 import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
-import { io } from "socket.io-client";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
-import { RandomWheelEntry, useClearRandomWheelMutation, useDeleteRandomWheelEntryMutation, useDeleteRandomWheelMutation, useLikeRandomWheelMutation, useRandomWheelBySlugEntriesQuery, useRandomWheelBySlugQuery, useRandomWheelBySlugWinnersQuery, useSpinRandomWheelMutation } from "../../generated/graphql";
-import { useAuth } from "../../hooks";
+import { RandomWheelEntry } from "../../generated/graphql";
+import { useAuth, useRandomWheel } from "../../hooks";
 import NotFoundPage from "../404";
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
@@ -19,214 +18,49 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
   const { user } = useAuth()
 
-  const [{ data, fetching }, fetchWheel] = useRandomWheelBySlugQuery({
-    variables: {
-      slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
-    }
-  })
+  const [
+    { wheel, entries, winners, fetching },
+    { spin, clear, like, deleteEntry, deleteWheel },
+  ] = useRandomWheel(slug ?? "", {
+    details: true,
+    entries: true,
+    winners: true,
+    onSpinStarted: () => {
+      setWinnerDialogOpen(false)
+    },
+    onSpinFinished: (self, entry) => {
+      console.log("onSpinFinished", self, entry, wheel)
 
-  const [{ data: winnersData }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
-    variables: {
-      slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
-    }
-  })
+      setLastWinningEntry(entry)
 
-  const [{ data: entriesData }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
-    variables: {
-      slug: typeof slug === "string" ? slug : slug?.[0] ?? ""
-    }
+      if (wheel?.editable || wheel?.editAnonymous) {
+        setWinnerDialogOpen(true)
+      }
+    },
   })
-
-  const [, spinRandomWheel] = useSpinRandomWheelMutation()
-  const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
-  const [, clearRandomWheel] = useClearRandomWheelMutation()
-  const [, deleteRandomWheel] = useDeleteRandomWheelMutation()
+  const [lastWinningEntry, setLastWinningEntry] = useState<RandomWheelEntry>()
 
   const [entriesTab, setEntriesTab] = useState(0)
-
-  const wheel = data?.randomWheelBySlug
-  const winners = winnersData?.randomWheelBySlug?.winners
-  const entries = entriesData?.randomWheelBySlug?.entries
-
-  // const [winners, setWinners] = useState<RandomWheelWinnerFragment[]>([])
-  // useEffect(() => {
-  //   if (winnersData?.randomWheelBySlug?.winners) {
-  //     setWinners(winnersData?.randomWheelBySlug?.winners)
-  //   }
-  // }, [winnersData?.randomWheelBySlug?.winners])
-  // const [entries, setEntries] = useState<RandomWheelEntryFragment[]>([])
-
-  const [wheelRotation, setWheelRotation] = useState(0)
-  const [spinning, setSpinning] = useState(false)
-
-  const [wheelLiked, setWheelLiked] = useState(false)
-  const [, likeRandomWheel] = useLikeRandomWheelMutation()
-
-  useEffect(() => {
-    setWheelLiked(wheel?.liked ?? false)
-  }, [wheel?.liked])
 
   const [optionsAnchor, setOptionsAnchor] = useState<Element | null>(null)
   const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
 
   const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
-  const [lastWinningEntry, setLastWinningEntry] = useState<RandomWheelEntry>()
-
-  const onRemoveWinnerDialog = async () => {
-
-    const { data } = await deleteEntry({ id: lastWinningEntry?.id ?? "" }, {
-      additionalTypenames: ["RandomWheelEntry"]
-    })
-
-    if (data?.deleteRandomWheelEntry) {
-      // setEntries(entries.filter(e => e.id !== entries[winnerIndex].id))
-    } else {
-      // TODO: Error
-    }
-
-  }
-
   const [clearDialogOpen, setClearDialogOpen] = useState(false)
-  const onClearDialog = async () => {
-    if (!wheel) {
-      return
-    }
-
-    const { data } = await clearRandomWheel({
-      id: wheel?.id
-    })
-
-    // setEntries([])
-    setWheelRotation(0)
-
-    console.log(`deleted ${data?.clearRandomWheel} entries`)
-    // TODO: Alerts and error handling
-
-  }
-
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-
   const [membersDialogOpen, setMembersDialogOpen] = useState(false)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const onDeleteDialog = async () => {
-    if (!wheel) {
-      return
-    }
-
-    const { data } = await deleteRandomWheel({
-      id: wheel?.id
-    })
-
-    // TODO: Proper error handling
-    if (data?.deleteRandomWheel !== null) {
-      console.log("delete error", data?.deleteRandomWheel)
-    }
-
+    await deleteWheel()
     router.push("/randomwheel")
-
   }
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/r/${slug}`)
   }
 
-  const spinHandler: MouseEventHandler<HTMLButtonElement> = async () => {
-
-    if (!wheel) {
-      console.log("no wheel to spin")
-      return
-    }
-
-    if (spinning) {
-      console.log("already spinning")
-      return
-    }
-
-    const { data, error } = await spinRandomWheel({
-      wheelId: wheel?.id
-    })
-
-    if (!data) {
-      // error handling
-      console.warn(error)
-      return
-    }
-
-    setTimeout(() => {
-      setWinnerDialogOpen(true)
-    }, wheel.spinDuration + 500 + 10)
-
-  }
-
-  // socket
-  useEffect(() => {
-    if (!wheel?.id) {
-      // console.log("no wheel")
-      return
-    }
-
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL ?? process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:4000", {
-      path: process.env.NEXT_PUBLIC_SOCKET_SERVER_PATH ?? "/socket",
-    })
-
-    socket.on("connect", () => {
-      // console.log("connect")
-      socket.emit("wheel:join", wheel.id)
-      // console.log(`join ${wheel.id.substring(0, 6)}`)
-    })
-
-    socket.on("wheel:spin", ({ rotation, entry }) => {
-      // console.log("wheel:spin", { rotation, winner, entry })
-
-      const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
-      // console.log(revolutions)
-
-      setSpinning(true)
-      setWheelRotation(rotation + (360 * revolutions))
-      setWinnerDialogOpen(false)
-
-      // TODO: Refactor to update the "local" winners with winner from socket?
-      fetchWinners({ requestPolicy: "cache-and-network" })
-
-      setTimeout(() => {
-        setSpinning(false)
-        setWheelRotation(rotation)
-        setLastWinningEntry(entry)
-
-        if (wheel.editable || wheel.editAnonymous) {
-          setWinnerDialogOpen(true)
-        }
-      }, wheel.spinDuration + 500 + 20)
-
-    })
-
-    socket.on("wheel:entries", () => {
-      // console.log("wheel:entries")
-
-      // TODO: Refactor to update the "local" entries with entry from socket?
-      // Depending on type, add/delete/clear
-      fetchEntries({
-        requestPolicy: "cache-and-network",
-      })
-    })
-
-    socket.on("wheel:update", () => {
-      // console.log("wheel")
-
-      fetchWheel({
-        requestPolicy: "cache-and-network",
-      })
-    })
-
-    return () => {
-      socket.off("wheel:spin")
-      socket.disconnect()
-      // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
-    }
-  }, [wheel?.id, wheel?.spinDuration, wheel?.editable, wheel?.editAnonymous, fetchEntries, fetchWinners, fetchWheel])
-
-  if (fetching || !slug) {
+  if (fetching.wheel || !slug) {
     return <Box>
       <Typography variant="h1" width="42%"><Skeleton /></Typography>
       <Typography width="32%"><Skeleton sx={{ animationDelay: 50 }} /></Typography>
@@ -252,12 +86,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   // TODO: Use members, server-side
   // https://nextjs.org/docs/advanced-features/middleware
 
-  const viewable = wheel.accessType === "PUBLIC"
-    || wheel.owner === null
-    || wheel.owner?.id === user?.id
-    || wheel.members.some(member => member.userId === user?.id)
-
-  if (!viewable) {
+  if (!wheel.viewable) {
     return <NotFoundPage />
   }
 
@@ -284,20 +113,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             <Box>
 
               <Tooltip arrow placement="bottom" title="Favorite">
-                <IconButton color={wheelLiked ? "error" : "secondary"}
+                <IconButton color={wheel.liked ? "error" : "secondary"}
                   disabled={!user}
                   sx={{ ml: 1 }}
-                  onClick={async () => {
-                    setWheelLiked(!wheelLiked)
-                    const res = await likeRandomWheel({
-                      randomWheelId: wheel.id,
-                      like: !wheelLiked
-                    })
-                    // TODO: Error when undefined?
-                    setWheelLiked(Boolean(res.data?.likeRandomWheel))
-                  }}
+                  onClick={like}
                 >
-                  <SvgIcon component={wheelLiked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
+                  <SvgIcon component={wheel.liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
                 </IconButton>
               </Tooltip>
 
@@ -354,11 +175,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     hiddenLabel
                     fullWidth
                     defaultValue={`${window.location.host}/r/${slug}`}
-                    inputProps={{
-                      style: {
-                        // fontSize: "0.925rem",
-                      }
-                    }}
                     InputProps={{
                       readOnly: true,
                       sx: { pl: 1 },
@@ -376,10 +192,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     onFocus={(ev) => {
                       ev.currentTarget.select()
                     }}
-                  // onClick={(ev) => {
-                  //   // console.log("click")
-                  //   // navigator.clipboard.writeText(`${window.location.host}/r/${slug}`)
-                  // }}
                   />
 
                 </Paper>
@@ -486,10 +298,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Wheel
                   diameter={688}
                   entries={entries}
-                  // rotation={wheel.editable ? (wheelRotation || wheel.rotation) : 0}
-                  // spinning={spinning && wheel.editable}
-                  rotation={wheelRotation || wheel.rotation}
-                  spinning={spinning}
+                  rotation={wheel.rotation}
+                  spinning={wheel.spinning}
                   spinDuration={wheel.spinDuration}
                   colors={wheel.theme?.colors}
                 />
@@ -504,9 +314,9 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     <Button
                       color="primary"
                       variant="contained"
-                      disabled={!entries?.length || spinning}
+                      disabled={!entries?.length || wheel.spinning}
                       endIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
-                      onClick={spinHandler}
+                      onClick={spin}
                     >
                       Spin
                     </Button>
@@ -515,7 +325,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <Button
                     color="error"
                     variant="outlined"
-                    disabled={!entries?.length || spinning}
+                    disabled={!entries?.length || wheel.spinning}
                     endIcon={<HiTrash />}
                     onClick={() => setClearDialogOpen(true)}
                     sx={{ ml: 2 }}
@@ -526,9 +336,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <ClearEntriesDialog
                     open={clearDialogOpen}
                     onClose={() => setClearDialogOpen(false)}
-                    onClear={onClearDialog}
+                    onClear={clear}
                   />
-
 
                 </Paper>
               </Box>
@@ -538,7 +347,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               open={[winnerDialogOpen, setWinnerDialogOpen]}
               description={winners?.[0]?.name}
               onClose={() => setWinnerDialogOpen(false)}
-              onRemove={onRemoveWinnerDialog}
+              onRemove={async () => await deleteEntry(lastWinningEntry?.id ?? "")}
               hideRemove={!wheel.editable && !wheel.editAnonymous}
             />
 
@@ -568,10 +377,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     gap: 2,
                   }}>
 
-                    <EntryList entries={entries ?? []} editable={wheel.editable || wheel.editAnonymous} spinning={spinning} autoScroll />
+                    <EntryList entries={entries ?? []} editable={wheel.editable || wheel.editAnonymous} spinning={wheel.spinning} autoScroll />
 
                     {(wheel.editable || wheel.editAnonymous) &&
-                      <AddEntryForm wheelId={wheel.id} spinning={spinning} />
+                      <AddEntryForm wheelId={wheel.id} spinning={wheel.spinning} />
                     }
 
                   </Box>
@@ -584,7 +393,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       createdAt: new Date(winner.createdAt)
                     }))
                   }
-                    spinning={spinning}
+                    spinning={wheel.spinning}
                     editable={wheel.editable || wheel.editAnonymous}
                   />
                 </TabPanel>
