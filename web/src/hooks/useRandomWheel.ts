@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { io } from "socket.io-client"
 import {
   useRandomWheelBySlugQuery,
   useRandomWheelBySlugWinnersQuery,
@@ -15,6 +14,7 @@ import {
   RandomWheelEntry,
   UserNameFragment
 } from "../generated/graphql"
+import { socket } from "../utils/socket"
 import { useAuth } from "./useAuth"
 
 type RandomWheelDetailsFull = RandomWheelDetailsQuery & {
@@ -60,6 +60,10 @@ interface RandomWheelOptions {
 
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
 
+  // TODO: Split up each handler function in its own custom hook
+  // TODO: Split up socket useEffect in one for each event?
+  // TODO: Maybe return a boolean or Error (message + code) from some mutation wrappers/handlers, like deleteWheel
+
   const slug = typeof wheelSlug === "string" ? wheelSlug : wheelSlug?.[0] ?? ""
 
   const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelBySlugQuery({
@@ -86,7 +90,6 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     || wheel?.owner?.id === user?.id
     || wheel?.members.some(member => member.userId === user?.id)
 
-  // TODO: Maybe return a boolean or Error (message + code) from some mutation wrappers, like deleteWheel
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
   const deleteEntryHandler = async (entryId: string) => {
     const { data } = await deleteEntry({ id: entryId }, {
@@ -146,7 +149,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     setWheelLiked(Boolean(likeResponse.data?.likeRandomWheel))
   }
 
-  const [wheelRotation, setWheelRotation] = useState(0)
+  const [wheelRotation, setWheelRotation] = useState<number | null>(null)
 
   const [, spinRandomWheel] = useSpinRandomWheelMutation()
   const [spinning, setSpinning] = useState(false)
@@ -179,6 +182,26 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   }
 
+  useEffect(() => {
+    if (!wheel?.id || options?.disableSocket) {
+      return
+    }
+
+    console.log("connect socket")
+    socket.connect()
+
+    socket.on("connect", () => {
+      socket.emit("wheel:join", wheel.id)
+      console.log("wheel:join")
+    })
+
+    return () => {
+      console.log("disconnect socket")
+      socket.off("connect")
+      socket.disconnect()
+    }
+  }, [wheel?.id, options?.disableSocket])
+
   // handle web socket
   useEffect(() => {
     if (!wheel?.id || options?.disableSocket) {
@@ -186,16 +209,10 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       return
     }
 
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER_URL ?? process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:4000", {
-      path: process.env.NEXT_PUBLIC_SOCKET_SERVER_PATH ?? "/socket",
-    })
-
-    socket.once("connect", () => {
-      socket.emit("wheel:join", wheel.id)
-      console.log("join socket")
-    })
-
+    // TODD: make listener functions named, so they can be removed specifically?
+    // actually bad currently, because socket.off("foo") removes all listeners for this event (also possibly in other components)
     socket.on("wheel:spin", ({ rotation, entry, /*winner*/ }) => {
+      console.log("wheel:spin")
 
       const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
       setSpinning(true)
@@ -207,6 +224,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       fetchWinners({ requestPolicy: "cache-and-network" })
 
       setTimeout(() => {
+        console.log("wheel:spin finish")
         setSpinning(false)
         setWheelRotation(rotation)
         options?.onSpinFinished?.(false, entry)
@@ -217,12 +235,14 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     socket.on("wheel:entries", () => {
       // TODO: Refactor to update the "local" entries with entry from socket?
       // Depending on type, add/delete/clear
+      console.log("wheel:entries")
       fetchEntries({
         requestPolicy: "cache-and-network",
       })
     })
 
     socket.on("wheel:update", () => {
+      console.log("wheel:update")
       fetchWheel({
         requestPolicy: "cache-and-network",
       })
@@ -232,8 +252,6 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       socket.off("wheel:spin")
       socket.off("wheel:entries")
       socket.off("wheel:update")
-      socket.disconnect()
-      // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
   }, [wheel?.id, wheel?.spinDuration, wheel?.editable, wheel?.editAnonymous, fetchEntries, fetchWinners, fetchWheel, options])
 
@@ -243,7 +261,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
         ...wheel,
         liked: wheelLiked,
         spinning: spinning,
-        rotation: wheelRotation,
+        rotation: wheelRotation ?? wheel.rotation,
         viewable: viewable,
       } : undefined,
       entries: entries,
