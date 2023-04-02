@@ -12,8 +12,42 @@ import {
   RandomWheelDetailsFragment,
   RandomWheelEntryFragment,
   RandomWheelWinnerFragment,
-  RandomWheelEntry
+  RandomWheelEntry,
+  UserNameFragment
 } from "../generated/graphql"
+import { useAuth } from "./useAuth"
+
+type RandomWheelDetailsFull = RandomWheelDetailsQuery & {
+  spinning: boolean
+  viewable: boolean
+}
+
+type RandomWheelDetailsQuery = RandomWheelDetailsFragment & {
+  owner: UserNameFragment
+  members: {
+    userId: string
+    roleName: string
+  }[]
+}
+
+interface RandomWheelData {
+  wheel?: RandomWheelDetailsFull,
+  entries?: RandomWheelEntryFragment[],
+  winners?: RandomWheelWinnerFragment[],
+  fetching: {
+    wheel: boolean,
+    entries: boolean,
+    winners: boolean,
+  }
+}
+
+interface RandomWheelHandlers {
+  spin: () => Promise<void>,
+  like: () => Promise<void>,
+  clear: () => Promise<void>,
+  deleteWheel: () => Promise<void>,
+  deleteEntry: (entryId: string) => Promise<void>,
+}
 
 interface RandomWheelOptions {
   details?: boolean
@@ -24,12 +58,6 @@ interface RandomWheelOptions {
   onSpinStarted?: (self: boolean) => void
 }
 
-type RandomWheelDetailsFull = RandomWheelDetailsFragment & {
-  spinning: boolean
-}
-
-interface RandomWheelData { }
-
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
 
   const slug = typeof wheelSlug === "string" ? wheelSlug : wheelSlug?.[0] ?? ""
@@ -38,13 +66,13 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     variables: { slug },
     pause: !options?.details
   })
-  const wheel = <RandomWheelDetailsFragment | undefined>wheelData?.randomWheelBySlug
+  const wheel = <RandomWheelDetailsQuery | undefined>wheelData?.randomWheelBySlug
 
   const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
     variables: { slug },
     pause: !options?.entries,
   })
-  const entries = <RandomWheelEntryFragment[]>entriesData?.randomWheelBySlug?.entries
+  const entries = <RandomWheelEntryFragment[] | undefined>entriesData?.randomWheelBySlug?.entries
 
   const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
     variables: { slug },
@@ -52,20 +80,76 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   })
   const winners = <RandomWheelWinnerFragment[]>winnersData?.randomWheelBySlug?.winners
 
-  const [, spinRandomWheel] = useSpinRandomWheelMutation()
-  const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
-  const [, clearRandomWheel] = useClearRandomWheelMutation()
-  const [, deleteRandomWheel] = useDeleteRandomWheelMutation()
-  const [, likeRandomWheel] = useLikeRandomWheelMutation()
+  const { user } = useAuth()
+  const viewable = wheel?.accessType === "PUBLIC"
+    || wheel?.owner === null
+    || wheel?.owner?.id === user?.id
+    || wheel?.members.some(member => member.userId === user?.id)
 
+  // TODO: Maybe return a boolean or Error (message + code) from some mutation wrappers, like deleteWheel
+  const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
+  const deleteEntryHandler = async (entryId: string) => {
+    const { data } = await deleteEntry({ id: entryId }, {
+      additionalTypenames: ["RandomWheelEntry"]
+    })
+
+    if (!data?.deleteRandomWheelEntry) {
+      // TODO: Error
+    }
+  }
+
+  const [, clearRandomWheel] = useClearRandomWheelMutation()
+  const clearHandler = async () => {
+    if (!wheel) {
+      return
+    }
+
+    const { data } = await clearRandomWheel({
+      id: wheel?.id
+    })
+
+    console.log(`deleted ${data?.clearRandomWheel} entries`)
+  }
+
+  const [, deleteRandomWheel] = useDeleteRandomWheelMutation()
+  const deleteWheelHandler = async () => {
+    if (!wheel) {
+      return
+    }
+
+    const { data } = await deleteRandomWheel({
+      id: wheel?.id
+    })
+
+    // TODO: Proper error handling, or return an error from this function
+    if (data?.deleteRandomWheel !== null) {
+      console.log("delete error", data?.deleteRandomWheel)
+    }
+  }
+
+  const [, likeRandomWheel] = useLikeRandomWheelMutation()
   const [wheelLiked, setWheelLiked] = useState(false)
   useEffect(() => {
     setWheelLiked(wheel?.liked ?? false)
   }, [wheel?.liked])
 
-  const [wheelRotation, setWheelRotation] = useState(0)
-  const [spinning, setSpinning] = useState(false)
+  const likeHandler = async () => {
+    if (!wheel) {
+      return
+    }
+    setWheelLiked(!wheelLiked)
+    const likeResponse = await likeRandomWheel({
+      randomWheelId: wheel.id,
+      like: !wheelLiked
+    })
+    // TODO: Error when undefined?
+    setWheelLiked(Boolean(likeResponse.data?.likeRandomWheel))
+  }
 
+  const [wheelRotation, setWheelRotation] = useState(0)
+
+  const [, spinRandomWheel] = useSpinRandomWheelMutation()
+  const [spinning, setSpinning] = useState(false)
   const spinHandler = async () => {
     if (!wheel) {
       console.log("no wheel to spin")
@@ -89,7 +173,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
     setTimeout(() => {
       // TODO: onSpinFinished actually not needed here? 
-      options?.onSpinFinished?.(true, data.spinRandomWheel, error)
+      // options?.onSpinFinished?.(true, data.spinRandomWheel)
       // setWinnerDialogOpen(true)
     }, wheel.spinDuration + 500 + 10)
 
@@ -106,23 +190,18 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       path: process.env.NEXT_PUBLIC_SOCKET_SERVER_PATH ?? "/socket",
     })
 
-    socket.on("connect", () => {
-      // console.log("connect")
+    socket.once("connect", () => {
       socket.emit("wheel:join", wheel.id)
-      // console.log(`join ${wheel.id.substring(0, 6)}`)
+      console.log("join socket")
     })
 
-    socket.on("wheel:spin", ({ rotation, entry, winner }) => {
-      // console.log("wheel:spin", { rotation, winner, entry })
+    socket.on("wheel:spin", ({ rotation, entry, /*winner*/ }) => {
 
       const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
-      // console.log(revolutions)
-
       setSpinning(true)
       setWheelRotation(rotation + (360 * revolutions))
 
       options?.onSpinStarted?.(false)
-      // setWinnerDialogOpen(false)
 
       // TODO: Refactor to update the "local" winners with winner from socket?
       fetchWinners({ requestPolicy: "cache-and-network" })
@@ -130,20 +209,12 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       setTimeout(() => {
         setSpinning(false)
         setWheelRotation(rotation)
-
         options?.onSpinFinished?.(false, entry)
-        // setLastWinningEntry(entry)
-
-        // if (wheel.editable || wheel.editAnonymous) {
-        //   setWinnerDialogOpen(true)
-        // }
       }, wheel.spinDuration + 500 + 20)
 
     })
 
     socket.on("wheel:entries", () => {
-      // console.log("wheel:entries")
-
       // TODO: Refactor to update the "local" entries with entry from socket?
       // Depending on type, add/delete/clear
       fetchEntries({
@@ -152,8 +223,6 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     })
 
     socket.on("wheel:update", () => {
-      // console.log("wheel")
-
       fetchWheel({
         requestPolicy: "cache-and-network",
       })
@@ -161,18 +230,21 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
     return () => {
       socket.off("wheel:spin")
+      socket.off("wheel:entries")
+      socket.off("wheel:update")
       socket.disconnect()
       // console.log(`disconnect ${wheel.id.substring(0, 6)}`)
     }
   }, [wheel?.id, wheel?.spinDuration, wheel?.editable, wheel?.editAnonymous, fetchEntries, fetchWinners, fetchWheel, options])
 
   return [
-    {
-      wheel: wheel ? <RandomWheelDetailsFull>{
+    <RandomWheelData>{
+      wheel: wheel ? {
         ...wheel,
         liked: wheelLiked,
         spinning: spinning,
         rotation: wheelRotation,
+        viewable: viewable,
       } : undefined,
       entries: entries,
       winners: winners,
@@ -182,15 +254,17 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
         winners: fetchingWinners,
       },
     },
-    {
+    <RandomWheelHandlers>{
       spin: spinHandler,
-      like: likeRandomWheel,
-      clear: clearRandomWheel,
-      deleteWheel: deleteRandomWheel,
-      deleteEntry: deleteEntry,
-      fetchWheel: fetchWheel,
-      fetchEntries: fetchEntries,
-      fetchWinners: fetchWinners,
+      like: likeHandler,
+      clear: clearHandler,
+      deleteWheel: deleteWheelHandler,
+      deleteEntry: deleteEntryHandler,
     },
+    // {
+    //   fetchWheel: fetchWheel,
+    //   fetchEntries: fetchEntries,
+    //   fetchWinners: fetchWinners,
+    // }
   ] as const
 }
