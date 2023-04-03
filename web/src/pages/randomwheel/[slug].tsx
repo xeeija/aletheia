@@ -7,7 +7,6 @@ import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } f
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
 import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
-import { RandomWheelEntry } from "../../generated/graphql";
 import { useAuth, useRandomWheel } from "../../hooks";
 import NotFoundPage from "../404";
 
@@ -19,26 +18,21 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const { user } = useAuth()
 
   const [
-    { wheel, entries, winners, fetching },
+    { wheel, entries, winners, fetching, lastWinnerEntry },
     { spin, clear, like, deleteEntry, deleteWheel },
   ] = useRandomWheel(slug ?? "", {
     details: true,
     entries: true,
     winners: true,
-    onSpinStarted: () => {
-      setWinnerDialogOpen(false)
-    },
-    onSpinFinished: (self, entry) => {
-      console.log("onSpinFinished", self, entry, wheel)
-
-      setLastWinningEntry(entry)
-
-      if (wheel?.editable || wheel?.editAnonymous) {
-        setWinnerDialogOpen(true)
-      }
+    socket: {
+      onSpinStarted: () => setWinnerDialogOpen(false),
+      onSpinFinished: () => {
+        if (wheel?.editable || wheel?.editAnonymous) {
+          setWinnerDialogOpen(true)
+        }
+      },
     },
   })
-  const [lastWinningEntry, setLastWinningEntry] = useState<RandomWheelEntry>()
 
   const [entriesTab, setEntriesTab] = useState(0)
 
@@ -347,7 +341,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               open={[winnerDialogOpen, setWinnerDialogOpen]}
               description={winners?.[0]?.name}
               onClose={() => setWinnerDialogOpen(false)}
-              onRemove={async () => await deleteEntry(lastWinningEntry?.id ?? "")}
+              onRemove={async () => await deleteEntry(lastWinnerEntry?.id ?? "")}
               hideRemove={!wheel.editable && !wheel.editAnonymous}
             />
 
