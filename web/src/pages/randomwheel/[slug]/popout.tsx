@@ -59,6 +59,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
           rotation={wheel.rotation}
           spinning={wheel.spinning}
           spinDuration={wheel?.spinDuration ?? 0}
+          colors={wheel.theme?.colors}
         />
       </Box>
     </>
