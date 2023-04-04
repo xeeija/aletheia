@@ -39,7 +39,6 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   const [liked, setLiked] = useState(wheel?.liked)
   useEffect(() => {
-    console.log("liked useRandomWheel", wheel?.liked)
     setLiked(wheel?.liked)
   }, [wheel?.liked])
 

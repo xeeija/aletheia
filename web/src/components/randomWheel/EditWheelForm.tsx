@@ -2,8 +2,8 @@ import { FC, RefObject } from "react"
 import { Portal } from "@mui/material"
 import { Formik, Form, FormikProps, FormikValues } from "formik"
 import { LoadingButton } from "../components"
-import { useRandomWheelBySlugQuery, useUpdateRandomWheelMutation } from "../../generated/graphql"
 import { WheelFormFields } from "./WheelFormFields"
+import { useRandomWheel } from "../../hooks"
 
 interface Props {
   slug: string
@@ -13,12 +13,9 @@ interface Props {
 
 export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
 
-  const [, updateWheel] = useUpdateRandomWheelMutation()
-  const [{ data }] = useRandomWheelBySlugQuery({
-    variables: { slug: slug ?? "" }
+  const [{ wheel }, { updateWheel }] = useRandomWheel(slug, {
+    details: true,
   })
-
-  const wheel = data?.randomWheelBySlug
 
   if (!wheel) {
     return null
@@ -38,22 +35,11 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
         }}
         enableReinitialize
         onSubmit={async ({ theme, ...values }) => {
-
-          const { error } = await updateWheel({
-            id: wheel.id,
-            options: {
-              ...values,
-              name: values.name || null,
-              theme: {
-                id: theme
-              }
-            },
+          await updateWheel({
+            ...values,
+            name: values.name || null,
+            theme: theme ? { id: theme } : undefined,
           })
-          if (error) {
-            console.warn(error)
-          }
-          // // TODO: proper error handling/feedback
-
         }}
       >
         {({ isSubmitting, dirty }) => (

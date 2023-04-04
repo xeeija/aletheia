@@ -422,7 +422,7 @@ export class RandomWheelResolver {
     try {
 
       // extra query as workaround, because theme and wheeloptions are not compatible somehow idk
-      if (theme) {
+      if (theme?.id) {
         await prisma.randomWheel.update({
           where: { id },
           data: {
