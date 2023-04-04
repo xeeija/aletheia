@@ -1,13 +1,16 @@
 import {
+  RandomWheelInput,
   useClearRandomWheelMutation,
   useDeleteRandomWheelEntryMutation,
-  useDeleteRandomWheelMutation
+  useDeleteRandomWheelMutation,
+  useUpdateRandomWheelMutation
 } from "../../generated/graphql"
 
 export interface RandomWheelActions {
-  clear: () => Promise<void>,
-  deleteEntry: (entryId: string) => Promise<void>,
-  deleteWheel: () => Promise<void>,
+  clear: () => Promise<void>
+  updateWheel: (options: RandomWheelInput) => Promise<void>
+  deleteEntry: (entryId: string) => Promise<void>
+  deleteWheel: () => Promise<void>
 }
 
 export const useRandomWheelActions = (wheelId: string | undefined) => {
@@ -51,9 +54,28 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     }
   }
 
+  const [, updateRandomWheel] = useUpdateRandomWheelMutation()
+  const updateWheel = async (options: RandomWheelInput) => {
+    if (!wheelId) {
+      return
+    }
+
+    const { data } = await updateRandomWheel({
+      id: wheelId,
+      options,
+    })
+
+    // TODO: Proper error handling, or return an error from this function
+    if (data?.updateRandomWheel !== null) {
+      console.log("delete error", data?.updateRandomWheel)
+    }
+  }
+
+
   return <RandomWheelActions>{
+    clear,
+    updateWheel,
     deleteEntry,
     deleteWheel,
-    clear,
   }
 }

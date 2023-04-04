@@ -28,7 +28,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     winners: options?.winners,
   })
 
-  const randomWheelCrud = useRandomWheelActions(wheel?.id)
+  const randomWheelActions = useRandomWheelActions(wheel?.id)
 
   const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
 
@@ -59,7 +59,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       lastWinnerEntry,
     },
     <RandomWheelHandlers>{
-      ...randomWheelCrud,
+      ...randomWheelActions,
       spin: spin,
       like: like,
     },
