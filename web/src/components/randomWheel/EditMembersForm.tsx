@@ -1,11 +1,11 @@
 import { FC, RefObject } from "react"
 import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Portal, SvgIcon } from "@mui/material"
 import { Formik, Form, FormikProps } from "formik"
-import { useRandomWheelBySlugMembersQuery, useUpdateRandomWheelMembersMutation } from "../../generated/graphql"
 import { HiTrash } from "react-icons/hi"
 import { SelectField } from "../input/SelectField"
 import { TiPlus, TiTimes } from "react-icons/ti"
 import { InputField, LoadingButton, NoData } from "../components"
+import { useRandomWheel } from "../../hooks"
 
 interface MemberFormEntry {
   id: string | null
@@ -29,18 +29,13 @@ interface Props {
 
 export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, readonly }) => {
 
-  const [{ data, fetching: fetchingWheel }, refetchWheel] = useRandomWheelBySlugMembersQuery({
-    variables: { slug: slug },
+  const [{ members, fetching }, { updateMembers, fetchMembers }] = useRandomWheel(slug, {
+    members: true,
+    // TODO: without "details" the actions (updateMembers) dont work
+    details: true,
   })
-  const [, updateMembers] = useUpdateRandomWheelMembersMutation()
 
-  const wheel = data?.randomWheelBySlug
-
-  if (!wheel) {
-    return null
-  }
-
-  const initialMembers: Record<string, MemberFormEntry> = wheel.members.reduce((acc, member) => ({
+  const initialMembers: Record<string, MemberFormEntry> = (members ?? []).reduce((acc, member) => ({
     ...acc,
     [member.user.username]: {
       id: member.id,
@@ -67,19 +62,12 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
         const mappedMembers = Object.values(values.members).map(({ id, displayname, ...member }) => member)
         const members = values.draft ? [...mappedMembers, values.draft] : mappedMembers
 
-        const { error } = await updateMembers({
-          randomWheelId: wheel.id,
-          members: members,
-        })
-
-        if (error) {
-          console.warn(error)
-        }
+        const response = await updateMembers(members)
 
         // FIX: Doesn't reload wheel (and members) when the members are empty and one is added
         // Any fix for this? Maybe normalized cache?
-        if (members.length === 1) {
-          refetchWheel({ requestPolicy: "network-only" })
+        if (response?.length ?? 0 <= 1) {
+          fetchMembers({ requestPolicy: "network-only" })
         }
 
         // // TODO: proper error handling/feedback
@@ -208,7 +196,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                   <LoadingButton
                     type="submit"
                     variant="contained"
-                    loading={isSubmitting || fetchingWheel}
+                    loading={isSubmitting || fetching.members}
                     disabled={
                       !isValid || JSON.stringify(values) === JSON.stringify(initialValues)
                       || values.draft?.username === ""
