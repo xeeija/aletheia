@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { RandomWheelEntry } from "../generated/graphql"
 import { RandomWheelActions, useRandomWheelActions } from "./randomwheel/useRandomWheelActions"
-import { RandomWheelData, useRandomWheelData } from "./randomwheel/useRandomWheelData"
+import { RandomWheelData, RandomWheelFetch, useRandomWheelData } from "./randomwheel/useRandomWheelData"
 import { useRandomWheelLike } from "./randomwheel/useRandomWheelLike"
 import { RandomWheelSocketOptions, useRandomWheelSocket } from "./randomwheel/useRandomWheelSocket"
 import { useRandomWheelSpin } from "./randomwheel/useRandomWheelSpin"
 
-interface RandomWheelHandlers extends RandomWheelActions {
+interface RandomWheelHandlers extends RandomWheelActions, RandomWheelFetch {
   spin: () => Promise<void>,
   like: () => Promise<void>,
 }
@@ -15,6 +15,7 @@ interface RandomWheelOptions {
   details?: boolean
   entries?: boolean
   winners?: boolean
+  members?: boolean
   socket?: RandomWheelSocketOptions
 }
 
@@ -26,8 +27,10 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     details: options?.details,
     entries: options?.entries,
     winners: options?.winners,
+    members: options?.members,
   })
 
+  // TODO FIX: without options.details the actions dont work, because wheel.id is undefined
   const randomWheelActions = useRandomWheelActions(wheel?.id)
 
   const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
@@ -59,9 +62,9 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     },
     <RandomWheelHandlers>{
       ...randomWheelActions,
+      ...randomWheelFetch,
       spin: spin,
       like: like,
     },
-    randomWheelFetch
   ] as const
 }

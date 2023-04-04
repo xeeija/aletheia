@@ -1,11 +1,12 @@
-import { Dispatch, SetStateAction } from "react"
 import { OperationContext } from "urql"
 import {
   RandomWheelDetailsFragment,
   RandomWheelEntry,
   RandomWheelEntryFragment,
+  RandomWheelMemberFragment,
   RandomWheelWinnerFragment,
   useRandomWheelBySlugEntriesQuery,
+  useRandomWheelBySlugMembersQuery,
   useRandomWheelBySlugQuery,
   useRandomWheelBySlugWinnersQuery,
   UserNameFragment
@@ -21,37 +22,38 @@ export interface RandomWheelDetailsQuery extends RandomWheelDetailsFragment {
 }
 
 export interface RandomWheelDetails extends RandomWheelDetailsQuery {
-  viewable: boolean,
-  spinning: boolean,
+  viewable: boolean
+  spinning: boolean
 }
 
 export interface RandomWheelData {
-  wheel?: RandomWheelDetails,
-  entries?: RandomWheelEntryFragment[],
-  winners?: RandomWheelWinnerFragment[],
+  wheel?: RandomWheelDetails
+  entries?: RandomWheelEntryFragment[]
+  winners?: RandomWheelWinnerFragment[]
+  members?: RandomWheelMemberFragment[]
   fetching: {
-    wheel: boolean,
-    entries: boolean,
-    winners: boolean,
-  },
-  lastWinnerEntry?: RandomWheelEntry,
+    wheel: boolean
+    entries: boolean
+    winners: boolean
+    members: boolean
+  }
+  lastWinnerEntry?: RandomWheelEntry
 }
 
 type FetchFunction = (opts?: Partial<OperationContext> | undefined) => void
 
-interface RandomWheelFetch {
-  fetchWheel: FetchFunction,
-  fetchEntries: FetchFunction,
-  fetchWinners: FetchFunction,
-  setSpinning: Dispatch<SetStateAction<boolean>>,
-  setRotation: Dispatch<SetStateAction<number | undefined>>,
-  setLastWinnerEntry: Dispatch<SetStateAction<RandomWheelEntry | undefined>>,
+export interface RandomWheelFetch {
+  fetchWheel: FetchFunction
+  fetchEntries: FetchFunction
+  fetchWinners: FetchFunction
+  fetchMembers: FetchFunction
 }
 
 interface DataOptions {
   details?: boolean
   entries?: boolean
   winners?: boolean
+  members?: boolean
   fetchOnly?: boolean
 }
 
@@ -74,7 +76,13 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
     variables: { slug },
     pause: !options?.winners || options.fetchOnly,
   })
-  const winners = <RandomWheelWinnerFragment[]>winnersData?.randomWheelBySlug?.winners
+  const winners = <RandomWheelWinnerFragment[] | undefined>winnersData?.randomWheelBySlug?.winners
+
+  const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelBySlugMembersQuery({
+    variables: { slug },
+    pause: !options?.members || options.fetchOnly,
+  })
+  const members = <RandomWheelMemberFragment[] | undefined>membersData?.randomWheelBySlug?.members
 
   const { user } = useAuth()
   const viewable = wheel?.accessType === "PUBLIC"
@@ -90,10 +98,12 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
       } : undefined,
       entries: entries,
       winners: winners,
+      members: members,
       fetching: {
         wheel: fetchingWheel,
         entries: fetchingEntries,
         winners: fetchingWinners,
+        members: fetchingMembers,
       },
       // lastWinnerEntry,
     },
@@ -101,6 +111,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
       fetchWheel,
       fetchEntries,
       fetchWinners,
+      fetchMembers,
     },
   ] as const
 }

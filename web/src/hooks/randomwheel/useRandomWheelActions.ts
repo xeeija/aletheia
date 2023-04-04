@@ -1,14 +1,17 @@
 import {
   RandomWheelInput,
+  RandomWheelMemberInput,
   useClearRandomWheelMutation,
   useDeleteRandomWheelEntryMutation,
   useDeleteRandomWheelMutation,
+  useUpdateRandomWheelMembersMutation,
   useUpdateRandomWheelMutation
 } from "../../generated/graphql"
 
 export interface RandomWheelActions {
   clear: () => Promise<void>
   updateWheel: (options: RandomWheelInput) => Promise<void>
+  updateMembers: (members: RandomWheelMemberInput | RandomWheelMemberInput[]) => Promise<{ id: string }[] | null | undefined>
   deleteEntry: (entryId: string) => Promise<void>
   deleteWheel: () => Promise<void>
 }
@@ -71,10 +74,29 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     }
   }
 
+  const [, updateWheelMembers] = useUpdateRandomWheelMembersMutation()
+  const updateMembers = async (members: RandomWheelMemberInput[]) => {
+    if (!wheelId) {
+      return
+    }
+
+    const { data, error } = await updateWheelMembers({
+      randomWheelId: wheelId,
+      members: members,
+    })
+
+    if (error) {
+      console.warn(error)
+    }
+
+    return data?.updateRandomWheelMembers
+  }
+
 
   return <RandomWheelActions>{
     clear,
     updateWheel,
+    updateMembers,
     deleteEntry,
     deleteWheel,
   }
