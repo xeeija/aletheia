@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { RandomWheelEntry } from "../generated/graphql"
 import { RandomWheelActions, useRandomWheelActions } from "./randomwheel/useRandomWheelActions"
 import { RandomWheelData, useRandomWheelData } from "./randomwheel/useRandomWheelData"
@@ -38,6 +38,11 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   const spin = useRandomWheelSpin(wheel?.id, spinning)
 
   const [liked, setLiked] = useState(wheel?.liked)
+  useEffect(() => {
+    console.log("liked useRandomWheel", wheel?.liked)
+    setLiked(wheel?.liked)
+  }, [wheel?.liked])
+
   const like = useRandomWheelLike(wheel?.id, liked, setLiked)
 
   useRandomWheelSocket(wheelSlug, setSpinning, setRotation, setLastWinnerEntry, options?.socket)
