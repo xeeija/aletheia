@@ -31,8 +31,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
 
   const [{ members, fetching }, { updateMembers, fetchMembers }] = useRandomWheel(slug, {
     members: true,
-    // TODO: without "details" the actions (updateMembers) dont work
-    details: true,
   })
 
   const initialMembers: Record<string, MemberFormEntry> = (members ?? []).reduce((acc, member) => ({

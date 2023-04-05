@@ -1,5 +1,6 @@
 query RandomWheelBySlugWinners($slug: String!) {
   randomWheelBySlug(slug: $slug) {
+    id
     winners {
       ...RandomWheelWinner
     }

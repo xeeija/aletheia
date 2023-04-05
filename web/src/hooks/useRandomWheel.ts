@@ -23,7 +23,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   // TODO: Maybe return a boolean or Error (message + code) from some mutation wrappers/handlers, like deleteWheel
 
-  const [{ wheel, ...randomWheelData }, randomWheelFetch] = useRandomWheelData(wheelSlug, {
+  const [{ id, wheel, ...randomWheelData }, randomWheelFetch] = useRandomWheelData(wheelSlug, {
     details: options?.details,
     entries: options?.entries,
     winners: options?.winners,
@@ -31,27 +31,28 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   })
 
   // TODO FIX: without options.details the actions dont work, because wheel.id is undefined
-  const randomWheelActions = useRandomWheelActions(wheel?.id)
+  const randomWheelActions = useRandomWheelActions(id)
 
   const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
 
   const [rotation, setRotation] = useState<number>()
   const [spinning, setSpinning] = useState(false)
   // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event? 
-  const spin = useRandomWheelSpin(wheel?.id, spinning)
+  const spin = useRandomWheelSpin(id, spinning)
 
   const [liked, setLiked] = useState(wheel?.liked)
   useEffect(() => {
     setLiked(wheel?.liked)
   }, [wheel?.liked])
 
-  const like = useRandomWheelLike(wheel?.id, liked, setLiked)
+  const like = useRandomWheelLike(id, liked, setLiked)
 
   useRandomWheelSocket(wheelSlug, setSpinning, setRotation, setLastWinnerEntry, options?.socket)
 
   return [
     <RandomWheelData>{
       ...randomWheelData,
+      id,
       wheel: {
         ...wheel,
         rotation: rotation ?? wheel?.rotation,

@@ -5,8 +5,9 @@ query RandomWheelBySlug($slug: String!) {
       ...UserName
     }
     members {
-      userId
-      roleName
+      ...RandomWheelMember
+      # userId
+      # roleName
     }
   }
 }

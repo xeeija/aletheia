@@ -27,6 +27,7 @@ export interface RandomWheelDetails extends RandomWheelDetailsQuery {
 }
 
 export interface RandomWheelData {
+  id?: string
   wheel?: RandomWheelDetails
   entries?: RandomWheelEntryFragment[]
   winners?: RandomWheelWinnerFragment[]
@@ -84,6 +85,8 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   })
   const members = <RandomWheelMemberFragment[] | undefined>membersData?.randomWheelBySlug?.members
 
+  const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheelBySlug?.id
+
   const { user } = useAuth()
   const viewable = wheel?.accessType === "PUBLIC"
     || wheel?.owner === null
@@ -92,6 +95,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
 
   return [
     <RandomWheelData>{
+      id,
       wheel: wheel ? {
         ...wheel,
         viewable,
