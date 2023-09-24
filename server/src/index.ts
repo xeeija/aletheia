@@ -1,17 +1,17 @@
-import "reflect-metadata"
+import { PrismaClient } from "@prisma/client"
+import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
+import { ApolloServer } from "apollo-server-express"
+import PGStore from "connect-pg-simple"
+import cors from "cors"
 import express from "express"
 import session from "express-session"
-import cors from "cors"
-import { ApolloServer } from "apollo-server-express"
-import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
+import "reflect-metadata"
 import { buildSchema } from "type-graphql"
-import { PrismaClient } from "@prisma/client"
-import { UserResolver, RandomWheelResolver, ColorThemeResolver } from "./resolvers"
+import { ColorThemeResolver, RandomWheelResolver, UserResolver } from "./resolvers"
 import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
-import PGStore from "connect-pg-simple"
 // import { slugTest } from "./utils/slug"
-import { Server } from "socket.io"
 import { createServer } from "http"
+import { Server } from "socket.io"
 import { randomWheelHandlers } from "./socket"
 
 // Database client
@@ -105,16 +105,23 @@ const main = async () => {
   await apolloServer.start()
   apolloServer.applyMiddleware({ app, cors: false })
 
+  // eventSubMiddleware.apply(app);
+
   // # Start server (listen)
 
   const APP_PORT = process.env.APP_PORT ?? 4000
 
-  httpServer.listen(APP_PORT, () => {
+  httpServer.listen(APP_PORT, async () => {
     console.log(`Server started at http://localhost:${APP_PORT}`)
+
+    // await eventSubMiddleware.markAsReady();
+
+    // handleEventSub(eventSubMiddleware)
+
   })
 }
 
 main()
-  // .finally(async () => {
-  //   await prisma.$disconnect()
-  // })
+// .finally(async () => {
+//   await prisma.$disconnect()
+// })
