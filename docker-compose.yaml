@@ -1,0 +1,33 @@
+version: "3.1"
+name: aletheia
+services:
+  postgres: 
+    image: postgres:14.8
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: aletheia
+      POSTGRES_USER: aletheia
+      POSTGRES_PASSWORD: aletheia
+    volumes:
+      - ./docker/data/postgres:/var/lib/postgresql/data
+  server:
+    image: xeeija/aletheia-server:1.4.1
+    build:
+      context: server
+    restart: unless-stopped
+    ports:
+      - 4000:4000
+    environment:
+      DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
+      ORIGIN_URL: http://localhost:3000      
+  web:
+    image: xeeija/aletheia-web:1.4.0
+    build:
+      context: server
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      SERVER_URL: http://server:4000
