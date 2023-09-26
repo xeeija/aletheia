@@ -1,9 +1,8 @@
-import React from "react"
-import { Grid, Typography } from "@mui/material"
+import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { LoadingButton, InputField } from "../components"
+import { InputField, LoadingButton } from "../components"
+import { LayoutNextPage, defaultLayout } from "../components/layout"
 import { useMeQuery, useUpdateUserMutation } from "../generated/graphql"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
 
 const SettingsPage: LayoutNextPage = () => {
 
@@ -56,12 +55,25 @@ const SettingsPage: LayoutNextPage = () => {
                   </LoadingButton>
                 </Grid>
 
+                <Grid item>
+                  {/* <Button variant="contained" href={twitchAuthorizeLink}>Login with Twitch</Button> */}
+                </Grid>
+
               </Grid>
 
             </Form>
           )}
         </Formik>
       )}
+
+      <Button
+        variant="outlined"
+        href="http://localhost:4000/twitch/authorize"
+        sx={{ textTransform: "none" }}
+      >
+        Connect with Twitch
+      </Button>
+
     </>
   )
 }

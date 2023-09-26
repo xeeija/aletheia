@@ -31,6 +31,7 @@ model User {
   randomWheelMember RandomWheelMember[]
   likes             RandomWheelLike[]
   colorThemes       ColorTheme[]        @relation(name: "fk_creator")
+  UserAccessToken   UserAccessToken[]
 }
 
 // Session store table
@@ -145,3 +146,25 @@ model ColorTheme {
   randomWheels  RandomWheel[]
   usersStandard User[]        @relation(name: "fk_standardTheme")
 }
+
+// Twitch user access token
+model UserAccessToken {
+  id                  String   @id @default(uuid()) @db.Uuid
+  user                User     @relation(fields: [userId], references: [id])
+  userId              String   @db.Uuid
+  accessToken         String
+  refreshToken        String?
+  scope               String[]
+  expiresIn           Int
+  obtainmentTimestamp BigInt
+  twitchUserId        String?
+  twitchUsername      String?
+}
+
+// model EventSubSubscription {
+//   id            String      @id @default(uuid()) @db.Uuid
+//   randomWheel   RandomWheel @relation(references: [id], fields: [randomWheelId])
+//   randomWheelId String      @db.Uuid
+//   type String
+
+// }
