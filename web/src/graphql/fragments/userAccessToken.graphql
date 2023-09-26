@@ -1,0 +1,10 @@
+fragment UserAccessToken on UserAccessToken {
+  id
+  accessToken
+  refreshToken
+  scope
+  expiresIn
+  obtainmentTimestamp
+  twitchUserId
+  twitchUsername
+}

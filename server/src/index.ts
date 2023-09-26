@@ -110,6 +110,7 @@ const main = async () => {
   // Twitch Integration
 
   // eventSubMiddleware.apply(app);
+  // await setupAuthProvider(prisma)
 
   app.get("/twitch/authorize", async (req, res) => {
 
@@ -137,14 +138,12 @@ const main = async () => {
     const params = new URLSearchParams({
       response_type: "code",
       client_id: process.env.TWITCH_CLIENT_ID ?? "",
-      // redirct_uri: `${process.env.TWITCH_REDIRECT_URI}/twitch/token`,
-      scopes: [
+      scope: [
         "channel:read:redemptions",
       ].join(" "),
       state: "c3ab8aa609ea11e793ae92361f002672" // randomly generated unique per request
     }).toString()
 
-    // const paramsString = new URLSearchParams(params).toString()
     const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/twitch/token`
 
     res.redirect(`https://id.twitch.tv/oauth2/authorize?${params}&${redirectUri}`)
@@ -158,10 +157,8 @@ const main = async () => {
       client_id: process.env.TWITCH_CLIENT_ID ?? "",
       client_secret: process.env.TWITCH_CLIENT_SECRET ?? "",
       grant_type: "authorization_code",
-      // redirct_uri: `${process.env.TWITCH_REDIRECT_URI ?? ""}/twitch/token`,
       code: `${req.query.code}`
     }).toString()
-    // const paramsString = new URLSearchParams(params).toString()
     const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/twitch/token`
 
     const response = await fetch(`https://id.twitch.tv/oauth2/token?${params}&${redirectUri}`, {

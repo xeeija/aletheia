@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  BigInt: any;
   DateTime: any;
 };
 
@@ -69,6 +70,7 @@ export type Mutation = {
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
   deleteRandomWheelMember?: Maybe<Scalars['Boolean']>;
+  disconnectAccessToken: Scalars['Boolean'];
   likeRandomWheel?: Maybe<RandomWheelLike>;
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -174,6 +176,7 @@ export type Query = {
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
+  userAccesToken: UserAccessToken;
 };
 
 
@@ -306,8 +309,22 @@ export type User = {
   username: Scalars['String'];
 };
 
+export type UserAccessToken = {
+  __typename?: 'UserAccessToken';
+  accessToken: Scalars['String'];
+  expiresIn: Scalars['Int'];
+  id: Scalars['String'];
+  obtainmentTimestamp: Scalars['BigInt'];
+  refreshToken?: Maybe<Scalars['String']>;
+  scope: Array<Scalars['String']>;
+  twitchUserId?: Maybe<Scalars['String']>;
+  twitchUsername?: Maybe<Scalars['String']>;
+  userId: Scalars['String'];
+};
+
 export type UserCount = {
   __typename?: 'UserCount';
+  UserAccessToken: Scalars['Int'];
   colorThemes: Scalars['Int'];
   drawnWinners: Scalars['Int'];
   likes: Scalars['Int'];
@@ -339,6 +356,8 @@ export type RandomWheelMemberFragment = { __typename?: 'RandomWheelMember', id: 
 export type NormalUserFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
 
 export type UserNameFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
+
+export type UserAccessTokenFragment = { __typename?: 'UserAccessToken', id: string, accessToken: string, refreshToken?: Maybe<string>, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> };
 
 export type AddRandomWheelEntryMutationVariables = Exact<{
   randomWheelId: Scalars['String'];
@@ -379,6 +398,11 @@ export type DeleteRandomWheelEntryMutationVariables = Exact<{
 
 
 export type DeleteRandomWheelEntryMutation = { __typename?: 'Mutation', deleteRandomWheelEntry?: Maybe<boolean> };
+
+export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
 
 export type LikeRandomWheelMutationVariables = Exact<{
   randomWheelId: Scalars['String'];
@@ -495,6 +519,11 @@ export type RandomWheelBySlugWinnersQueryVariables = Exact<{
 
 export type RandomWheelBySlugWinnersQuery = { __typename?: 'Query', randomWheelBySlug?: Maybe<{ __typename?: 'RandomWheel', id: string, winners: Array<{ __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> }> }> };
 
+export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserAccessTokenQuery = { __typename?: 'Query', userAccesToken: { __typename?: 'UserAccessToken', id: string, accessToken: string, refreshToken?: Maybe<string>, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> } };
+
 export type UsernameExistsMutationVariables = Exact<{
   username: Scalars['String'];
 }>;
@@ -572,6 +601,18 @@ export const NormalUserFragmentDoc = gql`
   displayname
 }
     `;
+export const UserAccessTokenFragmentDoc = gql`
+    fragment UserAccessToken on UserAccessToken {
+  id
+  accessToken
+  refreshToken
+  scope
+  expiresIn
+  obtainmentTimestamp
+  twitchUserId
+  twitchUsername
+}
+    `;
 export const AddRandomWheelEntryDocument = gql`
     mutation AddRandomWheelEntry($randomWheelId: String!, $name: String!) {
   addRandomWheelEntry(randomWheelId: $randomWheelId, name: $name) {
@@ -629,6 +670,15 @@ export const DeleteRandomWheelEntryDocument = gql`
 
 export function useDeleteRandomWheelEntryMutation() {
   return Urql.useMutation<DeleteRandomWheelEntryMutation, DeleteRandomWheelEntryMutationVariables>(DeleteRandomWheelEntryDocument);
+};
+export const DisconnectAccessTokenDocument = gql`
+    mutation DisconnectAccessToken {
+  disconnectAccessToken
+}
+    `;
+
+export function useDisconnectAccessTokenMutation() {
+  return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
 };
 export const LikeRandomWheelDocument = gql`
     mutation LikeRandomWheel($randomWheelId: String!, $like: Boolean!) {
@@ -846,6 +896,17 @@ export const RandomWheelBySlugWinnersDocument = gql`
 
 export function useRandomWheelBySlugWinnersQuery(options: Omit<Urql.UseQueryArgs<RandomWheelBySlugWinnersQueryVariables>, 'query'>) {
   return Urql.useQuery<RandomWheelBySlugWinnersQuery, RandomWheelBySlugWinnersQueryVariables>({ query: RandomWheelBySlugWinnersDocument, ...options });
+};
+export const UserAccessTokenDocument = gql`
+    query UserAccessToken {
+  userAccesToken {
+    ...UserAccessToken
+  }
+}
+    ${UserAccessTokenFragmentDoc}`;
+
+export function useUserAccessTokenQuery(options?: Omit<Urql.UseQueryArgs<UserAccessTokenQueryVariables>, 'query'>) {
+  return Urql.useQuery<UserAccessTokenQuery, UserAccessTokenQueryVariables>({ query: UserAccessTokenDocument, ...options });
 };
 export const UsernameExistsDocument = gql`
     mutation UsernameExists($username: String!) {

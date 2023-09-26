@@ -2,22 +2,23 @@ import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { InputField, LoadingButton } from "../components"
 import { LayoutNextPage, defaultLayout } from "../components/layout"
-import { useMeQuery, useUpdateUserMutation } from "../generated/graphql"
+import { useUpdateUserMutation } from "../generated/graphql"
+import { useAuth } from "../hooks"
 
 const SettingsPage: LayoutNextPage = () => {
 
-  const [{ data }] = useMeQuery()
-  const [{ }, updateUser] = useUpdateUserMutation()
+  const { user, userAccessToken, disconnectAccessToken } = useAuth({ includeToken: true })
+  const [, updateUser] = useUpdateUserMutation()
 
   return (
     <>
       <Typography variant="h3" mb={2}>Profile Settings</Typography>
 
-      {data?.me && (
+      {user && (
         <Formik
           initialValues={{
-            username: data?.me?.username ?? "",
-            displayname: data?.me?.displayname ?? "",
+            username: user.username ?? "",
+            displayname: user.displayname ?? "",
           }}
           onSubmit={async (values) => {
             const response = await updateUser({
@@ -39,7 +40,7 @@ const SettingsPage: LayoutNextPage = () => {
           {({ isSubmitting }) => (
             <Form>
 
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
 
                 <Grid item xs={12}>
                   <InputField name="username" label="Username" />
@@ -66,13 +67,39 @@ const SettingsPage: LayoutNextPage = () => {
         </Formik>
       )}
 
-      <Button
-        variant="outlined"
-        href="http://localhost:4000/twitch/authorize"
-        sx={{ textTransform: "none" }}
-      >
-        Connect with Twitch
-      </Button>
+      <Typography variant="h4" sx={{ pb: 1 }}>
+        Twitch
+      </Typography>
+
+      {!userAccessToken?.id && (
+        <Button
+          variant="outlined"
+          href="http://localhost:4000/twitch/authorize"
+          sx={{ textTransform: "none" }}
+        >
+          Connect with Twitch
+        </Button>
+      )}
+      {userAccessToken?.id && (
+        <>
+          <Typography color="text.secondary" sx={{ pb: 1 }}>
+            Connected as {userAccessToken.twitchUsername}
+          </Typography>
+
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              disconnectAccessToken({}, {
+                additionalTypenames: ["UserAccessToken"]
+              })
+            }}
+            sx={{ textTransform: "none" }}
+          >
+            Disconnect
+          </Button>
+        </>
+      )}
 
     </>
   )

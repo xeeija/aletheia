@@ -1,0 +1,5 @@
+query UserAccessToken {
+  userAccesToken {
+    ...UserAccessToken
+  }
+}

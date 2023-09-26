@@ -46,6 +46,10 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
     // await writeFile(`./src/twitch/token/token.${userId}.json`, JSON.stringify({ ...newTokenData, userId }, null, 2), 'utf-8')
   });
 
+  // TODO: Validate tokens every hour -- investigate if twurple automatically does that
+  // setTimeout(() => {
+  // })
+
   // await authProvider.addUserForToken(tokenData);
   // authProvider.addUser("78823247", tokenData)
 

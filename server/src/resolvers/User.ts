@@ -1,7 +1,7 @@
-import { User } from "../../dist/generated/typegraphql-prisma";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import argon2 from "argon2"
+import argon2 from "argon2";
 import { GraphqlContext } from "src/types";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { User, UserAccessToken } from "../../dist/generated/typegraphql-prisma";
 import { FieldError } from "./common/types";
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
@@ -215,5 +215,60 @@ export class UserResolver {
     })
 
     return userExists > 0
+  }
+
+  @Query(() => UserAccessToken)
+  async userAccesToken(
+    @Ctx() { prisma, req }: GraphqlContext
+  ) {
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? ""
+      }
+    })
+
+    return token
+  }
+
+  @Mutation(() => Boolean)
+  async disconnectAccessToken(
+    @Ctx() { prisma, req }: GraphqlContext
+  ) {
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? ""
+      }
+    })
+
+    if (token?.refreshToken) {
+      const response = await fetch(`https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.refreshToken}`, {
+        method: "POST",
+      })
+
+      // token succesfully revoked or token was already invalid
+      if (!response.ok && response.status !== 400) {
+        console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
+      }
+    }
+
+    if (token?.accessToken) {
+      const response = await fetch(`https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.accessToken}`, {
+        method: "POST",
+      })
+
+      // token succesfully revoked or token was already invalid
+      if (!response.ok && response.status !== 400) {
+        console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
+      }
+    }
+
+    await prisma.userAccessToken.delete({
+      where: {
+        id: token?.id
+      }
+    })
+
+    return true
   }
 }
