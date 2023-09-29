@@ -86,14 +86,15 @@ const SettingsPage: LayoutNextPage = () => {
             Connected as {userAccessToken.twitchUsername}
           </Typography>
 
+          {/* TODO: make it look nice, maybe with display name or profile picture https://dev.twitch.tv/docs/api/reference/#get-users */}
+
           <Button
             variant="outlined"
             color="error"
-            onClick={() => {
-              disconnectAccessToken({}, {
-                additionalTypenames: ["UserAccessToken"]
-              })
+            onClick={async () => {
+              await disconnectAccessToken()
             }}
+
             sx={{ textTransform: "none" }}
           >
             Disconnect

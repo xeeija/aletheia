@@ -15,6 +15,8 @@ export const useAuth = (config?: { includeToken?: boolean }) => {
     userAccessToken: <UserAccessTokenFragment | undefined>token?.userAccesToken,
     errorUserAccessToken: errorToken,
     fetchingToken,
-    disconnectAccessToken
+    disconnectAccessToken: () => disconnectAccessToken({}, {
+      additionalTypenames: ["UserAccessToken"]
+    })
   }
 }

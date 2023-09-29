@@ -12,9 +12,11 @@ export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret 
 export const setupAuthProvider = async (prisma: PrismaClient) => {
   // const tokenData = JSON.parse(await readFile('./src/twitch/token/token.78823247.json', "utf-8"));
 
+  // await writeFile("../docker/secret.txt", randomBytes(32).toString("hex"))
+
   const accessTokens = await prisma.userAccessToken.findMany()
 
-  console.log("setup auth provider", accessTokens.length)
+  console.log("Setup auth provider", accessTokens.length)
 
   accessTokens.forEach((token) => {
     const tokenNew: AccessToken = {
@@ -22,12 +24,12 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
       obtainmentTimestamp: Number(token.obtainmentTimestamp)
     }
 
-    if (token.twitchUserId) {
-      authProvider.addUser(token.twitchUserId, tokenNew)
-    }
-    else {
-      authProvider.addUserForToken(tokenNew)
-    }
+    // if (token.twitchUserId) {
+    //   authProvider.addUser(token.twitchUserId, tokenNew)
+    // }
+    // else {
+    authProvider.addUserForToken(tokenNew)
+    // }
   })
 
   authProvider.onRefresh(async (userId, newTokenData) => {
@@ -44,7 +46,11 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
     })
 
     // await writeFile(`./src/twitch/token/token.${userId}.json`, JSON.stringify({ ...newTokenData, userId }, null, 2), 'utf-8')
-  });
+  })
+
+  authProvider.onRefreshFailure((userId) => {
+    console.warn("WARNING failed to refresh token for user", userId)
+  })
 
   // TODO: Validate tokens every hour -- investigate if twurple automatically does that
   // setTimeout(() => {

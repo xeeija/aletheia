@@ -1,13 +1,13 @@
-import { GraphqlContext } from "src/types";
-import { slugify } from "../utils/slug";
-import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
-import { RandomWheel, RandomWheelEntry, RandomWheelMember, RandomWheelWinner, User, AccessType, RandomWheelRole, RandomWheelLike, ColorTheme } from "../../dist/generated/typegraphql-prisma";
-import { AppError, createAppErrorUnion } from "./common/types";
-import { GraphQLError, GraphQLResolveInfo } from "graphql";
-import { parseResolveInfo, ResolveTree } from "graphql-parse-resolve-info";
 import { Prisma } from "@prisma/client";
+import { GraphQLError, GraphQLResolveInfo } from "graphql";
+import { ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info";
+import { GraphqlContext } from "src/types";
+import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
+import { AccessType, ColorTheme, RandomWheel, RandomWheelEntry, RandomWheelLike, RandomWheelMember, RandomWheelRole, RandomWheelWinner, User } from "../../dist/generated/typegraphql-prisma";
 import { random, randomNumber } from "../utils/math";
+import { slugify } from "../utils/slug";
 import { ColorThemeInput } from "./ColorTheme";
+import { AppError, createAppErrorUnion } from "./common/types";
 
 /*
   @ObjectType()

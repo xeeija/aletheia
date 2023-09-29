@@ -7,14 +7,15 @@ import express from "express"
 import session from "express-session"
 import "reflect-metadata"
 import { buildSchema } from "type-graphql"
-import { ColorThemeResolver, RandomWheelResolver, UserResolver } from "./resolvers"
+import { ColorThemeResolver, RandomWheelResolver, TwitchResolver, UserResolver } from "./resolvers"
 import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
 // import { slugTest } from "./utils/slug"
 import { getTokenInfo } from "@twurple/auth"
 import { createServer } from "http"
 import { Server } from "socket.io"
 import { randomWheelHandlers } from "./socket"
-import { authProvider } from "./twitch/auth"
+import { authProvider, setupAuthProvider } from "./twitch/auth"
+import { apiClient, eventSubMiddleware, handleEventSub } from "./twitch/eventsub"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -87,11 +88,19 @@ const main = async () => {
       resolvers: [
         UserResolver,
         RandomWheelResolver,
-        ColorThemeResolver
+        ColorThemeResolver,
+        TwitchResolver
       ],
       validate: false
     }),
-    context: ({ req, res }): GraphqlContext => ({ req, res, prisma, socketIo }),
+    context: ({ req, res }): GraphqlContext => ({
+      req,
+      res,
+      prisma,
+      socketIo,
+      apiClient,
+      eventSub: eventSubMiddleware
+    }),
     cache: "bounded",
     plugins: [
       process.env.NODE_ENV === "production"
@@ -109,8 +118,8 @@ const main = async () => {
 
   // Twitch Integration
 
-  // eventSubMiddleware.apply(app);
-  // await setupAuthProvider(prisma)
+  eventSubMiddleware.apply(app);
+  await setupAuthProvider(prisma)
 
   app.get("/twitch/authorize", async (req, res) => {
 
@@ -212,8 +221,8 @@ const main = async () => {
   httpServer.listen(APP_PORT, async () => {
     console.log(`Server started at http://localhost:${APP_PORT}`)
 
-    // await eventSubMiddleware.markAsReady();
-    // await handleEventSub(eventSubMiddleware)
+    await eventSubMiddleware.markAsReady();
+    await handleEventSub(eventSubMiddleware, prisma, socketIo)
 
   })
 }

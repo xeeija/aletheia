@@ -1,6 +1,8 @@
+import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client";
+import { ApiClient } from "@twurple/api";
+import { EventSubMiddleware } from "@twurple/eventsub-http";
 import { Request, Response } from "express";
-import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
-import { Server as SocketServerDefault, Socket as SocketDefault } from "socket.io";
+import { Socket as SocketDefault, Server as SocketServerDefault } from "socket.io";
 
 // Define custom properties on the session
 declare module "express-session" {
@@ -16,6 +18,8 @@ export type GraphqlContext = {
   res: Response
   prisma: PrismaClient
   socketIo: SocketServer
+  apiClient: ApiClient,
+  eventSub: EventSubMiddleware
 }
 
 // Socket
@@ -50,3 +54,7 @@ export interface ClientToServerEvents {
 export interface InterServerEvents { }
 
 export interface SocketData { }
+
+export enum SubscriptionType {
+  redemptionAdd = "channel.channel_points_custom_reward_redemption.add"
+}
