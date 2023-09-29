@@ -43,7 +43,8 @@ export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
 export const showEventSubDebug = process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
 
-const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
+// const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
+const eventTypePattern = /^([a-z_.]+[a-z_])/
 const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 // const eventType = (eventId: string) => {
 //   const r = eventId.match(eventTypePattern)
@@ -54,22 +55,22 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
 
   if (showEventSubDebug) {
     eventSub.onSubscriptionCreateFailure((ev) => {
-      console.log("EVENTSUB create failure", eventType(ev.id))
+      console.log("[eventsub] create failure", eventType(ev.id))
     })
     eventSub.onSubscriptionCreateSuccess((ev) => {
-      console.log("EVENTSUB create success", eventType(ev.id))
+      console.log("[eventsub] create success", eventType(ev.id))
     })
     eventSub.onSubscriptionDeleteFailure((ev) => {
-      console.log("EVENTSUB delete failure", eventType(ev.id))
+      console.log("[eventsub] delete failure", eventType(ev.id))
     })
     eventSub.onSubscriptionDeleteSuccess((ev) => {
-      console.log("EVENTSUB delete success", eventType(ev.id))
+      console.log("[eventsub] delete success", eventType(ev.id))
     })
     eventSub.onVerify((success, ev) => {
-      console.log(`EVENTSUB verify ${success ? "succes" : "failure"}`, eventType(ev.id))
+      console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
     })
     eventSub.onRevoke((ev) => {
-      console.log("EVENTSUB revoked ", eventType(ev.id))
+      console.log("[eventsub] revoked ", eventType(ev.id))
     })
   }
 
@@ -86,7 +87,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // TODO: check type and resume with the correct listener
 
   if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
-    console.log(`EVENTSUB subscriptions active: ${helixSubs.data.length}, stored: ${storedSubscriptions.length}`)
+    console.log(`[eventsub] subscriptions active: ${helixSubs.data.length}, stored: ${storedSubscriptions.length}`)
   }
 
   helixSubs.data.forEach((helixSub) => {
@@ -99,10 +100,8 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       )
 
       eventSub.onChannelRedemptionAddForReward(condition.broadcaster_user_id, condition.reward_id, (event) => {
-        console.log("resumed event redemption add", event.userDisplayName, event.input)
-        if (stored) {
-          addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, stored)
-        }
+        console.log("[eventsub] resumed redemption add", event.userDisplayName, event.input)
+        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
       })
 
     }

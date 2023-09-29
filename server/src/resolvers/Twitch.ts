@@ -1,7 +1,7 @@
 import { GraphQLJSON } from "graphql-scalars"
-import { GraphqlContext } from "src/types"
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
 import { addSubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
+import { GraphqlContext, SubscriptionType } from "../types"
 
 @Resolver()
 export class TwitchResolver {
@@ -26,7 +26,7 @@ export class TwitchResolver {
 
   @Mutation(() => Boolean, { nullable: true })
   async syncEntriesWithChannelRedemption(
-    @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
     @Arg("useInput", { defaultValue: false }) useInput: boolean,
@@ -35,7 +35,12 @@ export class TwitchResolver {
       return null
     }
 
-    const token = await prisma.userAccessToken.findFirst({ where: { userId: req.session.userId } })
+    const token = await prisma.userAccessToken.findFirst({
+      where: { userId: req.session.userId },
+      select: {
+        twitchUserId: true
+      }
+    })
 
     if (!token?.twitchUserId) {
       console.error("twitchUserId is not set for token")
@@ -89,6 +94,8 @@ export class TwitchResolver {
       id: existingSubscription?.id
     })
 
+    const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
     // console.log(await eventSubscription.getCliTestCommand())
 
     // const helixSubs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
@@ -108,15 +115,18 @@ export class TwitchResolver {
     // activeEventSubSubscriptions.set(newSubscription.id, eventSubscription)
 
     if (!existingSubscription) {
+      const condition = helixSub?.condition as Record<string, string> | undefined
       await prisma.eventSubscription.create({
         data: {
           id: subscriptionId,
-          rewardId: rewardId,
+          type: SubscriptionType.redemptionAdd,
           twitchUserId: token.twitchUserId ?? "",
-          randomWheelId: randomWheelId,
           userId: req.session.userId,
+          rewardId: rewardId,
+          randomWheelId: randomWheelId,
+          subscriptionId: helixSub?.id,
           useInput: useInput,
-          subscriptionId: "", // newSubscription?.id ?? ""
+          condition: condition,
         }
       })
     }
@@ -150,22 +160,6 @@ export class TwitchResolver {
     // activeEventSubSubscriptions.delete(subscriptionId)
 
     await deleteSubscriptionRedemptionAdd(apiClient, prisma, id)
-
-    const sub = await prisma.eventSubscription.findUnique({
-      where: { id },
-    })
-
-    if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-      console.warn(`invalid ID ${id}: a required related ID is undefined`)
-      return false
-    }
-
-    const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
-
-    if (helixSub) {
-      await apiClient.eventSub.deleteSubscription(helixSub?.id)
-
-    }
 
     await prisma.eventSubscription.delete({
       where: { id }
@@ -214,7 +208,7 @@ export class TwitchResolver {
     // }
 
     if (pause) {
-      await deleteSubscriptionRedemptionAdd(apiClient, prisma, id)
+      await deleteSubscriptionRedemptionAdd(apiClient, prisma, id, true)
 
       // const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
 
@@ -227,11 +221,11 @@ export class TwitchResolver {
       })
 
       if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-        console.warn(`invalid ID ${id}: a required related ID is undefined`)
+        console.warn(`create redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
         return false
       }
 
-      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, sub)
+      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>sub)
     }
 
     // const subscription = activeEventSubSubscriptions.get(helixSub?.id)

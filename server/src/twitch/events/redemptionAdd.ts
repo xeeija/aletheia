@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
-import { SocketServer } from "src/types"
+import { SocketServer, SubscriptionType } from "../../types"
 import { activeSubscriptions } from "../eventsub"
 
 export const addSubscriptionRedemptionAdd = (
@@ -42,22 +42,22 @@ export const addSubscriptionRedemptionAdd = (
 }
 
 export const findSubscriptionRedemptionAdd = async (apiClient: ApiClient, userId: string, rewardId: string) => {
-  const helixSubs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
+  const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
 
   return helixSubs.data.find((sub) =>
     (sub.status === "enabled" || sub.status === "webhook_callback_verification_pending") &&
-    sub.condition["broadcaster_user_id"] === userId &&
-    sub.condition["reward_id"] === rewardId
+    sub.condition.broadcaster_user_id === userId &&
+    sub.condition.reward_id === rewardId
   )
 }
 
-export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, prisma: PrismaClient, id: string) => {
+export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, prisma: PrismaClient, id: string, skipDelete?: boolean) => {
   const sub = await prisma.eventSubscription.findUnique({
     where: { id },
   })
 
   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-    console.warn(`invalid ID ${id}: a required related ID is undefined`)
+    console.warn(`delete redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
     return false
   }
 
@@ -66,7 +66,14 @@ export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, pris
   if (helixSub) {
     activeSubscriptions.get(sub.id)?.stop()
     activeSubscriptions.delete(sub.id)
-    await apiClient.eventSub.deleteSubscription(helixSub?.id)
+    await apiClient.eventSub.deleteSubscription(helixSub.id)
+
+  }
+
+  if (!skipDelete) {
+    await prisma.eventSubscription.delete({
+      where: { id }
+    })
   }
 
   return sub

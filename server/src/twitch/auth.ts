@@ -16,7 +16,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
 
   const accessTokens = await prisma.userAccessToken.findMany()
 
-  console.log("Setup auth provider", accessTokens.length)
+  console.log("Setup Twitch AuthProvider with", accessTokens.length, "tokens")
 
   accessTokens.forEach((token) => {
     const tokenNew: AccessToken = {
