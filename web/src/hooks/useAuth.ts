@@ -8,7 +8,7 @@ export const useAuth = (config?: { includeToken?: boolean }) => {
   const [, disconnectAccessToken] = useDisconnectAccessTokenMutation()
 
   return {
-    user: <UserNameFragment>user?.me,
+    user: <UserNameFragment | undefined>user?.me,
     error: errorUser,
     fetchingUser,
     authenticated: !!user?.me,

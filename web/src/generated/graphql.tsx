@@ -115,10 +115,10 @@ export type Mutation = {
   likeRandomWheel?: Maybe<RandomWheelLike>;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  pauseEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
+  pauseEntriesRedemptionSync?: Maybe<EventSubscription>;
   register: UserResponse;
   spinRandomWheel: RandomWheelWinner;
-  syncEntriesWithRedemption?: Maybe<Scalars['Boolean']>;
+  syncEntriesWithRedemption?: Maybe<EventSubscription>;
   updateRandomWheel?: Maybe<RandomWheel>;
   updateRandomWheelEntry: RandomWheelEntry;
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
@@ -148,7 +148,7 @@ export type MutationCreateRandomWheelArgs = {
 
 
 export type MutationDeleteEntriesRedemptionSyncArgs = {
-  id: Scalars['String'];
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -521,7 +521,7 @@ export type SpinRandomWheelMutationVariables = Exact<{
 export type SpinRandomWheelMutation = { __typename?: 'Mutation', spinRandomWheel: { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, drawnById?: Maybe<string>, randomWheelId: string, winnerIndex?: Maybe<number> } };
 
 export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
-  id: Scalars['String'];
+  ids: Array<Scalars['String']> | Scalars['String'];
 }>;
 
 
@@ -533,7 +533,7 @@ export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
 }>;
 
 
-export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<boolean> };
+export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
 
 export type SyncEntriesWithRedemptionMutationVariables = Exact<{
   rewardId: Scalars['String'];
@@ -541,7 +541,7 @@ export type SyncEntriesWithRedemptionMutationVariables = Exact<{
 }>;
 
 
-export type SyncEntriesWithRedemptionMutation = { __typename?: 'Mutation', syncEntriesWithRedemption?: Maybe<boolean> };
+export type SyncEntriesWithRedemptionMutation = { __typename?: 'Mutation', syncEntriesWithRedemption?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
 
 export type UpdateRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
@@ -907,8 +907,8 @@ export function useSpinRandomWheelMutation() {
   return Urql.useMutation<SpinRandomWheelMutation, SpinRandomWheelMutationVariables>(SpinRandomWheelDocument);
 };
 export const DeleteEntriesRedemptionSyncDocument = gql`
-    mutation DeleteEntriesRedemptionSync($id: String!) {
-  deleteEntriesRedemptionSync(id: $id)
+    mutation DeleteEntriesRedemptionSync($ids: [String!]!) {
+  deleteEntriesRedemptionSync(ids: $ids)
 }
     `;
 
@@ -917,18 +917,22 @@ export function useDeleteEntriesRedemptionSyncMutation() {
 };
 export const PauseEntriesRedemptionSyncDocument = gql`
     mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
-  pauseEntriesRedemptionSync(id: $id, pause: $pause)
+  pauseEntriesRedemptionSync(id: $id, pause: $pause) {
+    ...EventSubscription
+  }
 }
-    `;
+    ${EventSubscriptionFragmentDoc}`;
 
 export function usePauseEntriesRedemptionSyncMutation() {
   return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
 };
 export const SyncEntriesWithRedemptionDocument = gql`
     mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!) {
-  syncEntriesWithRedemption(rewardId: $rewardId, randomWheelId: $randomWheelId)
+  syncEntriesWithRedemption(rewardId: $rewardId, randomWheelId: $randomWheelId) {
+    ...EventSubscription
+  }
 }
-    `;
+    ${EventSubscriptionFragmentDoc}`;
 
 export function useSyncEntriesWithRedemptionMutation() {
   return Urql.useMutation<SyncEntriesWithRedemptionMutation, SyncEntriesWithRedemptionMutationVariables>(SyncEntriesWithRedemptionDocument);

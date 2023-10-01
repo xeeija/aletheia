@@ -227,7 +227,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         }}
                       />
                     }
-                    {wheel.editable && user.id &&
+                    {wheel.editable && user?.id &&
                       <LinkListItem
                         name="Sync"
                         icon={<SvgIcon component={TiArrowRepeat} viewBox="2 1 22 22" />}

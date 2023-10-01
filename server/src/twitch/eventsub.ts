@@ -87,8 +87,8 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // TODO: check type and resume with the correct listener
 
   if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
-    const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored: ${storedSubscriptions.length}` : ""
-    console.log(`[eventsub] subscriptions active:`, helixSubs.data.length, storedCountText)
+    const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored:` : ""
+    console.log(`[eventsub] subscriptions active:`, helixSubs.data.length, storedCountText, storedCountText ? storedSubscriptions.length : undefined)
   }
 
   helixSubs.data.forEach((helixSub) => {

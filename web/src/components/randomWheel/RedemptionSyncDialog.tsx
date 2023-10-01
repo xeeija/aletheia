@@ -27,7 +27,7 @@ export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug, readonly 
       <Dialog
         // keepMounted
         fullWidth
-        maxWidth="xs"
+        maxWidth="sm"
         open={open}
         onClose={() => {
           closeHandler()

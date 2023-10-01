@@ -2,7 +2,7 @@ import { HelixCustomReward } from "@twurple/api"
 import { GraphQLJSON } from "graphql-scalars"
 import { Arg, Ctx, Field, FieldResolver, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
-import { addSubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
+import { addSubscriptionRedemptionAdd, deleteManySubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
 import { getRewards } from "../twitch/mock"
 import { GraphqlContext, SubscriptionType } from "../types"
 
@@ -117,7 +117,7 @@ export class TwitchResolver {
     return true
   }
 
-  @Mutation(() => Boolean, { nullable: true })
+  @Mutation(() => EventSubscriptionFull, { nullable: true })
   async syncEntriesWithRedemption(
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
@@ -136,7 +136,7 @@ export class TwitchResolver {
     })
 
     if (!token?.twitchUserId) {
-      console.error("twitchUserId is not set for token")
+      console.error("sync entries: twitchUserId is not set for token")
       return null
     }
 
@@ -209,7 +209,7 @@ export class TwitchResolver {
 
     if (!existingSubscription) {
       const condition = helixSub?.condition as Record<string, string> | undefined
-      await prisma.eventSubscription.create({
+      const newSubscription = await prisma.eventSubscription.create({
         data: {
           id: subscriptionId,
           type: SubscriptionType.redemptionAdd,
@@ -222,6 +222,8 @@ export class TwitchResolver {
           condition: condition,
         }
       })
+
+      return newSubscription
     }
 
     // console.log({ ...userSubscriptions })
@@ -231,14 +233,14 @@ export class TwitchResolver {
 
     // subscription.start()
 
-    return true
+    return existingSubscription
 
   }
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteEntriesRedemptionSync(
     @Ctx() { prisma, apiClient }: GraphqlContext,
-    @Arg("id") id: string
+    @Arg("ids", () => [String]) ids: string[]
   ) {
     // const subs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
 
@@ -252,11 +254,7 @@ export class TwitchResolver {
 
     // activeEventSubSubscriptions.delete(subscriptionId)
 
-    await deleteSubscriptionRedemptionAdd(apiClient, prisma, id)
-
-    await prisma.eventSubscription.delete({
-      where: { id }
-    })
+    await deleteManySubscriptionRedemptionAdd(apiClient, prisma, ids)
 
     return true
   }
@@ -271,7 +269,7 @@ export class TwitchResolver {
 
   // }
 
-  @Mutation(() => Boolean, { nullable: true })
+  @Mutation(() => EventSubscriptionFull, { nullable: true })
   async pauseEntriesRedemptionSync(
     @Ctx() { prisma, eventSub, apiClient, socketIo }: GraphqlContext,
     @Arg("id") id: string,
@@ -314,7 +312,7 @@ export class TwitchResolver {
       })
 
       if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-        console.warn(`create redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
+        console.warn(`[eventsub] create redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
         return false
       }
 
@@ -330,14 +328,14 @@ export class TwitchResolver {
     //   subscription?.start()
     // }
 
-    await prisma.eventSubscription.updateMany({
+    const newSubscription = await prisma.eventSubscription.updateMany({
       where: { id },
       data: {
         paused: pause
       }
     })
 
-    return true
+    return newSubscription
   }
 
 }

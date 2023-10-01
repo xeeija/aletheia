@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { ApiClient } from "@twurple/api"
+import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { SocketServer, SubscriptionType } from "../../types"
 import { activeSubscriptions } from "../eventsub"
@@ -41,8 +41,8 @@ export const addSubscriptionRedemptionAdd = (
   return id
 }
 
-export const findSubscriptionRedemptionAdd = async (apiClient: ApiClient, userId: string, rewardId: string) => {
-  const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
+export const findSubscriptionRedemptionAdd = async (apiClient: ApiClient, userId: string, rewardId: string, existingResult?: HelixPaginatedEventSubSubscriptionsResult) => {
+  const helixSubs = existingResult ?? await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
 
   return helixSubs.data.find((sub) =>
     (sub.status === "enabled" || sub.status === "webhook_callback_verification_pending") &&
@@ -57,7 +57,7 @@ export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, pris
   })
 
   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-    console.warn(`delete redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
+    console.warn(`[eventsub] delete redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
     return false
   }
 
@@ -77,4 +77,48 @@ export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, pris
   }
 
   return sub
+}
+
+export const deleteManySubscriptionRedemptionAdd = async (apiClient: ApiClient, prisma: PrismaClient, ids: string[], skipDelete?: boolean) => {
+  const subs = await prisma.eventSubscription.findMany({
+    where: {
+      id: { in: ids },
+    },
+  })
+
+  const validSubs = subs.filter(s => s.twitchUserId && s.rewardId && s.randomWheelId)
+
+  if (validSubs.length === 0) {
+    console.warn(`[eventsub] delete many redemptionAdd: no valid subscriptions`)
+    return false
+  }
+
+  const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
+
+  console.log(`[eventsub] deleting ${validSubs.length} subscriptions`)
+
+  // validSubs.forEach(async (sub) => {
+  for (const sub of validSubs) {
+    const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "", helixSubs)
+
+    if (helixSub) {
+      activeSubscriptions.get(sub.id)?.stop()
+      activeSubscriptions.delete(sub.id)
+      await apiClient.eventSub.deleteSubscription(helixSub.id)
+    } else {
+      console.log(`[eventsub] found no matching subscription to delete`)
+    }
+  }
+
+  if (!skipDelete) {
+    const deleted = await prisma.eventSubscription.deleteMany({
+      where: {
+        id: { in: validSubs.map(s => s.id) }
+      }
+    })
+
+    console.log(`[eventsub] deleted ${deleted.count} subscriptions`)
+  }
+
+  return true
 }
