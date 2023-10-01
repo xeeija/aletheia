@@ -1,10 +1,103 @@
+import { HelixCustomReward } from "@twurple/api"
 import { GraphQLJSON } from "graphql-scalars"
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
+import { Arg, Ctx, Field, FieldResolver, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
+import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
 import { addSubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
+import { getRewards } from "../twitch/mock"
 import { GraphqlContext, SubscriptionType } from "../types"
+
+// same properties as HelixCustomReward
+@ObjectType("CustomReward")
+class CustomReward {
+  @Field() id: string
+  @Field() broadcasterId: string
+  @Field() broadcasterName: string
+  @Field() broadcasterDisplayName: string
+  @Field() backgroundColor: string
+  @Field() isEnabled: boolean
+  @Field() cost: number
+  @Field() title: string
+  @Field() prompt: string
+  @Field() userInputRequired: boolean
+  @Field(() => Int, { nullable: true }) maxRedemptionsPerStream: number | null
+  @Field(() => Int, { nullable: true }) maxRedemptionsPerUserPerStream: number | null
+  @Field(() => Int, { nullable: true }) globalCooldown: number | null
+  @Field() isPaused: boolean
+  @Field() isInStock: boolean
+  @Field(() => Int, { nullable: true }) redemptionsThisStream: number | null
+  @Field() autoFulfill: boolean
+  @Field(() => Date, { nullable: true }) cooldownExpiryDate: Date | null
+}
+
+@Resolver(() => CustomReward)
+export class CustomRewardResolver {
+  @FieldResolver(() => String)
+  async image(@Root() reward: HelixCustomReward) {
+    return reward.getImageUrl(1)
+  }
+}
+
+// @Resolver(() => EventSubscription)
+// export class EventSubscriptionFull extends EventSubscription {
+
+// }
+@ObjectType("EventSubscription")
+export class EventSubscriptionFull extends EventSubscription {
+  @Field(() => CustomReward, { nullable: true })
+  reward?: CustomReward | null
+}
 
 @Resolver()
 export class TwitchResolver {
+
+  @Query(() => [CustomReward])
+  async channelRewards(
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Arg("userId", { nullable: true }) userId: string
+  ) {
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: userId ?? req.session.userId ?? "",
+      }
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    // const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
+    const rewards = await getRewards()
+
+    return rewards
+  }
+
+  @Query(() => [EventSubscriptionFull])
+  async eventSubscriptionsForWheel(
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Arg("randomWheelId") randomWheelId: string
+  ): Promise<EventSubscriptionFull[]> {
+    const subscriptions = await prisma.eventSubscription.findMany({
+      where: {
+        randomWheelId: randomWheelId,
+      }
+    })
+
+    if (subscriptions.length === 0) {
+      return subscriptions
+    }
+
+    // const rewards = await apiClient.channelPoints.getCustomRewardsByIds(subscriptions[0].twitchUserId,
+    //   subscriptions.filter(s => s.rewardId).map(s => s.rewardId as string)
+    // )
+    const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+
+    return subscriptions.map(subscription => ({
+      ...subscription,
+      reward: rewards.find(r => r.id === subscription.rewardId)
+    }))
+  }
+
 
   @Query(() => GraphQLJSON)
   async eventSubActiveSubscriptions(
@@ -25,7 +118,7 @@ export class TwitchResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async syncEntriesWithChannelRedemption(
+  async syncEntriesWithRedemption(
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
@@ -143,7 +236,7 @@ export class TwitchResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteEntriesChannelRedemptionSync(
+  async deleteEntriesRedemptionSync(
     @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("id") id: string
   ) {
@@ -179,7 +272,7 @@ export class TwitchResolver {
   // }
 
   @Mutation(() => Boolean, { nullable: true })
-  async pauseEntriesChannelRedemptionSync(
+  async pauseEntriesRedemptionSync(
     @Ctx() { prisma, eventSub, apiClient, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("pause") pause: boolean,

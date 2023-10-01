@@ -1,0 +1,3 @@
+mutation DeleteEntriesRedemptionSync($id: String!) {
+  deleteEntriesRedemptionSync(id: $id)
+}

@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react"
 import { MenuItem } from "@mui/material"
+import { FC, ReactNode } from "react"
 import { InputField, InputFieldProps } from "../components"
 
 interface SelectOption {
@@ -16,7 +16,10 @@ type Props = InputFieldProps & {
 
 export const SelectField: FC<Props> = ({ options, children, ...props }) => {
   return (
-    <InputField select {...props}>
+    <InputField select {...props} sx={{
+      ...props.sx,
+      ...(props.fullWidth ? { width: "100%" } : {})
+    }}>
       {children}
       {options?.map(option => (
         <MenuItem key={option.value} value={option.value}>

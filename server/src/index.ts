@@ -7,7 +7,7 @@ import express from "express"
 import session from "express-session"
 import "reflect-metadata"
 import { buildSchema } from "type-graphql"
-import { ColorThemeResolver, RandomWheelResolver, TwitchResolver, UserResolver } from "./resolvers"
+import { ColorThemeResolver, CustomRewardResolver, RandomWheelResolver, TwitchResolver, UserResolver } from "./resolvers"
 import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
 // import { slugTest } from "./utils/slug"
 import { getTokenInfo } from "@twurple/auth"
@@ -89,7 +89,8 @@ const main = async () => {
         UserResolver,
         RandomWheelResolver,
         ColorThemeResolver,
-        TwitchResolver
+        TwitchResolver,
+        CustomRewardResolver,
       ],
       validate: false
     }),

@@ -1,5 +1,5 @@
+import { Avatar, Badge, IconButton, SvgIcon, useTheme } from "@mui/material"
 import { FC, SetStateAction } from "react"
-import { Badge, IconButton, Avatar, SvgIcon, useTheme } from "@mui/material"
 import { TiUser } from "react-icons/ti"
 import { UserNameFragment } from "../../generated/graphql"
 
@@ -26,7 +26,8 @@ export const UserAvatar: FC<Props> = ({ user, setDropdownAnchor }) => {
 
         <Avatar alt={user.username}
           // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
-          src={`https://avatars.dicebear.com/api/big-smile/${user.displayname ?? user.username}.svg?flip=true`}
+          // identicon
+          src={`https://api.dicebear.com/7.x/big-smile/svg?seed=${user.displayname ?? user.username}&flip=true`}
           sx={{
             width: 36, height: 36,
             backgroundColor: "transparent",

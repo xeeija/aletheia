@@ -1,0 +1,21 @@
+fragment CustomReward on CustomReward {
+    id
+    broadcasterId
+    broadcasterName
+    broadcasterDisplayName
+    backgroundColor
+    isEnabled
+    cost
+    title
+    prompt
+    userInputRequired
+    maxRedemptionsPerStream
+    maxRedemptionsPerUserPerStream
+    globalCooldown
+    isPaused
+    isInStock
+    redemptionsThisStream
+    autoFulfill
+    cooldownExpiryDate
+    image
+}

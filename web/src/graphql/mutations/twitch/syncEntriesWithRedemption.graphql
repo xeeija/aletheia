@@ -1,0 +1,6 @@
+mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!) {
+  syncEntriesWithRedemption(
+    rewardId: $rewardId, 
+    randomWheelId: $randomWheelId
+  )
+}

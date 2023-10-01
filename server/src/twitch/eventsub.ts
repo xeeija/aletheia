@@ -87,7 +87,8 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // TODO: check type and resume with the correct listener
 
   if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
-    console.log(`[eventsub] subscriptions active: ${helixSubs.data.length}, stored: ${storedSubscriptions.length}`)
+    const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored: ${storedSubscriptions.length}` : ""
+    console.log(`[eventsub] subscriptions active:`, helixSubs.data.length, storedCountText)
   }
 
   helixSubs.data.forEach((helixSub) => {
@@ -99,10 +100,13 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         s.twitchUserId === condition.broadcaster_user_id
       )
 
-      eventSub.onChannelRedemptionAddForReward(condition.broadcaster_user_id, condition.reward_id, (event) => {
-        console.log("[eventsub] resumed redemption add", event.userDisplayName, event.input)
-        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
-      })
+      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
+
+      // eventSub.onChannelRedemptionAddForReward(condition.broadcaster_user_id, condition.reward_id, (event) => {
+      //   console.log("[eventsub] resumed redemption add", event.userDisplayName, event.input)
+      //   addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
+
+      // })
 
     }
   })

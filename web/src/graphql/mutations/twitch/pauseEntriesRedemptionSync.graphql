@@ -1,0 +1,3 @@
+mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
+  pauseEntriesRedemptionSync(id: $id, pause: $pause)
+}

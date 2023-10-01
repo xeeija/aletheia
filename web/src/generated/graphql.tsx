@@ -14,6 +14,7 @@ export type Scalars = {
   Float: number;
   BigInt: any;
   DateTime: any;
+  JSON: any;
 };
 
 export type AccessType = {
@@ -56,6 +57,44 @@ export type ColorThemeInput = {
   name?: Maybe<Scalars['String']>;
 };
 
+export type CustomReward = {
+  __typename?: 'CustomReward';
+  autoFulfill: Scalars['Boolean'];
+  backgroundColor: Scalars['String'];
+  broadcasterDisplayName: Scalars['String'];
+  broadcasterId: Scalars['String'];
+  broadcasterName: Scalars['String'];
+  cooldownExpiryDate?: Maybe<Scalars['DateTime']>;
+  cost: Scalars['Float'];
+  globalCooldown?: Maybe<Scalars['Int']>;
+  id: Scalars['String'];
+  image: Scalars['String'];
+  isEnabled: Scalars['Boolean'];
+  isInStock: Scalars['Boolean'];
+  isPaused: Scalars['Boolean'];
+  maxRedemptionsPerStream?: Maybe<Scalars['Int']>;
+  maxRedemptionsPerUserPerStream?: Maybe<Scalars['Int']>;
+  prompt: Scalars['String'];
+  redemptionsThisStream?: Maybe<Scalars['Int']>;
+  title: Scalars['String'];
+  userInputRequired: Scalars['Boolean'];
+};
+
+export type EventSubscription = {
+  __typename?: 'EventSubscription';
+  condition?: Maybe<Scalars['JSON']>;
+  id: Scalars['String'];
+  paused: Scalars['Boolean'];
+  randomWheelId?: Maybe<Scalars['String']>;
+  reward?: Maybe<CustomReward>;
+  rewardId?: Maybe<Scalars['String']>;
+  subscriptionId?: Maybe<Scalars['String']>;
+  twitchUserId: Scalars['String'];
+  type: Scalars['String'];
+  useInput: Scalars['Boolean'];
+  userId?: Maybe<Scalars['String']>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -67,15 +106,19 @@ export type Mutation = {
   addRandomWheelEntry: RandomWheelEntry;
   clearRandomWheel: Scalars['Int'];
   createRandomWheel: RandomWheel;
+  deleteEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
   deleteRandomWheelMember?: Maybe<Scalars['Boolean']>;
   disconnectAccessToken: Scalars['Boolean'];
+  eventSubDeleteAllSubscriptions: Scalars['Boolean'];
   likeRandomWheel?: Maybe<RandomWheelLike>;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  pauseEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   register: UserResponse;
   spinRandomWheel: RandomWheelWinner;
+  syncEntriesWithRedemption?: Maybe<Scalars['Boolean']>;
   updateRandomWheel?: Maybe<RandomWheel>;
   updateRandomWheelEntry: RandomWheelEntry;
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
@@ -101,6 +144,11 @@ export type MutationCreateRandomWheelArgs = {
   fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
+};
+
+
+export type MutationDeleteEntriesRedemptionSyncArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -131,6 +179,12 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationPauseEntriesRedemptionSyncArgs = {
+  id: Scalars['String'];
+  pause: Scalars['Boolean'];
+};
+
+
 export type MutationRegisterArgs = {
   displayname?: Maybe<Scalars['String']>;
   password: Scalars['String'];
@@ -140,6 +194,13 @@ export type MutationRegisterArgs = {
 
 export type MutationSpinRandomWheelArgs = {
   randommWheelId: Scalars['String'];
+};
+
+
+export type MutationSyncEntriesWithRedemptionArgs = {
+  randomWheelId: Scalars['String'];
+  rewardId: Scalars['String'];
+  useInput?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -172,7 +233,10 @@ export type MutationUsernameExistsArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  channelRewards: Array<CustomReward>;
   colorThemes: Array<ColorTheme>;
+  eventSubActiveSubscriptions: Scalars['JSON'];
+  eventSubscriptionsForWheel: Array<EventSubscription>;
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
@@ -180,8 +244,18 @@ export type Query = {
 };
 
 
+export type QueryChannelRewardsArgs = {
+  userId?: Maybe<Scalars['String']>;
+};
+
+
 export type QueryColorThemesArgs = {
   type?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryEventSubscriptionsForWheelArgs = {
+  randomWheelId: Scalars['String'];
 };
 
 
@@ -222,6 +296,7 @@ export type RandomWheel = {
 export type RandomWheelCount = {
   __typename?: 'RandomWheelCount';
   entries: Scalars['Int'];
+  eventSubscriptions: Scalars['Int'];
   likes: Scalars['Int'];
   members: Scalars['Int'];
   winners: Scalars['Int'];
@@ -234,6 +309,7 @@ export type RandomWheelEntry = {
   id: Scalars['String'];
   name: Scalars['String'];
   randomWheelId: Scalars['String'];
+  redemptionId?: Maybe<Scalars['String']>;
   weight: Scalars['Int'];
 };
 
@@ -311,11 +387,9 @@ export type User = {
 
 export type UserAccessToken = {
   __typename?: 'UserAccessToken';
-  accessToken: Scalars['String'];
   expiresIn: Scalars['Int'];
   id: Scalars['String'];
   obtainmentTimestamp: Scalars['BigInt'];
-  refreshToken?: Maybe<Scalars['String']>;
   scope: Array<Scalars['String']>;
   twitchUserId?: Maybe<Scalars['String']>;
   twitchUsername?: Maybe<Scalars['String']>;
@@ -324,12 +398,13 @@ export type UserAccessToken = {
 
 export type UserCount = {
   __typename?: 'UserCount';
-  UserAccessToken: Scalars['Int'];
   colorThemes: Scalars['Int'];
   drawnWinners: Scalars['Int'];
+  eventSubscriptions: Scalars['Int'];
   likes: Scalars['Int'];
   randomWheelMember: Scalars['Int'];
   randomWheels: Scalars['Int'];
+  userAccessTokens: Scalars['Int'];
 };
 
 export type UserInput = {
@@ -345,6 +420,10 @@ export type UserResponse = {
 
 export type ColorThemeFragment = { __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string>, creatorId?: Maybe<string>, global: boolean };
 
+export type CustomRewardFragment = { __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string };
+
+export type EventSubscriptionFragment = { __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
+
 export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
 
 export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: string, name: string, weight: number };
@@ -357,7 +436,7 @@ export type NormalUserFragment = { __typename?: 'User', id: string, username: st
 
 export type UserNameFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
 
-export type UserAccessTokenFragment = { __typename?: 'UserAccessToken', id: string, accessToken: string, refreshToken?: Maybe<string>, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> };
+export type UserAccessTokenFragment = { __typename?: 'UserAccessToken', id: string, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> };
 
 export type AddRandomWheelEntryMutationVariables = Exact<{
   randomWheelId: Scalars['String'];
@@ -441,6 +520,29 @@ export type SpinRandomWheelMutationVariables = Exact<{
 
 export type SpinRandomWheelMutation = { __typename?: 'Mutation', spinRandomWheel: { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, drawnById?: Maybe<string>, randomWheelId: string, winnerIndex?: Maybe<number> } };
 
+export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
+
+export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
+  id: Scalars['String'];
+  pause: Scalars['Boolean'];
+}>;
+
+
+export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<boolean> };
+
+export type SyncEntriesWithRedemptionMutationVariables = Exact<{
+  rewardId: Scalars['String'];
+  randomWheelId: Scalars['String'];
+}>;
+
+
+export type SyncEntriesWithRedemptionMutation = { __typename?: 'Mutation', syncEntriesWithRedemption?: Maybe<boolean> };
+
 export type UpdateRandomWheelMutationVariables = Exact<{
   id: Scalars['String'];
   options: RandomWheelInput;
@@ -472,12 +574,26 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
+export type ChannelRewardsQueryVariables = Exact<{
+  userId?: Maybe<Scalars['String']>;
+}>;
+
+
+export type ChannelRewardsQuery = { __typename?: 'Query', channelRewards: Array<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
+
 export type ColorThemesQueryVariables = Exact<{
   type?: Maybe<Scalars['String']>;
 }>;
 
 
 export type ColorThemesQuery = { __typename?: 'Query', colorThemes: Array<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string>, creatorId?: Maybe<string>, global: boolean }> };
+
+export type EventSubscriptionsForWheelQueryVariables = Exact<{
+  randomWheelId: Scalars['String'];
+}>;
+
+
+export type EventSubscriptionsForWheelQuery = { __typename?: 'Query', eventSubscriptionsForWheel: Array<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -522,7 +638,7 @@ export type RandomWheelBySlugWinnersQuery = { __typename?: 'Query', randomWheelB
 export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserAccessTokenQuery = { __typename?: 'Query', userAccesToken: { __typename?: 'UserAccessToken', id: string, accessToken: string, refreshToken?: Maybe<string>, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> } };
+export type UserAccessTokenQuery = { __typename?: 'Query', userAccesToken: { __typename?: 'UserAccessToken', id: string, scope: Array<string>, expiresIn: number, obtainmentTimestamp: any, twitchUserId?: Maybe<string>, twitchUsername?: Maybe<string> } };
 
 export type UsernameExistsMutationVariables = Exact<{
   username: Scalars['String'];
@@ -540,6 +656,45 @@ export const ColorThemeFragmentDoc = gql`
   global
 }
     `;
+export const CustomRewardFragmentDoc = gql`
+    fragment CustomReward on CustomReward {
+  id
+  broadcasterId
+  broadcasterName
+  broadcasterDisplayName
+  backgroundColor
+  isEnabled
+  cost
+  title
+  prompt
+  userInputRequired
+  maxRedemptionsPerStream
+  maxRedemptionsPerUserPerStream
+  globalCooldown
+  isPaused
+  isInStock
+  redemptionsThisStream
+  autoFulfill
+  cooldownExpiryDate
+  image
+}
+    `;
+export const EventSubscriptionFragmentDoc = gql`
+    fragment EventSubscription on EventSubscription {
+  id
+  randomWheelId
+  userId
+  twitchUserId
+  type
+  rewardId
+  condition
+  useInput
+  paused
+  reward {
+    ...CustomReward
+  }
+}
+    ${CustomRewardFragmentDoc}`;
 export const RandomWheelDetailsFragmentDoc = gql`
     fragment RandomWheelDetails on RandomWheel {
   id
@@ -604,8 +759,6 @@ export const NormalUserFragmentDoc = gql`
 export const UserAccessTokenFragmentDoc = gql`
     fragment UserAccessToken on UserAccessToken {
   id
-  accessToken
-  refreshToken
   scope
   expiresIn
   obtainmentTimestamp
@@ -753,6 +906,33 @@ export const SpinRandomWheelDocument = gql`
 export function useSpinRandomWheelMutation() {
   return Urql.useMutation<SpinRandomWheelMutation, SpinRandomWheelMutationVariables>(SpinRandomWheelDocument);
 };
+export const DeleteEntriesRedemptionSyncDocument = gql`
+    mutation DeleteEntriesRedemptionSync($id: String!) {
+  deleteEntriesRedemptionSync(id: $id)
+}
+    `;
+
+export function useDeleteEntriesRedemptionSyncMutation() {
+  return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
+};
+export const PauseEntriesRedemptionSyncDocument = gql`
+    mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
+  pauseEntriesRedemptionSync(id: $id, pause: $pause)
+}
+    `;
+
+export function usePauseEntriesRedemptionSyncMutation() {
+  return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
+};
+export const SyncEntriesWithRedemptionDocument = gql`
+    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!) {
+  syncEntriesWithRedemption(rewardId: $rewardId, randomWheelId: $randomWheelId)
+}
+    `;
+
+export function useSyncEntriesWithRedemptionMutation() {
+  return Urql.useMutation<SyncEntriesWithRedemptionMutation, SyncEntriesWithRedemptionMutationVariables>(SyncEntriesWithRedemptionDocument);
+};
 export const UpdateRandomWheelDocument = gql`
     mutation UpdateRandomWheel($id: String!, $options: RandomWheelInput!) {
   updateRandomWheel(id: $id, options: $options) {
@@ -803,6 +983,17 @@ export const UpdateUserDocument = gql`
 export function useUpdateUserMutation() {
   return Urql.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
 };
+export const ChannelRewardsDocument = gql`
+    query ChannelRewards($userId: String) {
+  channelRewards(userId: $userId) {
+    ...CustomReward
+  }
+}
+    ${CustomRewardFragmentDoc}`;
+
+export function useChannelRewardsQuery(options?: Omit<Urql.UseQueryArgs<ChannelRewardsQueryVariables>, 'query'>) {
+  return Urql.useQuery<ChannelRewardsQuery, ChannelRewardsQueryVariables>({ query: ChannelRewardsDocument, ...options });
+};
 export const ColorThemesDocument = gql`
     query ColorThemes($type: String) {
   colorThemes(type: $type) {
@@ -813,6 +1004,17 @@ export const ColorThemesDocument = gql`
 
 export function useColorThemesQuery(options?: Omit<Urql.UseQueryArgs<ColorThemesQueryVariables>, 'query'>) {
   return Urql.useQuery<ColorThemesQuery, ColorThemesQueryVariables>({ query: ColorThemesDocument, ...options });
+};
+export const EventSubscriptionsForWheelDocument = gql`
+    query EventSubscriptionsForWheel($randomWheelId: String!) {
+  eventSubscriptionsForWheel(randomWheelId: $randomWheelId) {
+    ...EventSubscription
+  }
+}
+    ${EventSubscriptionFragmentDoc}`;
+
+export function useEventSubscriptionsForWheelQuery(options: Omit<Urql.UseQueryArgs<EventSubscriptionsForWheelQueryVariables>, 'query'>) {
+  return Urql.useQuery<EventSubscriptionsForWheelQuery, EventSubscriptionsForWheelQueryVariables>({ query: EventSubscriptionsForWheelDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {

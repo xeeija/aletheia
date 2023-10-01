@@ -1,0 +1,14 @@
+fragment EventSubscription on EventSubscription {
+  id
+  randomWheelId
+  userId
+  twitchUserId
+  type
+  rewardId
+  condition
+  useInput
+  paused
+  reward {
+    ...CustomReward
+  }
+}

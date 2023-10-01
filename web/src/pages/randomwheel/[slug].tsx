@@ -2,11 +2,12 @@ import { Badge, Box, Button, IconButton, InputAdornment, List, Paper, Skeleton, 
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useState } from "react";
-import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowSync, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
+import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiRefresh, HiShare, HiTrash } from "react-icons/hi";
+import { TiArrowRepeat, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
-import { defaultLayout, getTitle, LayoutNextPage } from "../../components/layout";
-import { AddEntryForm, ClearEntriesDialog, DeleteWheelDialog, EditMembersDialog, CreateEditWheelDialog, EntryList, Wheel, WinnerDialog, WinnerList, AccessTypeBadge } from "../../components/randomWheel";
+import { LayoutNextPage, defaultLayout, getTitle } from "../../components/layout";
+import { AccessTypeBadge, AddEntryForm, ClearEntriesDialog, CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
+import { RedemptionSyncDialog } from "../../components/randomWheel/RedemptionSyncDialog";
 import { useAuth, useRandomWheel } from "../../hooks";
 import NotFoundPage from "../404";
 
@@ -43,6 +44,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [clearDialogOpen, setClearDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [membersDialogOpen, setMembersDialogOpen] = useState(false)
+  const [redemptionDialogOpen, setRedemptionDialogOpen] = useState(false)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const onDeleteDialog = async () => {
@@ -225,6 +227,16 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         }}
                       />
                     }
+                    {wheel.editable && user.id &&
+                      <LinkListItem
+                        name="Sync"
+                        icon={<SvgIcon component={TiArrowRepeat} viewBox="2 1 22 22" />}
+                        onClick={() => {
+                          setOptionsAnchor(null)
+                          setRedemptionDialogOpen(true)
+                        }}
+                      />
+                    }
                     {wheel.owner && user?.id === wheel.owner.id && (
                       <>
                         <LinkListItem divider />
@@ -252,6 +264,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   open={membersDialogOpen}
                   slug={wheel.slug}
                   onClose={() => setMembersDialogOpen(false)}
+                  readonly={wheel.owner.id !== user?.id}
+                />
+              }
+
+              {wheel.editable &&
+                <RedemptionSyncDialog
+                  open={redemptionDialogOpen}
+                  slug={wheel.slug}
+                  onClose={() => setRedemptionDialogOpen(false)}
                   readonly={wheel.owner.id !== user?.id}
                 />
               }
@@ -309,7 +330,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       color="primary"
                       variant="contained"
                       disabled={!entries?.length || wheel.spinning}
-                      endIcon={<SvgIcon component={TiArrowSync} viewBox="1 1 22 22" />}
+                      endIcon={<SvgIcon component={HiRefresh} viewBox="0 0 20 20" />}
                       onClick={spin}
                     >
                       Spin

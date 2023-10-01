@@ -16,7 +16,7 @@ export const addSubscriptionRedemptionAdd = (
     id?: string,
   }) => {
   const addedSubscription = eventSub.onChannelRedemptionAddForReward(subConfig.twitchUserId, subConfig.rewardId, async (event) => {
-    console.log("received redemption", new Date().toISOString(), event.rewardTitle)
+    console.log(`[eventsub] received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`)
 
     if (event.status === "unfulfilled") {
       await prisma.randomWheelEntry.create({
