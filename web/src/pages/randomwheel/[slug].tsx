@@ -269,7 +269,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 />
               }
 
-              {wheel.editable &&
+              {(wheel.editable || wheel.editAnonymous) &&
                 <RedemptionSyncDialog
                   open={redemptionDialogOpen}
                   slug={wheel.slug}

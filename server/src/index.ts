@@ -116,7 +116,7 @@ const main = async () => {
   eventSubMiddleware.apply(app);
   await setupAuthProvider(prisma)
 
-  app.get("/twitch/authorize", async (req, res) => {
+  app.get("/api/twitch/authorize", async (req, res) => {
 
     // authorize user
 
@@ -148,12 +148,12 @@ const main = async () => {
       state: "c3ab8aa609ea11e793ae92361f002672" // randomly generated unique per request
     }).toString()
 
-    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/twitch/token`
+    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/token`
 
     res.redirect(`https://id.twitch.tv/oauth2/authorize?${params}&${redirectUri}`)
   })
 
-  app.get("/twitch/token", async (req, res) => {
+  app.get("/api/twitch/token", async (req, res) => {
 
     // get access token for user with code
 
@@ -163,7 +163,7 @@ const main = async () => {
       grant_type: "authorization_code",
       code: `${req.query.code}`
     }).toString()
-    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/twitch/token`
+    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/token`
 
     const response = await fetch(`https://id.twitch.tv/oauth2/token?${params}&${redirectUri}`, {
       method: "POST",
@@ -176,7 +176,7 @@ const main = async () => {
     if (!tokenInfo.userId) {
       // res.status(400).json({ respone: body, message: "userId of token not found" })
       const errorParams = new URLSearchParams({ error: "userId of token not found" }).toString()
-      res.redirect(`http://localhost:3000/settings?${errorParams}`)
+      res.redirect(`${process.env.NEXT_SERVER_URL ?? "http://localhost:3000"}/api/twitch/confirm?${errorParams}`)
       return
     }
 
@@ -203,7 +203,7 @@ const main = async () => {
     })
 
     // TODO: success code as query param and open a success popup
-    res.redirect("http://localhost:3000/settings")
+    res.redirect(`${process.env.NEXT_SERVER_URL ?? "http://localhost:3000"}/api/twitch/confirm`)
 
     // res.json({ respone: body, userAccessToken })
 

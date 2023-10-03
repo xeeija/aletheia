@@ -249,6 +249,7 @@ export class UserResolver {
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
         console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
+        throw new Error(`error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`)
       }
     }
 
@@ -260,6 +261,7 @@ export class UserResolver {
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
         console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
+        throw new Error(`error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`)
       }
     }
 

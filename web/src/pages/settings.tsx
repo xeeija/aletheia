@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from "@mui/material"
+import { Button, Grid, Link, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { InputField, LoadingButton } from "../components"
 import { LayoutNextPage, defaultLayout } from "../components/layout"
@@ -7,7 +7,7 @@ import { useAuth } from "../hooks"
 
 const SettingsPage: LayoutNextPage = () => {
 
-  const { user, userAccessToken, disconnectAccessToken } = useAuth({ includeToken: true })
+  const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
 
   return (
@@ -74,12 +74,26 @@ const SettingsPage: LayoutNextPage = () => {
       {!userAccessToken?.id && (
         <Button
           variant="outlined"
-          href="http://localhost:4000/twitch/authorize"
+          href="/api/twitch/authorize"
           sx={{ textTransform: "none" }}
         >
           Connect with Twitch
         </Button>
       )}
+
+
+      <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 2 }}>
+        For more information, go to your Twitch{" "}
+        <Link
+          // variant="text"
+          target="_blank"
+          href="https://www.twitch.tv/settings/connections"
+          sx={{ textTransform: "none", mx: 0, px: 0, py: 0.5 }}
+        >
+          connections
+        </Link>.
+      </Typography>
+
       {userAccessToken?.id && (
         <>
           <Typography color="text.secondary" sx={{ pb: 1 }}>
@@ -88,9 +102,10 @@ const SettingsPage: LayoutNextPage = () => {
 
           {/* TODO: make it look nice, maybe with display name or profile picture https://dev.twitch.tv/docs/api/reference/#get-users */}
 
-          <Button
+          <LoadingButton
             variant="outlined"
             color="error"
+            loading={fetchingDisconnect}
             onClick={async () => {
               await disconnectAccessToken()
             }}
@@ -98,7 +113,8 @@ const SettingsPage: LayoutNextPage = () => {
             sx={{ textTransform: "none" }}
           >
             Disconnect
-          </Button>
+          </LoadingButton>
+
         </>
       )}
 

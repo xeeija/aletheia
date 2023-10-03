@@ -14,7 +14,7 @@ export const apiClient = new ApiClient({ authProvider })
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient,
   hostName: process.env.TWITCH_HOSTNAME ?? "",
-  pathPrefix: '/twitch',
+  pathPrefix: '/api/twitch',
   secret: process.env.TWITCH_EVENTSUB_SECRET ?? 'haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi',
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug

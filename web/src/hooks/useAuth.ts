@@ -5,7 +5,7 @@ export const useAuth = (config?: { includeToken?: boolean }) => {
   const [{ data: token, error: errorToken, fetching: fetchingToken }] = useUserAccessTokenQuery({
     pause: !config?.includeToken
   })
-  const [, disconnectAccessToken] = useDisconnectAccessTokenMutation()
+  const [{ fetching: fetchingDisconnect }, disconnectAccessToken] = useDisconnectAccessTokenMutation()
 
   return {
     user: <UserNameFragment | undefined>user?.me,
@@ -15,6 +15,7 @@ export const useAuth = (config?: { includeToken?: boolean }) => {
     userAccessToken: <UserAccessTokenFragment | undefined>token?.userAccesToken,
     errorUserAccessToken: errorToken,
     fetchingToken,
+    fetchingDisconnect,
     disconnectAccessToken: () => disconnectAccessToken({}, {
       additionalTypenames: ["UserAccessToken"]
     })
