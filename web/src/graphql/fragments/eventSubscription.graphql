@@ -8,6 +8,7 @@ fragment EventSubscription on EventSubscription {
   condition
   useInput
   paused
+  pending
   reward {
     ...CustomReward
   }

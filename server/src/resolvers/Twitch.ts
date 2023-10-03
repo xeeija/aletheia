@@ -45,6 +45,15 @@ export class CustomRewardResolver {
 export class EventSubscriptionFull extends EventSubscription {
   @Field(() => CustomReward, { nullable: true })
   reward?: CustomReward | null
+
+}
+
+@Resolver(() => EventSubscriptionFull)
+export class EventSubscriptionResolver {
+  @FieldResolver(() => Boolean)
+  pending(@Root() subscription: EventSubscription) {
+    return subscription.subscriptionId === null || subscription.subscriptionId === undefined
+  }
 }
 
 @Resolver()
@@ -187,7 +196,15 @@ export class TwitchResolver {
       id: existingSubscription?.id
     })
 
+    // wait a bit for the twitch API
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
+    if (!helixSub) {
+      console.log("[eventsub] Failed to create subscription: no response from twitch")
+      throw new Error("Failed to create subscription: no response from twitch")
+    }
 
     // console.log(await eventSubscription.getCliTestCommand())
 
@@ -207,8 +224,9 @@ export class TwitchResolver {
 
     // activeEventSubSubscriptions.set(newSubscription.id, eventSubscription)
 
+    const condition = helixSub?.condition as Record<string, string> | undefined
+
     if (!existingSubscription) {
-      const condition = helixSub?.condition as Record<string, string> | undefined
       const newSubscription = await prisma.eventSubscription.create({
         data: {
           id: subscriptionId,
@@ -224,6 +242,20 @@ export class TwitchResolver {
       })
 
       return newSubscription
+    } else {
+      const updatedSubscription = await prisma.eventSubscription.update({
+        where: {
+          id: subscriptionId
+        },
+        data: {
+          twitchUserId: token.twitchUserId ?? "",
+          rewardId: rewardId,
+          randomWheelId: randomWheelId,
+          subscriptionId: helixSub?.id,
+          condition: condition,
+        }
+      })
+      return updatedSubscription
     }
 
     // console.log({ ...userSubscriptions })
@@ -233,7 +265,7 @@ export class TwitchResolver {
 
     // subscription.start()
 
-    return existingSubscription
+    // return existingSubscription
 
   }
 
@@ -317,6 +349,16 @@ export class TwitchResolver {
       }
 
       addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>sub)
+
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+
+      if (!helixSub) {
+        console.log("[eventsub] Failed to reactivate subscription")
+        throw new Error("Failed to receive subscription from Twitch")
+      }
+
     }
 
     // const subscription = activeEventSubSubscriptions.get(helixSub?.id)

@@ -7,7 +7,7 @@ import express from "express"
 import session from "express-session"
 import "reflect-metadata"
 import { buildSchema } from "type-graphql"
-import { ColorThemeResolver, CustomRewardResolver, RandomWheelResolver, TwitchResolver, UserResolver } from "./resolvers"
+import { Resolvers } from "./resolvers"
 import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
 // import { slugTest } from "./utils/slug"
 import { getTokenInfo } from "@twurple/auth"
@@ -85,13 +85,7 @@ const main = async () => {
   // # Graphql Server
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [
-        UserResolver,
-        RandomWheelResolver,
-        ColorThemeResolver,
-        TwitchResolver,
-        CustomRewardResolver,
-      ],
+      resolvers: Resolvers,
       validate: false
     }),
     context: ({ req, res }): GraphqlContext => ({

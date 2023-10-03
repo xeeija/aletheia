@@ -2,10 +2,10 @@ import { CircularProgress, Grid, IconButton, List, ListItem, ListItemSecondaryAc
 import { Form, Formik, FormikProps, FormikValues } from "formik"
 import { FC, RefObject } from "react"
 import { HiTrash } from "react-icons/hi"
-import { TiMediaPause, TiMediaPlay } from "react-icons/ti"
+import { TiMediaPause, TiMediaPlay, TiRefresh } from "react-icons/ti"
 import { EventSubscriptionFragment, useChannelRewardsQuery } from "../../generated/graphql"
 import { useEventSubscriptionsWheel, useRandomWheel } from "../../hooks"
-import { CheckboxField, LoadingButton, NoData, SelectField } from "../components"
+import { LoadingButton, NoData, SelectField } from "../components"
 import { CustomRewardMenuItem } from "../input/CustomRewardMenuItem"
 
 interface Props {
@@ -37,7 +37,13 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
     }
   })
 
-  const { subscriptions, fetchingPause, syncEntries, pauseEntriesSync, deleteEntriesSync } = useEventSubscriptionsWheel({
+  const {
+    subscriptions,
+    fetchingPause,
+    syncEntries,
+    pauseEntriesSync,
+    deleteEntriesSync,
+  } = useEventSubscriptionsWheel({
     randomWheelId: wheel.id,
   })
 
@@ -66,21 +72,22 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         innerRef={formRef}
         initialValues={initialValues}
         enableReinitialize
-        onSubmit={async (values) => {
+        onSubmit={async (values, { setFieldValue }) => {
           const entries = values as InitialValues
 
-          console.log(entries)
+          // console.log("entries", entries)
+
+          if (entries.rewardId) {
+            await syncEntries(entries.rewardId)
+            setFieldValue("rewardId", "")
+          }
 
           const deleteEntries = entries.subscriptions.filter(s => s.delete)
 
-          console.log(deleteEntries)
+          // console.log("deleteEntries", deleteEntries)
 
           if (deleteEntries.length > 0) {
             await deleteEntriesSync(deleteEntries.map(e => e.id))
-          }
-
-          if (entries.rewardId) {
-            await syncEntries({ randomWheelId: wheel.id, rewardId: entries.rewardId })
           }
 
           // const result = await syncEntries({
@@ -98,6 +105,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
       >
         {({ values, isSubmitting, dirty, setFieldValue }) => {
           const entries = values as InitialValues
+          // console.log(subscriptions)
 
           return (
             <Form id="redemptionSyncForm">
@@ -105,13 +113,26 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
               <Grid container spacing={2}>
 
                 <Grid item xs={12}>
-                  {(subscriptions?.length ?? 0 > 0) ? (
+                  {!!subscriptions?.length ? (
                     <List role="list" dense>
                       {entries.subscriptions.filter((v) => !v.delete).map((subscription, i) => (
-                        subscription.reward &&
+                        // subscription.reward &&
                         <ListItem key={subscription.id} role="listitem" sx={{ width: "100%" }}>
-                          <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
-
+                          {subscription.reward ? (
+                            <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
+                          ) : (
+                            <NoData
+                              direction="row"
+                              iconSize="xs"
+                              textProps={{ variant: "body1", mb: 0 }}
+                              sx={{ mt: 0 }}
+                            >
+                              Failed to load reward
+                            </NoData>
+                            // <Typography color="textSecondary" sx={{ fontStyle: "italic" }}>
+                            //   Failed to load reward
+                            // </Typography>
+                          )}
                           <ListItemSecondaryAction sx={{
                             display: "flex",
                             alignItems: "center",
@@ -119,22 +140,38 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           }}>
 
                             <Typography variant="body2" color="textSecondary" sx={{ mr: -0.5 }}>
-                              {subscription.paused ? "Paused" : "Active"}
+                              {subscription.pending ? "Pending" :
+                                (subscription.paused ? "Paused" : "Active")}
                             </Typography>
 
-                            {fetchingPause &&
-                              <IconButton disabled sx={{ mr: 0.75 }}>
-                                <CircularProgress size={20} color="inherit" />
+
+                            {/* {subscription.pending &&
+                              <IconButton color="info" sx={{ mr: -1.5 }}>
+                                <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
+                                  onClick={async () => {
+                                    await syncEntries({ randomWheelId: wheel.id, rewardId: entries.rewardId })
+                                    setFieldValue("rewardId", "")
+                                    refetchSubscriptions({
+                                      additionalTypenames: ["EventSubscription"]
+                                    })
+                                  }}
+                                />
+                              </IconButton>
+                            } */}
+
+                            {(fetchingPause) &&
+                              <IconButton disabled sx={{ mr: 0.75, mt: "2px" }}>
+                                <CircularProgress size={18} color="inherit" />
                               </IconButton>
                             }
-                            {!fetchingPause &&
+                            {/* {!(fetchingPause || subscription.pending) &&
                               <CheckboxField
                                 // noForm
-                                name={`subscriptions[${i}].paused`}
-                                // name="paused"
+                                // name={`subscriptions[${i}].paused`}
+                                name="paused"
                                 tooltip={subscription.paused ? "Activate" : "Pause"}
                                 // value={subscription.paused}
-                                // checked={subscription.paused}
+                                checked={subscription.paused}
                                 icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
                                 checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
                                 onClick={async () => {
@@ -154,6 +191,39 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               //   }
                               // }}
                               />
+                            } */}
+
+                            {!subscription.paused && !fetchingPause && !subscription.pending &&
+                              <IconButton color="success"
+                                onClick={async () => {
+                                  console.log("pause", subscription.paused)
+                                  await pauseEntriesSync(subscription.id, !subscription.paused)
+                                }}>
+                                <SvgIcon component={TiMediaPause} viewBox="1 1 22 22" />
+                              </IconButton>
+                            }
+
+                            {subscription.paused && !fetchingPause && !subscription.pending &&
+                              <IconButton color="success"
+                                onClick={async () => {
+                                  console.log("pause", subscription.paused)
+                                  await pauseEntriesSync(subscription.id, !subscription.paused)
+                                }}>
+                                <SvgIcon component={TiMediaPlay} />
+                                {/* // viewBox="2 2 20 20" */}
+                              </IconButton>
+                            }
+
+                            {subscription.pending && !fetchingPause &&
+                              <IconButton color="info" sx={{ ml: -0.00002 }}>
+                                <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
+                                  // {/* <SvgIcon component={TiWarning} color="warning" */}
+                                  onClick={async () => {
+                                    // await syncEntries(entries.rewardId)
+                                    await pauseEntriesSync(subscription.id, false)
+                                  }}
+                                />
+                              </IconButton>
                             }
 
                             <IconButton

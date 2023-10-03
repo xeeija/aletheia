@@ -26,6 +26,7 @@ export const addSubscriptionRedemptionAdd = (
         }
       })
 
+      console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
       socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
     }
   })
@@ -58,16 +59,18 @@ export const deleteSubscriptionRedemptionAdd = async (apiClient: ApiClient, pris
 
   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
     console.warn(`[eventsub] delete redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
-    return false
+    return null
   }
 
   const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
 
   if (helixSub) {
     activeSubscriptions.get(sub.id)?.stop()
-    activeSubscriptions.delete(sub.id)
-    await apiClient.eventSub.deleteSubscription(helixSub.id)
+    // await apiClient.eventSub.deleteSubscription(helixSub.id)
 
+    if (!skipDelete) {
+      activeSubscriptions.delete(sub.id)
+    }
   }
 
   if (!skipDelete) {
@@ -102,9 +105,12 @@ export const deleteManySubscriptionRedemptionAdd = async (apiClient: ApiClient, 
     const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "", helixSubs)
 
     if (helixSub) {
+      // await apiClient.eventSub.deleteSubscription(helixSub.id)
       activeSubscriptions.get(sub.id)?.stop()
-      activeSubscriptions.delete(sub.id)
-      await apiClient.eventSub.deleteSubscription(helixSub.id)
+
+      if (!skipDelete) {
+        activeSubscriptions.delete(sub.id)
+      }
     } else {
       console.log(`[eventsub] found no matching subscription to delete`)
     }

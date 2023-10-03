@@ -5,7 +5,7 @@ export const useEventSubscriptionsWheel = (config: {
   fetchSubscriptions?: boolean
 }) => {
 
-  const [{ data, fetching, error }] = useEventSubscriptionsForWheelQuery({
+  const [{ data, fetching, error }, refetch] = useEventSubscriptionsForWheelQuery({
     variables: {
       randomWheelId: config.randomWheelId
     },
@@ -26,13 +26,13 @@ export const useEventSubscriptionsWheel = (config: {
     errorSync,
     errorPause,
     errorDelete,
-    syncEntries: (config: { rewardId: string, randomWheelId: string }) => syncEntries(config, {
-      additionalTypenames: ["EventSubscription"]
-    }),
-    pauseEntriesSync: (id: string, pause: boolean) => pauseEntriesSync({
-      id,
-      pause
-    }, {
+    syncEntries: async (rewardId: string) => {
+      await syncEntries({ rewardId, randomWheelId: config.randomWheelId }, {
+        additionalTypenames: ["EventSubscription"]
+      })
+      refetch({ requestPolicy: "network-only" })
+    },
+    pauseEntriesSync: (id: string, pause: boolean) => pauseEntriesSync({ id, pause }, {
       additionalTypenames: ["EventSubscription"]
     }),
     deleteEntriesSync: (ids: string | string[]) => deleteEntriesSync({ ids }, {
