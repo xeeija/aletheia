@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { MouseEventHandler, useState } from "react";
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiRefresh, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowRepeat, TiRefresh, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
+import { TiArrowRepeat, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
 import { Dropdown, LinkListItem, TabPanel } from "../../components";
 import { LayoutNextPage, defaultLayout, getTitle } from "../../components/layout";
 import { AccessTypeBadge, AddEntryForm, ClearEntriesDialog, CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
@@ -206,7 +206,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <Paper sx={{ p: 1.5, width: 180 }}>
 
                   <List dense sx={{ py: 0 }}>
-                    <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} disabled />
                     <LinkListItem
                       name="Edit"
                       icon={<SvgIcon component={HiPencil} viewBox="0 0 20 20" />}
@@ -227,16 +226,18 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         }}
                       />
                     }
-                    {wheel.editable && user?.id &&
+                    {(wheel.editable || wheel.editAnonymous) &&
                       <LinkListItem
                         name="Sync"
                         icon={<SvgIcon component={TiArrowRepeat} viewBox="2 1 22 22" />}
+                        disabled={!user?.id}
                         onClick={() => {
                           setOptionsAnchor(null)
                           setRedemptionDialogOpen(true)
                         }}
                       />
                     }
+                    {/* <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} disabled /> */}
                     {wheel.owner && user?.id === wheel.owner.id && (
                       <>
                         <LinkListItem divider />
@@ -323,7 +324,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             </Box>
             {(wheel.editable || wheel.editAnonymous) && (
               <Box sx={{ gridArea: "controls" }}>
-                <Paper sx={{ p: 2 }}>
+                <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
 
                   <Badge badgeContent={entries?.length} color="success">
                     <Button
@@ -343,7 +344,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     disabled={!entries?.length || wheel.spinning}
                     endIcon={<HiTrash />}
                     onClick={() => setClearDialogOpen(true)}
-                    sx={{ ml: 2 }}
                   >
                     Clear
                   </Button>

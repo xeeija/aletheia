@@ -14,12 +14,14 @@ export const useRandomWheelSocket = (
   setSpinning: Dispatch<SetStateAction<boolean>>,
   setRotation: Dispatch<SetStateAction<number | undefined>>,
   setLastWinnerEntry: Dispatch<SetStateAction<RandomWheelEntry | undefined>>,
-  options?: RandomWheelSocketOptions,
+  options?: RandomWheelSocketOptions | false,
 ) => {
   const [{ wheel }, { fetchWheel, fetchEntries, fetchWinners }] = useRandomWheelData(wheelSlug, { details: true })
 
+  const disableSocket = options === false || options?.disableSocket
+
   useEffect(() => {
-    if (!wheel?.id || options?.disableSocket) {
+    if (!wheel?.id || disableSocket) {
       return
     }
 
@@ -33,11 +35,11 @@ export const useRandomWheelSocket = (
       socket.off("connect")
       socket.disconnect()
     }
-  }, [wheel?.id, options?.disableSocket])
+  }, [wheel?.id, disableSocket])
 
   // handle web socket
   useEffect(() => {
-    if (!wheel?.id || options?.disableSocket) {
+    if (!wheel?.id || disableSocket) {
       return
     }
 
@@ -68,7 +70,7 @@ export const useRandomWheelSocket = (
   }, [wheel?.id, wheel?.spinDuration, setSpinning, setRotation, setLastWinnerEntry, fetchWinners, options])
 
   useEffect(() => {
-    if (!wheel?.id || options?.disableSocket) {
+    if (!wheel?.id || disableSocket) {
       return
     }
 
@@ -83,10 +85,10 @@ export const useRandomWheelSocket = (
     return () => {
       socket.off("wheel:entries")
     }
-  }, [wheel?.id, options?.disableSocket, fetchEntries])
+  }, [wheel?.id, disableSocket, fetchEntries])
 
   useEffect(() => {
-    if (!wheel?.id || options?.disableSocket) {
+    if (!wheel?.id || disableSocket) {
       return
     }
 
@@ -99,6 +101,6 @@ export const useRandomWheelSocket = (
     return () => {
       socket.off("wheel:update")
     }
-  }, [wheel?.id, options?.disableSocket, fetchWheel])
+  }, [wheel?.id, disableSocket, fetchWheel])
 
 }

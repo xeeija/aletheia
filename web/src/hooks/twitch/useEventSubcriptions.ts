@@ -30,7 +30,7 @@ export const useEventSubscriptionsWheel = (config: {
       await syncEntries({ rewardId, randomWheelId: config.randomWheelId }, {
         additionalTypenames: ["EventSubscription"]
       })
-      refetch({ requestPolicy: "network-only" })
+      refetch({ requestPolicy: "cache-and-network" })
     },
     pauseEntriesSync: (id: string, pause: boolean) => pauseEntriesSync({ id, pause }, {
       additionalTypenames: ["EventSubscription"]

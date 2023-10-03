@@ -25,7 +25,7 @@ interface InitialValues {
 
 export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
 
-  const [{ wheel }] = useRandomWheel(slug, { details: true })
+  const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
 
   if (!wheel) {
     return null

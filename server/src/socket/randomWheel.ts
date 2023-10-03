@@ -10,6 +10,7 @@ export const randomWheelHandlers: SocketHandler = (socket) => {
     // TODO: User authentication
     // prisma instance from socket.data to check wheel id
 
+    // console.log(`[socket] join in wheel/${id} from ${socket.id.slice(0, 6)}`)
     socket.join(`wheel/${id}`)
 
   })

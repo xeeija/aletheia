@@ -16,7 +16,7 @@ interface RandomWheelOptions {
   entries?: boolean
   winners?: boolean
   members?: boolean
-  socket?: RandomWheelSocketOptions
+  socket?: RandomWheelSocketOptions | false
 }
 
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
