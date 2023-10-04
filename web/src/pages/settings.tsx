@@ -71,16 +71,15 @@ const SettingsPage: LayoutNextPage = () => {
         Twitch
       </Typography>
 
-      {!userAccessToken?.id && (
+      {user && !userAccessToken?.id && (
         <Button
           variant="outlined"
           href="/api/twitch/authorize"
-          sx={{ textTransform: "none" }}
+          sx={{ textTransform: "none", mb: 1 }}
         >
           Connect with Twitch
         </Button>
       )}
-
 
       <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 2 }}>
         For more information, go to your Twitch{" "}
@@ -93,6 +92,11 @@ const SettingsPage: LayoutNextPage = () => {
           connections
         </Link>.
       </Typography>
+
+
+      {!user && (
+        <Typography sx={{ mb: 2 }}>You must be logged in to connect a Twitch account.</Typography>
+      )}
 
       {userAccessToken?.id && (
         <>

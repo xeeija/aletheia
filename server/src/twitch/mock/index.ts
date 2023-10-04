@@ -1,11 +1,84 @@
 import { HelixCustomReward } from "@twurple/api"
-import { readFile } from "fs/promises"
 
 let mockRewards: HelixCustomReward[] = []
 
+const rewards = [
+  {
+    "id": "7d50fb8c-0125-c849-120b-658e0635f83f",
+    "broadcaster_id": "57084058",
+    "broadcaster_login": "marcusshepard362",
+    "broadcaster_name": "MarcusShepard362",
+    "image": null,
+    "background_color": "#9146FF",
+    "is_enabled": true,
+    "cost": 1,
+    "title": "Test reward for 57084058",
+    "prompt": "",
+    "is_user_input_required": false,
+    "max_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_stream": 0
+    },
+    "max_per_user_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_user_per_stream": 0
+    },
+    "global_cooldown_setting": {
+      "is_enabled": false,
+      "global_cooldown_seconds": 0
+    },
+    "is_paused": false,
+    "is_in_stock": true,
+    "default_image": {
+      "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
+      "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
+      "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
+    },
+    "should_redemptions_skip_request_queue": false,
+    "redemptions_redeemed_current_stream": null,
+    "cooldown_expires_at": null
+  },
+  {
+    "id": "8d50fb8c-0125-c849-120b-658e0635f830",
+    "broadcaster_id": "57084058",
+    "broadcaster_login": "marcusshepard362",
+    "broadcaster_name": "MarcusShepard362",
+    "image": null,
+    "background_color": "#7cb995",
+    "is_enabled": true,
+    "cost": 1,
+    "title": "Test reward 2",
+    "prompt": "",
+    "is_user_input_required": false,
+    "max_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_stream": 0
+    },
+    "max_per_user_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_user_per_stream": 0
+    },
+    "global_cooldown_setting": {
+      "is_enabled": false,
+      "global_cooldown_seconds": 0
+    },
+    "is_paused": false,
+    "is_in_stock": true,
+    "default_image": {
+      "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
+      "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
+      "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
+    },
+    "should_redemptions_skip_request_queue": false,
+    "redemptions_redeemed_current_stream": null,
+    "cooldown_expires_at": null
+  }
+]
+
 export const getRewards = async () => {
   if (mockRewards.length === 0) {
-    const rewardData: any[] = (JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")))
+    // const rewardData: any[] = (JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")))
+    const rewardData: any[] = rewards
     mockRewards = rewardData.map(r => new HelixCustomReward(r))
   }
   return mockRewards

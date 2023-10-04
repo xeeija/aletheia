@@ -1,17 +1,13 @@
-import { FC, useState } from "react"
-import { SvgIcon, Box, Typography, Skeleton, Paper, Divider, ListItemIcon, Snackbar, Alert, Button } from "@mui/material"
+import { Alert, Box, Button, Divider, ListItemIcon, Paper, Skeleton, Snackbar, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
-import { TiUser, TiSpanner, TiPower, TiWarning } from "react-icons/ti"
+import { useRouter } from "next/router"
+import { FC, useState } from "react"
+import { TiPower, TiSpanner, TiUser, TiWarning } from "react-icons/ti"
 import { useLogoutMutation } from "../../generated/graphql"
 import { useAuth } from "../../hooks"
-import { LinkItem, Dropdown, LinkList, LoadingButton, UserAvatar } from "../components"
-import { useRouter } from "next/router"
+import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar } from "../components"
 
-const userDropdownItems: LinkItem[] = [
-  { name: "Profile", icon: <SvgIcon component={TiUser} /> },
-  { name: "Settings", href: "/settings", icon: <SvgIcon component={TiSpanner} /> },
-  // Logout added seperately
-]
+
 
 interface Props { }
 
@@ -28,6 +24,20 @@ export const UserMenu: FC<Props> = () => {
 
   const [dropdownAnchor, setDropdownAnchor] = useState<Element | null>(null)
 
+  const userDropdownItems: LinkItem[] = [
+    {
+      name: "Profile",
+      icon: <SvgIcon component={TiUser} />,
+      onClick: () => setTimeout(() => setDropdownAnchor(null), 100)
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: <SvgIcon component={TiSpanner} />,
+      onClick: () => setTimeout(() => setDropdownAnchor(null), 100)
+    },
+    // Logout added seperately
+  ]
   const handleLogout = async () => {
     setFetchingLogout(true)
 

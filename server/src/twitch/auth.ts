@@ -33,7 +33,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   })
 
   authProvider.onRefresh(async (userId, newTokenData) => {
-    console.log("refresh token", userId)
+    // console.log("refresh token", userId)
 
     await prisma.userAccessToken.updateMany({
       where: {
