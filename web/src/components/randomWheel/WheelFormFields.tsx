@@ -1,8 +1,8 @@
-import { FC, ReactNode } from "react"
 import { Grid } from "@mui/material"
-import { CheckboxField, ColorMenuItem, InputField, RadioGroupField, SliderField, SelectField } from "../components"
-import { useAuth } from "../../hooks"
+import { FC, ReactNode } from "react"
 import { useColorThemesQuery } from "../../generated/graphql"
+import { useAuth } from "../../hooks"
+import { CheckboxField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "../components"
 
 interface Mark {
   value: number

@@ -17,22 +17,22 @@ type Props = CheckboxProps & {
   noForm: true
 })
 
-export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlacement, noClickLabel, tooltip, tooltipProps, noForm, ...props }) => {
+export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlacement, noClickLabel, tooltip, tooltipProps, noForm, checked, ...props }) => {
 
   const [field] = useField(name ?? "")
+
   const hasLabel = label !== undefined && label !== null
-  const labelId = `${name}Label`
+  const labelId = name ? `${name}Label` : label?.toString().slice(0, 16).toLowerCase().replaceAll(" ", "_")
 
   const checkbox = <Checkbox
     aria-labelledby={hasLabel && !noClickLabel ? labelId : undefined}
     aria-describedby={!hasLabel ? tooltip || name : undefined}
     name={name}
     {...props}
-    checked={!noForm ? (field.checked ?? false) : props.checked}
+    checked={!noForm ? (field.value ?? false) : checked}
     inputProps={{
       ...props.inputProps,
-      // ...(!noForm ? { ...field } : {}),
-      ...field,
+      ...(!noForm ? field : {}),
     }}
   />
 
