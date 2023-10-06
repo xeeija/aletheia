@@ -10,10 +10,11 @@ const SettingsPage: LayoutNextPage = () => {
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
 
+  // TODO: show error for twitch auth 
+
   return (
     <>
       <Typography variant="h3" mb={2}>Profile Settings</Typography>
-
       {user && (
         <Formik
           initialValues={{

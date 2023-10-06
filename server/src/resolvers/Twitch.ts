@@ -75,15 +75,19 @@ export class TwitchResolver {
       throw new Error("No connected twitch account found")
     }
 
-    // const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
-    const rewards = await getRewards()
-
-    return rewards
+    try {
+      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
+      return rewards
+    }
+    catch {
+      const rewards = await getRewards()
+      return rewards
+    }
   }
 
   @Query(() => [EventSubscriptionFull])
   async eventSubscriptionsForWheel(
-    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string
   ): Promise<EventSubscriptionFull[]> {
     const subscriptions = await prisma.eventSubscription.findMany({
@@ -96,15 +100,33 @@ export class TwitchResolver {
       return subscriptions
     }
 
-    // const rewards = await apiClient.channelPoints.getCustomRewardsByIds(subscriptions[0].twitchUserId,
-    //   subscriptions.filter(s => s.rewardId).map(s => s.rewardId as string)
-    // )
-    const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+    try {
+      // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
 
-    return subscriptions.map(subscription => ({
-      ...subscription,
-      reward: rewards.find(r => r.id === subscription.rewardId)
-    }))
+      // test
+      const rewardsTwitch = await apiClient.channelPoints.getCustomRewardsByIds(subscriptions[0].twitchUserId,
+        subscriptions.filter(s => s.rewardId).map(s => s.rewardId as string)
+      )
+      const rewardsTest = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+
+      const rewards = [...rewardsTwitch, ...rewardsTest]
+      // test end
+
+      return subscriptions.map(subscription => ({
+        ...subscription,
+        reward: rewards.find(r => r.id === subscription.rewardId)
+      }))
+    } catch {
+      const rewards2 = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+      // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+
+      const rewards = [...rewards2]
+
+      return subscriptions.map(subscription => ({
+        ...subscription,
+        reward: rewards.find(r => r.id === subscription.rewardId)
+      }))
+    }
   }
 
 
