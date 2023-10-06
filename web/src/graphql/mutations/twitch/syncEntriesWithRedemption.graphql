@@ -1,7 +1,12 @@
-mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!) {
+mutation SyncEntriesWithRedemption(
+  $rewardId: String!
+  $randomWheelId: String!
+  $useInput: Boolean
+  ) {
   syncEntriesWithRedemption(
-    rewardId: $rewardId, 
+    rewardId: $rewardId
     randomWheelId: $randomWheelId
+    useInput: $useInput
   ) {
     ...EventSubscription
   }

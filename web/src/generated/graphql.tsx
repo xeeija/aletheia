@@ -539,6 +539,7 @@ export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', paus
 export type SyncEntriesWithRedemptionMutationVariables = Exact<{
   rewardId: Scalars['String'];
   randomWheelId: Scalars['String'];
+  useInput?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -929,8 +930,12 @@ export function usePauseEntriesRedemptionSyncMutation() {
   return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
 };
 export const SyncEntriesWithRedemptionDocument = gql`
-    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!) {
-  syncEntriesWithRedemption(rewardId: $rewardId, randomWheelId: $randomWheelId) {
+    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean) {
+  syncEntriesWithRedemption(
+    rewardId: $rewardId
+    randomWheelId: $randomWheelId
+    useInput: $useInput
+  ) {
     ...EventSubscription
   }
 }

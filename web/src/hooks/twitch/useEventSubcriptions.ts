@@ -1,4 +1,10 @@
-import { EventSubscriptionFragment, useDeleteEntriesRedemptionSyncMutation, useEventSubscriptionsForWheelQuery, usePauseEntriesRedemptionSyncMutation, useSyncEntriesWithRedemptionMutation } from "../../generated/graphql"
+import { EventSubscriptionFragment, useDeleteEntriesRedemptionSyncMutation, useEventSubscriptionsForWheelQuery, usePauseEntriesRedemptionSyncMutation, useSyncEntriesWithRedemptionMutation } from "../../generated/graphql";
+
+type SyncEntriesInput = {
+  rewardId: string;
+  randomWheelId: string;
+  useInput?: boolean | null;
+}
 
 export const useEventSubscriptionsWheel = (config: {
   randomWheelId: string,
@@ -26,8 +32,8 @@ export const useEventSubscriptionsWheel = (config: {
     errorSync,
     errorPause,
     errorDelete,
-    syncEntries: async (rewardId: string) => {
-      await syncEntries({ rewardId, randomWheelId: config.randomWheelId }, {
+    syncEntries: async (input: SyncEntriesInput) => {
+      await syncEntries(input, {
         additionalTypenames: ["EventSubscription"]
       })
       refetch({ requestPolicy: "cache-and-network" })
