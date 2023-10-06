@@ -65,7 +65,7 @@ export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlaceme
               disabled={props.disabled}
               required={props.required}
               error={hasError}
-              sx={{ mt: -0.75, ml: 0 }}
+              sx={{ mt: -0.75, ml: 1.75 }}
             >
               {hasError ? error : helperText}
             </FormHelperText>

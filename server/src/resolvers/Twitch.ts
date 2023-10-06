@@ -120,8 +120,14 @@ export class TwitchResolver {
   @Mutation(() => Boolean)
   async eventSubDeleteAllSubscriptions(
     @Ctx() { apiClient }: GraphqlContext,
+    @Arg("all", { nullable: true }) all?: boolean
   ) {
-    await apiClient.eventSub.deleteAllSubscriptions()
+    if (all) {
+      await apiClient.eventSub.deleteAllSubscriptions()
+    }
+    else {
+      await apiClient.eventSub.deleteBrokenSubscriptions()
+    }
 
     return true
   }
@@ -181,9 +187,10 @@ export class TwitchResolver {
 
     // })
 
+    // find all susbcriptions with this reward, also other wheels (and override)
     const existingSubscription = await prisma.eventSubscription.findFirst({
       where: {
-        randomWheelId,
+        // randomWheelId,
         rewardId,
       }
     })

@@ -82,7 +82,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     },
   })
 
-  const helixSubs = await apiClient.eventSub.getSubscriptions()
+  const helixSubs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
 
   // TODO: check type and resume with the correct listener
 

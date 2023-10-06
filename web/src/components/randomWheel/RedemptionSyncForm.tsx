@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, IconButton, List, ListItem, ListItemSecondaryAction, Portal, SvgIcon, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, FormHelperText, Grid, IconButton, List, ListItem, ListItemSecondaryAction, Portal, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik, FormikProps, FormikValues } from "formik"
 import { FC, RefObject, useState } from "react"
 import { HiAnnotation, HiTrash } from "react-icons/hi"
@@ -304,7 +304,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                         New synchronization
                       </Typography>
-                      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                      <Box sx={{ display: "flex", gap: 1, alignItems: "start" }}>
                         <SelectField
                           name="rewardId"
                           options={channelRewards?.map((reward) => ({
@@ -314,9 +314,10 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           required
                           fullWidth
                           label="New Reward"
+                          helperText="This will override synchronization of other wheels with the same reward."
                           sx={{ mb: 1 }}
                         />
-                        <span>
+                        <Box sx={{ mt: 0.75 }}>
                           <IconButton
                             role="button"
                             onClick={() => {
@@ -328,7 +329,8 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           >
                             <SvgIcon component={TiTimes} fontSize="small" viewBox="0 0 20 20" color="error" />
                           </IconButton>
-                        </span>
+                          <FormHelperText> </FormHelperText>
+                        </Box>
                       </Box>
                       <CheckboxField name="useInput"
                         label="Use input as entry"

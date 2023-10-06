@@ -26,7 +26,7 @@ export const addSubscriptionRedemptionAdd = (
         }
       })
 
-      console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
+      // console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
       socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
     }
   })
