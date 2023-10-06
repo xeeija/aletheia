@@ -10,10 +10,6 @@ const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
 export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret });
 
 export const setupAuthProvider = async (prisma: PrismaClient) => {
-  // const tokenData = JSON.parse(await readFile('./src/twitch/token/token.78823247.json', "utf-8"));
-
-  // await writeFile("../docker/secret.txt", randomBytes(32).toString("hex"))
-
   const accessTokens = await prisma.userAccessToken.findMany()
 
   console.log("Setup Twitch AuthProvider with", accessTokens.length, "tokens")
@@ -45,7 +41,6 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
       }
     })
 
-    // await writeFile(`./src/twitch/token/token.${userId}.json`, JSON.stringify({ ...newTokenData, userId }, null, 2), 'utf-8')
   })
 
   authProvider.onRefreshFailure((userId) => {

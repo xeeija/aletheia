@@ -24,23 +24,6 @@ export const eventSubMiddleware = new EventSubMiddleware({
 
 export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
-// (async () => {
-
-//   // only needed for testing with ngrok
-//   await apiClient.eventSub.deleteAllSubscriptions()
-//   const adapter = new NgrokAdapter()
-
-//   listener.start()
-
-//   const redemptionsSubscription = listener.onChannelRedemptionAddForReward("78823247", "67890", (event) => {
-//     console.log("recieved event")
-//     console.log(JSON.stringify({ ...event }))
-//   })
-
-//   console.log(await redemptionsSubscription.getCliTestCommand())
-
-// })()
-
 export const showEventSubDebug = process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
 
 // const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
@@ -104,62 +87,10 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
       }
 
-      // eventSub.onChannelRedemptionAddForReward(condition.broadcaster_user_id, condition.reward_id, (event) => {
-      //   console.log("[eventsub] resumed redemption add", event.userDisplayName, event.input)
-      //   addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
-
-      // })
-
     }
   })
 
-
   // await apiClient.eventSub.deleteAllSubscriptions()
-
-  // activeSubscriptions.forEach(async (sub) => {
-
-  //   // addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, sub)
-
-  //   // SUB
-
-  //   // const subscription = eventSub.onChannelRedemptionAddForReward(sub.twitchUserId, sub.rewardId, async (event) => {
-  //   //   console.log("received redemption continue", new Date().toISOString(), event.rewardTitle)
-
-  //   //   if (event.status === "unfulfilled") {
-  //   //     await prisma.randomWheelEntry.create({
-  //   //       data: {
-  //   //         name: sub.useInput ? (event.input || event.userDisplayName) : event.userDisplayName,
-  //   //         randomWheelId: sub.randomWheelId
-  //   //       }
-  //   //     })
-
-  //   //     socketIo.to(`wheel/${sub.randomWheelId}`).emit("wheel:entries", "add")
-  //   //   }
-  //   // })
-
-  //   // activeEventSubSubscriptions.set(sub.subscriptionId, subscription)
-
-  //   // console.log(await subscription.getCliTestCommand())
-
-  // })
-  // END SUB
-
-  // apiClient.eventSub.deleteAllSubscriptions()
-
-  // const subs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
-
-  // const redemptionsSubscription = middleware.onChannelRedemptionAddForReward("1234", "12345", (event) => {
-  //   console.log("received event")
-  //   console.log(JSON.stringify({ ...event }))
-  // })
-
-  // redemptionsSubscription.start({
-  // })
-
-
-  // middleware.onSubscriptionCreateFailure((event, error) => {
-  //   console.log('[EventSub] onSubscriptionCreateFailure', { event, error })
-  // })
 
   // console.log(await redemptionsSubscription.getCliTestCommand())
 

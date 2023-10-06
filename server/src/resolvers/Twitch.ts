@@ -117,10 +117,10 @@ export class TwitchResolver {
         reward: rewards.find(r => r.id === subscription.rewardId)
       }))
     } catch {
-      const rewards2 = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+      const rewardsTest = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
       // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
 
-      const rewards = [...rewards2]
+      const rewards = [...rewardsTest]
 
       return subscriptions.map(subscription => ({
         ...subscription,
@@ -177,38 +177,6 @@ export class TwitchResolver {
       return null
     }
 
-    // const allRewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
-    // const allRewards = <HelixCustomReward[]>(JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")).data)
-
-
-    // const reward = allRewards.find((r) => r.title === rewardName)
-
-    // if (!reward) {
-    //   console.error(`reward "${rewardName}" not found for ${token.twitchUsername}`)
-    //   return null
-    // }
-
-    // await apiClient.eventSub.deleteAllSubscriptions()
-
-    // SUB
-    // const eventSubscription = eventSub.onChannelRedemptionAddForReward(token.twitchUserId, rewardId, async (event) => {
-    //   console.log("received redemption", new Date().toISOString(), event.rewardTitle)
-
-    //   if (event.status === "unfulfilled") {
-
-    //     await prisma.randomWheelEntry.create({
-    //       data: {
-    //         name: useInput ? (event.input || event.userDisplayName) : event.userDisplayName,
-    //         randomWheelId: randomWheelId
-    //       }
-    //     })
-
-    //     socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
-
-    //   }
-
-    // })
-
     // find all susbcriptions with this reward, also other wheels (and override)
     const existingSubscription = await prisma.eventSubscription.findFirst({
       where: {
@@ -234,24 +202,6 @@ export class TwitchResolver {
       console.log("[eventsub] Failed to create subscription: no response from twitch")
       throw new Error("Failed to create subscription: no response from twitch")
     }
-
-    // console.log(await eventSubscription.getCliTestCommand())
-
-    // const helixSubs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
-
-    // const newSubscription = helixSubs.data.find((sub) =>
-    //   (sub.status === "enabled" || sub.status === "webhook_callback_verification_pending") &&
-    //   sub.condition["broadcaster_user_id"] === token.twitchUserId &&
-    //   sub.condition["reward_id"] === rewardId
-    // )
-
-    // if (!newSubscription?.id) {
-    //   eventSubscription.stop()
-    //   console.error("subscription ID is undefined")
-    //   return false
-    // }
-
-    // activeEventSubSubscriptions.set(newSubscription.id, eventSubscription)
 
     const condition = helixSub?.condition as Record<string, string> | undefined
 
@@ -287,15 +237,6 @@ export class TwitchResolver {
       return updatedSubscription
     }
 
-    // console.log({ ...userSubscriptions })
-
-
-    // TODO: start with resumeFrom options if subscription already exists?
-
-    // subscription.start()
-
-    // return existingSubscription
-
   }
 
   @Mutation(() => Boolean, { nullable: true })
@@ -303,21 +244,7 @@ export class TwitchResolver {
     @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("ids", () => [String]) ids: string[]
   ) {
-    // const subs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
-
-    // console.log(subs.data[0].id, subs.data[0].condition)
-    // const helixSubs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
-
-    // // const activeSub = activeEventSubSubscriptions.get(subscriptionId)
-    // // activeSub?.stop()
-
-    // await apiClient.eventSub.deleteSubscription(subscriptionId)
-
-    // activeEventSubSubscriptions.delete(subscriptionId)
-
-    await deleteManySubscriptionRedemptionAdd(apiClient, prisma, ids)
-
-    return true
+    return await deleteManySubscriptionRedemptionAdd(apiClient, prisma, ids)
   }
 
   // async findByCondition(apiClient: ApiClient, type: string, condition: Record<string, unknown>) {
@@ -336,28 +263,10 @@ export class TwitchResolver {
     @Arg("id") id: string,
     @Arg("pause") pause: boolean,
   ) {
-    // const subs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
-
-    // console.log(subs.data[0].id, subs.data[0].condition)
-
-    // console.log("EVENTSUB pause event", pause, subscriptionId)
-
-    // const helixSubs = await apiClient.eventSub.getSubscriptionsForType("channel.channel_points_custom_reward_redemption.add")
-
     // this.findByCondition(apiClient, "channel.channel_points_custom_reward_redemption.add", {
     //   broadcaster_user_id: sub?.twitchUserId,
     //   reward_id: sub?.rewardId
     // })
-
-
-    // const sub = await prisma.eventSubscription.findUnique({
-    //   where: { id },
-    // })
-
-    // if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-    //   console.warn("invalid sub ID", id)
-    //   return false
-    // }
 
     if (pause) {
       await deleteSubscriptionRedemptionAdd(apiClient, prisma, id, true)
@@ -389,15 +298,6 @@ export class TwitchResolver {
       }
 
     }
-
-    // const subscription = activeEventSubSubscriptions.get(helixSub?.id)
-
-    // if (pause) {
-    //   // subscription?.suspend()
-    //   subscription?.stop()
-    // } else {
-    //   subscription?.start()
-    // }
 
     const newSubscription = await prisma.eventSubscription.updateMany({
       where: { id },

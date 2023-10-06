@@ -4,13 +4,6 @@ const apiPattern = /^\/api/
 
 const handler: ApiHandler = async (req, res) => {
 
-  // res.redirect(200, `${process.env.SERVER_URL}${req.url?.replace(apiPattern, "")}`)
-  // console.log(req.url?.replace(apiPattern, ""))
-
-  // res.status(200).send({})
-
-  // return
-
   if (req.method !== "POST") {
     res.status(405).send(null)
     return
@@ -26,9 +19,6 @@ const handler: ApiHandler = async (req, res) => {
 
   // ?.replace("/api", "")
   const requestUrl = `${process.env.SERVER_URL ?? "http://localhost:4000"}${req.url}`
-  // console.log(req.method, requestUrl)
-  // console.log(headersList.map(([k, v]) => `${k}: ${v}`).join("\n"))
-  // console.log(JSON.stringify(req.body))
 
   const serverRes = await fetch(requestUrl, {
     method: req.method,
