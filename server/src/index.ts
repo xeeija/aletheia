@@ -14,7 +14,7 @@ import { createServer } from "http"
 import { Server } from "socket.io"
 import { randomWheelHandlers } from "./socket"
 import { handleTwitchRoutes as twitchRouter } from "./twitch/api"
-import { setupAuthProvider } from "./twitch/auth"
+import { handleTokenValidation, setupAuthProvider } from "./twitch/auth"
 import { apiClient, eventSubMiddleware, handleEventSub } from "./twitch/eventsub"
 
 // Database client
@@ -125,7 +125,7 @@ const main = async () => {
 
     await eventSubMiddleware.markAsReady();
     await handleEventSub(eventSubMiddleware, prisma, socketIo)
-
+    await handleTokenValidation(apiClient, prisma)
   })
 }
 

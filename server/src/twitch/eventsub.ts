@@ -52,8 +52,20 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     eventSub.onVerify((success, ev) => {
       console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
     })
-    eventSub.onRevoke((ev) => {
-      console.log("[eventsub] revoked ", eventType(ev.id))
+    eventSub.onRevoke(async (ev) => {
+      console.log("[eventsub] revoked ", ev.authUserId)
+
+      await prisma.eventSubscription.deleteMany({
+        where: {
+          twitchUserId: ev.authUserId ?? "",
+        }
+      })
+
+      await prisma.userAccessToken.deleteMany({
+        where: {
+          twitchUserId: ev.authUserId
+        }
+      })
     })
   }
 

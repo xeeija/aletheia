@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { ApiClient } from "@twurple/api";
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth";
 import { config } from "dotenv";
+import { deleteManySubscriptionRedemptionAdd } from "./events";
 
 config()
 
@@ -47,11 +49,82 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
     console.warn("WARNING failed to refresh token for user", userId)
   })
 
-  // TODO: Validate tokens every hour -- investigate if twurple automatically does that
-  // setTimeout(() => {
-  // })
+}
 
-  // await authProvider.addUserForToken(tokenData);
-  // authProvider.addUser("78823247", tokenData)
+export const handleTokenValidation = async (apiClient: ApiClient, prisma: PrismaClient) => {
+  const intervalTime = (Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000) || 1000 * 60 * 60
+
+  const validateTokenInterval = setInterval(async () => {
+
+    const tokens = await prisma.userAccessToken.findMany({
+      where: {
+        refreshToken: { not: null },
+        // obtainmentTimestamp: {
+        //   gt: 
+        // },
+      }
+    })
+
+    const userTokensToDelete: string[] = []
+
+    console.log("[twitch] validating tokens...")
+
+    for (const token of tokens) {
+      const response = await fetch("https://id.twitch.tv/oauth2/validate", {
+        headers: {
+          "Authorization": `Bearer ${token.accessToken}`
+        }
+      })
+
+      if (response.status === 401) {
+        const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
+          headers: {
+            "Authorization": `Bearer ${token.refreshToken}`
+          }
+        })
+
+        if (refreshResponse.status === 401) {
+          // user revoked access, delete the token and all its subscriptions
+          userTokensToDelete.push(token.userId)
+        }
+
+        if (refreshResponse.ok) {
+          // maybe refresh token, or do nothing?
+
+          // TODO: does it get added to the provider automatically?
+          // if so, then onRefresh should trigger, which automatically updates in the DB 
+          await authProvider.refreshAccessTokenForUser(token.userId)
+        }
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    const subscriptionsToDelete = await prisma.eventSubscription.findMany({
+      where: {
+        twitchUserId: { in: userTokensToDelete }
+      }
+    })
+
+    if (userTokensToDelete.length > 0) {
+      if (subscriptionsToDelete.length > 0) {
+        await deleteManySubscriptionRedemptionAdd(apiClient, prisma, subscriptionsToDelete.map(s => s.id))
+      }
+
+      console.log(`[twitch] deleting ${userTokensToDelete.length} invalid tokens...`)
+      await prisma.userAccessToken.deleteMany({
+        where: {
+          twitchUserId: { in: userTokensToDelete }
+        }
+      })
+    }
+
+    console.log("[twitch] finished validating tokens")
+  }, intervalTime)
+
+  // dont block the process from exiting, if nothing else is running
+  validateTokenInterval.unref()
+
+  // TODO: Validate tokens every hour -> check if twurple does that automatically
 
 }
