@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { ApiClient } from "@twurple/api";
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth";
 import { config } from "dotenv";
+import { HttpError } from "src/types";
 import { deleteManySubscriptionRedemptionAdd } from "./events";
 
 config()
@@ -16,19 +17,47 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
 
   console.log("Setup Twitch AuthProvider with", accessTokens.length, "tokens")
 
-  accessTokens.forEach((token) => {
+  for (const token of accessTokens) {
     const tokenNew: AccessToken = {
       ...token,
       obtainmentTimestamp: Number(token.obtainmentTimestamp)
     }
 
-    // if (token.twitchUserId) {
-    //   authProvider.addUser(token.twitchUserId, tokenNew)
-    // }
-    // else {
-    authProvider.addUserForToken(tokenNew)
-    // }
-  })
+    // returns the userId
+    try {
+      await authProvider.addUserForToken(tokenNew)
+    }
+    catch (err: unknown) {
+      if (!(err instanceof Error)) {
+        throw err
+      }
+
+      if (!("statusCode" in err)) {
+        throw err
+      }
+
+      const httpError = <HttpError>err
+
+      if (httpError.statusCode !== 400 && httpError.statusCode !== 401) {
+        throw err
+      }
+
+      console.log("[twitch] removing invalid token\n", JSON.parse(httpError.body))
+
+      await prisma.eventSubscription.deleteMany({
+        where: {
+          twitchUserId: token.twitchUserId ?? "",
+        }
+      })
+
+      await prisma.userAccessToken.deleteMany({
+        where: {
+          twitchUserId: token.twitchUserId
+        }
+      })
+
+    }
+  }
 
   authProvider.onRefresh(async (userId, newTokenData) => {
     // console.log("refresh token", userId)

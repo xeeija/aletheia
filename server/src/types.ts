@@ -58,3 +58,8 @@ export interface SocketData { }
 export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add"
 }
+
+export type HttpError = Error & {
+  statusCode: number
+  body: string
+}
