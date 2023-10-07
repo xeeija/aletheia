@@ -1,6 +1,7 @@
-import { Button, Grid, Link, Typography } from "@mui/material"
+import { Box, Button, Grid, Link, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { InputField, LoadingButton } from "../components"
+import { useState } from "react"
+import { DisconnectTwitchDialog, InputField, LoadingButton } from "../components"
 import { LayoutNextPage, defaultLayout } from "../components/layout"
 import { useUpdateUserMutation } from "../generated/graphql"
 import { useAuth } from "../hooks"
@@ -9,6 +10,8 @@ const SettingsPage: LayoutNextPage = () => {
 
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
+  const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
+
 
   // TODO: show error for twitch auth 
 
@@ -102,7 +105,10 @@ const SettingsPage: LayoutNextPage = () => {
       {userAccessToken?.id && (
         <>
           <Typography color="text.secondary" sx={{ pb: 1 }}>
-            Connected as {userAccessToken.twitchUsername}
+            Connected as{" "}
+            <Box component="span" sx={{ fontWeight: 500 }}>
+              {userAccessToken.twitchUsername}
+            </Box>
           </Typography>
 
           {/* TODO: make it look nice, maybe with display name or profile picture https://dev.twitch.tv/docs/api/reference/#get-users */}
@@ -112,7 +118,7 @@ const SettingsPage: LayoutNextPage = () => {
             color="error"
             loading={fetchingDisconnect}
             onClick={async () => {
-              await disconnectAccessToken()
+              setDisconnectDialogOpen(true)
             }}
 
             sx={{ textTransform: "none" }}
@@ -122,6 +128,14 @@ const SettingsPage: LayoutNextPage = () => {
 
         </>
       )}
+
+      <DisconnectTwitchDialog
+        open={disconnectDialogOpen}
+        onClose={() => setDisconnectDialogOpen(false)}
+        onDelete={async () => {
+          await disconnectAccessToken()
+        }}
+      />
 
     </>
   )
