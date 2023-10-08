@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
+import fetch from "node-fetch"
+import { AccessTokenResponse } from "src/types"
 import { authProvider } from "./auth"
+
 
 export const handleTwitchRoutes = async (prisma: PrismaClient) => {
 
@@ -24,7 +27,7 @@ export const handleTwitchRoutes = async (prisma: PrismaClient) => {
         method: "POST",
       })
 
-      const body = await response.json()
+      const body = <AccessTokenResponse>(await response.json())
 
       const tokenInfo = await getTokenInfo(body.access_token, process.env.TWITCH_CLIENT_ID)
 

@@ -59,6 +59,14 @@ export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add"
 }
 
+export type AccessTokenResponse = {
+  access_token: string
+  refresh_token: string
+  expires_in: number
+  scope: string[]
+  token_type: string
+}
+
 export type HttpError = Error & {
   statusCode: number
   body: string

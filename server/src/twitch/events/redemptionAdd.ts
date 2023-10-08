@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
+import crypto from "crypto"
 import { SocketServer, SubscriptionType } from "../../types"
 import { activeSubscriptions } from "../eventsub"
 
