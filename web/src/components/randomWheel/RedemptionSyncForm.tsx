@@ -28,10 +28,6 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
   const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
 
-  if (!wheel) {
-    return null
-  }
-
   const [{ data }] = useChannelRewardsQuery({
     variables: {
 
@@ -45,10 +41,14 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
     pauseEntriesSync,
     deleteEntriesSync,
   } = useEventSubscriptionsWheel({
-    randomWheelId: wheel.id,
+    randomWheelId: wheel?.id ?? "",
   })
 
   const [showNewSyncronization, setShowNewSyncronization] = useState(false)
+
+  if (!wheel) {
+    return null
+  }
 
   const channelRewards = data?.channelRewards.filter(reward => !subscriptions?.some(s => s.rewardId === reward.id))
 

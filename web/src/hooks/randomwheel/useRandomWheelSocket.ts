@@ -67,7 +67,7 @@ export const useRandomWheelSocket = (
     return () => {
       socket.off("wheel:spin")
     }
-  }, [wheel?.id, wheel?.spinDuration, setSpinning, setRotation, setLastWinnerEntry, fetchWinners, options])
+  }, [wheel?.id, wheel?.spinDuration, setSpinning, setRotation, setLastWinnerEntry, fetchWinners, options, disableSocket])
 
   useEffect(() => {
     if (!wheel?.id || disableSocket) {

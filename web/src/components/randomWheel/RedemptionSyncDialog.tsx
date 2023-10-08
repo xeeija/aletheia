@@ -10,7 +10,7 @@ interface Props {
   readonly?: boolean
 }
 
-export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug, readonly }) => {
+export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
 
   const actionsRef = useRef(null)
   const formRef = useRef<FormikProps<any>>(null)

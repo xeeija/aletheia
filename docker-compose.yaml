@@ -13,7 +13,7 @@ services:
     volumes:
       - ./docker/data/postgres:/var/lib/postgresql/data
   server:
-    image: xeeija/aletheia-server:1.4.1
+    image: xeeija/aletheia-server:1.5.0
     build:
       context: server
     restart: unless-stopped
@@ -23,7 +23,7 @@ services:
       DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
       ORIGIN_URL: http://localhost:3000      
   web:
-    image: xeeija/aletheia-web:1.4.0
+    image: xeeija/aletheia-web:1.5.0
     build:
       context: server
     restart: unless-stopped

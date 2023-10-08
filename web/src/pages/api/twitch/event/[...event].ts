@@ -1,6 +1,6 @@
 import { ApiHandler } from "../../../../types"
 
-const apiPattern = /^\/api/
+// const apiPattern = /^\/api/
 
 const handler: ApiHandler = async (req, res) => {
 
