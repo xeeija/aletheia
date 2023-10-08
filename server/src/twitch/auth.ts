@@ -97,7 +97,9 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
 
     const userTokensToDelete: string[] = []
 
-    console.log("[twitch] validating tokens...")
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[twitch] validating tokens...")
+    }
 
     for (const token of tokens) {
       const response = await fetch("https://id.twitch.tv/oauth2/validate", {
@@ -149,7 +151,9 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
       })
     }
 
-    console.log("[twitch] finished validating tokens")
+    // if (process.env.NODE_ENV !== "production") {
+    //   console.log("[twitch] finished validating tokens")
+    // }
   }, intervalTime)
 
   // dont block the process from exiting, if nothing else is running

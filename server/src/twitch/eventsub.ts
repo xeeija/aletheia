@@ -13,12 +13,12 @@ export const apiClient = new ApiClient({ authProvider })
 
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient,
-  hostName: process.env.TWITCH_HOSTNAME ?? "",
-  pathPrefix: '/api/twitch',
-  secret: process.env.TWITCH_EVENTSUB_SECRET ?? 'haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi',
+  hostName: process.env.EVENTSUB_HOSTNAME ?? "",
+  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? '/api/twitch',
+  secret: process.env.EVENTSUB_SECRET ?? 'haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi',
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
-    minLevel: Number(process.env.EVENTSUB_LOGLEVEL),
+    minLevel: Number(process.env.EVENTSUB_LOGLEVEL) || undefined,
   }
 })
 
@@ -52,22 +52,24 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     eventSub.onVerify((success, ev) => {
       console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
     })
-    eventSub.onRevoke(async (ev) => {
-      console.log("[eventsub] revoked ", ev.authUserId)
-
-      await prisma.eventSubscription.deleteMany({
-        where: {
-          twitchUserId: ev.authUserId ?? "",
-        }
-      })
-
-      await prisma.userAccessToken.deleteMany({
-        where: {
-          twitchUserId: ev.authUserId
-        }
-      })
-    })
   }
+
+  eventSub.onRevoke(async (ev) => {
+    console.log("[eventsub] revoked ", ev.authUserId)
+
+    await prisma.eventSubscription.deleteMany({
+      where: {
+        twitchUserId: ev.authUserId ?? "",
+      }
+    })
+
+    await prisma.userAccessToken.deleteMany({
+      where: {
+        twitchUserId: ev.authUserId
+      }
+    })
+    console.log("[eventsub] revoke: removed token successfully")
+  })
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 

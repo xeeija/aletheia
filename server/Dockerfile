@@ -44,7 +44,7 @@ WORKDIR /server
 COPY --from=builder /server/dist ./dist
 COPY --from=builder /server/node_modules/ ./node_modules
 
-EXPOSE 4000
+ENV NODE_ENV "production"
 
 ENV PORT 4000
 
