@@ -55,7 +55,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   }
 
   eventSub.onRevoke(async (ev) => {
-    console.log("[eventsub] revoked ", ev.authUserId)
+    console.log("[eventsub] revoked ", ev.authUserId?.slice(0, 4))
 
     await prisma.eventSubscription.deleteMany({
       where: {
@@ -68,6 +68,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         twitchUserId: ev.authUserId
       }
     })
+
     console.log("[eventsub] revoke: removed token successfully")
   })
 

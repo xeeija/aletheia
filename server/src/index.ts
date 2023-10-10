@@ -98,7 +98,7 @@ const main = async () => {
     }),
     cache: "bounded",
     plugins: [
-      process.env.NODE_ENV === "production"
+      process.env.ENABLE_GRAPHQL !== "1"
         ? ApolloServerPluginLandingPageDisabled()
         : ApolloServerPluginLandingPageGraphQLPlayground()
     ]

@@ -61,7 +61,9 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   }
 
   authProvider.onRefresh(async (userId, newTokenData) => {
-    // console.log("refresh token", userId)
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[twitch] refresh token (${userId.slice(0, 4)})`)
+    }
 
     await prisma.userAccessToken.updateMany({
       where: {
@@ -76,7 +78,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   })
 
   authProvider.onRefreshFailure((userId) => {
-    console.warn("WARNING failed to refresh token for user", userId)
+    console.warn(`[twitch] WARNING: failed to refresh token (${userId.slice(0, 4)})`)
   })
 
 }
@@ -109,23 +111,39 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
       })
 
       if (response.status === 401) {
-        const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
-          headers: {
-            "Authorization": `Bearer ${token.refreshToken}`
-          }
-        })
-
-        if (refreshResponse.status === 401) {
-          // user revoked access, delete the token and all its subscriptions
-          userTokensToDelete.push(token.userId)
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`[twitch] validate: access response ${response.status} (${token.twitchUserId?.slice(0, 4)})`)
         }
 
-        if (refreshResponse.ok) {
-          // maybe refresh token, or do nothing?
+        if (token.twitchUserId) {
+          try {
+            await authProvider.refreshAccessTokenForUser(token.twitchUserId)
+          }
+          catch {
+            console.log("[twitch] validate: refresh error")
 
-          // TODO: does it get added to the provider automatically?
-          // if so, then onRefresh should trigger, which automatically updates in the DB 
-          await authProvider.refreshAccessTokenForUser(token.userId)
+            const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
+              headers: {
+                "Authorization": `Bearer ${token.refreshToken}`
+              }
+            })
+
+            if (process.env.NODE_ENV !== "production") {
+              console.log(`[twitch] validate: refresh response ${refreshResponse.status}`)
+            }
+
+            if (refreshResponse.status === 401) {
+              // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
+              userTokensToDelete.push(token.twitchUserId)
+            }
+
+            // if (refreshResponse.ok) {
+            //   // maybe refresh token, or do nothing?
+
+            //   // TODO: does it get added to the provider automatically?
+            //   // if so, then onRefresh should trigger, which automatically updates in the DB 
+            // }
+          }
         }
       }
 
@@ -140,15 +158,23 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
 
     if (userTokensToDelete.length > 0) {
       if (subscriptionsToDelete.length > 0) {
+        console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
         await deleteManySubscriptionRedemptionAdd(apiClient, prisma, subscriptionsToDelete.map(s => s.id))
       }
 
-      console.log(`[twitch] deleting ${userTokensToDelete.length} invalid tokens...`)
-      await prisma.userAccessToken.deleteMany({
+      // if (process.env.NODE_ENV !== "production") {
+      console.log(`[twitch] validate: deleting ${userTokensToDelete.length} invalid tokens...`)
+      // }
+
+      const deleted = await prisma.userAccessToken.deleteMany({
         where: {
           twitchUserId: { in: userTokensToDelete }
         }
       })
+
+      if (deleted.count > 0) {
+        console.log(`[twitch] validate: deleted ${deleted.count} invalid tokens...`)
+      }
     }
 
     // if (process.env.NODE_ENV !== "production") {
