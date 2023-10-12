@@ -1,17 +1,17 @@
 import { Box, Button, CircularProgress, FormHelperText, Grid, IconButton, List, ListItem, ListItemSecondaryAction, Portal, SvgIcon, Typography } from "@mui/material"
-import { Form, Formik, FormikProps, FormikValues } from "formik"
+import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject, useState } from "react"
 import { HiAnnotation, HiTrash } from "react-icons/hi"
 import { TiMediaPause, TiMediaPlay, TiPlus, TiRefresh, TiTimes, TiUser } from "react-icons/ti"
-import { EventSubscriptionFragment, useChannelRewardsQuery } from "../../generated/graphql"
-import { useEventSubscriptionsWheel, useRandomWheel } from "../../hooks"
+import { EventSubscriptionFragment } from "../../generated/graphql"
+import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "../../hooks"
 import { CheckboxField, LoadingButton, NoData, SelectField } from "../components"
 import { CustomRewardMenuItem } from "../input/CustomRewardMenuItem"
 
 interface Props {
   slug: string
   dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<FormikValues>>
+  formRef?: RefObject<FormikProps<InitialValues>>
 }
 
 interface SubscriptionEntry extends EventSubscriptionFragment {
@@ -28,11 +28,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
   const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
 
-  const [{ data }] = useChannelRewardsQuery({
-    variables: {
-
-    }
-  })
+  const { channelRewards } = useChannelRewards()
 
   const {
     subscriptions,
@@ -50,7 +46,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
     return null
   }
 
-  const channelRewards = data?.channelRewards.filter(reward => !subscriptions?.some(s => s.rewardId === reward.id))
+  const rewards = channelRewards?.filter(reward => !subscriptions?.some(s => s.rewardId === reward.id))
 
   // const [{ data: subscriptionData }] = useEventSubscriptionsForWheelQuery({
   //   variables: {
@@ -88,20 +84,19 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
           return
         }}
         onSubmit={async (values, { setFieldValue }) => {
-          const entries = values as InitialValues
 
           // only create if new
-          if (showNewSyncronization && entries.rewardId) {
+          if (showNewSyncronization && values.rewardId) {
             await syncEntries({
               randomWheelId: wheel.id,
-              rewardId: entries.rewardId,
-              useInput: entries.useInput,
+              rewardId: values.rewardId,
+              useInput: values.useInput,
             })
             setShowNewSyncronization(false)
             setFieldValue("rewardId", "")
           }
 
-          const deleteEntries = entries.subscriptions.filter(s => s.delete)
+          const deleteEntries = values.subscriptions.filter(s => s.delete)
 
           // console.log("deleteEntries", deleteEntries)
 
@@ -123,7 +118,6 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         }}
       >
         {({ values, isSubmitting, dirty, setFieldValue, setFieldError }) => {
-          const entries = values as InitialValues
           // console.log(subscriptions)
 
           return (
@@ -134,7 +128,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                 <Grid item xs={12}>
                   {!!subscriptions?.length ? (
                     <List role="list" dense>
-                      {entries.subscriptions.map((subscription, i) => (
+                      {values.subscriptions.map((subscription, i) => (
                         // subscription.reward &&
                         <ListItem key={subscription.id} role="listitem" sx={{ width: "100%" }}>
                           {subscription.reward && !subscription.delete && (
@@ -307,7 +301,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <Box sx={{ display: "flex", gap: 1, alignItems: "start" }}>
                         <SelectField
                           name="rewardId"
-                          options={channelRewards?.map((reward) => ({
+                          options={rewards?.map((reward) => ({
                             value: reward.id,
                             label: <CustomRewardMenuItem reward={reward} noMenuItem />
                           }))}
