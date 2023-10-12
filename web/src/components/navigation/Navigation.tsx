@@ -1,8 +1,9 @@
-import { FC, ReactNode, useState } from "react"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"
-import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
+import { FC, ReactNode, useState } from "react"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
-import { LinkItem, Sidebar, Navbar, UserMenu, Footer } from "../components"
+import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
+import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "../components"
+import { ChannelPoints } from "../icons"
 
 export interface NavigationProps {
   noAppbar?: boolean
@@ -13,6 +14,7 @@ export interface NavigationProps {
 const sidebarItems: LinkItem[] = [
   { name: "Home", href: "/", icon: <SvgIcon component={TiHome} color="primary" /> },
   { name: "Random Wheel", href: "/randomwheel", icon: <SvgIcon component={TiChartPie} color="secondary" viewBox="0 1 22 22" /> },
+  { name: "Channel Points", href: "/channelpoints", icon: <ChannelPoints color="info" /> },
   { name: "Bingo", href: "/bingo", icon: <SvgIcon component={HiViewGridAdd} color="success" viewBox="0 0 20 20" />, disabled: true },
   { name: "Color Palette", icon: <SvgIcon component={TiPipette} color="info" />, disabled: true },
   { name: "Pile of Shame", icon: <SvgIcon component={HiDuplicate} color="warning" viewBox="0 0 20 20" />, disabled: true },
