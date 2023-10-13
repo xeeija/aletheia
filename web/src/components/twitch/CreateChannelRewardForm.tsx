@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
-import { CheckboxField, InputField } from "../components"
+import { BooleanField, InputField } from "../components"
 
 interface InitialValues {
   // max 40 char
@@ -63,14 +63,14 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef }) => {
               <InputField name="prompt" label="Description" />
 
               {/* Toggle instead of checkbox */}
-              <CheckboxField name="userInputRequired" label="Require user to enter text" />
+              <BooleanField name="userInputRequired" label="Require user to enter text" />
 
               <InputField name="cost" type="number" label="Cost" />
               <hr />
               <InputField name="backgroundColor" type="color" label="Background Color" />
 
               {/* Toggle instead of checkbox */}
-              <CheckboxField name="autoFulfill" label="Skip reward requests queue" />
+              <BooleanField name="autoFulfill" label="Skip reward requests queue" />
 
               <hr />
 

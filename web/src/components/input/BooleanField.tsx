@@ -1,4 +1,4 @@
-import { Box, Checkbox, CheckboxProps, FormControlLabel, FormControlLabelProps, FormHelperText, Tooltip, TooltipProps } from "@mui/material"
+import { Box, Checkbox, CheckboxProps, FormControlLabel, FormControlLabelProps, FormHelperText, Switch, Tooltip, TooltipProps } from "@mui/material"
 import { useField } from "formik"
 import { FC, ReactNode } from "react"
 
@@ -10,6 +10,8 @@ type Props = CheckboxProps & {
   tooltipProps?: Partial<TooltipProps>
   noClickLabel?: boolean
   helperText?: ReactNode
+  toggle?: boolean
+  fullWidth?: boolean
 } & ({
   name: string
   noForm?: false
@@ -18,7 +20,7 @@ type Props = CheckboxProps & {
   noForm: true
 })
 
-export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlacement, helperText, noClickLabel, tooltip, tooltipProps, noForm, checked, ...props }) => {
+export const BooleanField: FC<Props> = ({ name, label, labelProps, labelPlacement, helperText, noClickLabel, tooltip, tooltipProps, noForm, checked, toggle, fullWidth, ...props }) => {
 
   const [field, { error, touched }] = useField(name ?? "")
 
@@ -27,7 +29,9 @@ export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlaceme
 
   const hasError = error !== undefined && touched
 
-  const checkbox = <Checkbox
+  const BooleanComponent = toggle ? Switch : Checkbox
+
+  const checkbox = <BooleanComponent
     aria-labelledby={hasLabel && !noClickLabel ? labelId : undefined}
     aria-describedby={!hasLabel ? tooltip || name : undefined}
     name={name}
@@ -36,12 +40,16 @@ export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlaceme
     color={error ? "error" : props.color}
     inputProps={{
       ...props.inputProps,
-      ...(!noForm ? field : {}),
+      ...(!noForm && field),
     }}
   />
 
+  const marginLeft = labelPlacement === "start" ? 1 : undefined
+  const helperMarginLeftToggle = (labelPlacement === "end" || labelPlacement === undefined) && toggle ? (props.size === "small" ? 2.5 : 4.5) : 0
+  const helperMarginLeftCheckbox = (labelPlacement === "end" || labelPlacement === undefined) && !toggle ? (props.size === "small" ? 1.75 : 2) : 0
+
   return (
-    <span>
+    <Box>
       <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
         <Box>
           {hasLabel ?
@@ -57,6 +65,15 @@ export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlaceme
               }}
               control={checkbox}
               labelPlacement={labelPlacement}
+              sx={{
+                gap: toggle ? 0.75 : undefined,
+                marginLeft: marginLeft,
+                ...(fullWidth && {
+                  display: "flex",
+                  justifyContent: "space-between",
+                }),
+                ...labelProps?.sx
+              }}
             />
             : checkbox
           }
@@ -65,13 +82,13 @@ export const CheckboxField: FC<Props> = ({ name, label, labelProps, labelPlaceme
               disabled={props.disabled}
               required={props.required}
               error={hasError}
-              sx={{ mt: -0.75, ml: 1.75 }}
+              sx={{ mt: -0.75, ml: (marginLeft ?? 1.75) + helperMarginLeftToggle + helperMarginLeftCheckbox }}
             >
               {hasError ? error : helperText}
             </FormHelperText>
           ) : null}
         </Box>
       </Tooltip>
-    </span>
+    </Box>
   )
 }

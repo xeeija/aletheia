@@ -2,7 +2,7 @@ import { Grid } from "@mui/material"
 import { FC, ReactNode } from "react"
 import { useColorThemesQuery } from "../../generated/graphql"
 import { useAuth } from "../../hooks"
-import { CheckboxField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "../components"
+import { BooleanField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "../components"
 
 interface Mark {
   value: number
@@ -36,7 +36,7 @@ export const WheelFormFields: FC<Props> = () => {
           { value: "PRIVATE", label: "Private", color: "secondary", disabled: !authenticated },
         ]} />
 
-        <CheckboxField name="editAnonymous" label="Everyone can edit the wheel" disabled={!authenticated} />
+        <BooleanField name="editAnonymous" label="Everyone can edit the wheel" disabled={!authenticated} />
       </Grid>
 
       <Grid item xs={12}>

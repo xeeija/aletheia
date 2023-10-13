@@ -5,7 +5,7 @@ import { HiAnnotation, HiTrash } from "react-icons/hi"
 import { TiMediaPause, TiMediaPlay, TiPlus, TiRefresh, TiTimes, TiUser } from "react-icons/ti"
 import { EventSubscriptionFragment } from "../../generated/graphql"
 import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "../../hooks"
-import { CheckboxField, LoadingButton, NoData, SelectField } from "../components"
+import { BooleanField, LoadingButton, NoData, SelectField } from "../components"
 import { CustomRewardMenuItem } from "../input/CustomRewardMenuItem"
 
 interface Props {
@@ -138,7 +138,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               alignItems: "center"
                             }}>
                               <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
-                              <CheckboxField
+                              <BooleanField
                                 name={`subscriptions[${i}].useInput`}
                                 // size="small"
                                 tooltip={subscription.useInput ? "Use input as entry" : "Use display name as entry"}
@@ -211,7 +211,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                 </IconButton>
                               }
                               {!(fetchingPause || subscription.pending) &&
-                                <CheckboxField
+                                <BooleanField
                                   name={`subscriptions[${i}].paused`}
                                   tooltip={subscription.paused ? "Activate" : "Pause"}
                                   value={subscription.paused}
@@ -326,7 +326,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           <FormHelperText> </FormHelperText>
                         </Box>
                       </Box>
-                      <CheckboxField name="useInput"
+                      <BooleanField name="useInput"
                         label="Use input as entry"
                         helperText="Use redemption input as entry. By default, the display name is used."
                       />

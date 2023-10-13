@@ -10,7 +10,7 @@ export * from "./common/NoData"
 export * from "./common/SkeletonList"
 export * from "./common/TabPanel"
 
-export * from "./input/CheckboxField"
+export * from "./input/BooleanField"
 export * from "./input/ColorMenuItem"
 export * from "./input/InputField"
 export * from "./input/PasswordField"
