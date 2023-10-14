@@ -65,6 +65,10 @@ export class TwitchResolver {
     @Arg("userId", { nullable: true }) userId: string
   ) {
 
+    if (!req.session.userId) {
+      return []
+    }
+
     const token = await prisma.userAccessToken.findFirst({
       where: {
         userId: userId ?? req.session.userId ?? "",

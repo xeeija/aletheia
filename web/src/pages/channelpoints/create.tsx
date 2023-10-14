@@ -1,6 +1,5 @@
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { LayoutNextPage, defaultLayout } from "../../components/layout"
-import { CreateChannelRewardForm } from "../../components/twitch"
 
 export const CreateChannelPointsPage: LayoutNextPage = () => {
 
@@ -9,7 +8,10 @@ export const CreateChannelPointsPage: LayoutNextPage = () => {
       <Typography variant="h4" sx={{ mb: 2 }}>
         Create Channel Reward
       </Typography>
-      <CreateChannelRewardForm />
+      <Box sx={{ width: 500 }}>
+        {/* <Button onClick={() => setCreateDialogOpen(true)} >Create</Button> */}
+      </Box>
+
     </>
   )
 }

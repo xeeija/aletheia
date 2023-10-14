@@ -14,7 +14,7 @@ export interface NavigationProps {
 const sidebarItems: LinkItem[] = [
   { name: "Home", href: "/", icon: <SvgIcon component={TiHome} color="primary" /> },
   { name: "Random Wheel", href: "/randomwheel", icon: <SvgIcon component={TiChartPie} color="secondary" viewBox="0 1 22 22" /> },
-  { name: "Channel Points", href: "/channelpoints", icon: <ChannelPoints color="info" /> },
+  { name: "Channel Points", href: "/channelpoints", icon: <ChannelPoints color="info" viewBox="0 0 20 20" /> },
   { name: "Bingo", href: "/bingo", icon: <SvgIcon component={HiViewGridAdd} color="success" viewBox="0 0 20 20" />, disabled: true },
   { name: "Color Palette", icon: <SvgIcon component={TiPipette} color="info" />, disabled: true },
   { name: "Pile of Shame", icon: <SvgIcon component={HiDuplicate} color="warning" viewBox="0 0 20 20" />, disabled: true },
