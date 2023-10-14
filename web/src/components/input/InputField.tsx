@@ -1,6 +1,6 @@
-import { FC } from "react"
-import { CircularProgress, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip, TooltipProps } from "@mui/material"
+import { CircularProgress, FormHelperText, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip, TooltipProps } from "@mui/material"
 import { FieldValidator, useField, useFormikContext } from "formik"
+import { FC } from "react"
 import { TiTick } from "react-icons/ti"
 
 export type InputFieldProps = TextFieldProps & {
@@ -11,9 +11,11 @@ export type InputFieldProps = TextFieldProps & {
   hiddenArrows?: boolean
   tooltip?: string
   tooltipProps?: Partial<TooltipProps>
+  maxLength?: number
+  adornment?: boolean
 }
 
-export const InputField: FC<InputFieldProps> = ({ name, icon, validate, required, hiddenArrows, tooltip, tooltipProps, ...props }) => {
+export const InputField: FC<InputFieldProps> = ({ name, icon, validate, required, hiddenArrows, tooltip, tooltipProps, maxLength, adornment, ...props }) => {
 
   // Custom validation idea: https://github.com/jaredpalmer/formik/issues/512#issuecomment-643788203
 
@@ -27,6 +29,12 @@ export const InputField: FC<InputFieldProps> = ({ name, icon, validate, required
 
   const hasError = error !== undefined
   const isFieldValidating = isValidating && status?.[name]
+
+  const maxLengthAdornment = (
+    <InputAdornment position="end" sx={{ alignItems: props.multiline ? "end" : undefined }}>
+      <FormHelperText>{`${field.value}`.length}/{maxLength}</FormHelperText>
+    </InputAdornment>
+  )
 
   return <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
     <TextField
@@ -53,23 +61,62 @@ export const InputField: FC<InputFieldProps> = ({ name, icon, validate, required
           setTimeout(() => setStatus({}), 1000)
         }
       }}
+      onChange={(ev) => {
+        if (maxLength && ev.target.value.length > maxLength) {
+          return
+        }
+
+        if (props.onChange) {
+          props.onChange(ev)
+        }
+
+        field.onChange(ev)
+      }}
       variant="filled"
       size="small"
       InputProps={{
-        ...(icon && touched && {
-          endAdornment: <InputAdornment position="end">
-            {!hasError && !isFieldValidating && <SvgIcon component={TiTick} color="success" />}
-            {isFieldValidating && <CircularProgress color="info" sx={{ p: 1.25 }} />}
-          </InputAdornment>
-        }),
         ...props.InputProps,
+        endAdornment: (maxLength ?? 0) > 0 ? <>
+          {maxLengthAdornment}
+          {props.InputProps?.endAdornment}
+        </> : props.InputProps?.endAdornment,
+        ...(icon && touched && {
+          endAdornment: (<>
+            <InputAdornment position="end">
+              {!hasError && !isFieldValidating && <SvgIcon component={TiTick} color="success" />}
+              {isFieldValidating && <CircularProgress color="info" sx={{ p: 1.25 }} />}
+              {(maxLength ?? 0) > 0 ? maxLengthAdornment : null}
+              {props.InputProps?.endAdornment}
+            </InputAdornment>
+          </>),
+        }),
+        ...(adornment && {
+          sx: {
+            ...props.InputProps?.sx,
+            textAlign: "right",
+            backgroundColor: "transparent !important",
+            "::before, ::after": {
+              borderBottomWidth: 0,
+            },
+            ".MuiFilledInput-input:focus": {
+              backgroundColor: "transparent !important",
+            },
+          },
+        })
       }}
-      InputLabelProps={{
-        required: required
+      sx={{
+        ...props.sx,
+        ...(adornment && {
+          backgroundColor: "transparent",
+        }),
       }}
       className={`${props.className}${hiddenArrows ? " hidden-arrows" : ""}`}
       name={name}
       {...props}
+      InputLabelProps={{
+        ...props.InputLabelProps,
+        required: required,
+      }}
       // show error message over default helper text
       {...(hasError && touched && { helperText: error })}
     />

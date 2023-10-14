@@ -1,44 +1,54 @@
-import { FC, ReactNode } from "react"
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle } from "@mui/material"
+import { FormikProps } from "formik"
+import { FC, ReactNode, RefObject } from "react"
 
-interface Props {
+type Props = DialogProps & {
   open: boolean
-  onClose: () => void
+  onClose: (reason: "backdropClick" | "escapeKeyDown" | "cancelClick") => void
   id?: string
-  form?: string
   title?: ReactNode
-  // actionsRef?: RefObject<FormikProps<FormikValues>>
+  formRef?: RefObject<FormikProps<any>>
+  actionsRef?: RefObject<Element>
+  closeOnBackdrop?: boolean
 }
 
 // onClose, id, form, title, children
-export const FormDialog: FC<Props> = ({ open }) => {
+export const FormDialog: FC<Props> = ({ id, open, title, onClose, closeOnBackdrop, formRef, actionsRef, children, ...props }) => {
   return (
     <Dialog
-      keepMounted
       fullWidth
       maxWidth="xs"
+      {...props}
       open={open}
       onClose={(_, reason) => {
-        if (reason === "backdropClick") {
+        if (!closeOnBackdrop && reason === "backdropClick") {
           return
         }
-        // closeHandler()
+
+        onClose(reason)
+
+        if (formRef) {
+          setTimeout(() => formRef?.current?.resetForm(), 350)
+        }
       }}
-      aria-labelledby="edit-dialog-title"
-      aria-describedby="edit-dialog-description">
-      <DialogTitle id="edit-dialog-title">Edit Random Wheel</DialogTitle>
+      aria-labelledby={`${id}-dialog-title`}
+      aria-describedby={`${id}-dialog-description`}>
+      <DialogTitle id={`${id}-dialog-title`}>{title}</DialogTitle>
       <DialogContent>
-        {/* <EditWheelForm slug={slug} dialogActionsRef={actionsRef} formRef={formRef} /> */}
+        {children}
       </DialogContent>
-      <DialogActions
-      //  ref={actionsRef}
-      >
+      <DialogActions ref={actionsRef}>
         <Button color="secondary" variant="outlined"
-        // onClick={closeHandler}
+          onClick={() => {
+            onClose("cancelClick")
+
+            if (formRef) {
+              setTimeout(() => formRef?.current?.resetForm(), 350)
+            }
+          }}
         >
           Cancel
         </Button>
-
       </DialogActions>
     </Dialog>
   )
