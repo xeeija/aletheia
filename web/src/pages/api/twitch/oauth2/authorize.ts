@@ -1,5 +1,5 @@
-import { ApiHandler } from "../../../types"
-import { randomBase64Url } from "../../../utils/random"
+import { ApiHandler } from "../../../../types"
+import { randomBase64Url } from "../../../../utils/random"
 
 
 const handler: ApiHandler = async (_, res) => {
@@ -23,7 +23,7 @@ const handler: ApiHandler = async (_, res) => {
 
   const paramsString = new URLSearchParams(params).toString()
 
-  const redirectUrl = `redirect_uri=${process.env.TWITCH_REDIRECT_URI ?? "http://localhost:3000"}/api/twitch/token`
+  const redirectUrl = `redirect_uri=${process.env.TWITCH_REDIRECT_URI ?? "http://localhost:3000"}/api/twitch/oauth2/token`
 
   res.redirect(`https://id.twitch.tv/oauth2/authorize?${paramsString}&${redirectUrl}`)
 

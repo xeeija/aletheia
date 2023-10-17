@@ -10,7 +10,13 @@ export const handleTwitchRoutes = async (prisma: PrismaClient) => {
 
   const router = Router()
 
-  router.get("/token", async (req, res) => {
+  router.get("/oauth2/token", async (req, res) => {
+
+    if (req.query.error) {
+      res.status(400).send({ error: req.query.error, errorMessage: req.query.error_message })
+
+      return
+    }
 
     // get access token for user with code
 
@@ -20,7 +26,7 @@ export const handleTwitchRoutes = async (prisma: PrismaClient) => {
       grant_type: "authorization_code",
       code: `${req.query.code}`
     }).toString()
-    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/token`
+    const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/oauth2/token`
 
     try {
       const response = await fetch(`https://id.twitch.tv/oauth2/token?${params}&${redirectUri}`, {

@@ -78,7 +78,7 @@ const SettingsPage: LayoutNextPage = () => {
       {user && !userAccessToken?.id && (
         <Button
           variant="outlined"
-          href="/api/twitch/authorize"
+          href="/api/twitch/oauth2/authorize"
           sx={{ textTransform: "none", mb: 1 }}
         >
           Connect with Twitch
