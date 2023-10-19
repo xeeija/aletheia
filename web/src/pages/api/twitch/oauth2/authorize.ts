@@ -16,6 +16,7 @@ const handler: ApiHandler = async (_, res) => {
     client_id: process.env.TWITCH_CLIENT_ID ?? "",
     scope: [
       "channel:read:redemptions",
+      "channel:manage:redemptions",
     ].join(" "),
     // force_verify: "true",
     state: state,

@@ -1,6 +1,6 @@
 import { HelixCustomReward } from "@twurple/api"
 import { GraphQLJSON } from "graphql-scalars"
-import { Arg, Ctx, Field, FieldResolver, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
+import { Arg, Ctx, Field, FieldResolver, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
 import { addSubscriptionRedemptionAdd, deleteManySubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
 import { getRewards } from "../twitch/mock"
@@ -27,6 +27,39 @@ class CustomReward {
   @Field(() => Int, { nullable: true }) redemptionsThisStream: number | null
   @Field() autoFulfill: boolean
   @Field(() => Date, { nullable: true }) cooldownExpiryDate: Date | null
+}
+
+@InputType()
+class CustomRewardInput {
+  @Field(() => String)
+  title: string
+
+  @Field(() => Int)
+  cost: number
+
+  @Field(() => String, { nullable: true })
+  prompt?: string
+
+  @Field(() => Boolean, { nullable: true })
+  userInputRequired?: boolean
+
+  @Field(() => String, { nullable: true })
+  backgroundColor?: string
+
+  @Field(() => Boolean, { nullable: true })
+  isEnabled?: boolean
+
+  @Field(() => Int, { nullable: true })
+  globalCooldown?: number
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerStream?: number
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerUser?: number
+
+  @Field(() => Boolean, { nullable: true })
+  autoFulfill?: boolean
 }
 
 @Resolver(() => CustomReward)
@@ -59,6 +92,8 @@ export class EventSubscriptionResolver {
 @Resolver()
 export class TwitchResolver {
 
+  // Channel Rewards
+
   @Query(() => [CustomReward])
   async channelRewards(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
@@ -88,6 +123,111 @@ export class TwitchResolver {
       return rewards
     }
   }
+
+  @Mutation(() => CustomReward, { nullable: true })
+  async createChannelReward(
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Arg("reward") reward: CustomRewardInput
+    // @Arg("userId", { nullable: true }) userId: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? req.session.userId ?? "",
+      }
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    // try {
+    const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, reward)
+    // {
+    //   title: reward.title,
+    //   prompt: reward.prompt,
+    //   cost: reward.cost,
+    //   userInputRequired: reward.userInputRequired,
+    //   isEnabled: reward.isEnabled,
+    //   autoFulfill: reward.autoFulfill,
+    //   backgroundColor: reward.backgroundColor,
+    //   globalCooldown: reward.globalCooldown,
+    //   maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerStream,
+    //   maxRedemptionsPerStream: reward.maxRedemptionsPerUser,
+    // })
+
+    return newReward
+    // }
+    // catch (err: unknown) {
+    //   throw err
+    // }
+  }
+
+  @Mutation(() => CustomReward, { nullable: true })
+  async updateChannelReward(
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Arg("rewardId") rewardId: string,
+    @Arg("reward") reward: CustomRewardInput
+    // @Arg("userId", { nullable: true }) userId: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? req.session.userId ?? "",
+      }
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    // try {
+    const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, reward)
+
+    return newReward
+    // }
+    // catch {
+    //   return null
+    // }
+  }
+
+
+  @Mutation(() => Boolean)
+  async deleteChannelReward(
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Arg("rewardId") rewardId: string
+    // @Arg("userId", { nullable: true }) userId: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? req.session.userId ?? "",
+      }
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    // try {
+    await apiClient.channelPoints.deleteCustomReward(token.twitchUserId, rewardId)
+    return true
+    // }
+    // catch {
+    //   return null
+    // }
+  }
+
+  // Eventsub
 
   @Query(() => [EventSubscriptionFull])
   async eventSubscriptionsForWheel(
