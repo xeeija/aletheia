@@ -116,34 +116,35 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
         }
 
         if (token.twitchUserId) {
-          try {
-            await authProvider.refreshAccessTokenForUser(token.twitchUserId)
-          }
-          catch {
-            console.log("[twitch] validate: refresh error")
+          // try {
+          //   await authProvider.refreshAccessTokenForUser(token.twitchUserId)
+          // }
+          // catch {
+          // console.log("[twitch] validate: refresh error")
 
-            const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
-              headers: {
-                "Authorization": `Bearer ${token.refreshToken}`
-              }
-            })
-
-            if (process.env.NODE_ENV !== "production") {
-              console.log(`[twitch] validate: refresh response ${refreshResponse.status}`)
+          const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
+            headers: {
+              "Authorization": `Bearer ${token.refreshToken}`
             }
+          })
 
-            if (refreshResponse.status === 401) {
-              // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
-              userTokensToDelete.push(token.twitchUserId)
-            }
-
-            // if (refreshResponse.ok) {
-            //   // maybe refresh token, or do nothing?
-
-            //   // TODO: does it get added to the provider automatically?
-            //   // if so, then onRefresh should trigger, which automatically updates in the DB 
-            // }
+          if (process.env.NODE_ENV !== "production") {
+            console.log(`[twitch] validate: refresh response ${refreshResponse.status}`)
           }
+
+          if (refreshResponse.status === 401) {
+            // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
+            userTokensToDelete.push(token.twitchUserId)
+          }
+
+          // if (refreshResponse.ok) {
+          //   // maybe refresh token, or do nothing?
+
+          //   // TODO: does it get added to the provider automatically?
+          //   // if so, then onRefresh should trigger, which automatically updates in the DB 
+          // }
+
+          // }
         }
       }
 
