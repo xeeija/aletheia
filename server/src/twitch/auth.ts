@@ -84,7 +84,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
 }
 
 export const handleTokenValidation = async (apiClient: ApiClient, prisma: PrismaClient) => {
-  const intervalTime = (Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000) || 1000 * 60 * 60
+  const intervalTime = (Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000) || 1000 * 60 * 60 * 4
 
   const validateTokenInterval = setInterval(async () => {
 
@@ -129,12 +129,22 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
           })
 
           if (process.env.NODE_ENV !== "production") {
-            console.log(`[twitch] validate: refresh response ${refreshResponse.status}`)
+            console.log(`[twitch] validate: refresh response ${refreshResponse.status} (${token.twitchUserId?.slice(0, 4)})`)
           }
 
           if (refreshResponse.status === 401) {
-            // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
-            userTokensToDelete.push(token.twitchUserId)
+
+            try {
+              const refreshedToken = await authProvider.refreshAccessTokenForUser(token.twitchUserId)
+
+              if (!refreshedToken.refreshToken) {
+                throw new Error("Token invalid")
+              }
+            }
+            catch {
+              // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
+              userTokensToDelete.push(token.twitchUserId)
+            }
           }
 
           // if (refreshResponse.ok) {
