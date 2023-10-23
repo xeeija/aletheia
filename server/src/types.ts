@@ -59,6 +59,11 @@ export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add"
 }
 
+export enum EventSubType {
+  wheelSync = "wheelSync",
+  rewardGroup = "rewardGroup",
+}
+
 export type AccessTokenResponse = {
   access_token: string
   refresh_token: string

@@ -3,7 +3,7 @@ import { ApiClient } from '@twurple/api';
 import { EventSubSubscription } from '@twurple/eventsub-base';
 import { EventSubMiddleware } from '@twurple/eventsub-http';
 import { config } from 'dotenv';
-import { SocketServer, SubscriptionType } from '../types';
+import { EventSubType, SocketServer, SubscriptionType } from '../types';
 import { authProvider } from './auth';
 import { addSubscriptionRedemptionAdd } from './events/redemptionAdd';
 
@@ -98,8 +98,12 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         s.twitchUserId === condition.broadcaster_user_id
       )
 
-      if (stored) {
+      if (stored?.type === EventSubType.wheelSync) {
         addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
+      }
+
+      if (stored?.type === EventSubType.rewardGroup) {
+        // add subscription for reward group handling
       }
 
     }

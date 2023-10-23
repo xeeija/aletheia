@@ -4,7 +4,7 @@ import { Arg, Ctx, Field, FieldResolver, InputType, Int, Mutation, ObjectType, Q
 import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
 import { addSubscriptionRedemptionAdd, deleteManySubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
 import { getRewards } from "../twitch/mock"
-import { GraphqlContext, SubscriptionType } from "../types"
+import { EventSubType, GraphqlContext, SubscriptionType } from "../types"
 
 // same properties as HelixCustomReward
 @ObjectType("CustomReward")
@@ -353,7 +353,8 @@ export class TwitchResolver {
       const newSubscription = await prisma.eventSubscription.create({
         data: {
           id: subscriptionId,
-          type: SubscriptionType.redemptionAdd,
+          type: EventSubType.wheelSync,
+          subscriptionType: SubscriptionType.redemptionAdd,
           twitchUserId: token.twitchUserId ?? "",
           userId: req.session.userId,
           rewardId: rewardId,
