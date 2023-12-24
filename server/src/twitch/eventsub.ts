@@ -9,7 +9,13 @@ import { addSubscriptionRedemptionAdd } from './events/redemptionAdd';
 
 config()
 
-export const apiClient = new ApiClient({ authProvider })
+export const apiClient = new ApiClient({
+  authProvider,
+  logger: {
+    // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
+    minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
+  }
+})
 
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient,
@@ -99,7 +105,11 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       )
 
       if (stored?.type === EventSubType.wheelSync) {
-        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>stored)
+        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+          ...stored,
+          randomWheelId: stored.randomWheelId ?? "",
+          rewardId: stored.rewardId ?? "",
+        })
       }
 
       if (stored?.type === EventSubType.rewardGroup) {
