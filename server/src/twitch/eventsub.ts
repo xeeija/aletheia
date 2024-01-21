@@ -11,6 +11,7 @@ config()
 
 export const apiClient = new ApiClient({
   authProvider,
+  batchDelay: Number(process.env.TWITCH_BATCH_DELAY) ?? 5,
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,

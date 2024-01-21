@@ -110,7 +110,7 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
         }
       })
 
-      if (response.status === 401) {
+      if (response.status === 401 && process.env.TWITCH_REFRESH_ON_VALIDATE !== "0") {
         if (process.env.NODE_ENV !== "production") {
           console.log(`[twitch] validate: access response ${response.status} (${token.twitchUserId?.slice(0, 4)})`)
         }
@@ -158,16 +158,16 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
         }
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      // await new Promise((resolve) => setTimeout(resolve, 100))
     }
 
-    const subscriptionsToDelete = await prisma.eventSubscription.findMany({
-      where: {
-        twitchUserId: { in: userTokensToDelete }
-      }
-    })
-
     if (userTokensToDelete.length > 0) {
+      const subscriptionsToDelete = await prisma.eventSubscription.findMany({
+        where: {
+          twitchUserId: { in: userTokensToDelete }
+        }
+      })
+
       if (subscriptionsToDelete.length > 0) {
         console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
         await deleteManySubscriptionRedemptionAdd(apiClient, prisma, subscriptionsToDelete.map(s => s.id))
