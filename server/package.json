@@ -25,6 +25,7 @@
     "@twurple/auth": "^7.0.2",
     "@twurple/eventsub-http": "^7.0.2",
     "@twurple/eventsub-ngrok": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
     "apollo-server-express": "^3.3.0",
     "argon2": "^0.28.2",
     "connect-pg-simple": "^7.0.0",
