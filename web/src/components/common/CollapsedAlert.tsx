@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { Collapse, Alert, AlertColor } from "@mui/material"
+import { Alert, AlertColor, Collapse } from "@mui/material"
+import { FC, useState } from "react"
 import { TiWarning } from "react-icons/ti"
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   onExited?: (node: HTMLElement) => void
 }
 
-export const CollapsedAlert: React.FC<Props> = ({ children, severity, onExited }) => {
+export const CollapsedAlert: FC<Props> = ({ children, severity, onExited }) => {
   const [show, setShow] = useState(false)
 
   return (

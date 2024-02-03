@@ -50,7 +50,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
       validate={() => {
         // Yup Validation
       }}
-      onSubmit={async (values) => {
+      onSubmit={(values) => {
         console.warn(values.backgroundColor)
       }}
     >

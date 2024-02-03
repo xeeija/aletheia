@@ -1,5 +1,5 @@
-import React from "react"
 import { AppBar, Toolbar, useTheme } from "@mui/material"
+import { FC } from "react"
 import { transitionMixin } from "./Sidebar"
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   marginLeft?: number
 }
 
-export const Navbar: React.FC<Props> = ({ children, open = false, marginLeft = 0, borderRadius }) => {
+export const Navbar: FC<Props> = ({ children, open = false, marginLeft = 0, borderRadius }) => {
   const theme = useTheme()
 
   return (

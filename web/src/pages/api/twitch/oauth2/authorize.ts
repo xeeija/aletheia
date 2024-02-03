@@ -1,7 +1,7 @@
 import { ApiHandler } from "../../../../types"
 import { randomBase64Url } from "../../../../utils/random"
 
-const handler: ApiHandler = async (_, res) => {
+const handler: ApiHandler = (_, res) => {
   if (!process.env.TWITCH_REDIRECT_URI) {
     res.status(500).send({ message: "redirect_uri is not set" })
     return

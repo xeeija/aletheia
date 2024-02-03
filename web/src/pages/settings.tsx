@@ -106,7 +106,7 @@ const SettingsPage: LayoutNextPage = () => {
             variant="outlined"
             color="error"
             loading={fetchingDisconnect}
-            onClick={async () => {
+            onClick={() => {
               setDisconnectDialogOpen(true)
             }}
             sx={{ textTransform: "none" }}
@@ -119,8 +119,8 @@ const SettingsPage: LayoutNextPage = () => {
       <DisconnectTwitchDialog
         open={disconnectDialogOpen}
         onClose={() => setDisconnectDialogOpen(false)}
-        onDelete={async () => {
-          await disconnectAccessToken()
+        onDelete={() => {
+          void disconnectAccessToken()
         }}
       />
     </>

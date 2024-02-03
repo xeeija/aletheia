@@ -1,8 +1,8 @@
-import { FC } from "react"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
+import Link from "next/link"
+import { FC } from "react"
 import { TiThList } from "react-icons/ti"
 import { RandomWheelDetailsFragment } from "../../generated/graphql"
-import Link from "next/link"
 import { AccessTypeBadge } from "./AccessTypeBadge"
 
 interface Props {
@@ -17,7 +17,10 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
           <CardContent>
             <Typography variant="h6">{wheel.name || `Wheel #${wheel.slug}`}</Typography>
             <Typography variant="body2" color="text.secondary">
-              {new Date(wheel.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+              {new Date(wheel.createdAt as string).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
             </Typography>
 
             <Box sx={{ display: "flex", gap: 0.5, mt: 1 }}>

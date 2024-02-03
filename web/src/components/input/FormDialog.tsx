@@ -7,7 +7,7 @@ type Props = DialogProps & {
   onClose: (reason: "backdropClick" | "escapeKeyDown" | "cancelClick") => void
   id?: string
   title?: ReactNode
-  formRef?: RefObject<FormikProps<any>>
+  formRef?: RefObject<FormikProps<unknown>>
   actionsRef?: RefObject<Element>
   closeOnBackdrop?: boolean
 }

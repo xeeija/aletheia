@@ -1,19 +1,19 @@
 import { IconButton, InputAdornment, useTheme } from "@mui/material"
+import { useFormikContext } from "formik"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
-import { InputField, InputFieldProps } from "../components"
 import { passwordStrengthColor } from "../../utils/passwordStrength"
-import { useFormikContext } from "formik"
+import { InputField, InputFieldProps } from "../components"
 
 type Props = InputFieldProps & {
-  strength?: number | ((value: any) => number)
+  strength?: number | ((value: string) => number)
 }
 
 export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, ...props }) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const theme = useTheme()
-  const { values } = useFormikContext<any>()
+  const { values } = useFormikContext<{ [name: string]: string }>()
 
   const strength = typeof strengthInput === "number" ? strengthInput : strengthInput?.(values[props.name])
   const strengthColor = passwordStrengthColor(strength ?? 0)

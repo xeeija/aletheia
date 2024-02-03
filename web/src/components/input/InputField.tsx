@@ -38,6 +38,7 @@ export const InputField: FC<InputFieldProps> = ({
 }) => {
   // Custom validation idea: https://github.com/jaredpalmer/formik/issues/512#issuecomment-643788203
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { isValidating, status, setStatus, validateField } = useFormikContext()
 
   // returns field props (value, handlers etc.) to spread on the field
@@ -47,7 +48,7 @@ export const InputField: FC<InputFieldProps> = ({
   })
 
   const hasError = error !== undefined
-  const isFieldValidating = isValidating && status?.[name]
+  const isFieldValidating = isValidating && (status as { [name: string]: string })?.[name]
 
   const maxLengthAdornment = (
     <InputAdornment position="end" sx={{ alignItems: props.multiline ? "end" : undefined }}>

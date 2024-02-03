@@ -1,10 +1,10 @@
+import { Box } from "@mui/material"
 import { NextPage } from "next"
 import Head from "next/head"
 import { ReactElement, ReactNode } from "react"
-import { Box } from "@mui/material"
-import { NavigationProps, Navigation } from "../components"
+import { Navigation, NavigationProps } from "../components"
 
-export type LayoutNextPage<P = {}, IP = P> = NextPage<P, IP> & {
+export type LayoutNextPage<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 

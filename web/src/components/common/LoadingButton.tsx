@@ -1,5 +1,5 @@
-import React from "react"
 import { Box, Button, ButtonProps, CircularProgress, CircularProgressProps, useTheme } from "@mui/material"
+import { FC } from "react"
 
 type Props = ButtonProps & {
   loading?: boolean
@@ -12,7 +12,7 @@ type Props = ButtonProps & {
   fade?: boolean // if true, overlaps children, otherwise hides children
 }
 
-export const LoadingButton: React.FC<Props> = ({
+export const LoadingButton: FC<Props> = ({
   children,
   loading,
   position = "end",

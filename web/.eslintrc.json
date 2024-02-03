@@ -11,7 +11,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-type-checked",
     // "prettier",
-    "plugin:prettier/recommended",
+    // "plugin:prettier/recommended",
     "next/core-web-vitals"
   ],
   "plugins": ["react", "@typescript-eslint", "prettier"],
@@ -38,6 +38,13 @@
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
     "jsx-quotes": ["warn", "prefer-double"],
     // "prettier/prettier": "warn",
+    // temporary disabled
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/require-await": "off",
+    // end
     "@typescript-eslint/ban-types": [
       "warn",
       {

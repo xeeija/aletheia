@@ -35,7 +35,7 @@ const handler: ApiHandler = async (req, res) => {
     if (serverRes.ok) {
       res.redirect("/settings")
     } else {
-      const body = await serverRes.json()
+      const body = (await serverRes.json()) as unknown
       console.error("body", body)
       res.redirect(`/settings#error`)
     }

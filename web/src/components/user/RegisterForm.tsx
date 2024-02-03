@@ -1,17 +1,17 @@
-import { FC, useState } from "react"
-import { Collapse, Alert, SvgIcon } from "@mui/material"
-import { Formik, Form } from "formik"
+import { Alert, Collapse, SvgIcon } from "@mui/material"
+import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { TiWarning, TiArrowRight } from "react-icons/ti"
+import { FC, useState } from "react"
+import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { useRegisterMutation } from "../../generated/graphql"
 import { useUsernameValidator } from "../../hooks"
 import { passwordStrength } from "../../utils/passwordStrength"
-import { InputField, PasswordField, LoadingButton } from "../components"
+import { InputField, LoadingButton, PasswordField } from "../components"
 
 interface Props {}
 
 export const RegisterForm: FC<Props> = () => {
-  const [{}, register] = useRegisterMutation()
+  const [, register] = useRegisterMutation()
   const router = useRouter()
 
   // TODO: One useValidator hook with all (or almost/most common) validators?
@@ -31,7 +31,7 @@ export const RegisterForm: FC<Props> = () => {
       validateOnChange={false}
       validateOnBlur={false}
       validate={({ password, confirmPassword }) => {
-        const errors: any = {}
+        const errors: Record<string, string> = {}
 
         if (password !== confirmPassword) errors.confirmPassword = "Passwords must match"
 
@@ -41,7 +41,7 @@ export const RegisterForm: FC<Props> = () => {
         // Reset error message (so same error shows again)
         setShowError(false)
 
-        const { confirmPassword: _, displayname, ...rest } = values
+        const { displayname, ...rest } = values
 
         const response = await register({
           displayname: displayname || null, // pass null if empty
@@ -82,7 +82,7 @@ export const RegisterForm: FC<Props> = () => {
 
         // TODO: Redirect to "welcome page"?
         // Redirect to home page
-        router.push("/")
+        await router.push("/")
       }}
     >
       {({ isSubmitting, values }) => (

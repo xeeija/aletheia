@@ -84,8 +84,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         enableReinitialize
         validateOnChange={false}
         validate={(values) => {
-          const entries = values as InitialValues
-          if (showNewSyncronization && !entries.rewardId) {
+          if (showNewSyncronization && !values.rewardId) {
             return { rewardId: "Required" }
           }
 
@@ -130,7 +129,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
             <Form id="redemptionSyncForm">
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  {!!subscriptions?.length ? (
+                  {subscriptions?.length ? (
                     <List role="list" dense>
                       {values.subscriptions.map((subscription, i) => (
                         // subscription.reward &&
@@ -206,9 +205,9 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     component={TiRefresh}
                                     viewBox="2 2 20 20"
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
-                                    onClick={async () => {
+                                    onClick={() => {
                                       // await syncEntries(entries.rewardId)
-                                      await pauseEntriesSync(subscription.id, false)
+                                      void pauseEntriesSync(subscription.id, false)
                                     }}
                                   />
                                 </IconButton>
@@ -230,9 +229,9 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                   // indeterminateIcon={<CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
                                   icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
                                   checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
-                                  onClick={async () => {
+                                  onClick={() => {
                                     console.log("pause", subscription.paused)
-                                    await pauseEntriesSync(subscription.id, !subscription.paused)
+                                    void pauseEntriesSync(subscription.id, !subscription.paused)
                                   }}
                                 />
                               )}
@@ -254,7 +253,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                   await pauseEntriesSync(subscription.id, !subscription.paused)
                                 }}>
                                 <SvgIcon component={TiMediaPlay}
-                                // viewBox="2 2 20 20" 
+                                // viewBox="2 2 20 20"
                                 />
                               </IconButton>
                             } */}
@@ -265,9 +264,9 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     component={TiRefresh}
                                     viewBox="2 2 20 20"
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
-                                    onClick={async () => {
+                                    onClick={() => {
                                       // await syncEntries(entries.rewardId)
-                                      await pauseEntriesSync(subscription.id, false)
+                                      void pauseEntriesSync(subscription.id, false)
                                     }}
                                   />
                                 </IconButton>

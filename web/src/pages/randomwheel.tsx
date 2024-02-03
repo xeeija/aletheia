@@ -1,11 +1,11 @@
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
-import React, { useState } from "react"
+import { useState } from "react"
+import { HiDotsVertical } from "react-icons/hi"
+import { TiPlus } from "react-icons/ti"
+import { NoData, TabPanel } from "../components"
+import { LayoutNextPage, defaultLayout } from "../components/layout"
 import { CreateEditWheelDialog, WheelList } from "../components/randomWheel"
 import { useMyRandomWheelsQuery } from "../generated/graphql"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
-import { TiPlus } from "react-icons/ti"
-import { HiDotsVertical } from "react-icons/hi"
-import { NoData, TabPanel } from "../components"
 
 const wheelsTypes = ["my", "shared", "favorite"]
 
@@ -32,7 +32,7 @@ const RandomWheelPage: LayoutNextPage = () => {
       >
         {/* <Typography variant="h2">My Wheels</Typography> */}
 
-        <Tabs value={wheelsTab} onChange={(_, value) => setWheelsTab(value)}>
+        <Tabs value={wheelsTab} onChange={(_, value: number) => setWheelsTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="My Wheels" itemType="capitalize" />
           <Tab label="Shared Wheels" itemType="capitalize" />

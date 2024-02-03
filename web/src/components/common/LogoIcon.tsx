@@ -1,9 +1,9 @@
-import React from "react"
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material"
+import { FC } from "react"
 
 type Props = SvgIconProps
 
-export const LogoIcon: React.FC<Props> = (props) => {
+export const LogoIcon: FC<Props> = (props) => {
   const { palette } = useTheme()
   return (
     <SvgIcon {...props}>

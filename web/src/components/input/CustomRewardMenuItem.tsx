@@ -7,7 +7,7 @@ type Props = MenuItemProps & {
   noMenuItem?: boolean
 }
 
-export const CustomRewardMenuItem: FC<Props> = ({ reward, noMenuItem, value, ...props }) => {
+export const CustomRewardMenuItem: FC<Props> = ({ reward, noMenuItem, ...props }) => {
   // const colorList = typeof colors === "string" ? [colors] : colors
   const label = (
     <Box

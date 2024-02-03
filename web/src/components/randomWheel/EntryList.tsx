@@ -1,5 +1,6 @@
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
+import { Form, Formik } from "formik"
 import { FC, useEffect, useRef, useState } from "react"
-import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, SvgIcon, useTheme } from "@mui/material"
 import { HiTrash } from "react-icons/hi"
 import {
   RandomWheelEntryFragment,
@@ -7,7 +8,6 @@ import {
   useUpdateRandomWheelEntryMutation,
 } from "../../generated/graphql"
 import { AlertPopup, InputField } from "../components"
-import { Form, Formik } from "formik"
 
 interface Props {
   entries: RandomWheelEntryFragment[]
@@ -153,13 +153,13 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
                     weight: entry.weight ?? null,
                   }}
                   enableReinitialize
-                  onSubmit={({ weight }, { resetForm }) => {
+                  onSubmit={async ({ weight }, { resetForm }) => {
                     // TODO: Replace with proper number validation (pattern or so)
                     if (!Number.isInteger(weight)) {
                       resetForm()
                     }
 
-                    updateEntry({
+                    await updateEntry({
                       id: entry.id,
                       entry: { weight },
                     })
@@ -189,7 +189,7 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
                         }}
                         onBlur={() => {
                           if (dirty) {
-                            submitForm()
+                            void submitForm()
                           }
                         }}
                       />
@@ -198,7 +198,7 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
                 </Formik>
 
                 <IconButton
-                  onClick={() => onDelete(entry)}
+                  onClick={() => void onDelete(entry)}
                   role="button"
                   disabled={spinning}
                   aria-label={`Delete entry '${entry.name}'`}

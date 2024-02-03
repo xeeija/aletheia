@@ -1,11 +1,11 @@
 import { Grid } from "@mui/material"
-import React from "react"
+import { FC } from "react"
 
 interface Props {
   items: string[]
 }
 
-export const BingoBoard: React.FC<Props> = ({ items }) => {
+export const BingoBoard: FC<Props> = ({ items }) => {
   const dimens = Math.ceil(Math.sqrt(items.length))
   const cell = 140
 

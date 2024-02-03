@@ -1,10 +1,10 @@
-import { FC, RefObject } from "react"
 import { Portal } from "@mui/material"
-import { Formik, Form, FormikProps, FormikValues } from "formik"
-import { LoadingButton } from "../components"
-import { useCreateRandomWheelMutation } from "../../generated/graphql"
-import { WheelFormFields } from "./WheelFormFields"
+import { Form, Formik, FormikProps, FormikValues } from "formik"
 import { useRouter } from "next/router"
+import { FC, RefObject } from "react"
+import { useCreateRandomWheelMutation } from "../../generated/graphql"
+import { LoadingButton } from "../components"
+import { WheelFormFields } from "./WheelFormFields"
 
 const wheelDraft = {
   name: "",
@@ -40,7 +40,7 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
 
         if (response.data?.createRandomWheel) {
           // TODO: Success snackbar
-          router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
+          await router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
         }
       }}
     >

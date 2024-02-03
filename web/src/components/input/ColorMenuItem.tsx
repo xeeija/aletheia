@@ -1,5 +1,5 @@
-import { FC } from "react"
 import { Box, ListItemText, MenuItem, MenuItemProps } from "@mui/material"
+import { FC } from "react"
 
 type Props = MenuItemProps & {
   name?: string | null
@@ -7,7 +7,7 @@ type Props = MenuItemProps & {
   noMenuItem?: boolean
 }
 
-export const ColorMenuItem: FC<Props> = ({ name, colors, noMenuItem, value, ...props }) => {
+export const ColorMenuItem: FC<Props> = ({ name, colors, noMenuItem, ...props }) => {
   const colorList = typeof colors === "string" ? [colors] : colors
   const label = (
     <Box

@@ -1,14 +1,23 @@
-import { FC, RefObject } from "react"
 import { Portal } from "@mui/material"
-import { Formik, Form, FormikProps, FormikValues } from "formik"
+import { Form, Formik, FormikProps } from "formik"
+import { FC, RefObject } from "react"
+import { useRandomWheel } from "../../hooks"
 import { LoadingButton } from "../components"
 import { WheelFormFields } from "./WheelFormFields"
-import { useRandomWheel } from "../../hooks"
+
+type Values = {
+  name: string
+  accessType: string
+  spinDuration: number
+  fadeDuration: number
+  editAnonymous: boolean
+  theme: string
+}
 
 interface Props {
   slug: string
   dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<FormikValues>>
+  formRef?: RefObject<FormikProps<Values>>
 }
 
 export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
@@ -20,18 +29,20 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
     return null
   }
 
+  const initialValues: Values = {
+    name: wheel.name ?? "",
+    accessType: wheel.accessType,
+    spinDuration: wheel.spinDuration,
+    fadeDuration: wheel.fadeDuration,
+    editAnonymous: wheel.editAnonymous,
+    theme: wheel.theme?.id ?? "",
+  }
+
   return (
     <>
       <Formik
         innerRef={formRef}
-        initialValues={{
-          name: wheel.name ?? "",
-          accessType: wheel.accessType,
-          spinDuration: wheel.spinDuration,
-          fadeDuration: wheel.fadeDuration,
-          editAnonymous: wheel.editAnonymous,
-          theme: wheel.theme?.id ?? "",
-        }}
+        initialValues={initialValues}
         enableReinitialize
         onSubmit={async ({ theme, ...values }) => {
           await updateWheel({

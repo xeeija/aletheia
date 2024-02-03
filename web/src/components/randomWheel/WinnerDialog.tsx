@@ -27,7 +27,7 @@ export const WinnerDialog: FC<Props> = ({
       fullWidth
       maxWidth="xs"
       open={open}
-      onClose={onClose}
+      onClose={() => onClose()}
       aria-labelledby="winner-dialog-title"
       aria-describedby="winner-dialog-description"
     >

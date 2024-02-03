@@ -1,15 +1,15 @@
-import { FC, useState } from "react"
-import { Collapse, Alert, SvgIcon } from "@mui/material"
-import { Formik, Form } from "formik"
+import { Alert, Collapse, SvgIcon } from "@mui/material"
+import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { TiWarning, TiArrowRight } from "react-icons/ti"
+import { FC, useState } from "react"
+import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { useLoginMutation } from "../../generated/graphql"
-import { InputField, PasswordField, LoadingButton } from "../components"
+import { InputField, LoadingButton, PasswordField } from "../components"
 
 interface Props {}
 
 export const LoginForm: FC<Props> = () => {
-  const [{}, login] = useLoginMutation()
+  const [, login] = useLoginMutation()
   const router = useRouter()
 
   const [generalError, setGeneralError] = useState<string | null>(null)
@@ -61,7 +61,7 @@ export const LoginForm: FC<Props> = () => {
         }
 
         // Go to home page
-        router.push("/")
+        await router.push("/")
       }}
     >
       {({ isSubmitting }) => (

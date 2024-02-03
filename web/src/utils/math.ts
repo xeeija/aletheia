@@ -32,5 +32,5 @@ interface LogisticOptions {
 // const logistic = (x: number, max: number, min: number, a: number, k: number) => min + max - (max / (1 + a * Math.exp(-k * x)))
 
 // f(x), a: 0-1, strength of curvature, b: horizontal offset
-export const logistic: (options: LogisticOptions) => number = ({ x, max, min, a = 0.5, b = 0, inverse = false }) =>
+export const logistic = ({ x, max, min, a = 0.5, b = 0, inverse = false }: LogisticOptions) =>
   min + (max - min) / (1 + a ** ((x - b) * (inverse ? -1 : 1)))

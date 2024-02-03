@@ -1,4 +1,3 @@
-import { FC, RefObject } from "react"
 import {
   Button,
   Grid,
@@ -10,12 +9,13 @@ import {
   Portal,
   SvgIcon,
 } from "@mui/material"
-import { Formik, Form, FormikProps } from "formik"
+import { Form, Formik, FormikProps } from "formik"
+import { FC, RefObject } from "react"
 import { HiTrash } from "react-icons/hi"
-import { SelectField } from "../input/SelectField"
 import { TiPlus, TiTimes } from "react-icons/ti"
-import { InputField, LoadingButton, NoData } from "../components"
 import { useRandomWheel } from "../../hooks"
+import { InputField, LoadingButton, NoData } from "../components"
+import { SelectField } from "../input/SelectField"
 
 interface MemberFormEntry {
   id: string | null
@@ -69,7 +69,12 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
         // async validation if username exists or is already a member (duplicate)
       }}
       onSubmit={async (values) => {
-        const mappedMembers = Object.values(values.members).map(({ id, displayname, ...member }) => member)
+        const mappedMembers = Object.values(values.members).map((member) => ({
+          username: member.username,
+          role: member.role,
+          delete: member.delete,
+        }))
+
         const members = values.draft ? [...mappedMembers, values.draft] : mappedMembers
 
         const response = await updateMembers(members)

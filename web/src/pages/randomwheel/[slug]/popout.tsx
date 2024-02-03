@@ -1,14 +1,15 @@
 import { Box, useTheme } from "@mui/material"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { getTitle, LayoutNextPage } from "../../../components/layout"
+import { LayoutNextPage, getTitle } from "../../../components/layout"
 import { Wheel } from "../../../components/randomWheel"
 import { useRandomWheel } from "../../../hooks"
 import NotFoundPage from "../../404"
 
 const RandomWheelPopoutPage: LayoutNextPage = () => {
   const router = useRouter()
-  const { slug } = router.query
+  const { slug: slugQuery } = router.query
+  const slug = typeof slugQuery === "string" ? slugQuery : slugQuery?.[0]
 
   const theme = useTheme()
 

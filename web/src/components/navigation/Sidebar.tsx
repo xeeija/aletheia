@@ -1,6 +1,6 @@
-import React from "react"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
-import { LinkList, LinkListItem, LinkItem, LogoIcon } from "../components"
+import React, { FC } from "react"
+import { LinkItem, LinkList, LinkListItem, LogoIcon } from "../components"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({
@@ -35,7 +35,7 @@ interface Props {
 }
 
 // #BetterMiniDrawer
-export const Sidebar: React.FC<Props> = ({ children, items, openedWidth, open, setOpen }) => {
+export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen }) => {
   const theme = useTheme()
   const itemWidth = `calc(100% - ${theme.spacing(2)})`
 

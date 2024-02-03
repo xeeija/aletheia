@@ -1,6 +1,6 @@
-import { FC, useRef } from "react"
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"
+import { FC, useRef } from "react"
 import { EditMembersForm } from "./EditMembersForm"
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 
 export const EditMembersDialog: FC<Props> = ({ open, onClose, slug, readonly }) => {
   const actionsRef = useRef(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
 
   const closeHandler = () => {

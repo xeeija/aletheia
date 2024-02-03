@@ -12,6 +12,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const [createRewardDialogOpen, setCreateRewardDialogOpen] = useState(false)
   const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false)
   const [tab, setTab] = useState(0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
   const actionsRef = useRef(null)
 
@@ -27,7 +28,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           justifyContent: "space-between",
         }}
       >
-        <Tabs value={tab} onChange={(_, value) => setTab(value)}>
+        <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="Rewards" itemType="capitalize" />
           <Tab label="Reward Groups" itemType="capitalize" />
@@ -74,7 +75,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       <Box sx={{ mt: 2 }}>
         {tab === 0 && (
           <Box>
-            {/* <Link href="/channelpoints/create" passHref> 
+            {/* <Link href="/channelpoints/create" passHref>
               <Button
                 color="success"
                 variant="contained"

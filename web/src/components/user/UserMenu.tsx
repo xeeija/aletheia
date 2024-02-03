@@ -77,7 +77,7 @@ export const UserMenu: FC<Props> = () => {
     // TODO: Show snackbar "Logged out successfully"
 
     // Redirect to home
-    router.push("/")
+    await router.push("/")
   }
 
   return (
@@ -121,7 +121,7 @@ export const UserMenu: FC<Props> = () => {
                     fullWidth
                     loading={fetchingLogout}
                     fade
-                    onClick={handleLogout}
+                    onClick={() => void handleLogout()}
                     position="start"
                     sx={{
                       justifyContent: "start",

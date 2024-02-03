@@ -39,7 +39,8 @@ import NotFoundPage from "../404"
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
   const router = useRouter()
-  const { slug } = router.query
+  const { slug: slugQuery } = router.query
+  const slug = typeof slugQuery === "string" ? slugQuery : slugQuery?.[0]
 
   const { user } = useAuth()
 
@@ -72,11 +73,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const onDeleteDialog = async () => {
     await deleteWheel()
-    router.push("/randomwheel")
+    await router.push("/randomwheel")
   }
 
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/r/${slug}`)
+    void navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/r/${slug}`)
   }
 
   if (fetching.wheel || !slug) {
@@ -135,7 +136,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
             <Box>
               <Tooltip arrow placement="bottom" title="Favorite">
-                <IconButton color={wheel.liked ? "error" : "secondary"} disabled={!user} sx={{ ml: 1 }} onClick={like}>
+                <IconButton
+                  color={wheel.liked ? "error" : "secondary"}
+                  disabled={!user}
+                  sx={{ ml: 1 }}
+                  onClick={() => like}
+                >
                   <SvgIcon component={wheel.liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
                 </IconButton>
               </Tooltip>
@@ -305,7 +311,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 <DeleteWheelDialog
                   open={deleteDialogOpen}
                   onClose={() => setDeleteDialogOpen(false)}
-                  onDelete={onDeleteDialog}
+                  onDelete={() => void onDeleteDialog()}
                 />
               )}
             </Box>
@@ -313,7 +319,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             {`${wheel.owner ? `von ${wheel.owner.displayname}` : "anonymous"} • `}
-            {new Date(wheel.createdAt).toLocaleString()}
+            {new Date(wheel.createdAt as string).toLocaleString()}
           </Typography>
 
           <Box
@@ -351,7 +357,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       variant="contained"
                       disabled={!entries?.length || wheel.spinning}
                       endIcon={<SvgIcon component={HiRefresh} viewBox="0 0 20 20" />}
-                      onClick={spin}
+                      onClick={() => void spin()}
                     >
                       Spin
                     </Button>
@@ -370,7 +376,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <ClearEntriesDialog
                     open={clearDialogOpen}
                     onClose={() => setClearDialogOpen(false)}
-                    onClear={clear}
+                    onClear={() => void clear()}
                   />
                 </Paper>
               </Box>
@@ -380,7 +386,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               open={[winnerDialogOpen, setWinnerDialogOpen]}
               description={winners?.[0]?.name}
               onClose={() => setWinnerDialogOpen(false)}
-              onRemove={async () => await deleteEntry(lastWinnerEntry?.id ?? "")}
+              onRemove={() => void deleteEntry(lastWinnerEntry?.id ?? "")}
               hideRemove={!wheel.editable && !wheel.editAnonymous}
             />
 
@@ -388,7 +394,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               <Paper sx={{ height: "100%" }}>
                 <Tabs
                   value={entriesTab}
-                  onChange={(_, value) => setEntriesTab(value)}
+                  onChange={(_, value: number) => setEntriesTab(value)}
                   variant="fullWidth"
                   sx={{
                     borderStartStartRadius: 6,
@@ -426,7 +432,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   <WinnerList
                     winners={(winners ?? []).map((winner) => ({
                       ...winner,
-                      createdAt: new Date(winner.createdAt),
+                      createdAt: new Date(winner.createdAt as string),
                     }))}
                     spinning={wheel.spinning}
                     editable={wheel.editable || wheel.editAnonymous}
