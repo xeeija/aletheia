@@ -15,7 +15,7 @@ export const useRandomWheelLike = (
     setLiked(!liked)
     const likeResponse = await likeRandomWheel({
       randomWheelId: wheelId,
-      like: !liked
+      like: !liked,
     })
     // TODO: Error when undefined?
     setLiked(Boolean(likeResponse.data?.likeRandomWheel))

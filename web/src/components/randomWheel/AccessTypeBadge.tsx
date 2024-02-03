@@ -15,9 +15,7 @@ export const AccessTypeBadge: FC<Props> = ({ type }) => {
       variant="outlined"
       sx={{ textTransform: "capitalize", fontWeight: 500 }}
       color={type === "PRIVATE" ? "secondary" : "success"}
-      icon={<SvgIcon
-        component={type === "PRIVATE" ? HiLockClosed : HiGlobe}
-        viewBox="0 0 20 20"
-      />}
-    />)
+      icon={<SvgIcon component={type === "PRIVATE" ? HiLockClosed : HiGlobe} viewBox="0 0 20 20" />}
+    />
+  )
 }

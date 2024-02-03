@@ -4,16 +4,17 @@ import Image from "next/image"
 import { defaultLayout, getTitle, LayoutNextPage } from "../components/layout"
 
 const NotFoundPage: LayoutNextPage = () => (
-  <Box sx={{
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 6,
-    py: 4,
-    px: 2,
-    // minHeight: "50vh",
-  }}>
-
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 6,
+      py: 4,
+      px: 2,
+      // minHeight: "50vh",
+    }}
+  >
     <Head>
       <title>{getTitle("Not Found")}</title>
     </Head>
@@ -21,7 +22,7 @@ const NotFoundPage: LayoutNextPage = () => (
     <Image src="/img/mathematics.svg" alt="" width={300} height={240} draggable="false" />
 
     <Box>
-      <Typography variant="h4" className="muted" >
+      <Typography variant="h4" className="muted">
         404 Not Found
       </Typography>
 
@@ -33,7 +34,6 @@ const NotFoundPage: LayoutNextPage = () => (
         Please rotate the keyboard by 90 degrees and try again.
       </Typography>
     </Box>
-
   </Box>
 )
 

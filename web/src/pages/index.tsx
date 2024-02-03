@@ -1,10 +1,9 @@
-import React from 'react'
-import { Typography, Box } from '@mui/material'
-import { defaultLayout, LayoutNextPage } from '../components/layout'
+import React from "react"
+import { Typography, Box } from "@mui/material"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 
 const IndexPage: LayoutNextPage = () => {
-
-  // Next Components 
+  // Next Components
   // Head: adds meta info in page <head>
   // Image: Optimized image caching etc
 

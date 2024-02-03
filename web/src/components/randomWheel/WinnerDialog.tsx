@@ -12,7 +12,14 @@ interface Props {
 
 // TODO: Add autoHide duration property
 
-export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose = () => { }, onRemove = () => { }, hideClose, hideRemove }) => {
+export const WinnerDialog: FC<Props> = ({
+  open: openState,
+  description,
+  onClose = () => {},
+  onRemove = () => {},
+  hideClose,
+  hideRemove,
+}) => {
   const [open, setOpen] = openState
 
   return (
@@ -22,7 +29,8 @@ export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose 
       open={open}
       onClose={onClose}
       aria-labelledby="winner-dialog-title"
-      aria-describedby="winner-dialog-description">
+      aria-describedby="winner-dialog-description"
+    >
       <DialogTitle color="textSecondary" id="winner-dialog-title">
         Congratulations
       </DialogTitle>
@@ -33,19 +41,27 @@ export const WinnerDialog: FC<Props> = ({ open: openState, description, onClose 
       </DialogContent>
       <DialogActions>
         {!hideClose && (
-          <Button variant="outlined" color="secondary" onClick={() => {
-            setOpen(false)
-            onClose()
-          }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              setOpen(false)
+              onClose()
+            }}
+          >
             Close
           </Button>
         )}
         {!hideRemove && (
-          <Button variant="contained" color="primary" onClick={() => {
-            setOpen(false)
-            onClose()
-            onRemove()
-          }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setOpen(false)
+              onClose()
+              onRemove()
+            }}
+          >
             Remove
           </Button>
         )}

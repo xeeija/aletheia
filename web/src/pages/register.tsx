@@ -4,7 +4,9 @@ import { RegisterForm } from "../components/user/RegisterForm"
 
 const RegisterPage: LayoutNextPage = () => (
   <Box sx={{ width: 360, mx: "auto" }}>
-    <Typography variant="h4" sx={{ mb: 1 }}>Register</Typography>
+    <Typography variant="h4" sx={{ mb: 1 }}>
+      Register
+    </Typography>
 
     <RegisterForm />
   </Box>

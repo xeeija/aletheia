@@ -1,7 +1,6 @@
 import { ApiHandler } from "../../../../types"
 
 const handler: ApiHandler = async (req, res) => {
-
   if (req.method !== "GET") {
     res.status(405).send(null)
     return
@@ -33,7 +32,6 @@ const handler: ApiHandler = async (req, res) => {
       headers: headersList,
     })
 
-
     if (serverRes.ok) {
       res.redirect("/settings")
     } else {
@@ -41,8 +39,7 @@ const handler: ApiHandler = async (req, res) => {
       console.error("body", body)
       res.redirect(`/settings#error`)
     }
-  }
-  catch (err: unknown) {
+  } catch (err: unknown) {
     if (err instanceof Error) {
       console.error(err.message)
       res.redirect(`/settings#error`)

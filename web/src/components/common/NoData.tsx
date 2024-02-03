@@ -18,7 +18,6 @@ type Props = BoxProps & {
 }
 
 export const NoData: FC<Props> = ({ iconSize = "lg", direction = "column", textProps, children, ...boxProps }) => {
-
   const iconSizeNumber = typeof iconSize === "number" ? iconSize : iconSizes[iconSize]
 
   return (
@@ -32,14 +31,17 @@ export const NoData: FC<Props> = ({ iconSize = "lg", direction = "column", textP
         gap: 3 * (iconSizeNumber / iconSizes.lg),
         mt: 2,
         ...boxProps.sx,
-      }}>
+      }}
+    >
       <Image src="/img/void.svg" alt="" width={iconSizeNumber} height={iconSizeNumber} draggable="false" />
 
-      {typeof children === "object" ? children :
-        <Typography variant="h6" color="text.secondary" gutterBottom {...textProps} >
+      {typeof children === "object" ? (
+        children
+      ) : (
+        <Typography variant="h6" color="text.secondary" gutterBottom {...textProps}>
           {children}
         </Typography>
-      }
+      )}
     </Box>
   )
 }

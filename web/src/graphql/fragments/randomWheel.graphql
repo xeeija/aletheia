@@ -11,16 +11,16 @@ fragment RandomWheelDetails on RandomWheel {
   editAnonymous
   liked
   theme {
-      id
-      name
-      colors
-    }
+    id
+    name
+    colors
+  }
   _count {
     entries
   }
 }
 
-# TODO: Maybe RandomWheelOverview 
+# TODO: Maybe RandomWheelOverview
 # only whats relevant for list view, then _count could be removed from details
 
 fragment RandomWheelEntry on RandomWheelEntry {

@@ -9,7 +9,7 @@ import {
   useRandomWheelBySlugMembersQuery,
   useRandomWheelBySlugQuery,
   useRandomWheelBySlugWinnersQuery,
-  UserNameFragment
+  UserNameFragment,
 } from "../../generated/graphql"
 import { useAuth } from "../useAuth"
 
@@ -63,7 +63,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
 
   const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelBySlugQuery({
     variables: { slug },
-    pause: !options?.details || options.fetchOnly
+    pause: !options?.details || options.fetchOnly,
   })
   const wheel = <RandomWheelDetailsQuery | undefined>wheelData?.randomWheelBySlug
 
@@ -88,18 +88,21 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheelBySlug?.id
 
   const { user } = useAuth()
-  const viewable = wheel?.accessType === "PUBLIC"
-    || wheel?.owner === null
-    || wheel?.owner?.id === user?.id
-    || wheel?.members.some(member => member.userId === user?.id)
+  const viewable =
+    wheel?.accessType === "PUBLIC" ||
+    wheel?.owner === null ||
+    wheel?.owner?.id === user?.id ||
+    wheel?.members.some((member) => member.userId === user?.id)
 
   return [
     <RandomWheelData>{
       id,
-      wheel: wheel ? {
-        ...wheel,
-        viewable,
-      } : undefined,
+      wheel: wheel
+        ? {
+            ...wheel,
+            viewable,
+          }
+        : undefined,
       entries: entries,
       winners: winners,
       members: members,

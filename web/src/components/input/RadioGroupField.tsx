@@ -18,7 +18,6 @@ interface Props {
 }
 
 export const RadioGroupField: FC<Props> = ({ name, label, row, options, children }) => {
-
   const [field] = useField(name)
   const hasLabel = label !== undefined && label !== null
 
@@ -31,13 +30,18 @@ export const RadioGroupField: FC<Props> = ({ name, label, row, options, children
           {label}
         </FormLabel>
       )}
-      <RadioGroup row={row}
-        aria-labelledby={hasLabel ? `${name}Label` : undefined}
-        {...field}
-      >
-        {(options ?? []).filter(option => !option.hidden).map(({ value, label, color, disabled }) => (
-          <FormControlLabel key={value} value={value} control={<Radio color={color} />} label={label} disabled={disabled} />
-        ))}
+      <RadioGroup row={row} aria-labelledby={hasLabel ? `${name}Label` : undefined} {...field}>
+        {(options ?? [])
+          .filter((option) => !option.hidden)
+          .map(({ value, label, color, disabled }) => (
+            <FormControlLabel
+              key={value}
+              value={value}
+              control={<Radio color={color} />}
+              label={label}
+              disabled={disabled}
+            />
+          ))}
 
         {children}
       </RadioGroup>

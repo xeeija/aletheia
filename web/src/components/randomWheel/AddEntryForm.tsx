@@ -11,46 +11,50 @@ interface Props {
 }
 
 export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
-
   const [, addEntry] = useAddRandomWheelEntryMutation()
 
   return (
-    <Formik initialValues={{
-      entry: ""
-    }}
+    <Formik
+      initialValues={{
+        entry: "",
+      }}
       onSubmit={async ({ entry }, { resetForm }) => {
         resetForm()
 
         const { data } = await addEntry({
           randomWheelId: wheelId,
-          name: entry.trim()
+          name: entry.trim(),
         })
 
         if (data?.addRandomWheelEntry) {
           // setEntries([...entries, data?.addRandomWheelEntry])
         }
-
       }}
     >
       {({ values }) => (
         <Form autoComplete="off">
-          <InputField name="entry" label="Add name" fullWidth
+          <InputField
+            name="entry"
+            label="Add name"
+            fullWidth
             InputProps={{
-              endAdornment: <InputAdornment position="end">
-                <Tooltip arrow placement="top" title="Add">
-                  <IconButton
-                    type="submit"
-                    disabled={!values.entry.trim() || spinning}
-                    aria-label="Add name"
-                    edge="end"
-                    sx={{ mr: -0.75 }}
-                  >
-                    <SvgIcon component={HiPaperAirplane} viewBox="0 0 20 20" sx={{ transform: "rotate(90deg)" }} />
-                  </IconButton>
-                </Tooltip>
-              </InputAdornment>
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip arrow placement="top" title="Add">
+                    <IconButton
+                      type="submit"
+                      disabled={!values.entry.trim() || spinning}
+                      aria-label="Add name"
+                      edge="end"
+                      sx={{ mr: -0.75 }}
+                    >
+                      <SvgIcon component={HiPaperAirplane} viewBox="0 0 20 20" sx={{ transform: "rotate(90deg)" }} />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ),
             }}
-          // sx={{ mt: 1 }}
+            // sx={{ mt: 1 }}
           />
         </Form>
       )}

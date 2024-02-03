@@ -12,7 +12,6 @@ interface Props {
 }
 
 export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
-
   const [{ wheel }, { updateWheel }] = useRandomWheel(slug, {
     details: true,
   })
@@ -44,7 +43,6 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
       >
         {({ isSubmitting, dirty }) => (
           <Form id="editRandomWheelForm">
-
             <WheelFormFields />
 
             <Portal container={dialogActionsRef?.current}>
@@ -58,11 +56,9 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
                 Update
               </LoadingButton>
             </Portal>
-
           </Form>
         )}
       </Formik>
-
     </>
   )
 }

@@ -8,7 +8,6 @@ type Props = SliderProps & {
 }
 
 export const SliderField: FC<Props> = ({ label, ...props }) => {
-
   const [field] = useField(props.name)
   const hasLabel = label !== undefined && label !== null
 

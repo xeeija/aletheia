@@ -12,7 +12,6 @@ interface Props {
 }
 
 export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) => {
-
   const actionsRef = useRef(null)
   const formRef = useRef<FormikProps<FormikValues>>(null)
 
@@ -24,7 +23,7 @@ export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) 
   }
 
   // TODO: Dialog Provider
-  // for dialogActionsRef, 
+  // for dialogActionsRef,
 
   if (type === "edit" && !slug) {
     console.error("Wheel dialog: slug is required when type is 'edit'")
@@ -45,25 +44,21 @@ export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) 
           closeHandler()
         }}
         aria-labelledby="edit-dialog-title"
-        aria-describedby="edit-dialog-description">
+        aria-describedby="edit-dialog-description"
+      >
         <DialogTitle id="edit-dialog-title">
           {type === "create" && "Create Random Wheel"}
           {type === "edit" && "Edit Random Wheel"}
         </DialogTitle>
         <DialogContent>
-          {type === "edit" && slug &&
-            <EditWheelForm slug={slug} dialogActionsRef={actionsRef} formRef={formRef} />
-          }
-          {type === "create" &&
-            <CreateWheelForm dialogActionsRef={actionsRef} formRef={formRef} />
-          }
+          {type === "edit" && slug && <EditWheelForm slug={slug} dialogActionsRef={actionsRef} formRef={formRef} />}
+          {type === "create" && <CreateWheelForm dialogActionsRef={actionsRef} formRef={formRef} />}
         </DialogContent>
         <DialogActions ref={actionsRef}>
           <Button color="secondary" variant="outlined" onClick={closeHandler}>
             {type === "create" && "Cancel"}
             {type === "edit" && "Close"}
           </Button>
-
         </DialogActions>
       </Dialog>
 

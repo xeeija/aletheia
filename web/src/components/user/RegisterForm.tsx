@@ -8,10 +8,10 @@ import { useUsernameValidator } from "../../hooks"
 import { passwordStrength } from "../../utils/passwordStrength"
 import { InputField, PasswordField, LoadingButton } from "../components"
 
-interface Props { }
+interface Props {}
 
 export const RegisterForm: FC<Props> = () => {
-  const [{ }, register] = useRegisterMutation()
+  const [{}, register] = useRegisterMutation()
   const router = useRouter()
 
   // TODO: One useValidator hook with all (or almost/most common) validators?
@@ -31,29 +31,25 @@ export const RegisterForm: FC<Props> = () => {
       validateOnChange={false}
       validateOnBlur={false}
       validate={({ password, confirmPassword }) => {
-
         const errors: any = {}
 
-        if (password !== confirmPassword)
-          errors.confirmPassword = "Passwords must match"
+        if (password !== confirmPassword) errors.confirmPassword = "Passwords must match"
 
         return errors
       }}
       onSubmit={async (values, { setFieldError, setFieldTouched }) => {
-
         // Reset error message (so same error shows again)
         setShowError(false)
 
         const { confirmPassword: _, displayname, ...rest } = values
 
         const response = await register({
-          displayname: (displayname || null), // pass null if empty
-          ...rest
+          displayname: displayname || null, // pass null if empty
+          ...rest,
         })
 
         // Unexpected error
         if (response.error) {
-
           let errorMsg: string
           if (response.error.networkError) errorMsg = "Could not connect to login server."
           else if (response.error.graphQLErrors) errorMsg = "The login server is currently unavailable."
@@ -87,22 +83,30 @@ export const RegisterForm: FC<Props> = () => {
         // TODO: Redirect to "welcome page"?
         // Redirect to home page
         router.push("/")
-
-      }}>
+      }}
+    >
       {({ isSubmitting, values }) => (
         <Form>
-
           {/* Error Alert */}
           <Collapse in={showError} onExited={() => setGeneralError("")}>
-            <Alert severity="error" variant="filled" icon={<TiWarning />}
+            <Alert
+              severity="error"
+              variant="filled"
+              icon={<TiWarning />}
               onClose={() => setShowError(false)}
-              sx={{ my: 1, }}
+              sx={{ my: 1 }}
             >
               {generalError}
             </Alert>
           </Collapse>
 
-          <InputField name="username" label="Username" margin="normal" fullWidth required icon
+          <InputField
+            name="username"
+            label="Username"
+            margin="normal"
+            fullWidth
+            required
+            icon
             validate={validateUsername}
           />
 
@@ -110,7 +114,13 @@ export const RegisterForm: FC<Props> = () => {
 
           {/* width: calc(100% - 36px) */}
           {/* Password Strength Meter: transition width input::after, border-width: 6-8px, border-bottom-right-radius 0 if 100% width */}
-          <PasswordField name="password" label="Password" margin="normal" fullWidth required icon
+          <PasswordField
+            name="password"
+            label="Password"
+            margin="normal"
+            fullWidth
+            required
+            icon
             // TODO: passworStrength is called in every render, maybe useMemo?
             strength={passwordStrength(values.password)}
             helperText="Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
@@ -127,7 +137,13 @@ export const RegisterForm: FC<Props> = () => {
             }}
           />
 
-          <InputField name="confirmPassword" label="Confirm password" type="password" margin="normal" fullWidth required
+          <InputField
+            name="confirmPassword"
+            label="Confirm password"
+            type="password"
+            margin="normal"
+            fullWidth
+            required
             validate={(value) => {
               if (!value) {
                 return "Please confirm your password"
@@ -138,17 +154,19 @@ export const RegisterForm: FC<Props> = () => {
             }}
           />
 
-          <LoadingButton type="submit" variant="contained" fullWidth
-            loading={isSubmitting} position="end"
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            fullWidth
+            loading={isSubmitting}
+            position="end"
             endIcon={<SvgIcon component={TiArrowRight} />}
             sx={{ mt: 2 }}
           >
             Register
           </LoadingButton>
-
         </Form>
       )}
     </Formik>
-
   )
 }

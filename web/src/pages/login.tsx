@@ -4,7 +4,9 @@ import { LoginForm } from "../components/user/LoginForm"
 
 const LoginPage: LayoutNextPage = () => (
   <Box sx={{ width: 360, mx: "auto" }}>
-    <Typography variant="h4" sx={{ mb: 1 }}>Login</Typography>
+    <Typography variant="h4" sx={{ mb: 1 }}>
+      Login
+    </Typography>
 
     <LoginForm />
   </Box>

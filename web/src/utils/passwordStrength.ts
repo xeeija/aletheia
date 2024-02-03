@@ -9,34 +9,32 @@ const strengthLevels = [
   {
     value: 80,
     // length 12+, lowercase, uppercase, number, special char, not 3 consecutivee same chars,
-    regex: /(?=.{12,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?!.*(.)\1\1).*/
+    regex: /(?=.{12,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?!.*(.)\1\1).*/,
   },
   {
     value: 60,
     // length 8+, lowercase, uppercase, number, special char
-    regex: /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/
+    regex: /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/,
   },
   {
     value: 40,
     // length 8+, lowercase, uppercase, number
-    regex: /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/
+    regex: /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
   },
   {
     value: 20,
     // length 6+, lowercase, uppercase
-    regex: /(?=.{6,})(?=.*[a-z])(?=.*[A-Z])/
+    regex: /(?=.{6,})(?=.*[a-z])(?=.*[A-Z])/,
   },
   {
     value: 10,
     // at least one char
-    regex: /.+/
-  }
+    regex: /.+/,
+  },
 ]
 
 export const passwordStrength = (password: string) => {
-  return strengthLevels.find(
-    level => level.regex.test(password)
-  )?.value ?? 0
+  return strengthLevels.find((level) => level.regex.test(password))?.value ?? 0
 }
 
 export const passwordStrengthColor: (strength: number) => ThemeColor | undefined = (strength: number) => {

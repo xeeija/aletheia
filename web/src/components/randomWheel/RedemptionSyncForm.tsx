@@ -1,4 +1,17 @@
-import { Box, Button, CircularProgress, FormHelperText, Grid, IconButton, List, ListItem, ListItemSecondaryAction, Portal, SvgIcon, Typography } from "@mui/material"
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormHelperText,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  Portal,
+  SvgIcon,
+  Typography,
+} from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject, useState } from "react"
 import { HiAnnotation, HiTrash } from "react-icons/hi"
@@ -25,20 +38,15 @@ interface InitialValues {
 }
 
 export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
-
   const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
 
   const { channelRewards } = useChannelRewards()
 
-  const {
-    subscriptions,
-    fetchingPause,
-    syncEntries,
-    pauseEntriesSync,
-    deleteEntriesSync,
-  } = useEventSubscriptionsWheel({
-    randomWheelId: wheel?.id ?? "",
-  })
+  const { subscriptions, fetchingPause, syncEntries, pauseEntriesSync, deleteEntriesSync } = useEventSubscriptionsWheel(
+    {
+      randomWheelId: wheel?.id ?? "",
+    }
+  )
 
   const [showNewSyncronization, setShowNewSyncronization] = useState(false)
 
@@ -46,7 +54,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
     return null
   }
 
-  const rewards = channelRewards?.filter(reward => !subscriptions?.some(s => s.rewardId === reward.id))
+  const rewards = channelRewards?.filter((reward) => !subscriptions?.some((s) => s.rewardId === reward.id))
 
   // const [{ data: subscriptionData }] = useEventSubscriptionsForWheelQuery({
   //   variables: {
@@ -84,7 +92,6 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
           return
         }}
         onSubmit={async (values, { setFieldValue }) => {
-
           // only create if new
           if (showNewSyncronization && values.rewardId) {
             await syncEntries({
@@ -96,12 +103,12 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
             setFieldValue("rewardId", "")
           }
 
-          const deleteEntries = values.subscriptions.filter(s => s.delete)
+          const deleteEntries = values.subscriptions.filter((s) => s.delete)
 
           // console.log("deleteEntries", deleteEntries)
 
           if (deleteEntries.length > 0) {
-            await deleteEntriesSync(deleteEntries.map(e => e.id))
+            await deleteEntriesSync(deleteEntries.map((e) => e.id))
           }
 
           // const result = await syncEntries({
@@ -114,7 +121,6 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
           // if (!result.data?.syncEntriesWithRedemption) {
           //   console.warn("error syncing entries")
           // }
-
         }}
       >
         {({ values, isSubmitting, dirty, setFieldValue, setFieldError }) => {
@@ -122,9 +128,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
           return (
             <Form id="redemptionSyncForm">
-
               <Grid container spacing={2}>
-
                 <Grid item xs={12}>
                   {!!subscriptions?.length ? (
                     <List role="list" dense>
@@ -132,11 +136,13 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                         // subscription.reward &&
                         <ListItem key={subscription.id} role="listitem" sx={{ width: "100%" }}>
                           {subscription.reward && !subscription.delete && (
-                            <Box sx={{
-                              display: "flex",
-                              gap: 0.25,
-                              alignItems: "center"
-                            }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                gap: 0.25,
+                                alignItems: "center",
+                              }}
+                            >
                               <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
                               <BooleanField
                                 name={`subscriptions[${i}].useInput`}
@@ -150,7 +156,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           )}
 
                           {subscription.delete && (
-                            <Typography color="textSecondary" sx={{ ml: 1, my: 1, }}>
+                            <Typography color="textSecondary" sx={{ ml: 1, my: 1 }}>
                               Deleted
                             </Typography>
                           )}
@@ -169,14 +175,15 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           )}
 
                           {!subscription.delete && (
-                            <ListItemSecondaryAction sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}>
+                            <ListItemSecondaryAction
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                               <Typography variant="body2" color="textSecondary" sx={{ mr: -0.5 }}>
-                                {subscription.pending ? "Pending" :
-                                  (subscription.paused ? "Paused" : "Active")}
+                                {subscription.pending ? "Pending" : subscription.paused ? "Paused" : "Active"}
                               </Typography>
 
                               {/* {subscription.pending &&
@@ -195,7 +202,9 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
                               {subscription.pending && !subscription.paused && (
                                 <IconButton color="info" sx={{ mr: 0.25 }}>
-                                  <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
+                                  <SvgIcon
+                                    component={TiRefresh}
+                                    viewBox="2 2 20 20"
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
                                     onClick={async () => {
                                       // await syncEntries(entries.rewardId)
@@ -205,12 +214,12 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                 </IconButton>
                               )}
 
-                              {(fetchingPause || subscription.pending) &&
+                              {(fetchingPause || subscription.pending) && (
                                 <IconButton disabled sx={{ mr: 1, mt: "2px" }}>
                                   <CircularProgress size={18} color="inherit" />
                                 </IconButton>
-                              }
-                              {!(fetchingPause || subscription.pending) &&
+                              )}
+                              {!(fetchingPause || subscription.pending) && (
                                 <BooleanField
                                   name={`subscriptions[${i}].paused`}
                                   tooltip={subscription.paused ? "Activate" : "Pause"}
@@ -226,7 +235,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     await pauseEntriesSync(subscription.id, !subscription.paused)
                                   }}
                                 />
-                              }
+                              )}
 
                               {/* {!subscription.paused && !fetchingPause && !subscription.pending &&
                               <IconButton color="success"
@@ -250,9 +259,11 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               </IconButton>
                             } */}
 
-                              {subscription.pending && !fetchingPause &&
+                              {subscription.pending && !fetchingPause && (
                                 <IconButton color="info" sx={{ ml: 0 }}>
-                                  <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
+                                  <SvgIcon
+                                    component={TiRefresh}
+                                    viewBox="2 2 20 20"
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
                                     onClick={async () => {
                                       // await syncEntries(entries.rewardId)
@@ -260,7 +271,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     }}
                                   />
                                 </IconButton>
-                              }
+                              )}
 
                               <IconButton
                                 onClick={() => {
@@ -270,10 +281,8 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               >
                                 <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
                               </IconButton>
-
                             </ListItemSecondaryAction>
                           )}
-
                         </ListItem>
                       ))}
                       {/* {values.subscriptions.every((s: SubscriptionEntry) => s.delete) ? (
@@ -285,11 +294,10 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                   ) : null}
 
                   {subscriptions?.length || showNewSyncronization ? null : (
-                    <NoData iconSize="sm" textProps={{ variant: "body1" }} >
+                    <NoData iconSize="sm" textProps={{ variant: "body1" }}>
                       No rewards are synchronized
                     </NoData>
                   )}
-
                 </Grid>
 
                 <Grid item xs={12}>
@@ -303,7 +311,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           name="rewardId"
                           options={rewards?.map((reward) => ({
                             value: reward.id,
-                            label: <CustomRewardMenuItem reward={reward} noMenuItem />
+                            label: <CustomRewardMenuItem reward={reward} noMenuItem />,
                           }))}
                           required
                           fullWidth
@@ -326,17 +334,20 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           <FormHelperText> </FormHelperText>
                         </Box>
                       </Box>
-                      <BooleanField name="useInput"
+                      <BooleanField
+                        name="useInput"
                         label="Use input as entry"
                         helperText="Use redemption input as entry. By default, the display name is used."
                       />
                     </>
                   )}
                   {!showNewSyncronization && (
-                    <Box sx={{
-                      display: "flex",
-                      justifyContent: subscriptions?.length ? "start" : "center"
-                    }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: subscriptions?.length ? "start" : "center",
+                      }}
+                    >
                       <Button
                         color="success"
                         variant="outlined"
@@ -344,7 +355,8 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                         endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                         onClick={() => {
                           setShowNewSyncronization(true)
-                        }}>
+                        }}
+                      >
                         New
                       </Button>
                     </Box>
@@ -363,12 +375,10 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                   Update
                 </LoadingButton>
               </Portal>
-
             </Form>
           )
         }}
       </Formik>
-
     </>
   )
 }

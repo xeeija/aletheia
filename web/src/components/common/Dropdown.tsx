@@ -8,7 +8,6 @@ interface Props {
 }
 
 export const Dropdown: React.FC<Props> = ({ children, anchor, setAnchor }) => {
-
   const open = Boolean(anchor)
 
   return (

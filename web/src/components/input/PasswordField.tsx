@@ -22,25 +22,34 @@ export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, 
     <InputField
       type={showPassword ? "text" : "password"}
       InputProps={{
-        endAdornment:
+        endAdornment: (
           <InputAdornment position="end">
-            <IconButton edge="end" disableRipple tabIndex={-1} sx={{ opacity: 0.7 }}
+            <IconButton
+              edge="end"
+              disableRipple
+              tabIndex={-1}
+              sx={{ opacity: 0.7 }}
               onMouseDown={() => setShowPassword(true)}
               onMouseUp={() => setShowPassword(false)}
-              onMouseLeave={() => setShowPassword(false)}>
+              onMouseLeave={() => setShowPassword(false)}
+            >
               {showPassword ? <HiEye /> : <HiEyeOff />}
             </IconButton>
-          </InputAdornment>,
+          </InputAdornment>
+        ),
         ...(strength !== undefined && {
           sx: {
             "::after": {
               borderWidth: 6,
               opacity: 1,
               transform: "scaleX(1)",
-              transition: theme.transitions.create(["opacity", "height", "width", "border-bottom", "borderBottomRightRadius"], {
-                duration: theme.transitions.duration.shorter,
-                easing: theme.transitions.easing.easeInOut,
-              }),
+              transition: theme.transitions.create(
+                ["opacity", "height", "width", "border-bottom", "borderBottomRightRadius"],
+                {
+                  duration: theme.transitions.duration.shorter,
+                  easing: theme.transitions.easing.easeInOut,
+                }
+              ),
               width: `${Math.min(100, strength)}%`,
               borderBottomRightRadius: strength < 100 ? 0 : undefined,
             },
@@ -55,11 +64,11 @@ export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, 
             },
           },
         }),
-        ...InputProps
+        ...InputProps,
       }}
-      {...strength !== undefined && {
+      {...(strength !== undefined && {
         color: strengthColor,
-      }}
+      })}
       {...props} // spread rest of props (and potentially override type)
     />
   )

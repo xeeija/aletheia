@@ -26,12 +26,14 @@ export const defaultLayout = (props?: Props) => (page: ReactElement) => {
         <title>{getTitle(title)}</title>
       </Head>
       <Navigation {...navProps}>
-        <Box sx={{
-          ...(!fullWidth && {
-            maxWidth: "85rem",
-            mx: "auto",
-          })
-        }}>
+        <Box
+          sx={{
+            ...(!fullWidth && {
+              maxWidth: "85rem",
+              mx: "auto",
+            }),
+          }}
+        >
           {page}
         </Box>
       </Navigation>

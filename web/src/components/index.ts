@@ -28,4 +28,3 @@ export * from "./navigation/Sidebar"
 export * from "./user/DisconnectTwitchDialog"
 export * from "./user/UserAvatar"
 export * from "./user/UserMenu"
-

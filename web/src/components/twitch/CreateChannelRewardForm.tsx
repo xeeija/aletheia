@@ -8,7 +8,7 @@ interface InitialValues {
   // max 40 char
   title: string
   // min 1
-  cost: number | "",
+  cost: number | ""
   // max 200 char, required if userInputRequired
   prompt: string
   userInputRequired: boolean
@@ -28,7 +28,6 @@ interface Props {
 }
 
 export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
-
   const initialValues: InitialValues = {
     title: "",
     prompt: "",
@@ -58,18 +57,15 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
       {({ isSubmitting, dirty, isValid }) => {
         return (
           <Form id="createChennelRewardForm">
-            <Box sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 1
-            }}>
-
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
               <Box>
-                <BooleanField
-                  name="isEnabled"
-                  label="Enable reward"
-                  toggle
-                />
+                <BooleanField name="isEnabled" label="Enable reward" toggle />
               </Box>
 
               <InputField name="title" required label="Reward Name" maxLength={45} />
@@ -91,10 +87,11 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                 required
                 label="Cost"
                 InputProps={{
-                  endAdornment:
+                  endAdornment: (
                     <InputAdornment position="end">
                       <ChannelPoints viewBox="-1 -2 22 22" opacity={0.7} />
                     </InputAdornment>
+                  ),
                 }}
                 sx={{ width: 160, mb: 1 }}
               />
@@ -105,8 +102,8 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                   label="Require user to enter text"
                   helperText="If enabled, a required text field will appear to viewers in the reward."
                   toggle
-                // labelPlacement="start"
-                // fullWidth
+                  // labelPlacement="start"
+                  // fullWidth
                 />
               </Box>
 
@@ -116,21 +113,17 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                   label="Skip reward requests queue"
                   helperText="If enabled, only future rewards will skip the queue for review."
                   toggle
-                // labelPlacement="start"
-                // fullWidth
+                  // labelPlacement="start"
+                  // fullWidth
                 />
               </Box>
 
               <InputField name="backgroundColor" type="color" label="Background Color" />
 
-              <Typography sx={{ mt: 1, fontWeight: 500, fontSize: "1.1em" }}>
-                Cooldown & Limits
-              </Typography>
-              <FormHelperText sx={{ mt: -0.75 }}>
-                Leave blank to disable a cooldown or limit.
-              </FormHelperText>
+              <Typography sx={{ mt: 1, fontWeight: 500, fontSize: "1.1em" }}>Cooldown & Limits</Typography>
+              <FormHelperText sx={{ mt: -0.75 }}>Leave blank to disable a cooldown or limit.</FormHelperText>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 {/* <BooleanField name="enableGlobalCooldown" label="Redemption cooldown" /> */}
                 <Typography>Global Cooldown</Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>
@@ -140,7 +133,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                     hiddenLabel
                     sx={{ width: 220 }}
                     InputProps={{
-                      endAdornment:
+                      endAdornment: (
                         <InputAdornment position="end">
                           <SelectField
                             name="cooldownUnit"
@@ -156,23 +149,19 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                             sx={{ width: 110, mr: -1.25 }}
                           />
                         </InputAdornment>
+                      ),
                     }}
                   />
                 </Box>
               </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 {/* <BooleanField name="enableMaxRedemptionsPerStream" label="Limit redemptions per stream" /> */}
                 <Typography>Limit redemptions per stream</Typography>
-                <NumberField
-                  name="maxRedemptionsPerStream"
-                  hiddenLabel
-                  placeholder="disabled"
-                  sx={{ width: 220 }}
-                />
+                <NumberField name="maxRedemptionsPerStream" hiddenLabel placeholder="disabled" sx={{ width: 220 }} />
               </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 {/* <BooleanField name="enableMaxRedemptionsPerUser" label="Limit redemptions per user" /> */}
                 <Typography>Limit redemptions per user</Typography>
                 <NumberField
@@ -195,7 +184,6 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
                   Create
                 </LoadingButton>
               </Portal>
-
             </Box>
           </Form>
         )

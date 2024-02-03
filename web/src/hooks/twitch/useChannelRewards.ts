@@ -2,9 +2,7 @@ import { CustomRewardFragment, useChannelRewardsQuery } from "../../generated/gr
 
 export const useChannelRewards = () => {
   const [{ data, fetching, error }] = useChannelRewardsQuery({
-    variables: {
-
-    }
+    variables: {},
   })
 
   return {

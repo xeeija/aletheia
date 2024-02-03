@@ -12,7 +12,7 @@ const wheelDraft = {
   spinDuration: 8000,
   fadeDuration: 8000,
   editAnonymous: true,
-  theme: ""
+  theme: "",
 }
 
 interface Props {
@@ -21,7 +21,6 @@ interface Props {
 }
 
 export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
-
   const router = useRouter()
 
   const [, createRandomWheel] = useCreateRandomWheelMutation()
@@ -43,12 +42,10 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
           // TODO: Success snackbar
           router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
         }
-
       }}
     >
       {({ isSubmitting }) => (
         <Form id="createRandomWheelForm">
-
           <WheelFormFields />
 
           <Portal container={dialogActionsRef?.current}>
@@ -62,7 +59,6 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
               Create
             </LoadingButton>
           </Portal>
-
         </Form>
       )}
     </Formik>

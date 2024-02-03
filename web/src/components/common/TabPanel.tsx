@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Box } from "@mui/material";
+import { FC } from "react"
+import { Box } from "@mui/material"
 
 interface Props {
   index: number
@@ -19,7 +19,7 @@ export const TabPanel: FC<Props> = ({ index, activeTab, keepMounted, children, f
         ...(fullHeight && { height: "calc(100% - 48px)" }),
       }}
     >
-      {(keepMounted || activeTab === index) && (<>{children}</>)}
+      {(keepMounted || activeTab === index) && <>{children}</>}
     </Box>
   )
 }

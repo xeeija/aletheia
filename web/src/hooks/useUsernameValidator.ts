@@ -7,7 +7,6 @@ export const useUsernameValidator = () => {
   const [{ fetching }, usernameExists] = useUsernameExistsMutation()
 
   const validate: FieldValidator = (username: string) => {
-
     if (username.length < 4) {
       return "Must have at least 4 characters"
     }
@@ -19,13 +18,10 @@ export const useUsernameValidator = () => {
       return "Username may only contain letters, numbers and underline"
     }
 
-    return usernameExists({ username: username }).then(
-      ({ data }) => data?.usernameExists ? "User already exists" : undefined
+    return usernameExists({ username: username }).then(({ data }) =>
+      data?.usernameExists ? "User already exists" : undefined
     )
   }
 
-  return [
-    validate,
-    { fetching },
-  ] as const
+  return [validate, { fetching }] as const
 }

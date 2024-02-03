@@ -7,8 +7,8 @@ import { RandomWheelSocketOptions, useRandomWheelSocket } from "./randomwheel/us
 import { useRandomWheelSpin } from "./randomwheel/useRandomWheelSpin"
 
 interface RandomWheelHandlers extends RandomWheelActions, RandomWheelFetch {
-  spin: () => Promise<void>,
-  like: () => Promise<void>,
+  spin: () => Promise<void>
+  like: () => Promise<void>
 }
 
 interface RandomWheelOptions {
@@ -20,7 +20,6 @@ interface RandomWheelOptions {
 }
 
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
-
   // TODO: Maybe return a boolean or Error (message + code) from some mutation wrappers/handlers, like deleteWheel
 
   const [{ id, wheel, ...randomWheelData }, randomWheelFetch] = useRandomWheelData(wheelSlug, {
@@ -37,7 +36,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   const [rotation, setRotation] = useState<number>()
   const [spinning, setSpinning] = useState(false)
-  // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event? 
+  // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event?
   const spin = useRandomWheelSpin(id, spinning)
 
   const [liked, setLiked] = useState(wheel?.liked)

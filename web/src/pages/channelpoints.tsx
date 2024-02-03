@@ -9,7 +9,6 @@ import { CreateChannelRewardForm } from "../components/twitch"
 import { useChannelRewards } from "../hooks"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
-
   const [createRewardDialogOpen, setCreateRewardDialogOpen] = useState(false)
   const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false)
   const [tab, setTab] = useState(0)
@@ -22,14 +21,13 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
   return (
     <>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "space-between"
-      }}>
-        <Tabs
-          value={tab}
-          onChange={(_, value) => setTab(value)}
-        >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Tabs value={tab} onChange={(_, value) => setTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="Rewards" itemType="capitalize" />
           <Tab label="Reward Groups" itemType="capitalize" />
@@ -37,7 +35,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
         {tab === 0 && (
           <Box>
-            <Button variant="outlined" color="success"
+            <Button
+              variant="outlined"
+              color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
               onClick={() => setCreateRewardDialogOpen(true)}
             >
@@ -49,12 +49,13 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
-
           </Box>
         )}
         {tab === 1 && (
           <Box>
-            <Button variant="outlined" color="success"
+            <Button
+              variant="outlined"
+              color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
               onClick={() => setCreateGroupDialogOpen(true)}
             >
@@ -66,7 +67,6 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
-
           </Box>
         )}
       </Box>
@@ -85,20 +85,16 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               </Button>
             </Link> */}
 
-            {channelRewards?.map((reward) => (
-              <pre key={reward.id}>
-                {reward.title}
-              </pre>
-            ))}
+            {channelRewards?.map((reward) => <pre key={reward.id}>{reward.title}</pre>)}
 
             {channelRewardsEmpty && !fetchingRewards && (
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <NoData>
-                  {"You don't have any channel point rewards yet."}
-                </NoData>
+                <NoData>{"You don't have any channel point rewards yet."}</NoData>
 
                 <Box>
-                  <Button variant="contained" color="success"
+                  <Button
+                    variant="contained"
+                    color="success"
                     endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                     onClick={() => setCreateRewardDialogOpen(true)}
                   >
@@ -129,15 +125,14 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
         {tab === 1 && (
           <Box>
-
             {channelRewardsEmpty && !fetchingRewards && (
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <NoData>
-                  {"You don't have any rewards groups yet."}
-                </NoData>
+                <NoData>{"You don't have any rewards groups yet."}</NoData>
 
                 <Box>
-                  <Button variant="contained" color="success"
+                  <Button
+                    variant="contained"
+                    color="success"
                     endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                     onClick={() => setCreateGroupDialogOpen(true)}
                   >
@@ -146,7 +141,6 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                 </Box>
               </Box>
             )}
-
           </Box>
         )}
       </Box>

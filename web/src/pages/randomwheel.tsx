@@ -10,13 +10,12 @@ import { NoData, TabPanel } from "../components"
 const wheelsTypes = ["my", "shared", "favorite"]
 
 const RandomWheelPage: LayoutNextPage = () => {
-
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
 
   const [{ data, fetching }] = useMyRandomWheelsQuery({
     variables: {
-      type: wheelsTypes[wheelsTab]
+      type: wheelsTypes[wheelsTab],
     },
   })
 
@@ -25,16 +24,15 @@ const RandomWheelPage: LayoutNextPage = () => {
 
   return (
     <>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "space-between"
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         {/* <Typography variant="h2">My Wheels</Typography> */}
 
-        <Tabs
-          value={wheelsTab}
-          onChange={(_, value) => setWheelsTab(value)}
-        >
+        <Tabs value={wheelsTab} onChange={(_, value) => setWheelsTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="My Wheels" itemType="capitalize" />
           <Tab label="Shared Wheels" itemType="capitalize" />
@@ -42,7 +40,9 @@ const RandomWheelPage: LayoutNextPage = () => {
         </Tabs>
 
         <Box>
-          <Button variant="outlined" color="success"
+          <Button
+            variant="outlined"
+            color="success"
             endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
             onClick={() => setCreateDialogOpen(true)}
           >
@@ -54,7 +54,6 @@ const RandomWheelPage: LayoutNextPage = () => {
               <HiDotsVertical />
             </IconButton>
           </Tooltip>
-
         </Box>
       </Box>
 
@@ -64,11 +63,7 @@ const RandomWheelPage: LayoutNextPage = () => {
         </TabPanel>
       ))}
 
-      {wheelsEmpty && !fetching && (
-        <NoData>
-          {"You don't have any Random Wheels yet."}
-        </NoData>
-      )}
+      {wheelsEmpty && !fetching && <NoData>{"You don't have any Random Wheels yet."}</NoData>}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
     </>

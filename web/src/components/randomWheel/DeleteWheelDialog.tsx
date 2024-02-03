@@ -16,18 +16,23 @@ export const DeleteWheelDialog: FC<Props> = ({ open, onClose, onDelete }) => {
       open={open}
       onClose={onClose}
       aria-labelledby="delete-dialog-title"
-      aria-describedby="delete-dialog-description">
-      <DialogTitle id="delete-dialog-title" sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-      }}>
+      aria-describedby="delete-dialog-description"
+    >
+      <DialogTitle
+        id="delete-dialog-title"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
         <SvgIcon component={TiWarning} color="warning" />
         <span>Delete wheel?</span>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="delete-dialog-description">
-          Do you really want to delete this wheel?<br />
+          Do you really want to delete this wheel?
+          <br />
           This cannot be undone. It will be lost <b>forever</b>.
         </DialogContentText>
       </DialogContent>
@@ -36,11 +41,14 @@ export const DeleteWheelDialog: FC<Props> = ({ open, onClose, onDelete }) => {
           Cancel
         </Button>
 
-        <Button color="error" variant="contained"
+        <Button
+          color="error"
+          variant="contained"
           onClick={() => {
             onDelete()
             onClose()
-          }}>
+          }}
+        >
           Delete
         </Button>
       </DialogActions>

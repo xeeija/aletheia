@@ -1,21 +1,23 @@
-import { EventSubscriptionFragment, useDeleteEntriesRedemptionSyncMutation, useEventSubscriptionsForWheelQuery, usePauseEntriesRedemptionSyncMutation, useSyncEntriesWithRedemptionMutation } from "../../generated/graphql";
+import {
+  EventSubscriptionFragment,
+  useDeleteEntriesRedemptionSyncMutation,
+  useEventSubscriptionsForWheelQuery,
+  usePauseEntriesRedemptionSyncMutation,
+  useSyncEntriesWithRedemptionMutation,
+} from "../../generated/graphql"
 
 type SyncEntriesInput = {
-  rewardId: string;
-  randomWheelId: string;
-  useInput?: boolean | null;
+  rewardId: string
+  randomWheelId: string
+  useInput?: boolean | null
 }
 
-export const useEventSubscriptionsWheel = (config: {
-  randomWheelId: string,
-  fetchSubscriptions?: boolean
-}) => {
-
+export const useEventSubscriptionsWheel = (config: { randomWheelId: string; fetchSubscriptions?: boolean }) => {
   const [{ data, fetching, error }, refetch] = useEventSubscriptionsForWheelQuery({
     variables: {
-      randomWheelId: config.randomWheelId
+      randomWheelId: config.randomWheelId,
     },
-    pause: config.fetchSubscriptions === false
+    pause: config.fetchSubscriptions === false,
   })
 
   const [{ fetching: fetchingSync, error: errorSync }, syncEntries] = useSyncEntriesWithRedemptionMutation()
@@ -34,15 +36,23 @@ export const useEventSubscriptionsWheel = (config: {
     errorDelete,
     syncEntries: async (input: SyncEntriesInput) => {
       await syncEntries(input, {
-        additionalTypenames: ["EventSubscription"]
+        additionalTypenames: ["EventSubscription"],
       })
       refetch({ requestPolicy: "cache-and-network" })
     },
-    pauseEntriesSync: (id: string, pause: boolean) => pauseEntriesSync({ id, pause }, {
-      additionalTypenames: ["EventSubscription"]
-    }),
-    deleteEntriesSync: (ids: string | string[]) => deleteEntriesSync({ ids }, {
-      additionalTypenames: ["EventSubscription"]
-    }),
+    pauseEntriesSync: (id: string, pause: boolean) =>
+      pauseEntriesSync(
+        { id, pause },
+        {
+          additionalTypenames: ["EventSubscription"],
+        }
+      ),
+    deleteEntriesSync: (ids: string | string[]) =>
+      deleteEntriesSync(
+        { ids },
+        {
+          additionalTypenames: ["EventSubscription"],
+        }
+      ),
   }
 }

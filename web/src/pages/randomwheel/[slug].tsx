@@ -1,39 +1,62 @@
-import { Badge, Box, Button, IconButton, InputAdornment, List, Paper, Skeleton, SvgIcon, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { MouseEventHandler, useState } from "react";
-import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiRefresh, HiShare, HiTrash } from "react-icons/hi";
-import { TiArrowRepeat, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti";
-import { Dropdown, LinkListItem, TabPanel } from "../../components";
-import { LayoutNextPage, defaultLayout, getTitle } from "../../components/layout";
-import { AccessTypeBadge, AddEntryForm, ClearEntriesDialog, CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, EntryList, Wheel, WinnerDialog, WinnerList } from "../../components/randomWheel";
-import { RedemptionSyncDialog } from "../../components/randomWheel/RedemptionSyncDialog";
-import { useAuth, useRandomWheel } from "../../hooks";
-import NotFoundPage from "../404";
+import {
+  Badge,
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  List,
+  Paper,
+  Skeleton,
+  SvgIcon,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material"
+import Head from "next/head"
+import { useRouter } from "next/router"
+import { MouseEventHandler, useState } from "react"
+import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiRefresh, HiShare, HiTrash } from "react-icons/hi"
+import { TiArrowRepeat, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti"
+import { Dropdown, LinkListItem, TabPanel } from "../../components"
+import { LayoutNextPage, defaultLayout, getTitle } from "../../components/layout"
+import {
+  AccessTypeBadge,
+  AddEntryForm,
+  ClearEntriesDialog,
+  CreateEditWheelDialog,
+  DeleteWheelDialog,
+  EditMembersDialog,
+  EntryList,
+  Wheel,
+  WinnerDialog,
+  WinnerList,
+} from "../../components/randomWheel"
+import { RedemptionSyncDialog } from "../../components/randomWheel/RedemptionSyncDialog"
+import { useAuth, useRandomWheel } from "../../hooks"
+import NotFoundPage from "../404"
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
-
   const router = useRouter()
   const { slug } = router.query
 
   const { user } = useAuth()
 
-  const [
-    { wheel, entries, winners, fetching, lastWinnerEntry },
-    { spin, clear, like, deleteEntry, deleteWheel },
-  ] = useRandomWheel(slug ?? "", {
-    details: true,
-    entries: true,
-    winners: true,
-    socket: {
-      onSpinStarted: () => setWinnerDialogOpen(false),
-      onSpinFinished: () => {
-        if (wheel?.editable || wheel?.editAnonymous) {
-          setWinnerDialogOpen(true)
-        }
+  const [{ wheel, entries, winners, fetching, lastWinnerEntry }, { spin, clear, like, deleteEntry, deleteWheel }] =
+    useRandomWheel(slug ?? "", {
+      details: true,
+      entries: true,
+      winners: true,
+      socket: {
+        onSpinStarted: () => setWinnerDialogOpen(false),
+        onSpinFinished: () => {
+          if (wheel?.editable || wheel?.editAnonymous) {
+            setWinnerDialogOpen(true)
+          }
+        },
       },
-    },
-  })
+    })
 
   const [entriesTab, setEntriesTab] = useState(0)
 
@@ -57,21 +80,28 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   }
 
   if (fetching.wheel || !slug) {
-    return <Box>
-      <Typography variant="h1" width="42%"><Skeleton /></Typography>
-      <Typography width="32%"><Skeleton sx={{ animationDelay: 50 }} /></Typography>
-      <Box sx={{
-        mt: 2,
-        display: "grid",
-        gap: "1em 1em",
-        gridTemplateColumns: "2fr 1fr",
-        gridTemplateRows: "min-content 1fr",
-      }}>
-        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
-        <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
+    return (
+      <Box>
+        <Typography variant="h1" width="42%">
+          <Skeleton />
+        </Typography>
+        <Typography width="32%">
+          <Skeleton sx={{ animationDelay: 50 }} />
+        </Typography>
+        <Box
+          sx={{
+            mt: 2,
+            display: "grid",
+            gap: "1em 1em",
+            gridTemplateColumns: "2fr 1fr",
+            gridTemplateRows: "min-content 1fr",
+          }}
+        >
+          <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
+          <Skeleton variant="rectangular" height="calc(80vh - 64px)" sx={{ animationDelay: 100 }} />
+        </Box>
       </Box>
-
-    </Box>
+    )
   }
 
   if (!wheel) {
@@ -97,23 +127,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
       {wheel && (
         <>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-
             <Box sx={{ display: "flex", alignItems: "baseline", gap: 1.5 }}>
-              <Typography variant="h2">
-                {title}
-              </Typography>
+              <Typography variant="h2">{title}</Typography>
 
               <AccessTypeBadge type={wheel.accessType} />
             </Box>
 
             <Box>
-
               <Tooltip arrow placement="bottom" title="Favorite">
-                <IconButton color={wheel.liked ? "error" : "secondary"}
-                  disabled={!user}
-                  sx={{ ml: 1 }}
-                  onClick={like}
-                >
+                <IconButton color={wheel.liked ? "error" : "secondary"} disabled={!user} sx={{ ml: 1 }} onClick={like}>
                   <SvgIcon component={wheel.liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
                 </IconButton>
               </Tooltip>
@@ -141,11 +163,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               {/* {wheel.editable && ( */}
               <Tooltip arrow placement="bottom" title="Popout">
-                <IconButton color="secondary"
-                  href={`${window.location.href}/popout`}
-                  target="_blank"
-                  sx={{ ml: 1 }}
-                >
+                <IconButton color="secondary" href={`${window.location.href}/popout`} target="_blank" sx={{ ml: 1 }}>
                   <SvgIcon component={HiExternalLink} viewBox="1 1 18 18" />
                 </IconButton>
               </Tooltip>
@@ -158,9 +176,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 </IconButton>
               </Tooltip>
 
-              <Dropdown anchor={shareAnchor} setAnchor={setShareAnchor} >
+              <Dropdown anchor={shareAnchor} setAnchor={setShareAnchor}>
                 <Paper sx={{ p: 1.5, width: "18rem" }}>
-
                   <Typography variant="h6" sx={{ mb: 1 }}>
                     Share
                   </Typography>
@@ -174,13 +191,15 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     InputProps={{
                       readOnly: true,
                       sx: { pl: 1 },
-                      startAdornment: (<InputAdornment position="start">
-                        <Tooltip arrow placement="bottom" title="Copy">
-                          <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
-                            <SvgIcon color="secondary" component={HiLink} viewBox="-1 -1 22 22" />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>),
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Tooltip arrow placement="bottom" title="Copy">
+                            <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
+                              <SvgIcon color="secondary" component={HiLink} viewBox="-1 -1 22 22" />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      ),
                       // endAdornment: (<InputAdornment position="end">
                       //   <SvgIcon color="secondary" component={HiClipboardCopy} />
                       // </InputAdornment>)
@@ -189,12 +208,12 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                       ev.currentTarget.select()
                     }}
                   />
-
                 </Paper>
               </Dropdown>
 
               <Tooltip arrow placement="bottom-end" title="More options">
-                <IconButton color="secondary"
+                <IconButton
+                  color="secondary"
                   disabled={!wheel.editable && !wheel.editAnonymous}
                   onClick={(ev) => setOptionsAnchor(ev.currentTarget)}
                 >
@@ -204,7 +223,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
 
               <Dropdown anchor={optionsAnchor} setAnchor={setOptionsAnchor}>
                 <Paper sx={{ p: 1.5, width: 180 }}>
-
                   <List dense sx={{ py: 0 }}>
                     <LinkListItem
                       name="Edit"
@@ -216,7 +234,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                         setEditDialogOpen(true)
                       }}
                     />
-                    {(wheel.editable || wheel.editAnonymous) && wheel.owner &&
+                    {(wheel.editable || wheel.editAnonymous) && wheel.owner && (
                       <LinkListItem
                         name="Members"
                         icon={<SvgIcon component={TiUserAdd} />}
@@ -225,8 +243,8 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                           setMembersDialogOpen(true)
                         }}
                       />
-                    }
-                    {(wheel.editable || wheel.editAnonymous) &&
+                    )}
+                    {(wheel.editable || wheel.editAnonymous) && (
                       <LinkListItem
                         name="Sync"
                         icon={<SvgIcon component={TiArrowRepeat} viewBox="2 1 22 22" />}
@@ -236,7 +254,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                           setRedemptionDialogOpen(true)
                         }}
                       />
-                    }
+                    )}
                     {/* <LinkListItem name="Test spin" icon={<SvgIcon component={TiRefresh} viewBox="2 3 20 20" />} disabled /> */}
                     {wheel.owner && user?.id === wheel.owner.id && (
                       <>
@@ -248,46 +266,49 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                           onClick={() => {
                             setOptionsAnchor(null)
                             setDeleteDialogOpen(true)
-                          }} />
+                          }}
+                        />
                       </>
                     )}
                   </List>
-
                 </Paper>
               </Dropdown>
 
               {(wheel.editable || wheel.editAnonymous) && (
-                <CreateEditWheelDialog type="edit" open={editDialogOpen} slug={wheel.slug} onClose={() => setEditDialogOpen(false)} />
+                <CreateEditWheelDialog
+                  type="edit"
+                  open={editDialogOpen}
+                  slug={wheel.slug}
+                  onClose={() => setEditDialogOpen(false)}
+                />
               )}
 
-              {(wheel.editable || wheel.editAnonymous) && wheel.owner &&
+              {(wheel.editable || wheel.editAnonymous) && wheel.owner && (
                 <EditMembersDialog
                   open={membersDialogOpen}
                   slug={wheel.slug}
                   onClose={() => setMembersDialogOpen(false)}
                   readonly={wheel.owner.id !== user?.id}
                 />
-              }
+              )}
 
-              {(wheel.editable || wheel.editAnonymous) &&
+              {(wheel.editable || wheel.editAnonymous) && (
                 <RedemptionSyncDialog
                   open={redemptionDialogOpen}
                   slug={wheel.slug}
                   onClose={() => setRedemptionDialogOpen(false)}
                   readonly={wheel.owner.id !== user?.id}
                 />
-              }
+              )}
 
-              {wheel.owner && wheel.owner?.id === user?.id &&
+              {wheel.owner && wheel.owner?.id === user?.id && (
                 <DeleteWheelDialog
                   open={deleteDialogOpen}
                   onClose={() => setDeleteDialogOpen(false)}
                   onDelete={onDeleteDialog}
                 />
-              }
-
+              )}
             </Box>
-
           </Box>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -295,22 +316,22 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             {new Date(wheel.createdAt).toLocaleString()}
           </Typography>
 
-          <Box sx={{
-            mt: 2,
-            display: "grid",
-            gap: "1em 1em",
-            gridTemplateColumns: "2fr 1fr",
-            gridTemplateRows: "min-content 1fr",
-            gridTemplateAreas: `
-              "wheel ${(wheel.editable || wheel.editAnonymous) ? "controls" : "names"}"
+          <Box
+            sx={{
+              mt: 2,
+              display: "grid",
+              gap: "1em 1em",
+              gridTemplateColumns: "2fr 1fr",
+              gridTemplateRows: "min-content 1fr",
+              gridTemplateAreas: `
+              "wheel ${wheel.editable || wheel.editAnonymous ? "controls" : "names"}"
               "wheel names"
             `,
-            // "wheel wheel names"
-          }}>
-
+              // "wheel wheel names"
+            }}
+          >
             <Box sx={{ gridArea: "wheel" }}>
               <Paper sx={{ p: 1, height: "100%" }}>
-
                 <Wheel
                   diameter={688}
                   entries={entries}
@@ -319,13 +340,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                   spinDuration={wheel.spinDuration}
                   colors={wheel.theme?.colors}
                 />
-
               </Paper>
             </Box>
             {(wheel.editable || wheel.editAnonymous) && (
               <Box sx={{ gridArea: "controls" }}>
                 <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
-
                   <Badge badgeContent={entries?.length} color="success">
                     <Button
                       color="primary"
@@ -353,7 +372,6 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     onClose={() => setClearDialogOpen(false)}
                     onClear={clear}
                   />
-
                 </Paper>
               </Box>
             )}
@@ -367,9 +385,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             />
 
             <Box sx={{ gridArea: "names" }}>
-
               <Paper sx={{ height: "100%" }}>
-
                 <Tabs
                   value={entriesTab}
                   onChange={(_, value) => setEntriesTab(value)}
@@ -384,40 +400,41 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                 </Tabs>
 
                 <TabPanel index={0} activeTab={entriesTab} fullHeight>
-                  <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    height: "100%",
-                    gap: 2,
-                  }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                      gap: 2,
+                    }}
+                  >
+                    <EntryList
+                      entries={entries ?? []}
+                      editable={wheel.editable || wheel.editAnonymous}
+                      spinning={wheel.spinning}
+                      autoScroll
+                    />
 
-                    <EntryList entries={entries ?? []} editable={wheel.editable || wheel.editAnonymous} spinning={wheel.spinning} autoScroll />
-
-                    {(wheel.editable || wheel.editAnonymous) &&
+                    {(wheel.editable || wheel.editAnonymous) && (
                       <AddEntryForm wheelId={wheel.id} spinning={wheel.spinning} />
-                    }
-
+                    )}
                   </Box>
                 </TabPanel>
 
                 <TabPanel index={1} activeTab={entriesTab} fullHeight>
-                  <WinnerList winners={
-                    (winners ?? []).map(winner => ({
+                  <WinnerList
+                    winners={(winners ?? []).map((winner) => ({
                       ...winner,
-                      createdAt: new Date(winner.createdAt)
-                    }))
-                  }
+                      createdAt: new Date(winner.createdAt),
+                    }))}
                     spinning={wheel.spinning}
                     editable={wheel.editable || wheel.editAnonymous}
                   />
                 </TabPanel>
-
               </Paper>
-
             </Box>
           </Box>
-
         </>
       )}
     </>
