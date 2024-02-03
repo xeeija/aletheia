@@ -10,7 +10,11 @@
     "eventsub-watch": "nodemon --delay 2 dist/twitch/eventsub.js",
     "watch": "tsc -w",
     "build": "tsc",
-    "migrate": "npx prisma migrate dev --create-only --name"
+    "migrate": "npx prisma migrate dev --create-only --name",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write --log-level warn",
+    "format:check": "prettier --check"
   },
   "keywords": [],
   "author": "xeeija",
@@ -44,6 +48,10 @@
     "@types/express-session": "^1.17.4",
     "@types/node": "^16.9.1",
     "@types/node-fetch": "^2.6.6",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.4",
     "prisma": "^3.12.0",
     "typescript": "~4.9.5"
   }

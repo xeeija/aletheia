@@ -1,0 +1,4 @@
+.eslintrc.cjs
+tsconfig.json
+README.md
+src/twitch/mock
