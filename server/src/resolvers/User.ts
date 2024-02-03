@@ -1,9 +1,9 @@
-import argon2 from "argon2";
-import fetch from "node-fetch";
-import { GraphqlContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { User, UserAccessToken } from "../../dist/generated/typegraphql-prisma";
-import { FieldError } from "./common/types";
+import argon2 from "argon2"
+import fetch from "node-fetch"
+import { GraphqlContext } from "src/types"
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
+import { User, UserAccessToken } from "../../dist/generated/typegraphql-prisma"
+import { FieldError } from "./common/types"
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
 
@@ -27,18 +27,15 @@ class UserInput implements Partial<User> {
 
 @Resolver()
 export class UserResolver {
-
   @Query(() => User, { nullable: true })
-  async me(
-    @Ctx() { req, prisma }: GraphqlContext
-  ) {
+  async me(@Ctx() { req, prisma }: GraphqlContext) {
     // Not logged in
     if (!req.session.userId) {
       return null
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: req.session.userId }
+      where: { id: req.session.userId },
     })
 
     return user
@@ -49,9 +46,8 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("displayname", { nullable: true }) displayname: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: GraphqlContext,
+    @Ctx() { req, prisma }: GraphqlContext
   ): Promise<UserResponse> {
-
     let errors: FieldError[] = []
 
     // Handle empty fields
@@ -63,7 +59,6 @@ export class UserResolver {
     }
     if (errors.length > 0) return { errors }
 
-
     const passwordHash = await argon2.hash(password)
 
     try {
@@ -71,17 +66,15 @@ export class UserResolver {
         data: {
           username,
           displayname,
-          password: passwordHash
-        }
+          password: passwordHash,
+        },
       })
 
       // Log the user in directly
       req.session.userId = user.id
 
       return { user }
-
     } catch (ex: any) {
-
       // User_username_key
       // P2002: unique constraint failed
 
@@ -89,15 +82,14 @@ export class UserResolver {
         const errorFields = ex.meta.target as string[]
 
         return {
-          errors: errorFields.map(field => ({
+          errors: errorFields.map((field) => ({
             field,
-            message: `${field[0].toUpperCase() + field.slice(1)} already exists`
-          }))
+            message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
+          })),
         }
       } else {
         throw ex
       }
-
     }
   }
 
@@ -105,9 +97,8 @@ export class UserResolver {
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: GraphqlContext,
+    @Ctx() { req, prisma }: GraphqlContext
   ): Promise<UserResponse> {
-
     let errors: FieldError[] = []
 
     // Handle empty fields
@@ -121,11 +112,9 @@ export class UserResolver {
 
     const user = await prisma.user.findUnique({ where: { username } })
 
-    if (user === null || !await argon2.verify(user.password, password)) {
+    if (user === null || !(await argon2.verify(user.password, password))) {
       return {
-        errors: [
-          { field: "password", message: "Username or password incorrect" }
-        ]
+        errors: [{ field: "password", message: "Username or password incorrect" }],
       }
     }
 
@@ -136,10 +125,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async logout(
-    @Ctx() { req, res }: GraphqlContext,
-  ): Promise<boolean> {
-
+  async logout(@Ctx() { req, res }: GraphqlContext): Promise<boolean> {
     if (!req.session.userId) {
       // Not logged in
       return false
@@ -161,15 +147,10 @@ export class UserResolver {
         resolve(true)
       })
     })
-
   }
 
   @Mutation(() => UserResponse)
-  async updateUser(
-    @Arg("user") user: UserInput,
-    @Ctx() { req, prisma }: GraphqlContext
-  ): Promise<UserResponse> {
-
+  async updateUser(@Arg("user") user: UserInput, @Ctx() { req, prisma }: GraphqlContext): Promise<UserResponse> {
     let errors: FieldError[] = []
 
     // Handle field errors
@@ -182,8 +163,8 @@ export class UserResolver {
     const usernameExists = await prisma.user.count({
       where: {
         username: user.username,
-        id: { not: req.session.userId }
-      }
+        id: { not: req.session.userId },
+      },
     })
 
     if (usernameExists) {
@@ -196,16 +177,12 @@ export class UserResolver {
     const newUser = await prisma.user.update({ where: { id: req.session.userId }, data: user })
 
     return { user: newUser }
-
   }
 
   // Actually could be a query, because it doesnt mutate anything,
-  // but queries can't easily be executed imperatively with urql 
+  // but queries can't easily be executed imperatively with urql
   @Mutation(() => Boolean)
-  async usernameExists(
-    @Ctx() { prisma }: GraphqlContext,
-    @Arg("username") username: string,
-  ) {
+  async usernameExists(@Ctx() { prisma }: GraphqlContext, @Arg("username") username: string) {
     const userExists = await prisma.user.count({
       where: {
         username: {
@@ -219,57 +196,74 @@ export class UserResolver {
   }
 
   @Query(() => UserAccessToken)
-  async userAccesToken(
-    @Ctx() { prisma, req }: GraphqlContext
-  ) {
-
+  async userAccesToken(@Ctx() { prisma, req }: GraphqlContext) {
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? ""
-      }
+        userId: req.session.userId ?? "",
+      },
     })
 
     return token
   }
 
   @Mutation(() => Boolean)
-  async disconnectAccessToken(
-    @Ctx() { prisma, req }: GraphqlContext
-  ) {
+  async disconnectAccessToken(@Ctx() { prisma, req }: GraphqlContext) {
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? ""
-      }
+        userId: req.session.userId ?? "",
+      },
     })
 
     if (token?.refreshToken) {
-      const response = await fetch(`https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.refreshToken}`, {
-        method: "POST",
-      })
+      const response = await fetch(
+        `https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.refreshToken}`,
+        {
+          method: "POST",
+        }
+      )
 
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
-        console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
-        throw new Error(`error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`)
+        console.error(
+          "error revoking twitch refresh token:",
+          response.status,
+          response.statusText,
+          "\n",
+          await response.text()
+        )
+        throw new Error(
+          `error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`
+        )
       }
     }
 
     if (token?.accessToken) {
-      const response = await fetch(`https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.accessToken}`, {
-        method: "POST",
-      })
+      const response = await fetch(
+        `https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.accessToken}`,
+        {
+          method: "POST",
+        }
+      )
 
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
-        console.error("error revoking twitch refresh token:", response.status, response.statusText, "\n", await response.text())
-        throw new Error(`error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`)
+        console.error(
+          "error revoking twitch refresh token:",
+          response.status,
+          response.statusText,
+          "\n",
+          await response.text()
+        )
+        throw new Error(
+          `error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`
+        )
       }
     }
 
     await prisma.userAccessToken.delete({
       where: {
-        id: token?.id
-      }
+        id: token?.id,
+      },
     })
 
     return true

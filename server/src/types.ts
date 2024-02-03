@@ -1,8 +1,8 @@
-import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client";
-import { ApiClient } from "@twurple/api";
-import { EventSubMiddleware } from "@twurple/eventsub-http";
-import { Request, Response } from "express";
-import { Socket as SocketDefault, Server as SocketServerDefault } from "socket.io";
+import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
+import { ApiClient } from "@twurple/api"
+import { EventSubMiddleware } from "@twurple/eventsub-http"
+import { Request, Response } from "express"
+import { Socket as SocketDefault, Server as SocketServerDefault } from "socket.io"
 
 // Define custom properties on the session
 declare module "express-session" {
@@ -18,13 +18,18 @@ export type GraphqlContext = {
   res: Response
   prisma: PrismaClient
   socketIo: SocketServer
-  apiClient: ApiClient,
+  apiClient: ApiClient
   eventSub: EventSubMiddleware
 }
 
 // Socket
 
-export type SocketServer = SocketServerDefault<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+export type SocketServer = SocketServerDefault<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>
 export type Socket = SocketDefault<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 
 export type SocketHandler = (
@@ -38,25 +43,21 @@ export type SocketHandler = (
 export interface ServerToClientEvents {
   "wheel:entries": (type: "add" | "delete" | "update" | "clear") => void
   // "wheel:winners": (winner: RandomWheelWinner) => void
-  "wheel:spin": (spinResult: {
-    winner: RandomWheelWinner,
-    entry: RandomWheelEntry,
-    rotation: number,
-  }) => void
+  "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
   "wheel:update": (type: string) => void
 }
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
-  "wheel:entries": (type: "add" | "update", wheelId: string,) => void
+  "wheel:entries": (type: "add" | "update", wheelId: string) => void
 }
 
-export interface InterServerEvents { }
+export interface InterServerEvents {}
 
-export interface SocketData { }
+export interface SocketData {}
 
 export enum SubscriptionType {
-  redemptionAdd = "channel.channel_points_custom_reward_redemption.add"
+  redemptionAdd = "channel.channel_points_custom_reward_redemption.add",
 }
 
 export enum EventSubType {

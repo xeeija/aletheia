@@ -15,5 +15,5 @@ export const Resolvers: NonEmptyArray<Function> | NonEmptyArray<string> = [
   ColorThemeResolver,
   TwitchResolver,
   CustomRewardResolver,
-  EventSubscriptionResolver
+  EventSubscriptionResolver,
 ]

@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
-import { ApiClient } from '@twurple/api';
-import { EventSubSubscription } from '@twurple/eventsub-base';
-import { EventSubMiddleware } from '@twurple/eventsub-http';
-import { config } from 'dotenv';
-import { EventSubType, SocketServer, SubscriptionType } from '../types';
-import { authProvider } from './auth';
-import { addSubscriptionRedemptionAdd } from './events/redemptionAdd';
+import { PrismaClient } from "@prisma/client"
+import { ApiClient } from "@twurple/api"
+import { EventSubSubscription } from "@twurple/eventsub-base"
+import { EventSubMiddleware } from "@twurple/eventsub-http"
+import { config } from "dotenv"
+import { EventSubType, SocketServer, SubscriptionType } from "../types"
+import { authProvider } from "./auth"
+import { addSubscriptionRedemptionAdd } from "./events/redemptionAdd"
 
 config()
 
@@ -15,23 +15,24 @@ export const apiClient = new ApiClient({
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
-  }
+  },
 })
 
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient,
   hostName: process.env.EVENTSUB_HOSTNAME ?? "",
-  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? '/api/twitch',
-  secret: process.env.EVENTSUB_SECRET ?? 'haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi',
+  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch",
+  secret: process.env.EVENTSUB_SECRET ?? "haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi",
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.EVENTSUB_LOGLEVEL) || undefined,
-  }
+  },
 })
 
 export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
-export const showEventSubDebug = process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
+export const showEventSubDebug =
+  process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
 
 // const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
 const eventTypePattern = /^([a-z_.]+[a-z_])/
@@ -42,7 +43,6 @@ const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 // }
 
 export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: PrismaClient, socketIo: SocketServer) => {
-
   if (showEventSubDebug) {
     eventSub.onSubscriptionCreateFailure((ev) => {
       console.log("[eventsub] create failure", eventType(ev.id))
@@ -67,13 +67,13 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     await prisma.eventSubscription.deleteMany({
       where: {
         twitchUserId: ev.authUserId ?? "",
-      }
+      },
     })
 
     await prisma.userAccessToken.deleteMany({
       where: {
-        twitchUserId: ev.authUserId
-      }
+        twitchUserId: ev.authUserId,
+      },
     })
 
     console.log("[eventsub] revoke: removed token successfully")
@@ -93,16 +93,20 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
 
   if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
     const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored:` : ""
-    console.log(`[eventsub] subscriptions active:`, helixSubs.data.length, storedCountText, storedCountText ? storedSubscriptions.length : "")
+    console.log(
+      `[eventsub] subscriptions active:`,
+      helixSubs.data.length,
+      storedCountText,
+      storedCountText ? storedSubscriptions.length : ""
+    )
   }
 
   helixSubs.data.forEach((helixSub) => {
     if (helixSub.type === SubscriptionType.redemptionAdd) {
       const condition = helixSub.condition as Record<string, string>
 
-      const stored = storedSubscriptions.find(s =>
-        s.rewardId === condition.reward_id &&
-        s.twitchUserId === condition.broadcaster_user_id
+      const stored = storedSubscriptions.find(
+        (s) => s.rewardId === condition.reward_id && s.twitchUserId === condition.broadcaster_user_id
       )
 
       if (stored?.type === EventSubType.wheelSync) {
@@ -116,12 +120,10 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       if (stored?.type === EventSubType.rewardGroup) {
         // add subscription for reward group handling
       }
-
     }
   })
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 
   // console.log(await redemptionsSubscription.getCliTestCommand())
-
 }

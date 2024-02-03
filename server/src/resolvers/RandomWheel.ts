@@ -1,13 +1,36 @@
-import { Prisma } from "@prisma/client";
-import { GraphQLError, GraphQLResolveInfo } from "graphql";
-import { ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info";
-import { GraphqlContext } from "src/types";
-import { Arg, Ctx, Field, FieldResolver, Info, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
-import { AccessType, ColorTheme, RandomWheel, RandomWheelEntry, RandomWheelLike, RandomWheelMember, RandomWheelRole, RandomWheelWinner, User } from "../../dist/generated/typegraphql-prisma";
-import { random, randomNumber } from "../utils/math";
-import { slugify } from "../utils/slug";
-import { ColorThemeInput } from "./ColorTheme";
-import { AppError, createAppErrorUnion } from "./common/types";
+import { Prisma } from "@prisma/client"
+import { GraphQLError, GraphQLResolveInfo } from "graphql"
+import { ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
+import { GraphqlContext } from "src/types"
+import {
+  Arg,
+  Ctx,
+  Field,
+  FieldResolver,
+  Info,
+  InputType,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql"
+import {
+  AccessType,
+  ColorTheme,
+  RandomWheel,
+  RandomWheelEntry,
+  RandomWheelLike,
+  RandomWheelMember,
+  RandomWheelRole,
+  RandomWheelWinner,
+  User,
+} from "../../dist/generated/typegraphql-prisma"
+import { random, randomNumber } from "../utils/math"
+import { slugify } from "../utils/slug"
+import { ColorThemeInput } from "./ColorTheme"
+import { AppError, createAppErrorUnion } from "./common/types"
 
 /*
   @ObjectType()
@@ -94,10 +117,10 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
 
   const include: Prisma.RandomWheelInclude = {
     entries: "entries" in fields && {
-      orderBy: { createdAt: "asc" }
+      orderBy: { createdAt: "asc" },
     },
     winners: "winners" in fields && {
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     },
     members: "members" in fields && {
       include: { ...includeRandomWheelMember(info) },
@@ -114,9 +137,10 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
 const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
 
-  const membersFields: ResolveTree = ("RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {}))
-    ? resolveInfo
-    : (<any>resolveInfo?.fieldsByTypeName.RandomWheel).members
+  const membersFields: ResolveTree =
+    "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {})
+      ? resolveInfo
+      : (<any>resolveInfo?.fieldsByTypeName.RandomWheel).members
 
   const fields = membersFields.fieldsByTypeName.RandomWheelMember
 
@@ -182,8 +206,7 @@ export class RandomWheelResolver {
   async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously
 
-    if (randomWheel.ownerId === req.session.userId ||
-      randomWheel.ownerId === null) {
+    if (randomWheel.ownerId === req.session.userId || randomWheel.ownerId === null) {
       return true
     }
 
@@ -206,7 +229,6 @@ export class RandomWheelResolver {
 
   @FieldResolver(() => Boolean)
   async liked(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
-
     if (req.session.userId === undefined) {
       return false
     }
@@ -216,8 +238,8 @@ export class RandomWheelResolver {
         userId_randomWheelId: {
           userId: req.session.userId,
           randomWheelId: randomWheel.id,
-        }
-      }
+        },
+      },
     })
 
     return like !== null
@@ -231,7 +253,6 @@ export class RandomWheelResolver {
     @Info() info: GraphQLResolveInfo,
     @Arg("type", { defaultValue: "my" }) type: string // "should" be: "my" | "shared" | "favorite"
   ) {
-
     // TODO: FIX so it throws a proper Graphql Error or so
     if (!req.session.userId) {
       return []
@@ -245,19 +266,25 @@ export class RandomWheelResolver {
     const randomWheels = await prisma.randomWheel.findMany({
       where: {
         ownerId: type === "my" ? req.session.userId : undefined,
-        members: type === "shared" ? {
-          some: {
-            userId: req.session.userId,
-          }
-        } : undefined,
-        likes: type === "favorite" ? {
-          some: {
-            userId: req.session.userId
-          }
-        } : undefined,
+        members:
+          type === "shared"
+            ? {
+                some: {
+                  userId: req.session.userId,
+                },
+              }
+            : undefined,
+        likes:
+          type === "favorite"
+            ? {
+                some: {
+                  userId: req.session.userId,
+                },
+              }
+            : undefined,
       },
       include: {
-        ...includeRandomWheel(info)
+        ...includeRandomWheel(info),
       },
     })
 
@@ -270,7 +297,8 @@ export class RandomWheelResolver {
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("slug") slug: string,
     @Info() info: GraphQLResolveInfo
-  ) { //: Promise<typeof RandomWheelResponse> {
+  ) {
+    //: Promise<typeof RandomWheelResponse> {
     try {
       // console.log(JSON.stringify(info))
       // info.fieldNodes[0].selectionSet?.selections.forEach(sel => console.log(sel))
@@ -313,13 +341,12 @@ export class RandomWheelResolver {
       //   errorCode: 404,
       //   errorMessage: "Not found"
       // }
-
     } catch (ex: any) {
       console.error(ex)
 
       return {
         errorCode: 500,
-        errorMessage: "Unknown error"
+        errorMessage: "Unknown error",
       }
     }
   }
@@ -332,9 +359,8 @@ export class RandomWheelResolver {
     @Arg("accessType", { nullable: true }) accessType?: string,
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
-    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
+    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean
   ): Promise<typeof RandomWheelResponse> {
-
     const tempSlug = `slug-${Date.now()}`
 
     try {
@@ -347,28 +373,27 @@ export class RandomWheelResolver {
           spinDuration,
           fadeDuration,
           editAnonymous,
-        }
+        },
       })
 
       const slug = slugify(randomWheel.id, 6)
-      // TODO: Use default value for slug in schema to avoid a second update? 
+      // TODO: Use default value for slug in schema to avoid a second update?
       const newWheel = await prisma.randomWheel.update({
         where: { id: randomWheel.id },
-        data: { slug: slug }
+        data: { slug: slug },
       })
 
       return newWheel
-    }
-    catch (ex: any) {
+    } catch (ex: any) {
       if (ex.code === "P2002") {
         const errorFields = ex.meta.target as string[]
 
         return {
           errorCode: 400,
-          fieldErrors: errorFields.map(field => ({
+          fieldErrors: errorFields.map((field) => ({
             field,
-            message: `${field[0].toUpperCase() + field.slice(1)} already exists`
-          }))
+            message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
+          })),
         }
       }
 
@@ -376,11 +401,9 @@ export class RandomWheelResolver {
 
       return {
         errorCode: 500,
-        errorMessage: "Unknown error"
+        errorMessage: "Unknown error",
       }
-
     }
-
   }
 
   @Mutation(() => RandomWheelFull, { nullable: true })
@@ -390,13 +413,12 @@ export class RandomWheelResolver {
     @Arg("id") id: string,
     @Arg("options") { theme, ...wheelOptions }: RandomWheelInput
   ) {
-
     // TODO: Middleware to get randomWheel (or any other entity) or return a not found error/permission error
     const randomWheel = await prisma.randomWheel.findUnique({
       where: { id: id },
       include: {
         members: true,
-      }
+      },
     })
 
     if (!randomWheel) {
@@ -408,7 +430,8 @@ export class RandomWheelResolver {
     }
 
     const isOwner = randomWheel?.ownerId === req.session.userId
-    const isEditable = randomWheel.editAnonymous || randomWheel.members.some((member) => member.userId === req.session.userId)
+    const isEditable =
+      randomWheel.editAnonymous || randomWheel.members.some((member) => member.userId === req.session.userId)
 
     if ((!req.session.userId && !randomWheel.editAnonymous) || !(isOwner || isEditable)) {
       // TODO: Proper Error
@@ -420,7 +443,6 @@ export class RandomWheelResolver {
     }
 
     try {
-
       // extra query as workaround, because theme and wheeloptions are not compatible somehow idk
       if (theme?.id) {
         await prisma.randomWheel.update({
@@ -445,10 +467,10 @@ export class RandomWheelResolver {
                   name: theme.name,
                   colors: theme.colors,
                   creatorId: req.session.userId,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         })
       }
 
@@ -457,24 +479,22 @@ export class RandomWheelResolver {
         data: wheelOptions,
         include: {
           ...includeRandomWheel(info),
-        }
+        },
       })
 
       socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")
 
       return newWheel
-    }
-
-    catch (ex: any) {
+    } catch (ex: any) {
       if (ex.code === "P2002") {
         const errorFields = ex.meta.target as string[]
 
         return {
           errorCode: 400,
-          fieldErrors: errorFields.map(field => ({
+          fieldErrors: errorFields.map((field) => ({
             field,
-            message: `${field[0].toUpperCase() + field.slice(1)} is not available`
-          }))
+            message: `${field[0].toUpperCase() + field.slice(1)} is not available`,
+          })),
         }
       }
 
@@ -482,35 +502,31 @@ export class RandomWheelResolver {
 
       return {
         errorCode: 500,
-        errorMessage: "Unknown error"
+        errorMessage: "Unknown error",
       }
     }
-
   }
 
   @Mutation(() => AppError, { nullable: true })
-  async deleteRandomWheel(
-    @Ctx() { prisma, req }: GraphqlContext,
-    @Arg("id") id: string
-  ): Promise<AppError | null> {
+  async deleteRandomWheel(@Ctx() { prisma, req }: GraphqlContext, @Arg("id") id: string): Promise<AppError | null> {
     // TODO: isUuid utility function
     // const uuidRegex = /^[0-9a-f]{8}-?(?:[0-9a-f]{4}-?){3}[0-9a-f]{12}$/i
 
     const randomWheel = await prisma.randomWheel.findUnique({
-      where: { id: id }
+      where: { id: id },
     })
 
     if (!randomWheel) {
       return {
         errorCode: 404,
-        errorMessage: "Not found"
+        errorMessage: "Not found",
       }
     }
 
     if (randomWheel.ownerId !== req.session.userId) {
       return {
         errorCode: 403,
-        errorMessage: "Forbidden"
+        errorMessage: "Forbidden",
       }
     }
 
@@ -530,16 +546,15 @@ export class RandomWheelResolver {
   @Mutation(() => RandomWheelWinner)
   async spinRandomWheel(
     @Ctx() { prisma, req, socketIo }: GraphqlContext,
-    @Arg("randommWheelId") randomWheelId: string,
+    @Arg("randommWheelId") randomWheelId: string
   ) {
-
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
       include: {
         entries: {
-          orderBy: { createdAt: "asc" }
+          orderBy: { createdAt: "asc" },
         },
-      }
+      },
     })
 
     if (!wheel || wheel.entries.length === 0) {
@@ -550,13 +565,13 @@ export class RandomWheelResolver {
 
     const winnerNumber = await randomNumber(0, totalWeight)
     let winnerAcc = 0
-    const winnerIndex = wheel.entries.findIndex(((entry) => {
-      if (winnerNumber >= winnerAcc && winnerNumber < (winnerAcc + entry.weight)) {
+    const winnerIndex = wheel.entries.findIndex((entry) => {
+      if (winnerNumber >= winnerAcc && winnerNumber < winnerAcc + entry.weight) {
         return true
       }
       winnerAcc += entry.weight
       return false
-    }))
+    })
 
     const winnerEntry = wheel.entries[winnerIndex]
 
@@ -566,7 +581,7 @@ export class RandomWheelResolver {
         name: winnerEntry.name,
         drawnById: req.session.userId ?? null,
         winnerIndex,
-      }
+      },
     })
 
     // const rotateDuration = Math.round(wheel.spinDuration / 1000)
@@ -575,7 +590,7 @@ export class RandomWheelResolver {
     const sectorDeg = 360 / totalWeight
     const winnerDeg = random(0.1, 0.9)
 
-    const newRotation = (360 - winnerNumber * sectorDeg) - (sectorDeg * winnerDeg) + 90
+    const newRotation = 360 - winnerNumber * sectorDeg - sectorDeg * winnerDeg + 90
     // console.warn({ winnerIndex, rotateDuration, rotations, sectorDeg, winnerDeg, newRotation })
 
     await prisma.randomWheel.update({
@@ -589,7 +604,9 @@ export class RandomWheelResolver {
       rotation: newRotation % 360,
     })
 
-    console.log(`emit to wheel/${wheel.id.substring(0, 6)} (${socketIo.in(`wheel/${wheel.id}`).allSockets.length}) wheel:spin`)
+    console.log(
+      `emit to wheel/${wheel.id.substring(0, 6)} (${socketIo.in(`wheel/${wheel.id}`).allSockets.length}) wheel:spin`
+    )
 
     // console.log({ winnerIndex, newRotation: newRotation % 360 })
 
@@ -611,14 +628,13 @@ export class RandomWheelResolver {
   async addRandomWheelEntry(
     @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
-    @Arg("name") name: string,
+    @Arg("name") name: string
   ) {
-
     const entry = await prisma.randomWheelEntry.create({
       data: {
         randomWheelId,
-        name
-      }
+        name,
+      },
     })
 
     socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
@@ -644,12 +660,9 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: GraphqlContext,
-    @Arg("id") id: string
-  ) {
+  async deleteRandomWheelEntry(@Ctx() { prisma, socketIo }: GraphqlContext, @Arg("id") id: string) {
     const entry = await prisma.randomWheelEntry.delete({
-      where: { id }
+      where: { id },
     })
 
     socketIo.to(`wheel/${entry.randomWheelId}`).emit("wheel:entries", "delete")
@@ -659,10 +672,7 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => Int)
-  async clearRandomWheel(
-    @Ctx() { prisma, socketIo }: GraphqlContext,
-    @Arg("id") id: string
-  ) {
+  async clearRandomWheel(@Ctx() { prisma, socketIo }: GraphqlContext, @Arg("id") id: string) {
     const res = await prisma.randomWheelEntry.deleteMany({
       where: { randomWheelId: id },
     })
@@ -683,7 +693,7 @@ export class RandomWheelResolver {
     @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("randomWheelId") randomWwheelId: string,
-    @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[],
+    @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[]
   ) {
     // TODO: Validate username input
 
@@ -715,7 +725,7 @@ export class RandomWheelResolver {
       if (memberInput.delete) {
         if (member) {
           await prisma.randomWheelMember.delete({
-            where: { id: member.id }
+            where: { id: member.id },
           })
         }
 
@@ -741,13 +751,12 @@ export class RandomWheelResolver {
             randomWheelId: randomWwheelId,
             userId: userToUpdate?.id ?? "",
             roleName: memberInput.role,
-          }
+          },
         })
       }
     })
 
-
-    const finishedMembers = (await Promise.all(newMembers)).filter(member => member)
+    const finishedMembers = (await Promise.all(newMembers)).filter((member) => member)
 
     socketIo.to(`wheel/${wheel.id}`).emit("wheel:update", "members")
 
@@ -755,11 +764,7 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteRandomWheelMember(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
-    @Arg("id") id: string
-  ) {
-
+  async deleteRandomWheelMember(@Ctx() { prisma, req, socketIo }: GraphqlContext, @Arg("id") id: string) {
     const member = await prisma.randomWheelMember.findUnique({
       where: { id: id },
       include: {
@@ -786,7 +791,7 @@ export class RandomWheelResolver {
   async likeRandomWheel(
     @Ctx() { prisma, req }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
-    @Arg("like") like: boolean,
+    @Arg("like") like: boolean
   ) {
     // TODO
     if (!req.session.userId) {
@@ -798,8 +803,8 @@ export class RandomWheelResolver {
         userId_randomWheelId: {
           userId: req.session.userId,
           randomWheelId,
-        }
-      }
+        },
+      },
     })
 
     if (like === (wheelLike !== null)) {
@@ -811,7 +816,7 @@ export class RandomWheelResolver {
         data: {
           userId: req.session.userId,
           randomWheelId,
-        }
+        },
       })
       return newLike
     } else {
@@ -820,12 +825,10 @@ export class RandomWheelResolver {
           userId_randomWheelId: {
             userId: req.session.userId,
             randomWheelId,
-          }
-        }
+          },
+        },
       })
       return null
     }
-
   }
-
 }

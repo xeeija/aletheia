@@ -1,8 +1,25 @@
 import { HelixCustomReward } from "@twurple/api"
 import { GraphQLJSON } from "graphql-scalars"
-import { Arg, Ctx, Field, FieldResolver, InputType, Int, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
+import {
+  Arg,
+  Ctx,
+  Field,
+  FieldResolver,
+  InputType,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql"
 import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
-import { addSubscriptionRedemptionAdd, deleteManySubscriptionRedemptionAdd, deleteSubscriptionRedemptionAdd, findSubscriptionRedemptionAdd } from "../twitch/events"
+import {
+  addSubscriptionRedemptionAdd,
+  deleteManySubscriptionRedemptionAdd,
+  deleteSubscriptionRedemptionAdd,
+  findSubscriptionRedemptionAdd,
+} from "../twitch/events"
 import { getRewards } from "../twitch/mock"
 import { EventSubType, GraphqlContext, SubscriptionType } from "../types"
 
@@ -78,7 +95,6 @@ export class CustomRewardResolver {
 export class EventSubscriptionFull extends EventSubscription {
   @Field(() => CustomReward, { nullable: true })
   reward?: CustomReward | null
-
 }
 
 @Resolver(() => EventSubscriptionFull)
@@ -91,7 +107,6 @@ export class EventSubscriptionResolver {
 
 @Resolver()
 export class TwitchResolver {
-
   // Channel Rewards
 
   @Query(() => [CustomReward])
@@ -99,7 +114,6 @@ export class TwitchResolver {
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("userId", { nullable: true }) userId: string
   ) {
-
     if (!req.session.userId) {
       return []
     }
@@ -107,7 +121,7 @@ export class TwitchResolver {
     const token = await prisma.userAccessToken.findFirst({
       where: {
         userId: userId ?? req.session.userId ?? "",
-      }
+      },
     })
 
     if (!token?.twitchUserId) {
@@ -117,8 +131,7 @@ export class TwitchResolver {
     try {
       const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
       return rewards
-    }
-    catch {
+    } catch {
       const rewards = await getRewards()
       return rewards
     }
@@ -137,7 +150,7 @@ export class TwitchResolver {
     const token = await prisma.userAccessToken.findFirst({
       where: {
         userId: req.session.userId ?? req.session.userId ?? "",
-      }
+      },
     })
 
     if (!token?.twitchUserId) {
@@ -180,7 +193,7 @@ export class TwitchResolver {
     const token = await prisma.userAccessToken.findFirst({
       where: {
         userId: req.session.userId ?? req.session.userId ?? "",
-      }
+      },
     })
 
     if (!token?.twitchUserId) {
@@ -197,7 +210,6 @@ export class TwitchResolver {
     // }
   }
 
-
   @Mutation(() => Boolean)
   async deleteChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
@@ -211,7 +223,7 @@ export class TwitchResolver {
     const token = await prisma.userAccessToken.findFirst({
       where: {
         userId: req.session.userId ?? req.session.userId ?? "",
-      }
+      },
     })
 
     if (!token?.twitchUserId) {
@@ -237,7 +249,7 @@ export class TwitchResolver {
     const subscriptions = await prisma.eventSubscription.findMany({
       where: {
         randomWheelId: randomWheelId,
-      }
+      },
     })
 
     if (subscriptions.length === 0) {
@@ -248,36 +260,34 @@ export class TwitchResolver {
       // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
 
       // test
-      const rewardsTwitch = await apiClient.channelPoints.getCustomRewardsByIds(subscriptions[0].twitchUserId,
-        subscriptions.filter(s => s.rewardId).map(s => s.rewardId as string)
+      const rewardsTwitch = await apiClient.channelPoints.getCustomRewardsByIds(
+        subscriptions[0].twitchUserId,
+        subscriptions.filter((s) => s.rewardId).map((s) => s.rewardId as string)
       )
-      const rewardsTest = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+      const rewardsTest = (await getRewards()).filter((r) => subscriptions.some((s) => s.rewardId === r.id))
 
       const rewards = [...rewardsTwitch, ...rewardsTest]
       // test end
 
-      return subscriptions.map(subscription => ({
+      return subscriptions.map((subscription) => ({
         ...subscription,
-        reward: rewards.find(r => r.id === subscription.rewardId)
+        reward: rewards.find((r) => r.id === subscription.rewardId),
       }))
     } catch {
-      const rewardsTest = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+      const rewardsTest = (await getRewards()).filter((r) => subscriptions.some((s) => s.rewardId === r.id))
       // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
 
       const rewards = [...rewardsTest]
 
-      return subscriptions.map(subscription => ({
+      return subscriptions.map((subscription) => ({
         ...subscription,
-        reward: rewards.find(r => r.id === subscription.rewardId)
+        reward: rewards.find((r) => r.id === subscription.rewardId),
       }))
     }
   }
 
-
   @Query(() => GraphQLJSON)
-  async eventSubActiveSubscriptions(
-    @Ctx() { apiClient }: GraphqlContext,
-  ) {
+  async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
     const subs = await apiClient.eventSub.getSubscriptions()
 
     return subs
@@ -290,8 +300,7 @@ export class TwitchResolver {
   ) {
     if (all) {
       await apiClient.eventSub.deleteAllSubscriptions()
-    }
-    else {
+    } else {
       await apiClient.eventSub.deleteBrokenSubscriptions()
     }
 
@@ -303,7 +312,7 @@ export class TwitchResolver {
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
-    @Arg("useInput", { defaultValue: false }) useInput: boolean,
+    @Arg("useInput", { defaultValue: false }) useInput: boolean
   ) {
     if (!req.session.userId) {
       return null
@@ -312,8 +321,8 @@ export class TwitchResolver {
     const token = await prisma.userAccessToken.findFirst({
       where: { userId: req.session.userId },
       select: {
-        twitchUserId: true
-      }
+        twitchUserId: true,
+      },
     })
 
     if (!token?.twitchUserId) {
@@ -326,7 +335,7 @@ export class TwitchResolver {
       where: {
         // randomWheelId,
         rewardId,
-      }
+      },
     })
 
     const subscriptionId = addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
@@ -334,7 +343,7 @@ export class TwitchResolver {
       rewardId,
       randomWheelId,
       useInput,
-      id: existingSubscription?.id
+      id: existingSubscription?.id,
     })
 
     // wait a bit for the twitch API
@@ -362,14 +371,14 @@ export class TwitchResolver {
           subscriptionId: helixSub?.id,
           useInput: useInput,
           condition: condition,
-        }
+        },
       })
 
       return newSubscription
     } else {
       const updatedSubscription = await prisma.eventSubscription.update({
         where: {
-          id: subscriptionId
+          id: subscriptionId,
         },
         data: {
           twitchUserId: token.twitchUserId ?? "",
@@ -377,11 +386,10 @@ export class TwitchResolver {
           randomWheelId: randomWheelId,
           subscriptionId: helixSub?.id,
           condition: condition,
-        }
+        },
       })
       return updatedSubscription
     }
-
   }
 
   @Mutation(() => Boolean, { nullable: true })
@@ -395,7 +403,6 @@ export class TwitchResolver {
   // async findByCondition(apiClient: ApiClient, type: string, condition: Record<string, unknown>) {
   //   const helixSubs = await apiClient.eventSub.getSubscriptionsForType(type)
 
-
   //   helixSubs.data.filter(sub => {
   //     sub.condition
   //   })
@@ -406,7 +413,7 @@ export class TwitchResolver {
   async pauseEntriesRedemptionSync(
     @Ctx() { prisma, eventSub, apiClient, socketIo }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("pause") pause: boolean,
+    @Arg("pause") pause: boolean
   ) {
     // this.findByCondition(apiClient, "channel.channel_points_custom_reward_redemption.add", {
     //   broadcaster_user_id: sub?.twitchUserId,
@@ -427,7 +434,12 @@ export class TwitchResolver {
       })
 
       if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-        console.warn(`[eventsub] create redemptionAdd: invalid ID ${id}: a required related ID is undefined`, !!sub?.twitchUserId, !!sub?.rewardId, !!sub?.randomWheelId)
+        console.warn(
+          `[eventsub] create redemptionAdd: invalid ID ${id}: a required related ID is undefined`,
+          !!sub?.twitchUserId,
+          !!sub?.rewardId,
+          !!sub?.randomWheelId
+        )
         return false
       }
 
@@ -441,17 +453,15 @@ export class TwitchResolver {
         console.log("[eventsub] Failed to reactivate subscription")
         throw new Error("Failed to receive subscription from Twitch")
       }
-
     }
 
     const newSubscription = await prisma.eventSubscription.updateMany({
       where: { id },
       data: {
-        paused: pause
-      }
+        paused: pause,
+      },
     })
 
     return newSubscription
   }
-
 }

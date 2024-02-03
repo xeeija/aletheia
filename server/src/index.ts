@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client"
-import { ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
+import {
+  ApolloServerPluginLandingPageDisabled,
+  ApolloServerPluginLandingPageGraphQLPlayground,
+} from "apollo-server-core"
 import { ApolloServer } from "apollo-server-express"
 import PGStore from "connect-pg-simple"
 import cors from "cors"
@@ -27,43 +30,46 @@ prisma.$on("beforeExit", async () => {
 })
 
 const main = async () => {
-
   // # Web Server
   const app = express()
   const httpServer = createServer(app)
 
   const PostgresStore = PGStore(session)
 
-  const originUrl = (process.env.ORIGIN_URL)?.split(" ").filter(o => o)
+  const originUrl = process.env.ORIGIN_URL?.split(" ").filter((o) => o)
 
   // Set cors globally, Allowed-Origin header can't be '*' if credentials are set to true
-  app.use(cors({
-    credentials: true,
-    origin: originUrl,
-  }))
+  app.use(
+    cors({
+      credentials: true,
+      origin: originUrl,
+    })
+  )
 
   if (!process.env.SESSION_SECRET) {
     console.warn("No session secret is set")
   }
 
   // Session
-  app.use(session({
-    name: "asid",
-    secret: process.env.SESSION_SECRET?.split(" ").filter(s => s) ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: "lax",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      //maxAge: 1000 * 60 * 60 * 24
-    },
-    store: new PostgresStore({
-      tableName: "_session",
-      createTableIfMissing: true,
-      conString: process.env.DATABASE_URL,
+  app.use(
+    session({
+      name: "asid",
+      secret: process.env.SESSION_SECRET?.split(" ").filter((s) => s) ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        sameSite: "lax",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        //maxAge: 1000 * 60 * 60 * 24
+      },
+      store: new PostgresStore({
+        tableName: "_session",
+        createTableIfMissing: true,
+        conString: process.env.DATABASE_URL,
+      }),
     })
-  }))
+  )
 
   // Websocket
 
@@ -78,7 +84,7 @@ const main = async () => {
   socketIo.on("connection", (socket) => {
     randomWheelHandlers(socket, {
       socketIo,
-      prisma
+      prisma,
     })
   })
 
@@ -86,7 +92,7 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: Resolvers,
-      validate: false
+      validate: false,
     }),
     context: ({ req, res }): GraphqlContext => ({
       req,
@@ -94,14 +100,14 @@ const main = async () => {
       prisma,
       socketIo,
       apiClient,
-      eventSub: eventSubMiddleware
+      eventSub: eventSubMiddleware,
     }),
     cache: "bounded",
     plugins: [
       process.env.ENABLE_GRAPHQL !== "1"
         ? ApolloServerPluginLandingPageDisabled()
-        : ApolloServerPluginLandingPageGraphQLPlayground()
-    ]
+        : ApolloServerPluginLandingPageGraphQLPlayground(),
+    ],
   })
 
   // TODO Test
@@ -113,7 +119,7 @@ const main = async () => {
 
   // Twitch Integration
 
-  eventSubMiddleware.apply(app);
+  eventSubMiddleware.apply(app)
   await setupAuthProvider(prisma)
 
   app.use("/api/twitch", await twitchRouter(prisma))
@@ -123,7 +129,7 @@ const main = async () => {
   httpServer.listen(APP_PORT, async () => {
     console.log(`Server started at http://localhost:${APP_PORT}`)
 
-    await eventSubMiddleware.markAsReady();
+    await eventSubMiddleware.markAsReady()
     await handleEventSub(eventSubMiddleware, prisma, socketIo)
     await handleTokenValidation(apiClient, prisma)
   })

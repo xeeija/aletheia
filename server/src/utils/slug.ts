@@ -41,7 +41,7 @@ export const toString64b = (hex: string) => {
   let lo = number >>> 0
   let hi = (number / 4294967296) >>> 0
 
-  let right = ''
+  let right = ""
   while (hi > 0) {
     right = DIGITS[0x3f & lo] + right
     lo >>>= 6
@@ -50,7 +50,7 @@ export const toString64b = (hex: string) => {
     hi >>>= 6
   }
 
-  let left = ''
+  let left = ""
   do {
     left = DIGITS[0x3f & lo] + left
     lo >>>= 6
@@ -74,9 +74,7 @@ export function toString64n(hex: string) {
   return result
 }
 
-
-export const slugTest: RequestHandler<{ slug: string; }> = (req, res) => {
-
+export const slugTest: RequestHandler<{ slug: string }> = (req, res) => {
   // const n = 1000000
   // const nSlugs = Array<string>(n)
   // const slugDec = BigInt(`0x${req.params.slug}`)

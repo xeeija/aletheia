@@ -1,17 +1,17 @@
-import { PrismaClient } from "@prisma/client";
-import { ApiClient } from "@twurple/api";
-import { AccessToken, RefreshingAuthProvider } from "@twurple/auth";
-import { config } from "dotenv";
-import fetch from "node-fetch";
-import { HttpError } from "src/types";
-import { deleteManySubscriptionRedemptionAdd } from "./events";
+import { PrismaClient } from "@prisma/client"
+import { ApiClient } from "@twurple/api"
+import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
+import { config } from "dotenv"
+import fetch from "node-fetch"
+import { HttpError } from "src/types"
+import { deleteManySubscriptionRedemptionAdd } from "./events"
 
 config()
 
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
 
-export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret });
+export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret })
 
 export const setupAuthProvider = async (prisma: PrismaClient) => {
   const accessTokens = await prisma.userAccessToken.findMany()
@@ -21,14 +21,13 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   for (const token of accessTokens) {
     const tokenNew: AccessToken = {
       ...token,
-      obtainmentTimestamp: Number(token.obtainmentTimestamp)
+      obtainmentTimestamp: Number(token.obtainmentTimestamp),
     }
 
     // returns the userId
     try {
       await authProvider.addUserForToken(tokenNew)
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       if (!(err instanceof Error)) {
         throw err
       }
@@ -48,15 +47,14 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
       await prisma.eventSubscription.deleteMany({
         where: {
           twitchUserId: token.twitchUserId ?? "",
-        }
+        },
       })
 
       await prisma.userAccessToken.deleteMany({
         where: {
-          twitchUserId: token.twitchUserId
-        }
+          twitchUserId: token.twitchUserId,
+        },
       })
-
     }
   }
 
@@ -71,30 +69,27 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
       },
       data: {
         ...newTokenData,
-        expiresIn: newTokenData.expiresIn ?? 12000
-      }
+        expiresIn: newTokenData.expiresIn ?? 12000,
+      },
     })
-
   })
 
   authProvider.onRefreshFailure((userId) => {
     console.warn(`[twitch] WARNING: failed to refresh token (${userId.slice(0, 4)})`)
   })
-
 }
 
 export const handleTokenValidation = async (apiClient: ApiClient, prisma: PrismaClient) => {
-  const intervalTime = (Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000) || 1000 * 60 * 60 * 4
+  const intervalTime = Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000 || 1000 * 60 * 60 * 4
 
   const validateTokenInterval = setInterval(async () => {
-
     const tokens = await prisma.userAccessToken.findMany({
       where: {
         refreshToken: { not: null },
         // obtainmentTimestamp: {
-        //   gt: 
+        //   gt:
         // },
-      }
+      },
     })
 
     const userTokensToDelete: string[] = []
@@ -106,8 +101,8 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
     for (const token of tokens) {
       const response = await fetch("https://id.twitch.tv/oauth2/validate", {
         headers: {
-          "Authorization": `Bearer ${token.accessToken}`
-        }
+          Authorization: `Bearer ${token.accessToken}`,
+        },
       })
 
       if (response.status === 401 && process.env.TWITCH_REFRESH_ON_VALIDATE !== "0") {
@@ -124,24 +119,24 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
 
           const refreshResponse = await fetch("https://id.twitch.tv/oauth2/validate", {
             headers: {
-              "Authorization": `Bearer ${token.refreshToken}`
-            }
+              Authorization: `Bearer ${token.refreshToken}`,
+            },
           })
 
           if (process.env.NODE_ENV !== "production") {
-            console.log(`[twitch] validate: refresh response ${refreshResponse.status} (${token.twitchUserId?.slice(0, 4)})`)
+            console.log(
+              `[twitch] validate: refresh response ${refreshResponse.status} (${token.twitchUserId?.slice(0, 4)})`
+            )
           }
 
           if (refreshResponse.status === 401) {
-
             try {
               const refreshedToken = await authProvider.refreshAccessTokenForUser(token.twitchUserId)
 
               if (!refreshedToken.refreshToken) {
                 throw new Error("Token invalid")
               }
-            }
-            catch {
+            } catch {
               // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
               userTokensToDelete.push(token.twitchUserId)
             }
@@ -151,7 +146,7 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
           //   // maybe refresh token, or do nothing?
 
           //   // TODO: does it get added to the provider automatically?
-          //   // if so, then onRefresh should trigger, which automatically updates in the DB 
+          //   // if so, then onRefresh should trigger, which automatically updates in the DB
           // }
 
           // }
@@ -164,13 +159,17 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
     if (userTokensToDelete.length > 0) {
       const subscriptionsToDelete = await prisma.eventSubscription.findMany({
         where: {
-          twitchUserId: { in: userTokensToDelete }
-        }
+          twitchUserId: { in: userTokensToDelete },
+        },
       })
 
       if (subscriptionsToDelete.length > 0) {
         console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
-        await deleteManySubscriptionRedemptionAdd(apiClient, prisma, subscriptionsToDelete.map(s => s.id))
+        await deleteManySubscriptionRedemptionAdd(
+          apiClient,
+          prisma,
+          subscriptionsToDelete.map((s) => s.id)
+        )
       }
 
       // if (process.env.NODE_ENV !== "production") {
@@ -179,8 +178,8 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
 
       const deleted = await prisma.userAccessToken.deleteMany({
         where: {
-          twitchUserId: { in: userTokensToDelete }
-        }
+          twitchUserId: { in: userTokensToDelete },
+        },
       })
 
       if (deleted.count > 0) {
@@ -197,5 +196,4 @@ export const handleTokenValidation = async (apiClient: ApiClient, prisma: Prisma
   validateTokenInterval.unref()
 
   // TODO: Validate tokens every hour -> check if twurple does that automatically
-
 }
