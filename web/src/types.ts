@@ -4,7 +4,7 @@ import { RandomWheelEntry, RandomWheelWinner } from "./generated/graphql"
 
 export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
 
-export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse<T>) => void
+export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse<T>) => void | Promise<void>
 
 // Events copied from server
 export type Socket = SocketDefault<ServerToClientEvents, ClientToServerEvents>

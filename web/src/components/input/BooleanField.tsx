@@ -48,7 +48,7 @@ export const BooleanField: FC<Props> = ({
   fullWidth,
   ...props
 }) => {
-  const [field, { error, touched }] = useField(name ?? "")
+  const [field, { error, touched }] = useField<boolean>(name ?? "")
 
   const hasLabel = label !== undefined && label !== null
   const labelId = name ? `${name}Label` : label?.toString().slice(0, 16).toLowerCase().replaceAll(" ", "_")
@@ -63,11 +63,15 @@ export const BooleanField: FC<Props> = ({
       aria-describedby={!hasLabel ? tooltip || name : undefined}
       name={name}
       {...props}
-      checked={!noForm ? field.value ?? false : checked}
+      checked={!noForm ? Boolean(field.value) ?? false : checked}
       color={error ? "error" : props.color}
+      // fix this inputProps
       inputProps={{
         ...props.inputProps,
-        ...(!noForm && field),
+        ...(!noForm && {
+          ...field,
+          value: `${field.value}`,
+        }),
       }}
     />
   )
