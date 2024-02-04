@@ -1,6 +1,6 @@
 **/node_modules
 **/dist
-.eslintrc.cjs
 tsconfig.json
 # next.config.js
 README.md
+src/twitch/mock
