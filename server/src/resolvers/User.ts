@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime"
 import argon2 from "argon2"
 import fetch from "node-fetch"
 import { GraphqlContext } from "src/types"
@@ -74,19 +75,23 @@ export class UserResolver {
       req.session.userId = user.id
 
       return { user }
-    } catch (ex: any) {
+    } catch (ex: unknown) {
       // User_username_key
       // P2002: unique constraint failed
 
-      if (ex.code === "P2002") {
-        const errorFields = ex.meta.target as string[]
+      // ex is prisma client error
+      if (ex instanceof PrismaClientKnownRequestError) {
+        if (ex.code === "P2002") {
+          const errorFields = ex.meta?.target as string[]
 
-        return {
-          errors: errorFields.map((field) => ({
-            field,
-            message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
-          })),
+          return {
+            errors: errorFields.map((field) => ({
+              field,
+              message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
+            })),
+          }
         }
+        throw ex
       } else {
         throw ex
       }
@@ -133,7 +138,7 @@ export class UserResolver {
 
     // Create Promise and resolve it in session destroy callback
     return new Promise<boolean>((resolve) => {
-      req.session.destroy((err) => {
+      req.session.destroy((err: unknown) => {
         if (err) {
           console.log("Can't destroy session: ", { err })
           resolve(false)
@@ -151,7 +156,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async updateUser(@Arg("user") user: UserInput, @Ctx() { req, prisma }: GraphqlContext): Promise<UserResponse> {
-    let errors: FieldError[] = []
+    const errors: FieldError[] = []
 
     // Handle field errors
 

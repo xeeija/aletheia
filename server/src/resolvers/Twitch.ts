@@ -82,7 +82,7 @@ class CustomRewardInput {
 @Resolver(() => CustomReward)
 export class CustomRewardResolver {
   @FieldResolver(() => String)
-  async image(@Root() reward: HelixCustomReward) {
+  image(@Root() reward: HelixCustomReward) {
     return reward.getImageUrl(1)
   }
 }
@@ -443,7 +443,11 @@ export class TwitchResolver {
         return false
       }
 
-      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, <any>sub)
+      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+        ...sub,
+        rewardId: sub.rewardId ?? "",
+        randomWheelId: sub.randomWheelId ?? "",
+      })
 
       await new Promise((resolve) => setTimeout(resolve, 500))
 

@@ -102,7 +102,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   }
 
   helixSubs.data.forEach((helixSub) => {
-    if (helixSub.type === SubscriptionType.redemptionAdd) {
+    if (helixSub.type === SubscriptionType.redemptionAdd.toString()) {
       const condition = helixSub.condition as Record<string, string>
 
       const stored = storedSubscriptions.find(

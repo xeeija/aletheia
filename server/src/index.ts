@@ -11,7 +11,7 @@ import session from "express-session"
 import "reflect-metadata"
 import { buildSchema } from "type-graphql"
 import { Resolvers } from "./resolvers"
-import { ClientToServerEvents, GraphqlContext, ServerToClientEvents } from "./types"
+import { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "./types"
 // import { slugTest } from "./utils/slug"
 import { createServer } from "http"
 import { Server } from "socket.io"
@@ -74,7 +74,7 @@ const main = async () => {
   // Websocket
 
   // TODO: Add typescript hints as type params
-  const socketIo = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+  const socketIo = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
     path: process.env.WEBSOCKET_PATH ?? "/socket",
     cors: {
       origin: originUrl,
@@ -122,7 +122,7 @@ const main = async () => {
   eventSubMiddleware.apply(app)
   await setupAuthProvider(prisma)
 
-  app.use("/api/twitch", await twitchRouter(prisma))
+  app.use("/api/twitch", twitchRouter(prisma))
 
   const APP_PORT = process.env.APP_PORT ?? 4000
 
@@ -131,11 +131,11 @@ const main = async () => {
 
     await eventSubMiddleware.markAsReady()
     await handleEventSub(eventSubMiddleware, prisma, socketIo)
-    await handleTokenValidation(apiClient, prisma)
+    handleTokenValidation(apiClient, prisma)
   })
 }
 
-main()
+void main()
 // .finally(async () => {
 //   await prisma.$disconnect()
 // })

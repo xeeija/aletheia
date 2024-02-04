@@ -3,14 +3,14 @@ import { SocketHandler } from "src/types"
 // const prefix = "wheel"
 
 export const randomWheelHandlers: SocketHandler = (socket) => {
-  socket.on("wheel:join", (id) => {
+  socket.on("wheel:join", async (id) => {
     // console.log(`join wheel/${id.substring(0, 6)}`)
 
     // TODO: User authentication
     // prisma instance from socket.data to check wheel id
 
     // console.log(`[socket] join in wheel/${id} from ${socket.id.slice(0, 6)}`)
-    socket.join(`wheel/${id}`)
+    await socket.join(`wheel/${id}`)
   })
 
   // Clients dont need to send anything to the server, I think?

@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { GraphQLError, GraphQLResolveInfo } from "graphql"
-import { ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
+import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
 import { GraphqlContext } from "src/types"
 import {
   Arg,
@@ -137,20 +137,29 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
 const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
 
-  const membersFields: ResolveTree =
-    "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {})
-      ? resolveInfo
-      : (<any>resolveInfo?.fieldsByTypeName.RandomWheel).members
+  try {
+    // TODO: Fix without eslint-disable
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+    const fallbackMembers: ResolveTree | FieldsByTypeName | null | undefined = (<Record<string, any>>(
+      resolveInfo?.fieldsByTypeName.RandomWheel
+    )).members
 
-  const fields = membersFields.fieldsByTypeName.RandomWheelMember
+    const membersFields: ResolveTree | FieldsByTypeName | null | undefined =
+      "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {}) ? resolveInfo : fallbackMembers
 
-  const include: Prisma.RandomWheelMemberInclude = {
-    randomWheel: "randomWheel" in fields,
-    role: "role" in fields,
-    user: "user" in fields,
+    const fields = membersFields?.fieldsByTypeName.RandomWheelMember
+
+    const include: Prisma.RandomWheelMemberInclude = {
+      randomWheel: "randomWheel" in (fields ?? {}),
+      role: "role" in (fields ?? {}),
+      user: "user" in (fields ?? {}),
+    }
+
+    return include
+  } catch (ex: unknown) {
+    console.error("includeRandomWheelMember error", ex)
+    return {}
   }
-
-  return include
 }
 
 @ObjectType("RandomWheel")
@@ -341,7 +350,7 @@ export class RandomWheelResolver {
       //   errorCode: 404,
       //   errorMessage: "Not found"
       // }
-    } catch (ex: any) {
+    } catch (ex: unknown) {
       console.error(ex)
 
       return {
@@ -384,16 +393,18 @@ export class RandomWheelResolver {
       })
 
       return newWheel
-    } catch (ex: any) {
-      if (ex.code === "P2002") {
-        const errorFields = ex.meta.target as string[]
+    } catch (ex: unknown) {
+      if (ex instanceof Prisma.PrismaClientKnownRequestError) {
+        if (ex.code === "P2002") {
+          const errorFields = ex.meta?.target as string[]
 
-        return {
-          errorCode: 400,
-          fieldErrors: errorFields.map((field) => ({
-            field,
-            message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
-          })),
+          return {
+            errorCode: 400,
+            fieldErrors: errorFields.map((field) => ({
+              field,
+              message: `${field[0].toUpperCase() + field.slice(1)} already exists`,
+            })),
+          }
         }
       }
 
@@ -485,16 +496,18 @@ export class RandomWheelResolver {
       socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")
 
       return newWheel
-    } catch (ex: any) {
-      if (ex.code === "P2002") {
-        const errorFields = ex.meta.target as string[]
+    } catch (ex: unknown) {
+      if (ex instanceof Prisma.PrismaClientKnownRequestError) {
+        if (ex.code === "P2002") {
+          const errorFields = ex.meta?.target as string[]
 
-        return {
-          errorCode: 400,
-          fieldErrors: errorFields.map((field) => ({
-            field,
-            message: `${field[0].toUpperCase() + field.slice(1)} is not available`,
-          })),
+          return {
+            errorCode: 400,
+            fieldErrors: errorFields.map((field) => ({
+              field,
+              message: `${field[0].toUpperCase() + field.slice(1)} is not available`,
+            })),
+          }
         }
       }
 

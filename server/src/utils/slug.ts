@@ -36,7 +36,7 @@ export function toString64(hex: string) {
 // basically takes the left 6 bits (needed bits for 64 chars),
 // and looks up that value in the digits, then shifts right and repeat
 export const toString64b = (hex: string) => {
-  let number = parseInt(hex, 16)
+  const number = parseInt(hex, 16)
 
   let lo = number >>> 0
   let hi = (number / 4294967296) >>> 0

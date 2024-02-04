@@ -5,7 +5,7 @@ import fetch from "node-fetch"
 import { AccessTokenResponse } from "src/types"
 import { authProvider } from "./auth"
 
-export const handleTwitchRoutes = async (prisma: PrismaClient) => {
+export const handleTwitchRoutes = (prisma: PrismaClient) => {
   const router = Router()
 
   router.get("/oauth2/token", async (req, res) => {
@@ -21,7 +21,7 @@ export const handleTwitchRoutes = async (prisma: PrismaClient) => {
       client_id: process.env.TWITCH_CLIENT_ID ?? "",
       client_secret: process.env.TWITCH_CLIENT_SECRET ?? "",
       grant_type: "authorization_code",
-      code: `${req.query.code}`,
+      code: `${req.query.code?.toString()}`,
     }).toString()
     const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/oauth2/token`
 

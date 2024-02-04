@@ -79,7 +79,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   })
 }
 
-export const handleTokenValidation = async (apiClient: ApiClient, prisma: PrismaClient) => {
+export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient) => {
   const intervalTime = Number(process.env.TWITCH_VALIDATE_INTERVAL_SEC) * 1000 || 1000 * 60 * 60 * 4
 
   const validateTokenInterval = setInterval(async () => {
