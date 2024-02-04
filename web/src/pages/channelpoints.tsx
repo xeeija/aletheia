@@ -10,7 +10,7 @@ import { useChannelRewards } from "../hooks"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
   const [createRewardDialogOpen, setCreateRewardDialogOpen] = useState(false)
-  const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false)
+  const [, setCreateGroupDialogOpen] = useState(false)
   const [tab, setTab] = useState(0)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
