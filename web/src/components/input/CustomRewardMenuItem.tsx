@@ -21,8 +21,8 @@ export const CustomRewardMenuItem: FC<Props> = ({ reward, noMenuItem, ...props }
       }}
     >
       <Avatar
-        alt={`Reward Icon ${reward.title}`}
-        src={reward.image}
+        alt={`${reward.title} Reward`}
+        src={reward.image || "/img/channelpoints-2.png"}
         variant="rounded"
         sizes="xs"
         sx={{
