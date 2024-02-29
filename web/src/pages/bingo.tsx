@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import Head from 'next/head'
-import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme } from '@mui/material'
-import { BingoBoard } from '../components/bingo'
-import { shuffle } from '../utils/shuffle'
-import { defaultLayout, LayoutNextPage } from '../components/layout'
+import React, { useState } from "react"
+import Head from "next/head"
+import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme } from "@mui/material"
+import { BingoBoard } from "../components/bingo"
+import { shuffle } from "../utils/shuffle"
+import { defaultLayout, LayoutNextPage } from "../components/layout"
 
 const BingoPage: LayoutNextPage = () => {
-
   const theme = useTheme()
 
   const [entries, setEntries] = useState<string[]>([])
@@ -27,8 +26,7 @@ const BingoPage: LayoutNextPage = () => {
       // maybe splice instead?
       const entriesWithJoker = [...shuffled.slice(0, mid), jokerEntry, ...shuffled.slice(mid, -1)]
       setShuffledEntries(entriesWithJoker)
-    }
-    else {
+    } else {
       setShuffledEntries(shuffle(entries))
     }
   }
@@ -42,8 +40,7 @@ const BingoPage: LayoutNextPage = () => {
         <title>Bingo Board | Aletheia</title>
       </Head>
 
-      <Grid container spacing={2} >
-
+      <Grid container spacing={2}>
         <Grid item xs={8}>
           <Paper sx={{ padding: 2 }}>
             <BingoBoard items={shuffledEntries} />
@@ -51,46 +48,68 @@ const BingoPage: LayoutNextPage = () => {
         </Grid>
 
         <Grid item xs={4}>
-
-          <TextField multiline variant="filled" label="Bingo items" minRows={16} maxRows={32} fullWidth
-            value={entries.join("\n")} onChange={ev => {
+          <TextField
+            multiline
+            variant="filled"
+            label="Bingo items"
+            minRows={16}
+            maxRows={32}
+            fullWidth
+            value={entries.join("\n")}
+            onChange={(ev) => {
               const list = ev.target.value.split("\n")
               setEntries(list)
               updateRandomEntries(list, jokerEnabled, jokerText)
             }}
           />
 
-          <Typography variant="subtitle2" component="p" sx={{ mt: 2, mb: 0.5 }} >Options:</Typography>
+          <Typography variant="subtitle2" component="p" sx={{ mt: 2, mb: 0.5 }}>
+            Options:
+          </Typography>
 
-          <FormControlLabel label="Use Joker"
-            control={<Checkbox checked={jokerEnabled} onChange={ev => {
-              setJokerEnabled(ev.target.checked)
-              updateRandomEntries(entries, ev.target.checked, jokerText)
-            }} />}
+          <FormControlLabel
+            label="Use Joker"
+            control={
+              <Checkbox
+                checked={jokerEnabled}
+                onChange={(ev) => {
+                  setJokerEnabled(ev.target.checked)
+                  updateRandomEntries(entries, ev.target.checked, jokerText)
+                }}
+              />
+            }
           />
-          <TextField variant="filled" label="Joker text" size="small" disabled={!jokerEnabled}
-            value={jokerText} onChange={ev => {
+          <TextField
+            variant="filled"
+            label="Joker text"
+            size="small"
+            disabled={!jokerEnabled}
+            value={jokerText}
+            onChange={(ev) => {
               setJokerText(ev.target.value)
             }}
             sx={{
               opacity: jokerEnabled ? 1 : 0,
               transition: theme.transitions.create("opacity", {
                 duration: theme.transitions.duration.shortest,
-                easing: theme.transitions.easing.easeInOut
+                easing: theme.transitions.easing.easeInOut,
               }),
-            }} InputLabelProps={{ sx: { fontSize: 14 } }} InputProps={{ sx: { fontSize: 14 } }}
+            }}
+            InputLabelProps={{ sx: { fontSize: 14 } }}
+            InputProps={{ sx: { fontSize: 14 } }}
           />
 
           <br />
 
-          <Button variant="contained" onClick={() => {
-            updateRandomEntries(entries, jokerEnabled, jokerText)
-          }}
+          <Button
+            variant="contained"
+            onClick={() => {
+              updateRandomEntries(entries, jokerEnabled, jokerText)
+            }}
             sx={{ mt: 1 }}
           >
             Generate
           </Button>
-
         </Grid>
       </Grid>
     </>

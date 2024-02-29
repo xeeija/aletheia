@@ -1,2 +1,1 @@
-export * from "./CreateChannelRewardForm";
-
+export * from "./CreateChannelRewardForm"

@@ -14,7 +14,7 @@ export const useRandomWheelSpin = (wheelId: string | undefined, spinning: boolea
     }
 
     const { data, error } = await spinRandomWheel({
-      wheelId: wheelId
+      wheelId: wheelId,
     })
 
     if (!data) {
@@ -24,11 +24,10 @@ export const useRandomWheelSpin = (wheelId: string | undefined, spinning: boolea
     }
 
     // setTimeout(() => {
-    //   // TODO: onSpinFinished actually not needed here? 
+    //   // TODO: onSpinFinished actually not needed here?
     //   // options?.onSpinFinished?.(true, data.spinRandomWheel)
     //   // setWinnerDialogOpen(true)
     // }, wheel.spinDuration + 500 + 10)
-
   }
 
   return spin

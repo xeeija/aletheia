@@ -9,11 +9,12 @@ import { UserResolver } from "./User"
 // export * from "./Twitch"
 // export * from "./User"
 
-export const Resolvers: NonEmptyArray<Function> | NonEmptyArray<string> = [
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const Resolvers: NonEmptyArray<Function> = [
   UserResolver,
   RandomWheelResolver,
   ColorThemeResolver,
   TwitchResolver,
   CustomRewardResolver,
-  EventSubscriptionResolver
+  EventSubscriptionResolver,
 ]

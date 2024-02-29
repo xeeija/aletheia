@@ -11,8 +11,8 @@ interface Props {
 }
 
 export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
-
   const actionsRef = useRef(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
 
   const closeHandler = () => {
@@ -33,10 +33,9 @@ export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
           closeHandler()
         }}
         aria-labelledby="redemption-sync-dialog-title"
-        aria-describedby="redemption-sync-dialog-description">
-        <DialogTitle id="redemption-sync-dialog-title">
-          Synchronize Channel Rewards
-        </DialogTitle>
+        aria-describedby="redemption-sync-dialog-description"
+      >
+        <DialogTitle id="redemption-sync-dialog-title">Synchronize Channel Rewards</DialogTitle>
         <DialogContent>
           <RedemptionSyncForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
         </DialogContent>
@@ -44,7 +43,6 @@ export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
           <Button color="secondary" variant="outlined" onClick={closeHandler}>
             Close
           </Button>
-
         </DialogActions>
       </Dialog>
     </>

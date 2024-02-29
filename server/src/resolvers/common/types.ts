@@ -14,10 +14,10 @@ export function createAppErrorUnion<C extends object>(classType: ClassType<C>, n
   const union = createUnionType({
     name: `${classType.name ?? name}Response`,
     types: () => [classType, AppError] as const,
-    resolveType: (value => {
+    resolveType: (value) => {
       if ("errorMessage" in value || "fieldErrors" in value) return AppError
       else return classType
-    })
+    },
   })
   return union
 }
@@ -42,4 +42,3 @@ export class FieldError {
   @Field()
   message: string = ""
 }
-

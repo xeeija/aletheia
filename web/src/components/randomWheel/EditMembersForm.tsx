@@ -1,11 +1,21 @@
+import {
+  Button,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Portal,
+  SvgIcon,
+} from "@mui/material"
+import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
-import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Portal, SvgIcon } from "@mui/material"
-import { Formik, Form, FormikProps } from "formik"
 import { HiTrash } from "react-icons/hi"
-import { SelectField } from "../input/SelectField"
 import { TiPlus, TiTimes } from "react-icons/ti"
-import { InputField, LoadingButton, NoData } from "../components"
 import { useRandomWheel } from "../../hooks"
+import { InputField, LoadingButton, NoData } from "../components"
+import { SelectField } from "../input/SelectField"
 
 interface MemberFormEntry {
   id: string | null
@@ -17,7 +27,7 @@ interface MemberFormEntry {
 
 interface InitialValues {
   members: { [username: string]: MemberFormEntry }
-  draft?: { username: string, role: string }
+  draft?: { username: string; role: string }
 }
 
 interface Props {
@@ -28,20 +38,22 @@ interface Props {
 }
 
 export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, readonly }) => {
-
   const [{ members, fetching }, { updateMembers, fetchMembers }] = useRandomWheel(slug, {
     members: true,
   })
 
-  const initialMembers: Record<string, MemberFormEntry> = (members ?? []).reduce((acc, member) => ({
-    ...acc,
-    [member.user.username]: {
-      id: member.id,
-      username: member.user.username,
-      displayname: member.user.displayname ?? undefined,
-      role: member.roleName,
-    },
-  }), {})
+  const initialMembers: Record<string, MemberFormEntry> = (members ?? []).reduce(
+    (acc, member) => ({
+      ...acc,
+      [member.user.username]: {
+        id: member.id,
+        username: member.user.username,
+        displayname: member.user.displayname ?? undefined,
+        role: member.roleName,
+      },
+    }),
+    {}
+  )
 
   const initialValues: InitialValues = {
     members: initialMembers,
@@ -57,7 +69,12 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
         // async validation if username exists or is already a member (duplicate)
       }}
       onSubmit={async (values) => {
-        const mappedMembers = Object.values(values.members).map(({ id, displayname, ...member }) => member)
+        const mappedMembers = Object.values(values.members).map((member) => ({
+          username: member.username,
+          role: member.role,
+          delete: member.delete,
+        }))
+
         const members = values.draft ? [...mappedMembers, values.draft] : mappedMembers
 
         const response = await updateMembers(members)
@@ -70,7 +87,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
 
         // // TODO: proper error handling/feedback
         // TODO: Additional checks (eg. username exists, username already a member)
-
       }}
     >
       {({ isSubmitting, values, initialValues, setFieldValue, isValid }) => {
@@ -78,9 +94,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
 
         return (
           <Form id="editMembersForm" autoComplete="off">
-
             <Grid container spacing={2}>
-
               <Grid item xs={12}>
                 <List role="list">
                   {members.map(([key, member]) => (
@@ -97,12 +111,13 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                         }}
                         sx={{ my: 0 }}
                       />
-                      <ListItemSecondaryAction sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                      }}>
-
+                      <ListItemSecondaryAction
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
                         <SelectField
                           name={`members.${key}.role`}
                           options={[
@@ -126,23 +141,28 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                             <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
                           </IconButton>
                         )}
-
                       </ListItemSecondaryAction>
-
                     </ListItem>
                   ))}
 
                   {!readonly &&
                     (values.draft ? (
                       <ListItem role="listitem" dense>
-                        <InputField name="draft.username" required hiddenLabel placeholder="Username *" sx={{ width: "13rem", ml: -1 }} />
+                        <InputField
+                          name="draft.username"
+                          required
+                          hiddenLabel
+                          placeholder="Username *"
+                          sx={{ width: "13rem", ml: -1 }}
+                        />
 
-                        <ListItemSecondaryAction sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                        }}>
-
+                        <ListItemSecondaryAction
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
                           <SelectField
                             name="draft.role"
                             options={[
@@ -162,9 +182,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                           >
                             <SvgIcon component={TiTimes} fontSize="small" viewBox="3 2 20 20" color="error" />
                           </IconButton>
-
                         </ListItemSecondaryAction>
-
                       </ListItem>
                     ) : (
                       <Button
@@ -174,11 +192,11 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                         endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                         onClick={() => {
                           setFieldValue("draft", { username: "", role: "VIEW" })
-                        }}>
+                        }}
+                      >
                         Add
                       </Button>
-                    ))
-                  }
+                    ))}
                 </List>
 
                 {members.length === 0 && readonly && (
@@ -186,7 +204,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                     There are no members yet.
                   </NoData>
                 )}
-
               </Grid>
 
               <Portal container={dialogActionsRef?.current}>
@@ -196,8 +213,9 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                     variant="contained"
                     loading={isSubmitting || fetching.members}
                     disabled={
-                      !isValid || JSON.stringify(values) === JSON.stringify(initialValues)
-                      || values.draft?.username === ""
+                      !isValid ||
+                      JSON.stringify(values) === JSON.stringify(initialValues) ||
+                      values.draft?.username === ""
                     }
                     form="editMembersForm"
                   >
@@ -205,12 +223,10 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                   </LoadingButton>
                 )}
               </Portal>
-
             </Grid>
-
           </Form>
         )
       }}
-    </Formik >
+    </Formik>
   )
 }

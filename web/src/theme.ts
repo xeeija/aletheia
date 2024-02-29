@@ -5,7 +5,7 @@ const baseTheme = createTheme({
     mode: "dark",
     background: {
       default: "hsl(210, 18%, 13%)",
-      paper: "hsl(210, 18%, 16%)"
+      paper: "hsl(210, 18%, 16%)",
     },
     text: {
       primary: "hsl(210, 18%, 92%)",
@@ -23,7 +23,7 @@ const baseTheme = createTheme({
     error: { main: "#e37568" }, // #d58077, #db776c, #ee7466, #e37568
   },
   shape: {
-    borderRadius: 6
+    borderRadius: 6,
   },
   typography: () => ({
     fontFamily: [
@@ -46,7 +46,7 @@ const baseTheme = createTheme({
     h3: {
       fontSize: "1.5rem",
       fontWeight: 500,
-      mb: 2 * 8
+      mb: 2 * 8,
     },
     h4: {
       fontSize: "1.375rem",
@@ -66,23 +66,23 @@ const baseTheme = createTheme({
   }),
 })
 
-// Override style per component 
+// Override style per component
 const componentOverrides: ThemeOptions = {
   components: {
     MuiDrawer: {
       styleOverrides: {
         paper: {
           borderWidth: 0,
-        }
-      }
+        },
+      },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
           backgroundImage: "none",
           boxShadow: "none",
-        }
-      }
+        },
+      },
     },
     MuiTooltip: {
       styleOverrides: {
@@ -95,16 +95,16 @@ const componentOverrides: ThemeOptions = {
           "::before": {
             backgroundColor: baseTheme.palette.background.paper,
             backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))",
-          }
-        }
-      }
+          },
+        },
+      },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"
-        }
-      }
+          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))",
+        },
+      },
     },
     MuiFilledInput: {
       styleOverrides: {
@@ -113,7 +113,7 @@ const componentOverrides: ThemeOptions = {
           "::after": {
             borderWidth: 3,
             borderRadius: `0 0 ${baseTheme.shape.borderRadius}px ${baseTheme.shape.borderRadius}px`,
-            opacity: 0.6
+            opacity: 0.6,
           },
           borderRadius: baseTheme.shape.borderRadius,
         },
@@ -127,9 +127,9 @@ const componentOverrides: ThemeOptions = {
         dense: {
           "& .MuiListItemIcon-root": {
             minWidth: baseTheme.spacing(6),
-          }
-        }
-      }
+          },
+        },
+      },
     },
     MuiListItem: {
       styleOverrides: {
@@ -148,31 +148,31 @@ const componentOverrides: ThemeOptions = {
           "& .MuiListItemText-primary": {
             fontSize: "0.925rem",
           },
-        }
-      }
+        },
+      },
     },
     MuiSkeleton: {
       styleOverrides: {
         rectangular: {
           borderRadius: baseTheme.shape.borderRadius,
-        }
-      }
+        },
+      },
     },
     MuiTab: {
       // "artificial" new variant, because there is no variant prop
       variants: [
         {
           props: {
-            itemType: "capitalize"
+            itemType: "capitalize",
           },
           style: {
             textTransform: "none",
             fontSize: baseTheme.typography.htmlFontSize,
-            paddingBottom: baseTheme.spacing(2)
-          }
-        }
-      ]
-    }
+            paddingBottom: baseTheme.spacing(2),
+          },
+        },
+      ],
+    },
   },
 }
 

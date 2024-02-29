@@ -7,17 +7,17 @@ import { useUpdateUserMutation } from "../generated/graphql"
 import { useAuth } from "../hooks"
 
 const SettingsPage: LayoutNextPage = () => {
-
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
-
-  // TODO: show error for twitch auth 
+  // TODO: show error for twitch auth
 
   return (
     <>
-      <Typography variant="h3" mb={2}>Profile Settings</Typography>
+      <Typography variant="h3" mb={2}>
+        Profile Settings
+      </Typography>
       {user && (
         <Formik
           initialValues={{
@@ -28,8 +28,8 @@ const SettingsPage: LayoutNextPage = () => {
             const response = await updateUser({
               user: {
                 username: values.username,
-                displayname: values.displayname || null
-              }
+                displayname: values.displayname || null,
+              },
             })
 
             // TODO: proper error handling/feedback
@@ -38,14 +38,11 @@ const SettingsPage: LayoutNextPage = () => {
             else if (response.error?.graphQLErrors) console.warn(response.error.graphQLErrors)
             else if (response.data?.updateUser.errors) console.warn(response.data.updateUser.errors)
             else console.log("Updated user")
-
           }}
         >
           {({ isSubmitting }) => (
             <Form>
-
               <Grid container spacing={2} sx={{ mb: 2 }}>
-
                 <Grid item xs={12}>
                   <InputField name="username" label="Username" />
                 </Grid>
@@ -63,9 +60,7 @@ const SettingsPage: LayoutNextPage = () => {
                 <Grid item>
                   {/* <Button variant="contained" href={twitchAuthorizeLink}>Login with Twitch</Button> */}
                 </Grid>
-
               </Grid>
-
             </Form>
           )}
         </Formik>
@@ -76,11 +71,7 @@ const SettingsPage: LayoutNextPage = () => {
       </Typography>
 
       {user && !userAccessToken?.id && (
-        <Button
-          variant="outlined"
-          href="/api/twitch/oauth2/authorize"
-          sx={{ textTransform: "none", mb: 1 }}
-        >
+        <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ textTransform: "none", mb: 1 }}>
           Connect with Twitch
         </Button>
       )}
@@ -94,13 +85,11 @@ const SettingsPage: LayoutNextPage = () => {
           sx={{ textTransform: "none", mx: 0, px: 0, py: 0.5 }}
         >
           connections
-        </Link>.
+        </Link>
+        .
       </Typography>
 
-
-      {!user && (
-        <Typography sx={{ mb: 2 }}>You must be logged in to connect a Twitch account.</Typography>
-      )}
+      {!user && <Typography sx={{ mb: 2 }}>You must be logged in to connect a Twitch account.</Typography>}
 
       {userAccessToken?.id && (
         <>
@@ -117,26 +106,23 @@ const SettingsPage: LayoutNextPage = () => {
             variant="outlined"
             color="error"
             loading={fetchingDisconnect}
-            onClick={async () => {
+            onClick={() => {
               setDisconnectDialogOpen(true)
             }}
-
             sx={{ textTransform: "none" }}
           >
             Disconnect
           </LoadingButton>
-
         </>
       )}
 
       <DisconnectTwitchDialog
         open={disconnectDialogOpen}
         onClose={() => setDisconnectDialogOpen(false)}
-        onDelete={async () => {
-          await disconnectAccessToken()
+        onDelete={() => {
+          void disconnectAccessToken()
         }}
       />
-
     </>
   )
 }

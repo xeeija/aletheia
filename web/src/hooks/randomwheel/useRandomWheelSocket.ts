@@ -14,7 +14,7 @@ export const useRandomWheelSocket = (
   setSpinning: Dispatch<SetStateAction<boolean>>,
   setRotation: Dispatch<SetStateAction<number | undefined>>,
   setLastWinnerEntry: Dispatch<SetStateAction<RandomWheelEntry | undefined>>,
-  options?: RandomWheelSocketOptions | false,
+  options?: RandomWheelSocketOptions | false
 ) => {
   const [{ wheel }, { fetchWheel, fetchEntries, fetchWinners }] = useRandomWheelData(wheelSlug, { details: true })
 
@@ -45,29 +45,40 @@ export const useRandomWheelSocket = (
 
     // TODD: make listener functions named, so they can be removed specifically?
     // actually bad currently, because socket.off("foo") removes all listeners for this event (also possibly in other components)
-    socket.on("wheel:spin", ({ rotation, entry, /*winner*/ }) => {
-      const revolutions = ~~(Math.random() * 2 + (wheel.spinDuration / 1000) - 1)
+    socket.on("wheel:spin", ({ rotation, entry /*winner*/ }) => {
+      const revolutions = ~~(Math.random() * 2 + wheel.spinDuration / 1000 - 1)
       setSpinning(true)
-      setRotation(rotation + (360 * revolutions))
+      setRotation(rotation + 360 * revolutions)
 
       options?.onSpinStarted?.(false)
 
       // TODO: Refactor to update the "local" winners with winner from socket?
       fetchWinners({ requestPolicy: "cache-and-network" })
 
-      setTimeout(() => {
-        setSpinning(false)
-        setRotation(rotation)
-        setLastWinnerEntry(entry)
-        options?.onSpinFinished?.(entry, false)
-      }, wheel.spinDuration + 500 + 20)
-
+      setTimeout(
+        () => {
+          setSpinning(false)
+          setRotation(rotation)
+          setLastWinnerEntry(entry)
+          options?.onSpinFinished?.(entry, false)
+        },
+        wheel.spinDuration + 500 + 20
+      )
     })
 
     return () => {
       socket.off("wheel:spin")
     }
-  }, [wheel?.id, wheel?.spinDuration, setSpinning, setRotation, setLastWinnerEntry, fetchWinners, options, disableSocket])
+  }, [
+    wheel?.id,
+    wheel?.spinDuration,
+    setSpinning,
+    setRotation,
+    setLastWinnerEntry,
+    fetchWinners,
+    options,
+    disableSocket,
+  ])
 
   useEffect(() => {
     if (!wheel?.id || disableSocket) {
@@ -102,5 +113,4 @@ export const useRandomWheelSocket = (
       socket.off("wheel:update")
     }
   }, [wheel?.id, disableSocket, fetchWheel])
-
 }

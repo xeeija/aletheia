@@ -1,8 +1,8 @@
-import { FC } from "react"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
+import Link from "next/link"
+import { FC } from "react"
 import { TiThList } from "react-icons/ti"
 import { RandomWheelDetailsFragment } from "../../generated/graphql"
-import Link from "next/link"
 import { AccessTypeBadge } from "./AccessTypeBadge"
 
 interface Props {
@@ -15,11 +15,12 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
       <Link href={`randomwheel/${wheel.slug}`} passHref>
         <CardActionArea sx={{ height: "100%" }}>
           <CardContent>
-            <Typography variant="h6">
-              {wheel.name || `Wheel #${wheel.slug}`}
-            </Typography>
+            <Typography variant="h6">{wheel.name || `Wheel #${wheel.slug}`}</Typography>
             <Typography variant="body2" color="text.secondary">
-              {new Date(wheel.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+              {new Date(wheel.createdAt as string).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
             </Typography>
 
             <Box sx={{ display: "flex", gap: 0.5, mt: 1 }}>
@@ -34,10 +35,9 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
                 icon={<SvgIcon component={TiThList} viewBox="-2 -1 26 26" />}
               />
             </Box>
-
           </CardContent>
         </CardActionArea>
       </Link>
-    </Card >
+    </Card>
   )
 }

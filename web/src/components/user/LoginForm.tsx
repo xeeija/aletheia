@@ -1,15 +1,15 @@
-import { FC, useState } from "react"
-import { Collapse, Alert, SvgIcon } from "@mui/material"
-import { Formik, Form } from "formik"
+import { Alert, Collapse, SvgIcon } from "@mui/material"
+import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { TiWarning, TiArrowRight } from "react-icons/ti"
+import { FC, useState } from "react"
+import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { useLoginMutation } from "../../generated/graphql"
-import { InputField, PasswordField, LoadingButton } from "../components"
+import { InputField, LoadingButton, PasswordField } from "../components"
 
-interface Props { }
+interface Props {}
 
 export const LoginForm: FC<Props> = () => {
-  const [{ }, login] = useLoginMutation()
+  const [, login] = useLoginMutation()
   const router = useRouter()
 
   const [generalError, setGeneralError] = useState<string | null>(null)
@@ -21,11 +21,10 @@ export const LoginForm: FC<Props> = () => {
       // validate function also available
       initialValues={{
         username: "",
-        password: ""
+        password: "",
       }}
       validateOnChange={false}
       onSubmit={async (values, { setFieldError }) => {
-
         // Reset error message (so same error shows again)
         setShowError(false)
 
@@ -62,34 +61,47 @@ export const LoginForm: FC<Props> = () => {
         }
 
         // Go to home page
-        router.push("/")
-
-      }}>
+        await router.push("/")
+      }}
+    >
       {({ isSubmitting }) => (
         <Form>
-
           {/* Error Alert - TODO: Move to its own component */}
           <Collapse in={showError} onExited={() => setGeneralError("")}>
-            <Alert severity="error" variant="filled" icon={<TiWarning />}
+            <Alert
+              severity="error"
+              variant="filled"
+              icon={<TiWarning />}
               onClose={() => setShowError(false)}
-              sx={{ my: 1, }}
+              sx={{ my: 1 }}
             >
               {generalError}
             </Alert>
           </Collapse>
 
-          <InputField name="username" label="Username" variant="filled" size="small" margin="normal" fullWidth autoFocus />
+          <InputField
+            name="username"
+            label="Username"
+            variant="filled"
+            size="small"
+            margin="normal"
+            fullWidth
+            autoFocus
+          />
 
           <PasswordField name="password" label="Password" variant="filled" size="small" margin="normal" fullWidth />
 
-          <LoadingButton type="submit" variant="contained" fullWidth
-            loading={isSubmitting} position="end"
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            fullWidth
+            loading={isSubmitting}
+            position="end"
             endIcon={<SvgIcon component={TiArrowRight} />}
             sx={{ mt: 2 }}
           >
             Login
           </LoadingButton>
-
         </Form>
       )}
     </Formik>

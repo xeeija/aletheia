@@ -21,12 +21,11 @@ const errorConfig: { [statusCode: number]: ErrorConfig } = {
 }
 
 interface Props {
-  statusCode: number,
+  statusCode: number
   statusMessage: string
 }
 
 const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
-
   const error = errorConfig[statusCode]
 
   if (!error) {
@@ -38,20 +37,21 @@ const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
       <Head>
         <title>{getTitle(statusMessage)}</title>
       </Head>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 6,
-        py: 4,
-        px: 2,
-        // minHeight: "50vh",
-      }}>
-
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 6,
+          py: 4,
+          px: 2,
+          // minHeight: "50vh",
+        }}
+      >
         <Image src={error.imageSrc} alt="" width={300} height={240} draggable="false" />
 
         <Box>
-          <Typography variant="h4" className="muted" >
+          <Typography variant="h4" className="muted">
             {statusCode} {statusMessage}
           </Typography>
 
@@ -63,7 +63,6 @@ const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
             {error.subtitle}
           </Typography>
         </Box>
-
       </Box>
     </>
   )
@@ -72,7 +71,7 @@ const Error: NextPage<Props> = ({ statusCode, statusMessage }) => {
 Error.getInitialProps = ({ res }) => {
   return {
     statusCode: res?.statusCode ?? 404,
-    statusMessage: res?.statusMessage ?? "Not Found"
+    statusMessage: res?.statusMessage ?? "Not Found",
   }
 }
 

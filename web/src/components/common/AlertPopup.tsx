@@ -29,18 +29,17 @@ export const AlertPopup: FC<Props> = ({ severity, hideDuration = 6000, messageSt
     }
   }, [message])
 
-  const onClose: (event: Event | SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => void =
-    (_ev, reason) => {
-      if (reason === "clickaway") {
-        return
-      }
-
-      setOpen(false)
-      // delay until transition finished
-      setTimeout(() => {
-        setMessage(null)
-      }, theme.transitions.duration.leavingScreen)
+  const onClose: (event: Event | SyntheticEvent, reason: SnackbarCloseReason) => void = (_ev, reason) => {
+    if (reason === "clickaway") {
+      return
     }
+
+    setOpen(false)
+    // delay until transition finished
+    setTimeout(() => {
+      setMessage(null)
+    }, theme.transitions.duration.leavingScreen)
+  }
 
   return (
     <Snackbar
@@ -49,12 +48,15 @@ export const AlertPopup: FC<Props> = ({ severity, hideDuration = 6000, messageSt
       onClose={onClose}
       anchorOrigin={{
         horizontal: "center",
-        vertical: "bottom"
+        vertical: "bottom",
       }}
     >
-      <Alert severity={severity} variant="filled" icon={alertIcons[severity ?? "default"]}
+      <Alert
+        severity={severity}
+        variant="filled"
+        icon={alertIcons[severity ?? "default"]}
         onClose={() => setMessage(null)}
-        sx={{ my: 1, }}
+        sx={{ my: 1 }}
       >
         {message}
       </Alert>

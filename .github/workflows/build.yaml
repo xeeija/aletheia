@@ -1,0 +1,180 @@
+name: build
+
+on:
+  push:
+    paths:
+      - "server/**"
+      - "web/**"
+      - "!README.md"
+    branches:
+      - "**"
+  workflow_dispatch: {}
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./web"
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: "./web/package-lock.json"
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run Lint
+        id: lint
+        run: npm run lint:ci
+
+      - name: Run Prettier
+        id: prettier
+        run: npm run format:check .
+        # run: npx prettier --check --no-color . 2> prettier_report.txt
+        if: success() || steps.lint.outcome == 'failure'
+
+      - name: Annotate Lint results
+        uses: ataylorme/eslint-annotate-action@v2
+        with:
+          report-json: ./web/eslint_report.json
+        # Continue to the next step even if this fails
+        continue-on-error: true
+        # Run this, even if the previous step fails
+        if: always()
+
+  # TODO: Add tests
+  # unit: eg. https://nextjs.org/docs/app/building-your-application/testing/vitest
+  # e2e: https://nextjs.org/docs/app/building-your-application/testing/playwright
+
+  # test-web:
+  #   needs: build-web
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: "./web"
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Setup NodeJS 20.x
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: "npm"
+  #         cache-dependency-path: "./web/package-lock.json"
+
+  #     - name: Install packages
+  #       run: npm ci
+
+  #     - name: Run tests
+  #       run: npm test
+
+  build-server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./server"
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: "./server/package-lock.json"
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run Lint
+        id: lint
+        run: npm run lint:ci
+
+      - name: Run Prettier
+        id: prettier
+        run: npm run format:check .
+        # run: npx prettier --check --no-color . 2> prettier_report.txt
+        if: success() || steps.lint.outcome == 'failure'
+
+      - name: Annotate Lint results
+        uses: ataylorme/eslint-annotate-action@v2
+        with:
+          report-json: ./server/eslint_report.json
+        # Continue to the next step even if this fails
+        continue-on-error: true
+        # Run this, even if the previous step fails
+        if: always()
+
+      - name: Build
+        run: npm run build
+
+  # TODO: Add tests
+  # also comment in the previous migrations step and "env" and "services" sections
+
+  # test-server:
+  #   needs: build-server
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: "./server"
+
+  #   env:
+  #     POSTGRES_HOST: localhost
+  #     POSTGRES_PORT: 5432
+  #     POSTGRES_DB: aletheia
+  #     POSTGRES_USER: aletheia
+  #     POSTGRES_PASSWORD: aletheia
+  #     DATABASE_URL: postgresql://aletheia:aletheia@localhost:5432/aletheia
+
+  #   # additional postgres service (container) on the runner
+  #   services:
+  #     postgres:
+  #       image: postgres:14.8
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #       ports:
+  #         - 5432:5432
+  #       env:
+  #         POSTGRES_DB: ${{ env.POSTGRES_DB }}
+  #         POSTGRES_USER: ${{ env.POSTGRES_USER }}
+  #         POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Setup NodeJS 20.x
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: "npm"
+  #         cache-dependency-path: "./server/package-lock.json"
+
+  #     - name: Install packages
+  #       run: npm ci
+
+  #     - name: Build
+  #       run: npm run build
+
+  #     - name: Apply migrations
+  #       run: npx prisma migrate deploy
+
+  #     - name: Run tests
+  #       run: npm test

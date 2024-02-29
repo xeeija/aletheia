@@ -16,12 +16,16 @@ type Props = InputFieldProps & {
 
 export const SelectField: FC<Props> = ({ options, children, ...props }) => {
   return (
-    <InputField select {...props} sx={{
-      ...props.sx,
-      ...(props.fullWidth ? { width: "100%" } : {})
-    }}>
+    <InputField
+      select
+      {...props}
+      sx={{
+        ...props.sx,
+        ...(props.fullWidth ? { width: "100%" } : {}),
+      }}
+    >
       {children}
-      {options?.map(option => (
+      {options?.map((option) => (
         <MenuItem key={option.value} value={option.value}>
           {option.label}
         </MenuItem>

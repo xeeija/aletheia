@@ -1,1 +1,1 @@
-export * from "./redemptionAdd";
+export * from "./redemptionAdd"

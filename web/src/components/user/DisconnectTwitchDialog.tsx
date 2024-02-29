@@ -18,18 +18,23 @@ export const DisconnectTwitchDialog: FC<Props> = ({ open, onClose, onDelete }) =
       open={open}
       onClose={onClose}
       aria-labelledby="disconnect-dialog-title"
-      aria-describedby="disconnect-dialog-description">
-      <DialogTitle id="disconnect-dialog-title" sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-      }}>
+      aria-describedby="disconnect-dialog-description"
+    >
+      <DialogTitle
+        id="disconnect-dialog-title"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
         <SvgIcon component={TiWarning} color="warning" />
         <span>Disconnect from Twitch?</span>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="disconnect-dialog-description">
-          Do you really want disconnect from Twitch?<br />
+          Do you really want disconnect from Twitch?
+          <br />
           All your synchronizations for rewards will be removed.
         </DialogContentText>
       </DialogContent>
@@ -38,11 +43,14 @@ export const DisconnectTwitchDialog: FC<Props> = ({ open, onClose, onDelete }) =
           Cancel
         </Button>
 
-        <Button color="error" variant="contained"
+        <Button
+          color="error"
+          variant="contained"
           onClick={() => {
             onDelete()
             onClose()
-          }}>
+          }}
+        >
           Disconnect
         </Button>
       </DialogActions>

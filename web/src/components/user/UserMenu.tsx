@@ -1,4 +1,15 @@
-import { Alert, Box, Button, Divider, ListItemIcon, Paper, Skeleton, Snackbar, SvgIcon, Typography } from "@mui/material"
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  ListItemIcon,
+  Paper,
+  Skeleton,
+  Snackbar,
+  SvgIcon,
+  Typography,
+} from "@mui/material"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
@@ -7,12 +18,9 @@ import { useLogoutMutation } from "../../generated/graphql"
 import { useAuth } from "../../hooks"
 import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar } from "../components"
 
-
-
-interface Props { }
+interface Props {}
 
 export const UserMenu: FC<Props> = () => {
-
   const router = useRouter()
 
   const { user, fetchingUser } = useAuth()
@@ -28,22 +36,25 @@ export const UserMenu: FC<Props> = () => {
     {
       name: "Profile",
       icon: <SvgIcon component={TiUser} />,
-      onClick: () => setTimeout(() => setDropdownAnchor(null), 100)
+      onClick: () => setTimeout(() => setDropdownAnchor(null), 100),
     },
     {
       name: "Settings",
       href: "/settings",
       icon: <SvgIcon component={TiSpanner} />,
-      onClick: () => setTimeout(() => setDropdownAnchor(null), 100)
+      onClick: () => setTimeout(() => setDropdownAnchor(null), 100),
     },
     // Logout added seperately
   ]
   const handleLogout = async () => {
     setFetchingLogout(true)
 
-    const response = await logout({}, {
-      additionalTypenames: ["User"],
-    })
+    const response = await logout(
+      {},
+      {
+        additionalTypenames: ["User"],
+      }
+    )
 
     if (response.error) {
       console.log({ error: response.error })
@@ -66,19 +77,21 @@ export const UserMenu: FC<Props> = () => {
     // TODO: Show snackbar "Logged out successfully"
 
     // Redirect to home
-    router.push("/")
+    await router.push("/")
   }
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      {fetchingUser && !user &&
+      {fetchingUser && !user && (
         <>
-          <Typography width={64}><Skeleton /></Typography>
+          <Typography width={64}>
+            <Skeleton />
+          </Typography>
           <Skeleton variant="circular" height={36} width={36} />
         </>
-      }
+      )}
 
-      {user &&
+      {user && (
         <>
           <Typography variant="body2" fontWeight="bold">
             {user.displayname ?? user.username}
@@ -87,9 +100,7 @@ export const UserMenu: FC<Props> = () => {
           <UserAvatar user={user} setDropdownAnchor={setDropdownAnchor} />
 
           <Dropdown anchor={dropdownAnchor} setAnchor={setDropdownAnchor}>
-
             <Paper sx={{ p: 1.5, minWidth: 180 }}>
-
               <Box sx={{ py: 0.5, px: 1.5 }}>
                 <Typography sx={{ fontWeight: "bold", fontSize: "1em" }}>
                   {user.displayname ?? user.username}
@@ -104,8 +115,14 @@ export const UserMenu: FC<Props> = () => {
 
               <LinkList items={userDropdownItems} dense sx={{ p: 0 }}>
                 <li>
-                  <LoadingButton variant="text" color="error" fullWidth
-                    loading={fetchingLogout} fade onClick={handleLogout} position="start"
+                  <LoadingButton
+                    variant="text"
+                    color="error"
+                    fullWidth
+                    loading={fetchingLogout}
+                    fade
+                    onClick={() => void handleLogout()}
+                    position="start"
                     sx={{
                       justifyContent: "start",
                       textTransform: "inherit",
@@ -115,7 +132,8 @@ export const UserMenu: FC<Props> = () => {
                     startIcon={
                       <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
                         <SvgIcon component={TiPower} />
-                      </ListItemIcon>}
+                      </ListItemIcon>
+                    }
                     progressProps={{ color: "inherit", sx: { ml: 1, mr: 3.5 } }} // props for position start
                   >
                     <Typography variant="body1" component="span">
@@ -124,37 +142,44 @@ export const UserMenu: FC<Props> = () => {
                   </LoadingButton>
                 </li>
               </LinkList>
-
             </Paper>
-
           </Dropdown>
 
           {/* Logout Error Alert */}
-          <Snackbar open={logoutError}
+          <Snackbar
+            open={logoutError}
             autoHideDuration={6000}
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
             sx={{ transform: "translateY(56px)" }}
-            onClose={() => setLogoutError(false)}>
-
-            <Alert severity="error" variant="filled" sx={{ width: "100%" }} icon={<TiWarning />}
-            // action={<Button size="small" color="inherit" sx={{ pt: 0.25 }}>Try again</Button>}
+            onClose={() => setLogoutError(false)}
+          >
+            <Alert
+              severity="error"
+              variant="filled"
+              sx={{ width: "100%" }}
+              icon={<TiWarning />}
+              // action={<Button size="small" color="inherit" sx={{ pt: 0.25 }}>Try again</Button>}
             >
               Could not log out correctly.
             </Alert>
           </Snackbar>
         </>
-      }
+      )}
 
-      {!user && !fetchingUser &&
+      {!user && !fetchingUser && (
         <>
           <Link href="/register" passHref>
-            <Button variant="outlined" color="secondary">Register</Button>
+            <Button variant="outlined" color="secondary">
+              Register
+            </Button>
           </Link>
           <Link href="/login" passHref>
-            <Button variant="outlined" color="primary">Login</Button>
+            <Button variant="outlined" color="primary">
+              Login
+            </Button>
           </Link>
         </>
-      }
+      )}
     </Box>
   )
 }

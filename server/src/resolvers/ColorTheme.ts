@@ -16,7 +16,6 @@ export class ColorThemeInput {
 
 @Resolver(() => ColorTheme)
 export class ColorThemeResolver {
-
   @Query(() => [ColorTheme])
   async colorThemes(
     @Ctx() { req, prisma }: GraphqlContext,
@@ -32,12 +31,12 @@ export class ColorThemeResolver {
       where: {
         OR: [
           { global: type === "all" || type === "global" ? true : undefined },
-          { creatorId: type === "all" || type === "my" ? (req.session.userId ?? "") : undefined },
-        ]
+          { creatorId: type === "all" || type === "my" ? req.session.userId ?? "" : undefined },
+        ],
       },
       orderBy: {
         name: "asc",
-      }
+      },
     })
 
     return themes

@@ -15,12 +15,7 @@ export const SkeletonList: FC<Props> = ({ n, variant = "rectangular", ...props }
   return (
     <>
       {items.map((_, i) => (
-        <Skeleton
-          key={i}
-          variant={variant}
-          sx={{ animationDelay: `${i * 50}ms` }}
-          {...props}
-        />
+        <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * 50}ms` }} {...props} />
       ))}
     </>
   )

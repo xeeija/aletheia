@@ -1,5 +1,15 @@
 import { FC, forwardRef, MouseEventHandler, ReactNode } from "react"
-import { List, ListProps, Divider, ListItem, ListItemIcon, ListItemText, Theme, ListItemTextProps, useTheme } from "@mui/material"
+import {
+  List,
+  ListProps,
+  Divider,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Theme,
+  ListItemTextProps,
+  useTheme,
+} from "@mui/material"
 import Link from "next/link"
 import { SxProps } from "@mui/system"
 import { ThemeColor } from "../../types"
@@ -26,15 +36,16 @@ export const LinkList: FC<LinkListProps> = ({ children, items, ...listProps }) =
     <List {...listProps}>
       <>
         {items.map((item, index) => {
-
           // When all of them are met, you may safely use the index as a key.
           // 1. the list and items are static
           // 2. the items in the list have no ids
           // 3. the list is never reordered or filtered
 
-          return <li key={item.name || index}>
-            {(childrenFn ? children?.(item, index) : null) ?? <LinkListItem {...item} />}
-          </li>
+          return (
+            <li key={item.name || index}>
+              {(childrenFn ? children?.(item, index) : null) ?? <LinkListItem {...item} />}
+            </li>
+          )
         })}
         {!childrenFn && children}
       </>
@@ -49,43 +60,48 @@ type ItemProps = LinkItem & {
 
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
-export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(({ name = "", icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
+export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
+  ({ name = "", icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
+    const theme = useTheme()
+    const themeColor = color ? theme.palette[color].main : undefined
 
-  const theme = useTheme()
-  const themeColor = color ? theme.palette[color].main : undefined
+    const linkItem = (
+      <ListItem
+        button
+        ref={ref}
+        component={href ? "a" : "button"}
+        disabled={disabled}
+        sx={{
+          color: themeColor,
+          "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined },
+          ...sx,
+        }}
+        {...props}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 48,
+            color: "inherit",
+          }}
+        >
+          {icon}
+        </ListItemIcon>
+        <ListItemText primary={name} {...textProps} />
+      </ListItem>
+    )
 
-  const linkItem = (
-    <ListItem button
-      ref={ref}
-      component={href ? "a" : "button"}
-      disabled={disabled}
-      sx={{
-        color: themeColor,
-        "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined, },
-        ...sx,
-      }}
-      {...props}
-    >
-      <ListItemIcon sx={{
-        minWidth: 48,
-        color: "inherit",
-      }}>
-        {icon}
-      </ListItemIcon>
-      <ListItemText primary={name} {...textProps} />
-    </ListItem>
-  )
+    const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
 
-  const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
+    if (divider) {
+      return divider === true ? defaultDivider : divider
+    }
 
-  if (divider) {
-    return divider === true ? defaultDivider : divider
-  }
-
-  return (
-    !href ? linkItem :
+    return !href ? (
+      linkItem
+    ) : (
       <Link href={href} passHref>
         {linkItem}
       </Link>
-  )
-})
+    )
+  }
+)
