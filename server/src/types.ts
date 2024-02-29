@@ -65,6 +65,14 @@ export enum EventSubType {
   rewardGroup = "rewardGroup",
 }
 
+export type SubscriptionConfig = {
+  twitchUserId: string
+  rewardId: string
+  randomWheelId: string
+  useInput: boolean
+  id?: string
+}
+
 export type AccessTokenResponse = {
   access_token: string
   refresh_token: string

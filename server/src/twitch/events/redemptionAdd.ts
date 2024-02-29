@@ -2,20 +2,14 @@ import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import crypto from "crypto"
-import { SocketServer, SubscriptionType } from "../../types"
+import { SocketServer, SubscriptionConfig, SubscriptionType } from "../../types"
 import { activeSubscriptions } from "../eventsub"
 
 export const addSubscriptionRedemptionAdd = (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: {
-    twitchUserId: string
-    rewardId: string
-    randomWheelId: string
-    useInput: boolean
-    id?: string
-  }
+  subConfig: SubscriptionConfig
 ) => {
   const addedSubscription = eventSub.onChannelRedemptionAddForReward(
     subConfig.twitchUserId,
@@ -156,4 +150,47 @@ export const deleteManySubscriptionRedemptionAdd = async (
   }
 
   return true
+}
+
+export const addExistingRedemptions = async (
+  apiClient: ApiClient,
+  prisma: PrismaClient,
+  socketIo: SocketServer,
+  subConfig: SubscriptionConfig
+) => {
+  const redemptions = apiClient.channelPoints.getRedemptionsForBroadcasterPaginated(
+    subConfig.twitchUserId,
+    subConfig.rewardId,
+    "UNFULFILLED",
+    {}
+  )
+
+  await redemptions.getNext()
+
+  if ((redemptions.current?.length ?? 0) === 0) {
+    return
+  }
+
+  let redemptionsCount = 0
+
+  console.log(
+    `[eventsub] adding existing redemptions of ${redemptions.current?.[0].broadcaster_name} for ${redemptions.current?.[0].reward.title}`
+  )
+
+  while (redemptions.current?.length !== 0) {
+    await prisma.randomWheelEntry.createMany({
+      data: (redemptions.current ?? []).map((r) => ({
+        name: subConfig.useInput ? r.user_input || r.user_name : r.user_name,
+        randomWheelId: subConfig.randomWheelId,
+      })),
+    })
+
+    redemptionsCount += redemptions.current?.length ?? 0
+
+    await redemptions.getNext()
+  }
+
+  console.log(`[eventsub] added ${redemptionsCount} existing redemptions`)
+
+  socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
 }

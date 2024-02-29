@@ -15,6 +15,7 @@ import {
 } from "type-graphql"
 import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
 import {
+  addExistingRedemptions,
   addSubscriptionRedemptionAdd,
   deleteManySubscriptionRedemptionAdd,
   deleteSubscriptionRedemptionAdd,
@@ -312,7 +313,8 @@ export class TwitchResolver {
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
-    @Arg("useInput", { defaultValue: false }) useInput: boolean
+    @Arg("useInput", { defaultValue: false }) useInput: boolean,
+    @Arg("addExisting", { defaultValue: false }) addExisting: boolean
   ) {
     if (!req.session.userId) {
       return null
@@ -357,6 +359,17 @@ export class TwitchResolver {
     }
 
     const condition = helixSub?.condition as Record<string, string> | undefined
+
+    // add entries for existing unfullfiled redemptions
+
+    if (addExisting) {
+      await addExistingRedemptions(apiClient, prisma, socketIo, {
+        twitchUserId: token.twitchUserId,
+        rewardId: rewardId,
+        randomWheelId: randomWheelId,
+        useInput: useInput,
+      })
+    }
 
     if (!existingSubscription) {
       const newSubscription = await prisma.eventSubscription.create({

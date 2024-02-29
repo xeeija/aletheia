@@ -10,6 +10,7 @@ type SyncEntriesInput = {
   rewardId: string
   randomWheelId: string
   useInput?: boolean | null
+  addExisting?: boolean | null
 }
 
 export const useEventSubscriptionsWheel = (config: { randomWheelId: string; fetchSubscriptions?: boolean }) => {

@@ -35,6 +35,7 @@ interface InitialValues {
   subscriptions: SubscriptionEntry[]
   rewardId: string
   useInput: boolean
+  addExisting: boolean
 }
 
 export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
@@ -70,6 +71,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
     subscriptions: subscriptions ?? [],
     rewardId: "",
     useInput: false,
+    addExisting: false,
   }
   // const initialSubscriptions = subscriptions?.eventSubscriptionsForWheel.map(s => ({
   //   ...s,
@@ -97,7 +99,9 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
               randomWheelId: wheel.id,
               rewardId: values.rewardId,
               useInput: values.useInput,
+              addExisting: values.addExisting,
             })
+
             setShowNewSyncronization(false)
             setFieldValue("rewardId", "")
           }
@@ -337,6 +341,12 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                         name="useInput"
                         label="Use input as entry"
                         helperText="Use redemption input as entry. By default, the display name is used."
+                      />
+
+                      <BooleanField
+                        name="addExisting"
+                        label="Add existing redemptions"
+                        helperText="Add existing unfulfilled redemptions in the queue as entries."
                       />
                     </>
                   )}

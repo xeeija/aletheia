@@ -80,6 +80,19 @@ export type CustomReward = {
   userInputRequired: Scalars['Boolean'];
 };
 
+export type CustomRewardInput = {
+  autoFulfill?: Maybe<Scalars['Boolean']>;
+  backgroundColor?: Maybe<Scalars['String']>;
+  cost: Scalars['Int'];
+  globalCooldown?: Maybe<Scalars['Int']>;
+  isEnabled?: Maybe<Scalars['Boolean']>;
+  maxRedemptionsPerStream?: Maybe<Scalars['Int']>;
+  maxRedemptionsPerUser?: Maybe<Scalars['Int']>;
+  prompt?: Maybe<Scalars['String']>;
+  title: Scalars['String'];
+  userInputRequired?: Maybe<Scalars['Boolean']>;
+};
+
 export type EventSubscription = {
   __typename?: 'EventSubscription';
   condition?: Maybe<Scalars['JSON']>;
@@ -88,8 +101,10 @@ export type EventSubscription = {
   pending: Scalars['Boolean'];
   randomWheelId?: Maybe<Scalars['String']>;
   reward?: Maybe<CustomReward>;
+  rewardGroupId?: Maybe<Scalars['String']>;
   rewardId?: Maybe<Scalars['String']>;
   subscriptionId?: Maybe<Scalars['String']>;
+  subscriptionType: Scalars['String'];
   twitchUserId: Scalars['String'];
   type: Scalars['String'];
   useInput: Scalars['Boolean'];
@@ -106,7 +121,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   addRandomWheelEntry: RandomWheelEntry;
   clearRandomWheel: Scalars['Int'];
+  createChannelReward?: Maybe<CustomReward>;
   createRandomWheel: RandomWheel;
+  deleteChannelReward: Scalars['Boolean'];
   deleteEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
@@ -120,6 +137,7 @@ export type Mutation = {
   register: UserResponse;
   spinRandomWheel: RandomWheelWinner;
   syncEntriesWithRedemption?: Maybe<EventSubscription>;
+  updateChannelReward?: Maybe<CustomReward>;
   updateRandomWheel?: Maybe<RandomWheel>;
   updateRandomWheelEntry: RandomWheelEntry;
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
@@ -139,12 +157,22 @@ export type MutationClearRandomWheelArgs = {
 };
 
 
+export type MutationCreateChannelRewardArgs = {
+  reward: CustomRewardInput;
+};
+
+
 export type MutationCreateRandomWheelArgs = {
   accessType?: Maybe<Scalars['String']>;
   editAnonymous?: Maybe<Scalars['Boolean']>;
   fadeDuration?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
+};
+
+
+export type MutationDeleteChannelRewardArgs = {
+  rewardId: Scalars['String'];
 };
 
 
@@ -165,6 +193,11 @@ export type MutationDeleteRandomWheelEntryArgs = {
 
 export type MutationDeleteRandomWheelMemberArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationEventSubDeleteAllSubscriptionsArgs = {
+  all?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -199,9 +232,16 @@ export type MutationSpinRandomWheelArgs = {
 
 
 export type MutationSyncEntriesWithRedemptionArgs = {
+  addExisting?: Maybe<Scalars['Boolean']>;
   randomWheelId: Scalars['String'];
   rewardId: Scalars['String'];
   useInput?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationUpdateChannelRewardArgs = {
+  reward: CustomRewardInput;
+  rewardId: Scalars['String'];
 };
 
 
@@ -479,11 +519,6 @@ export type DeleteRandomWheelEntryMutationVariables = Exact<{
 
 export type DeleteRandomWheelEntryMutation = { __typename?: 'Mutation', deleteRandomWheelEntry?: Maybe<boolean> };
 
-export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
-
 export type LikeRandomWheelMutationVariables = Exact<{
   randomWheelId: Scalars['String'];
   like: Scalars['Boolean'];
@@ -528,6 +563,11 @@ export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
 
 export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
 
+export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
+
 export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
   id: Scalars['String'];
   pause: Scalars['Boolean'];
@@ -540,6 +580,7 @@ export type SyncEntriesWithRedemptionMutationVariables = Exact<{
   rewardId: Scalars['String'];
   randomWheelId: Scalars['String'];
   useInput?: Maybe<Scalars['Boolean']>;
+  addExisting?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -827,15 +868,6 @@ export const DeleteRandomWheelEntryDocument = gql`
 export function useDeleteRandomWheelEntryMutation() {
   return Urql.useMutation<DeleteRandomWheelEntryMutation, DeleteRandomWheelEntryMutationVariables>(DeleteRandomWheelEntryDocument);
 };
-export const DisconnectAccessTokenDocument = gql`
-    mutation DisconnectAccessToken {
-  disconnectAccessToken
-}
-    `;
-
-export function useDisconnectAccessTokenMutation() {
-  return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
-};
 export const LikeRandomWheelDocument = gql`
     mutation LikeRandomWheel($randomWheelId: String!, $like: Boolean!) {
   likeRandomWheel(randomWheelId: $randomWheelId, like: $like) {
@@ -918,6 +950,15 @@ export const DeleteEntriesRedemptionSyncDocument = gql`
 export function useDeleteEntriesRedemptionSyncMutation() {
   return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
 };
+export const DisconnectAccessTokenDocument = gql`
+    mutation DisconnectAccessToken {
+  disconnectAccessToken
+}
+    `;
+
+export function useDisconnectAccessTokenMutation() {
+  return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
+};
 export const PauseEntriesRedemptionSyncDocument = gql`
     mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
   pauseEntriesRedemptionSync(id: $id, pause: $pause) {
@@ -930,11 +971,12 @@ export function usePauseEntriesRedemptionSyncMutation() {
   return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
 };
 export const SyncEntriesWithRedemptionDocument = gql`
-    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean) {
+    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
   syncEntriesWithRedemption(
     rewardId: $rewardId
     randomWheelId: $randomWheelId
     useInput: $useInput
+    addExisting: $addExisting
   ) {
     ...EventSubscription
   }
