@@ -19,5 +19,6 @@ input::-webkit-inner-spin-button.hidden-arrows,
 /* Firefox */
 input[type="number"].hidden-arrows,
 .hidden-arrows input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
