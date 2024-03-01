@@ -1,6 +1,6 @@
+import { transitionMixin } from "@/components"
 import { AppBar, Toolbar, useTheme } from "@mui/material"
 import { FC } from "react"
-import { transitionMixin } from "./Sidebar"
 
 interface Props {
   open?: boolean

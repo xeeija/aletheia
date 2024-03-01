@@ -1,5 +1,5 @@
+import { useLikeRandomWheelMutation } from "@/generated/graphql"
 import { Dispatch, SetStateAction } from "react"
-import { useLikeRandomWheelMutation } from "../../generated/graphql"
 
 export const useRandomWheelLike = (
   wheelId: string | undefined,

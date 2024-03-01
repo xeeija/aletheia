@@ -1,6 +1,6 @@
+import { LinkItem, LinkList, LinkListItem, LogoIcon } from "@/components"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
 import React, { FC } from "react"
-import { LinkItem, LinkList, LinkListItem, LogoIcon } from "../components"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({

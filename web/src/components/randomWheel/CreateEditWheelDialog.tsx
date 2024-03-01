@@ -1,8 +1,7 @@
-import { FC, useRef } from "react"
+import { CreateWheelForm, EditWheelForm } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
-import { EditWheelForm } from "./EditWheelForm"
 import { FormikProps, FormikValues } from "formik"
-import { CreateWheelForm } from "./CreateWheelForm"
+import { FC, useRef } from "react"
 
 interface Props {
   open: boolean

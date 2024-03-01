@@ -1,6 +1,6 @@
-import { FC, ReactNode } from "react"
 import { FormControl, FormLabel, Slider, SliderProps } from "@mui/material"
 import { useField } from "formik"
+import { FC, ReactNode } from "react"
 
 type Props = SliderProps & {
   name: string

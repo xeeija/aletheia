@@ -1,6 +1,6 @@
+import { InputField, InputFieldProps } from "@/components"
 import { MenuItem } from "@mui/material"
 import { FC, ReactNode } from "react"
-import { InputField, InputFieldProps } from "../components"
 
 interface SelectOption {
   value: string | number

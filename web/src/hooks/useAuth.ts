@@ -4,7 +4,7 @@ import {
   UserAccessTokenFragment,
   UserNameFragment,
   useUserAccessTokenQuery,
-} from "../generated/graphql"
+} from "@/generated/graphql"
 
 export const useAuth = (config?: { includeToken?: boolean }) => {
   const [{ data: user, error: errorUser, fetching: fetchingUser }] = useMeQuery()

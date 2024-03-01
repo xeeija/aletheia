@@ -1,7 +1,7 @@
+import { UserNameFragment } from "@/generated/graphql"
 import { Avatar, Badge, IconButton, SvgIcon, useTheme } from "@mui/material"
 import { FC, SetStateAction } from "react"
 import { TiUser } from "react-icons/ti"
-import { UserNameFragment } from "../../generated/graphql"
 
 interface Props {
   user: UserNameFragment

@@ -1,6 +1,6 @@
-import { FC } from "react"
 import { Box, BoxProps, Typography, TypographyProps } from "@mui/material"
 import Image from "next/image"
+import { FC } from "react"
 
 type IconSize = "xs" | "sm" | "md" | "lg"
 

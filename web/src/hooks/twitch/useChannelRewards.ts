@@ -1,4 +1,4 @@
-import { CustomRewardFragment, useChannelRewardsQuery } from "../../generated/graphql"
+import { CustomRewardFragment, useChannelRewardsQuery } from "@/generated/graphql"
 
 export const useChannelRewards = () => {
   const [{ data, fetching, error }] = useChannelRewardsQuery({

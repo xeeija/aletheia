@@ -1,10 +1,16 @@
+import { RandomWheelEntry } from "@/generated/graphql"
+import {
+  RandomWheelActions,
+  RandomWheelData,
+  RandomWheelFetch,
+  RandomWheelSocketOptions,
+  useRandomWheelActions,
+  useRandomWheelData,
+  useRandomWheelLike,
+  useRandomWheelSocket,
+  useRandomWheelSpin,
+} from "@/hooks/randomwheel"
 import { useEffect, useState } from "react"
-import { RandomWheelEntry } from "../generated/graphql"
-import { RandomWheelActions, useRandomWheelActions } from "./randomwheel/useRandomWheelActions"
-import { RandomWheelData, RandomWheelFetch, useRandomWheelData } from "./randomwheel/useRandomWheelData"
-import { useRandomWheelLike } from "./randomwheel/useRandomWheelLike"
-import { RandomWheelSocketOptions, useRandomWheelSocket } from "./randomwheel/useRandomWheelSocket"
-import { useRandomWheelSpin } from "./randomwheel/useRandomWheelSpin"
 
 interface RandomWheelHandlers extends RandomWheelActions, RandomWheelFetch {
   spin: () => Promise<void>

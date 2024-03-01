@@ -1,13 +1,13 @@
-import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
-import { Form, Formik } from "formik"
-import { FC, useEffect, useRef, useState } from "react"
-import { HiTrash } from "react-icons/hi"
+import { AlertPopup, InputField } from "@/components"
 import {
   RandomWheelEntryFragment,
   useDeleteRandomWheelEntryMutation,
   useUpdateRandomWheelEntryMutation,
-} from "../../generated/graphql"
-import { AlertPopup, InputField } from "../components"
+} from "@/generated/graphql"
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
+import { Form, Formik } from "formik"
+import { FC, useEffect, useRef, useState } from "react"
+import { HiTrash } from "react-icons/hi"
 
 interface Props {
   entries: RandomWheelEntryFragment[]

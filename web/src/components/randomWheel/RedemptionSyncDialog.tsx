@@ -1,7 +1,7 @@
+import { RedemptionSyncForm } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"
 import { FC, useRef } from "react"
-import { RedemptionSyncForm } from "./RedemptionSyncForm"
 
 interface Props {
   open: boolean

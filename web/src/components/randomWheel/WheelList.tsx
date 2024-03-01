@@ -1,8 +1,8 @@
-import { FC } from "react"
+import { SkeletonList } from "@/components"
+import { WheelListItem } from "@/components/randomWheel"
+import { RandomWheelDetailsFragment } from "@/generated/graphql"
 import { Box } from "@mui/material"
-import { WheelListItem } from "."
-import { RandomWheelDetailsFragment } from "../../generated/graphql"
-import { SkeletonList } from "../components"
+import { FC } from "react"
 
 interface Props {
   items?: RandomWheelDetailsFragment[]

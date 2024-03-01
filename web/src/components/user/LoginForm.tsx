@@ -1,10 +1,10 @@
+import { InputField, LoadingButton, PasswordField } from "@/components"
+import { useLoginMutation } from "@/generated/graphql"
 import { Alert, Collapse, SvgIcon } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
-import { useLoginMutation } from "../../generated/graphql"
-import { InputField, LoadingButton, PasswordField } from "../components"
 
 interface Props {}
 

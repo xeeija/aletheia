@@ -1,3 +1,7 @@
+import { BooleanField, LoadingButton, NoData, SelectField } from "@/components"
+import { CustomRewardMenuItem } from "@/components/twitch"
+import { EventSubscriptionFragment } from "@/generated/graphql"
+import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "@/hooks"
 import {
   Box,
   Button,
@@ -16,10 +20,6 @@ import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject, useState } from "react"
 import { HiAnnotation, HiTrash } from "react-icons/hi"
 import { TiMediaPause, TiMediaPlay, TiPlus, TiRefresh, TiTimes, TiUser } from "react-icons/ti"
-import { EventSubscriptionFragment } from "../../generated/graphql"
-import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "../../hooks"
-import { BooleanField, LoadingButton, NoData, SelectField } from "../components"
-import { CustomRewardMenuItem } from "../input/CustomRewardMenuItem"
 
 interface Props {
   slug: string

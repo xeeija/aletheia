@@ -1,5 +1,5 @@
+import { InputField, InputFieldProps } from "@/components"
 import { FC } from "react"
-import { InputField, InputFieldProps } from "../components"
 
 const numberPattern = /^\d+$/
 

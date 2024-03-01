@@ -1,5 +1,5 @@
+import { Box, List, ListItem, ListItemText, Skeleton, SvgIcon, Typography } from "@mui/material"
 import { FC } from "react"
-import { Typography, List, ListItem, ListItemText, SvgIcon, Box, Skeleton } from "@mui/material"
 import { HiSpeakerphone } from "react-icons/hi"
 
 interface Winner {

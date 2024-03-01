@@ -1,9 +1,9 @@
+import { AccessTypeBadge } from "@/components/randomWheel"
+import { RandomWheelDetailsFragment } from "@/generated/graphql"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC } from "react"
 import { TiThList } from "react-icons/ti"
-import { RandomWheelDetailsFragment } from "../../generated/graphql"
-import { AccessTypeBadge } from "./AccessTypeBadge"
 
 interface Props {
   wheel: RandomWheelDetailsFragment

@@ -4,7 +4,7 @@ import {
   useEventSubscriptionsForWheelQuery,
   usePauseEntriesRedemptionSyncMutation,
   useSyncEntriesWithRedemptionMutation,
-} from "../../generated/graphql"
+} from "@/generated/graphql"
 
 type SyncEntriesInput = {
   rewardId: string

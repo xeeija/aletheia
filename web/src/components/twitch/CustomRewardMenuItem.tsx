@@ -1,6 +1,6 @@
+import { CustomRewardFragment } from "@/generated/graphql"
 import { Avatar, Box, ListItemText, MenuItem, MenuItemProps } from "@mui/material"
 import { FC } from "react"
-import { CustomRewardFragment } from "../../generated/graphql"
 
 type Props = MenuItemProps & {
   reward: CustomRewardFragment

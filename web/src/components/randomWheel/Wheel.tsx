@@ -1,7 +1,7 @@
-import { FC } from "react"
+import { RandomWheelEntryFragment } from "@/generated/graphql"
+import { Sector, logistic, pointOnCircle } from "@/utils/math"
 import { Box, useTheme } from "@mui/material"
-import { RandomWheelEntryFragment } from "../../generated/graphql"
-import { logistic, pointOnCircle, Sector } from "../../utils/math"
+import { FC } from "react"
 
 interface Props {
   diameter: number

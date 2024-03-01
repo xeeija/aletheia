@@ -1,10 +1,10 @@
+import { LoadingButton } from "@/components"
+import { WheelFormFields } from "@/components/randomWheel"
+import { useCreateRandomWheelMutation } from "@/generated/graphql"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps, FormikValues } from "formik"
 import { useRouter } from "next/router"
 import { FC, RefObject } from "react"
-import { useCreateRandomWheelMutation } from "../../generated/graphql"
-import { LoadingButton } from "../components"
-import { WheelFormFields } from "./WheelFormFields"
 
 const wheelDraft = {
   name: "",

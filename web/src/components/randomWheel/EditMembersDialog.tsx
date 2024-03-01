@@ -1,7 +1,7 @@
+import { EditMembersForm } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"
 import { FC, useRef } from "react"
-import { EditMembersForm } from "./EditMembersForm"
 
 interface Props {
   open: boolean

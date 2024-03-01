@@ -6,7 +6,7 @@ import {
   useDeleteRandomWheelMutation,
   useUpdateRandomWheelMembersMutation,
   useUpdateRandomWheelMutation,
-} from "../../generated/graphql"
+} from "@/generated/graphql"
 
 export interface RandomWheelActions {
   clear: () => Promise<void>

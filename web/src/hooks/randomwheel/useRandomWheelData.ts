@@ -1,4 +1,3 @@
-import { OperationContext } from "urql"
 import {
   RandomWheelDetailsFragment,
   RandomWheelEntry,
@@ -10,8 +9,9 @@ import {
   useRandomWheelBySlugQuery,
   useRandomWheelBySlugWinnersQuery,
   UserNameFragment,
-} from "../../generated/graphql"
-import { useAuth } from "../useAuth"
+} from "@/generated/graphql"
+import { useAuth } from "@/hooks/useAuth"
+import { OperationContext } from "urql"
 
 export interface RandomWheelDetailsQuery extends RandomWheelDetailsFragment {
   owner: UserNameFragment

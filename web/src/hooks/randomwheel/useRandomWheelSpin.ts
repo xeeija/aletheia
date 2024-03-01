@@ -1,4 +1,4 @@
-import { useSpinRandomWheelMutation } from "../../generated/graphql"
+import { useSpinRandomWheelMutation } from "@/generated/graphql"
 
 export const useRandomWheelSpin = (wheelId: string | undefined, spinning: boolean) => {
   const [, spinRandomWheel] = useSpinRandomWheelMutation()

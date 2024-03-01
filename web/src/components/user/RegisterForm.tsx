@@ -1,12 +1,12 @@
+import { InputField, LoadingButton, PasswordField } from "@/components"
+import { useRegisterMutation } from "@/generated/graphql"
+import { useUsernameValidator } from "@/hooks"
+import { passwordStrength } from "@/utils/password"
 import { Alert, Collapse, SvgIcon } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
-import { useRegisterMutation } from "../../generated/graphql"
-import { useUsernameValidator } from "../../hooks"
-import { passwordStrength } from "../../utils/password"
-import { InputField, LoadingButton, PasswordField } from "../components"
 
 interface Props {}
 

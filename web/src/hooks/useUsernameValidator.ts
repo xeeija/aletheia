@@ -1,5 +1,5 @@
+import { useUsernameExistsMutation } from "@/generated/graphql"
 import { FieldValidator } from "formik"
-import { useUsernameExistsMutation } from "../generated/graphql"
 
 const usernamePattern = /^[A-Za-z0-9]\w{3,31}$/
 

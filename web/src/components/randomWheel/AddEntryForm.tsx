@@ -1,9 +1,9 @@
-import { InputAdornment, IconButton, SvgIcon, Tooltip } from "@mui/material"
+import { InputField } from "@/components"
+import { useAddRandomWheelEntryMutation } from "@/generated/graphql"
+import { IconButton, InputAdornment, SvgIcon, Tooltip } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC } from "react"
 import { HiPaperAirplane } from "react-icons/hi"
-import { useAddRandomWheelEntryMutation } from "../../generated/graphql"
-import { InputField } from "../components"
 
 interface Props {
   wheelId: string

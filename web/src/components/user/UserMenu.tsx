@@ -1,3 +1,6 @@
+import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar } from "@/components"
+import { useLogoutMutation } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import {
   Alert,
   Box,
@@ -14,9 +17,6 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
 import { TiPower, TiSpanner, TiUser, TiWarning } from "react-icons/ti"
-import { useLogoutMutation } from "../../generated/graphql"
-import { useAuth } from "../../hooks"
-import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar } from "../components"
 
 interface Props {}
 

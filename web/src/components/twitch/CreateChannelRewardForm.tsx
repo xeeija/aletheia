@@ -1,8 +1,8 @@
+import { BooleanField, InputField, LoadingButton, NumberField, SelectField } from "@/components"
+import { ChannelPoints } from "@/components/icons"
 import { Box, FormHelperText, InputAdornment, Portal, Typography } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
-import { BooleanField, InputField, LoadingButton, NumberField, SelectField } from "../components"
-import { ChannelPoints } from "../icons"
 
 interface InitialValues {
   // max 40 char

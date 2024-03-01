@@ -1,7 +1,7 @@
+import { RandomWheelEntry } from "@/generated/graphql"
+import { useRandomWheelData } from "@/hooks/randomwheel"
+import { socket } from "@/utils/socket"
 import { Dispatch, SetStateAction, useEffect } from "react"
-import { RandomWheelEntry } from "../../generated/graphql"
-import { socket } from "../../utils/socket"
-import { useRandomWheelData } from "./useRandomWheelData"
 
 export interface RandomWheelSocketOptions {
   disableSocket?: boolean

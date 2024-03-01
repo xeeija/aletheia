@@ -1,9 +1,9 @@
+import { InputField, InputFieldProps } from "@/components"
+import { passwordStrengthColor } from "@/utils/password"
 import { IconButton, InputAdornment, useTheme } from "@mui/material"
 import { useFormikContext } from "formik"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
-import { passwordStrengthColor } from "../../utils/password"
-import { InputField, InputFieldProps } from "../components"
 
 type Props = InputFieldProps & {
   strength?: number | ((value: string) => number)

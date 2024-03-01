@@ -1,9 +1,9 @@
+import { LoadingButton } from "@/components"
+import { WheelFormFields } from "@/components/randomWheel"
+import { useRandomWheel } from "@/hooks"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
-import { useRandomWheel } from "../../hooks"
-import { LoadingButton } from "../components"
-import { WheelFormFields } from "./WheelFormFields"
 
 type Values = {
   name: string

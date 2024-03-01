@@ -1,8 +1,8 @@
+import { BooleanField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "@/components"
+import { useColorThemesQuery } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import { Grid } from "@mui/material"
 import { FC, ReactNode } from "react"
-import { useColorThemesQuery } from "../../generated/graphql"
-import { useAuth } from "../../hooks"
-import { BooleanField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "../components"
 
 interface Mark {
   value: number

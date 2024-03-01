@@ -1,9 +1,9 @@
+import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "@/components"
+import { ChannelPoints } from "@/components/icons"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
 import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
 import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
-import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "../components"
-import { ChannelPoints } from "../icons"
 
 export interface NavigationProps {
   noAppbar?: boolean
