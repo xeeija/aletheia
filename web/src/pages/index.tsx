@@ -1,6 +1,5 @@
-import React from "react"
-import { Typography, Box } from "@mui/material"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
+import { LayoutNextPage, defaultLayout } from "@/components"
+import { Box, Typography } from "@mui/material"
 
 const IndexPage: LayoutNextPage = () => {
   // Next Components

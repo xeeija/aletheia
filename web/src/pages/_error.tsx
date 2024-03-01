@@ -1,9 +1,9 @@
-import Head from "next/head"
-import Image from "next/image"
+import { getTitle } from "@/components"
+import NotFoundPage from "@/pages/404"
 import { Box, Typography } from "@mui/material"
 import { NextPage } from "next"
-import NotFoundPage from "./404"
-import { getTitle } from "../components/layout"
+import Head from "next/head"
+import Image from "next/image"
 
 interface ErrorConfig {
   title: string

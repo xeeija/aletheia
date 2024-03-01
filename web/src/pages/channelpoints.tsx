@@ -1,12 +1,11 @@
+import { FormDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
+import { CreateChannelRewardForm } from "@/components/twitch"
+import { useChannelRewards } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import { FormikProps } from "formik"
 import { useRef, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
-import { FormDialog, NoData } from "../components"
-import { LayoutNextPage, defaultLayout } from "../components/layout"
-import { CreateChannelRewardForm } from "../components/twitch"
-import { useChannelRewards } from "../hooks"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
   const [createRewardDialogOpen, setCreateRewardDialogOpen] = useState(false)

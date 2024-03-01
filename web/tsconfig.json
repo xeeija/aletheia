@@ -22,7 +22,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "pretty": true,
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/styles/*": ["./styles/*"],
+    }
   },
   "include": [
     "next-env.d.ts",

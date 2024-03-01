@@ -1,10 +1,9 @@
+import { DisconnectTwitchDialog, InputField, LayoutNextPage, LoadingButton, defaultLayout } from "@/components"
+import { useUpdateUserMutation } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import { Box, Button, Grid, Link, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useState } from "react"
-import { DisconnectTwitchDialog, InputField, LoadingButton } from "../components"
-import { LayoutNextPage, defaultLayout } from "../components/layout"
-import { useUpdateUserMutation } from "../generated/graphql"
-import { useAuth } from "../hooks"
 
 const SettingsPage: LayoutNextPage = () => {
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })

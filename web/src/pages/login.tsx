@@ -1,6 +1,5 @@
+import { LayoutNextPage, LoginForm, defaultLayout } from "@/components"
 import { Box, Typography } from "@mui/material"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
-import { LoginForm } from "../components/user/LoginForm"
 
 const LoginPage: LayoutNextPage = () => (
   <Box sx={{ width: 360, mx: "auto" }}>

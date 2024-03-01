@@ -1,11 +1,10 @@
+import { LayoutNextPage, NoData, TabPanel, defaultLayout } from "@/components"
+import { CreateEditWheelDialog, WheelList } from "@/components/randomWheel"
+import { useMyRandomWheelsQuery } from "@/generated/graphql"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
-import { NoData, TabPanel } from "../components"
-import { LayoutNextPage, defaultLayout } from "../components/layout"
-import { CreateEditWheelDialog, WheelList } from "../components/randomWheel"
-import { useMyRandomWheelsQuery } from "../generated/graphql"
 
 const wheelsTypes = ["my", "shared", "favorite"]
 

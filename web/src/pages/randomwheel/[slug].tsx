@@ -1,3 +1,19 @@
+import { Dropdown, LayoutNextPage, LinkListItem, TabPanel, defaultLayout, getTitle } from "@/components"
+import {
+  AccessTypeBadge,
+  AddEntryForm,
+  ClearEntriesDialog,
+  CreateEditWheelDialog,
+  DeleteWheelDialog,
+  EditMembersDialog,
+  EntryList,
+  RedemptionSyncDialog,
+  Wheel,
+  WinnerDialog,
+  WinnerList,
+} from "@/components/randomWheel"
+import { useAuth, useRandomWheel } from "@/hooks"
+import NotFoundPage from "@/pages/404"
 import {
   Badge,
   Box,
@@ -19,23 +35,6 @@ import { useRouter } from "next/router"
 import { MouseEventHandler, useState } from "react"
 import { HiDotsVertical, HiExternalLink, HiLink, HiPencil, HiRefresh, HiShare, HiTrash } from "react-icons/hi"
 import { TiArrowRepeat, TiStarFullOutline, TiStarOutline, TiUserAdd } from "react-icons/ti"
-import { Dropdown, LinkListItem, TabPanel } from "../../components"
-import { LayoutNextPage, defaultLayout, getTitle } from "../../components/layout"
-import {
-  AccessTypeBadge,
-  AddEntryForm,
-  ClearEntriesDialog,
-  CreateEditWheelDialog,
-  DeleteWheelDialog,
-  EditMembersDialog,
-  EntryList,
-  Wheel,
-  WinnerDialog,
-  WinnerList,
-} from "../../components/randomWheel"
-import { RedemptionSyncDialog } from "../../components/randomWheel/RedemptionSyncDialog"
-import { useAuth, useRandomWheel } from "../../hooks"
-import NotFoundPage from "../404"
 
 const RandomWheelDetailPage: LayoutNextPage = () => {
   const router = useRouter()

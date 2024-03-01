@@ -1,7 +1,7 @@
+import { LayoutNextPage, defaultLayout, getTitle } from "@/components"
 import { Box, Typography } from "@mui/material"
 import Head from "next/head"
 import Image from "next/image"
-import { defaultLayout, getTitle, LayoutNextPage } from "../components/layout"
 
 const NotFoundPage: LayoutNextPage = () => (
   <Box

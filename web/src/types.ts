@@ -1,6 +1,6 @@
+import { RandomWheelEntry, RandomWheelWinner } from "@/generated/graphql"
 import { NextApiRequest, NextApiResponse } from "next"
 import { Socket as SocketDefault } from "socket.io-client"
-import { RandomWheelEntry, RandomWheelWinner } from "./generated/graphql"
 
 export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
 

@@ -5,7 +5,7 @@ import { FC, useState } from "react"
 import { TiArrowRight, TiWarning } from "react-icons/ti"
 import { useRegisterMutation } from "../../generated/graphql"
 import { useUsernameValidator } from "../../hooks"
-import { passwordStrength } from "../../utils/passwordStrength"
+import { passwordStrength } from "../../utils/password"
 import { InputField, LoadingButton, PasswordField } from "../components"
 
 interface Props {}

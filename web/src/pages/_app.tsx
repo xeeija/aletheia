@@ -1,10 +1,10 @@
-import "../../styles/global.css"
-import "../../styles/fonts.css"
-import type { AppProps } from "next/app"
+import { LayoutNextPage, defaultLayout } from "@/components"
+import "@/styles/fonts.css"
+import "@/styles/global.css"
+import { theme } from "@/theme"
 import { CssBaseline, ThemeProvider } from "@mui/material"
-import { theme } from "../theme"
-import { createClient, Provider as UrqlProvider } from "urql"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
+import type { AppProps } from "next/app"
+import { Provider as UrqlProvider, createClient } from "urql"
 
 type LayoutAppProps = AppProps & {
   Component: LayoutNextPage

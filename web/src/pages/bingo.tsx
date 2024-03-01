@@ -1,9 +1,9 @@
-import React, { useState } from "react"
-import Head from "next/head"
+import { LayoutNextPage, defaultLayout } from "@/components"
+import { BingoBoard } from "@/components/bingo"
+import { shuffle } from "@/utils/math"
 import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme } from "@mui/material"
-import { BingoBoard } from "../components/bingo"
-import { shuffle } from "../utils/shuffle"
-import { defaultLayout, LayoutNextPage } from "../components/layout"
+import Head from "next/head"
+import { useState } from "react"
 
 const BingoPage: LayoutNextPage = () => {
   const theme = useTheme()

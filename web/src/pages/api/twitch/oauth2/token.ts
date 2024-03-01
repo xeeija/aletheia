@@ -1,4 +1,4 @@
-import { ApiHandler } from "../../../../types"
+import { ApiHandler } from "@/types"
 
 const handler: ApiHandler = async (req, res) => {
   if (req.method !== "GET") {

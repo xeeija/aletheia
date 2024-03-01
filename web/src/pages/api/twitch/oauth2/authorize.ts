@@ -1,5 +1,5 @@
-import { ApiHandler } from "../../../../types"
-import { randomBase64Url } from "../../../../utils/random"
+import { ApiHandler } from "@/types"
+import { randomBase64Url } from "@/utils/random"
 
 const handler: ApiHandler = (_, res) => {
   if (!process.env.TWITCH_REDIRECT_URI) {

@@ -2,7 +2,7 @@ import { IconButton, InputAdornment, useTheme } from "@mui/material"
 import { useFormikContext } from "formik"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
-import { passwordStrengthColor } from "../../utils/passwordStrength"
+import { passwordStrengthColor } from "../../utils/password"
 import { InputField, InputFieldProps } from "../components"
 
 type Props = InputFieldProps & {

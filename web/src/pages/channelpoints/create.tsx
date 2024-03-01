@@ -1,5 +1,5 @@
+import { LayoutNextPage, defaultLayout } from "@/components"
 import { Box, Typography } from "@mui/material"
-import { LayoutNextPage, defaultLayout } from "../../components/layout"
 
 export const CreateChannelPointsPage: LayoutNextPage = () => {
   return (

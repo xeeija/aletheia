@@ -1,5 +1,5 @@
+import { Socket } from "@/types"
 import { io } from "socket.io-client"
-import { Socket } from "../types"
 
 // TODO: Socket Remarks
 // best practises for react: https://socket.io/how-to/use-with-react#remarks-about-the-useeffect-hook

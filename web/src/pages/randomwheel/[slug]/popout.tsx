@@ -1,10 +1,10 @@
+import { LayoutNextPage, getTitle } from "@/components"
+import { Wheel } from "@/components/randomWheel"
+import { useRandomWheel } from "@/hooks"
+import NotFoundPage from "@/pages/404"
 import { Box, useTheme } from "@mui/material"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { LayoutNextPage, getTitle } from "../../../components/layout"
-import { Wheel } from "../../../components/randomWheel"
-import { useRandomWheel } from "../../../hooks"
-import NotFoundPage from "../../404"
 
 const RandomWheelPopoutPage: LayoutNextPage = () => {
   const router = useRouter()

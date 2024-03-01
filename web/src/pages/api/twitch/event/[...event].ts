@@ -1,4 +1,4 @@
-import { ApiHandler } from "../../../../types"
+import { ApiHandler } from "@/types"
 
 // const apiPattern = /^\/api/
 
