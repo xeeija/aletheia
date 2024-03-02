@@ -26,7 +26,7 @@ import {
   RandomWheelRole,
   RandomWheelWinner,
   User,
-} from "../../dist/generated/typegraphql-prisma"
+} from "../generated/typegraphql"
 import { random, randomNumber } from "../utils/math"
 import { slugify } from "../utils/slug"
 import { ColorThemeInput } from "./ColorTheme"

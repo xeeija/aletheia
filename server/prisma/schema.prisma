@@ -12,7 +12,7 @@ generator client {
 
 generator typegraphql {
   provider           = "typegraphql-prisma"
-  output             = "../dist/generated/typegraphql-prisma"
+  output             = "../src/generated/typegraphql"
   emitTranspiledCode = true
 }
 

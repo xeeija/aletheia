@@ -13,7 +13,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
+import { EventSubscription } from "../generated/typegraphql"
 import {
   addExistingRedemptions,
   addSubscriptionRedemptionAdd,

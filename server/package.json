@@ -11,6 +11,7 @@
     "watch": "tsc -w",
     "build": "tsc",
     "migrate": "npx prisma migrate dev --create-only --name",
+    "generate": "npx prisma generate",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "lint:ci": "eslint --output-file eslint_report.json --format json ./src",
