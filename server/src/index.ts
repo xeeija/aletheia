@@ -24,7 +24,7 @@ import { apiClient, eventSubMiddleware, handleEventSub } from "./twitch/eventsub
 // Create one instance and pass it around is the best practice for prisma
 const prisma = new PrismaClient()
 
-prisma.$on("beforeExit", async () => {
+process.on("beforeExit", async () => {
   await prisma.$disconnect()
   console.log("Prisma disconnected")
 })
