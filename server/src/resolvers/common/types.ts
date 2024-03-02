@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, createUnionType, ClassType } from "type-graphql"
+import { ClassType, Field, Int, ObjectType, createUnionType } from "type-graphql"
 
 // create a list type of a class (type) as workaround for union types
 export function ListType<C>(itemClass: ClassType<C>) {

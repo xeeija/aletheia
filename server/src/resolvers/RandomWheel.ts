@@ -165,31 +165,31 @@ const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
 @ObjectType("RandomWheel")
 class RandomWheelFull extends RandomWheel {
   @Field(() => [RandomWheelEntry])
-  entries: RandomWheelEntry[]
+  declare entries: RandomWheelEntry[]
 
   @Field(() => [RandomWheelWinner])
-  winners: RandomWheelWinner[]
+  declare winners: RandomWheelWinner[]
 
   @Field(() => [RandomWheelMemberFull])
-  members: RandomWheelMember[]
+  declare members: RandomWheelMember[]
 
   @Field(() => AccessType)
-  access: AccessType
+  declare access: AccessType
 
   @Field(() => User, { nullable: true })
-  owner?: User
+  declare owner?: User
 
   @Field(() => ColorTheme, { nullable: true })
-  theme?: ColorTheme
+  declare theme?: ColorTheme
 }
 
 @ObjectType("RandomWheelMember")
 class RandomWheelMemberFull extends RandomWheelMember {
   @Field(() => User)
-  user: User
+  declare user: User
 
   @Field(() => RandomWheelRole)
-  role: RandomWheelRole
+  declare role: RandomWheelRole
 }
 
 // @ObjectType()

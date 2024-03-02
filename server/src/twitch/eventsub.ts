@@ -2,12 +2,10 @@ import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
-import { config } from "dotenv"
+import "dotenv/config"
 import { EventSubType, SocketServer, SubscriptionType } from "../types"
 import { authProvider } from "./auth"
 import { addSubscriptionRedemptionAdd } from "./events/redemptionAdd"
-
-config()
 
 export const apiClient = new ApiClient({
   authProvider,
@@ -56,9 +54,10 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     eventSub.onSubscriptionDeleteSuccess((ev) => {
       console.log("[eventsub] delete success", eventType(ev.id))
     })
-    eventSub.onVerify((success, ev) => {
-      console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
-    })
+    // TODO: Fix: has type "any" somehow since typescript 5.3 upgrade
+    // eventSub.onVerify((success, ev) => {
+    //   console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
+    // })
   }
 
   eventSub.onRevoke(async (ev) => {

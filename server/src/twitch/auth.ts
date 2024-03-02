@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
-import { config } from "dotenv"
+import "dotenv/config"
 import fetch from "node-fetch"
 import { HttpError } from "src/types"
 import { deleteManySubscriptionRedemptionAdd } from "./events"
-
-config()
 
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
