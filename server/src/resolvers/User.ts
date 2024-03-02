@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import argon2 from "argon2"
 import fetch from "node-fetch"
 import { GraphqlContext } from "src/types"
