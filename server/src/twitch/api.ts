@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
-import fetch from "node-fetch"
 import { AccessTokenResponse } from "src/types"
 import { authProvider } from "./auth"
 

@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
 import "dotenv/config"
-import fetch from "node-fetch"
 import { HttpError } from "src/types"
 import { deleteManySubscriptionRedemptionAdd } from "./events"
 
