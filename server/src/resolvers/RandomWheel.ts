@@ -30,7 +30,7 @@ import { GraphqlContext } from "../types"
 import { random, randomNumber } from "../utils/math"
 import { slugify } from "../utils/slug"
 import { ColorThemeInput } from "./ColorTheme"
-import { AppError, createAppErrorUnion } from "./common/types"
+import { AppError, createAppErrorUnion } from "./types"
 
 /*
   @ObjectType()

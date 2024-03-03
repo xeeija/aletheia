@@ -1,5 +1,4 @@
 import { HelixCustomReward } from "@twurple/api"
-import { GraphQLJSON } from "graphql-scalars"
 import {
   Arg,
   Ctx,
@@ -287,27 +286,28 @@ export class TwitchResolver {
     }
   }
 
+  // Only for testing
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  @Query(() => GraphQLJSON)
-  async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
-    const subs = await apiClient.eventSub.getSubscriptions()
+  // @Query(() => GraphQLJSON)
+  // async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
+  //   const subs = await apiClient.eventSub.getSubscriptions()
+  //   return subs
+  // }
 
-    return subs
-  }
+  // @Mutation(() => Boolean)
+  // async eventSubDeleteAllSubscriptions(
+  //   @Ctx() { apiClient }: GraphqlContext,
+  //   @Arg("all", { nullable: true }) all?: boolean
+  // ) {
+  //   if (all) {
+  //     await apiClient.eventSub.deleteAllSubscriptions()
+  //   } else {
+  //     await apiClient.eventSub.deleteBrokenSubscriptions()
+  //   }
 
-  @Mutation(() => Boolean)
-  async eventSubDeleteAllSubscriptions(
-    @Ctx() { apiClient }: GraphqlContext,
-    @Arg("all", { nullable: true }) all?: boolean
-  ) {
-    if (all) {
-      await apiClient.eventSub.deleteAllSubscriptions()
-    } else {
-      await apiClient.eventSub.deleteBrokenSubscriptions()
-    }
-
-    return true
-  }
+  //   return true
+  // }
 
   @Mutation(() => EventSubscriptionFull, { nullable: true })
   async syncEntriesWithRedemption(
