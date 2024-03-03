@@ -51,11 +51,11 @@
     "emitDecoratorMetadata": true,
   },
   "include": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx"
+    "./**/*.ts",
+    "./**/*.tsx"
   ],
   "exclude": [
-    "./node_modules",
-    "./src/generated"
+    "../node_modules",
+    "./generated"
   ]
 }

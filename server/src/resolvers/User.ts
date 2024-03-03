@@ -1,8 +1,8 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import argon2 from "argon2"
-import { GraphqlContext } from "src/types"
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
 import { User, UserAccessToken } from "../generated/typegraphql"
+import { GraphqlContext } from "../types"
 import { FieldError } from "./common/types"
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types

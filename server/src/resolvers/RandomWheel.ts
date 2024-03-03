@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { GraphQLError, GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
-import { GraphqlContext } from "src/types"
 import {
   Arg,
   Ctx,
@@ -27,6 +26,7 @@ import {
   RandomWheelWinner,
   User,
 } from "../generated/typegraphql"
+import { GraphqlContext } from "../types"
 import { random, randomNumber } from "../utils/math"
 import { slugify } from "../utils/slug"
 import { ColorThemeInput } from "./ColorTheme"

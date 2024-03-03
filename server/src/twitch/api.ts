@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
-import { AccessTokenResponse } from "src/types"
+import { AccessTokenResponse } from "../types"
 import { authProvider } from "./auth"
 
 export const handleTwitchRoutes = (prisma: PrismaClient) => {

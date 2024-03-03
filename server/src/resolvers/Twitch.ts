@@ -287,6 +287,7 @@ export class TwitchResolver {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   @Query(() => GraphQLJSON)
   async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
     const subs = await apiClient.eventSub.getSubscriptions()
