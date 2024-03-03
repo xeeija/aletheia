@@ -2,11 +2,14 @@
   // "extends": ["./tsconfig.base.json"],
   "files": [],
   "compilerOptions": {
-    // is this needed/recommended with references?
-    // "composite": true,
+    // this is the composite project that references others
+    "composite": true,
   },
   "references": [
     {"path": "./src"},
     {"path": "./src/generated"},
   ],
+  "exclude": [
+    "./node_modules",
+  ]
 }

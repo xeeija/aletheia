@@ -27,8 +27,7 @@ import {
   User,
 } from "../generated/typegraphql"
 import { GraphqlContext } from "../types"
-import { random, randomNumber } from "../utils/math"
-import { slugify } from "../utils/slug"
+import { random, randomNumber, slugify } from "../utils"
 import { ColorThemeInput } from "./ColorTheme"
 import { AppError, createAppErrorUnion } from "./types"
 
