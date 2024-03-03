@@ -1,58 +1,12 @@
 {
+  // "extends": ["./tsconfig.base.json"],
+  "files": [],
   "compilerOptions": {
-    /* Basic Options */
-    "target": "es2022",
-    "module": "node16",
-    "lib": [
-      "es2023"
-    ],
-    "incremental": true,
-    "moduleResolution": "node16",
-    "outDir": "./dist",
-    // "rootDir": "./src",
-
-    /* Recommeded */
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-
-    /* Custom options */
-    "removeComments": true,
-    "pretty": true,
-    "sourceMap": true,
-    "importHelpers": true,
-    // "declaration": true,
-    // "declarationMap": true,
-
-    /* Module Resolution Options */
-    "baseUrl": ".",
-    // "paths": {},
-    // "preserveSymlinks": true,
-
-    /* Additional Checks */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    // "noUncheckedIndexedAccess": true,
-    "strictPropertyInitialization": false,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    // "exactOptionalPropertyTypes": true,
-
-    /* Experimental Options */
-    // needed for type-graphql decotators
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    // is this needed/recommended with references?
+    "composite": true,
   },
-  "include": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx"
+  "references": [
+    {"path": "./tsconfig.base.json"},
+    {"path": "./src/generated"},
   ],
-  "exclude": [
-    "./node_modules",
-  ]
 }

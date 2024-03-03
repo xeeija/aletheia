@@ -1,0 +1,13 @@
+{
+  "extends": ["../../tsconfig.base.json"],
+  "compilerOptions": {
+    "composite": true,
+    // disable unused errors for generated typegraphql files
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+  },
+  "include": [
+    "./**/*.ts",
+  ],
+  "exclude": []
+}
