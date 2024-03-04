@@ -85,10 +85,15 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
       return
     }
 
-    const { data, error } = await updateWheelMembers({
-      randomWheelId: wheelId,
-      members: members,
-    })
+    const { data, error } = await updateWheelMembers(
+      {
+        randomWheelId: wheelId,
+        members: members,
+      },
+      {
+        additionalTypenames: ["RandomWheelMember"],
+      }
+    )
 
     if (error) {
       console.warn(error)

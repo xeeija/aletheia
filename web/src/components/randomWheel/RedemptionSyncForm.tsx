@@ -1,4 +1,4 @@
-import { BooleanField, LoadingButton, NoData, SelectField } from "@/components"
+import { BooleanField, LoadingButton, NoData, SelectField, SkeletonList } from "@/components"
 import { CustomRewardMenuItem } from "@/components/twitch"
 import { EventSubscriptionFragment } from "@/generated/graphql"
 import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "@/hooks"
@@ -13,6 +13,7 @@ import {
   ListItem,
   ListItemSecondaryAction,
   Portal,
+  Skeleton,
   SvgIcon,
   Typography,
 } from "@mui/material"
@@ -43,11 +44,10 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
   const { channelRewards } = useChannelRewards()
 
-  const { subscriptions, fetchingPause, syncEntries, pauseEntriesSync, deleteEntriesSync } = useEventSubscriptionsWheel(
-    {
+  const { subscriptions, fetchingPause, fetching, syncEntries, pauseEntriesSync, deleteEntriesSync } =
+    useEventSubscriptionsWheel({
       randomWheelId: wheel?.id ?? "",
-    }
-  )
+    })
 
   const [showNewSyncronization, setShowNewSyncronization] = useState(false)
 
@@ -296,7 +296,28 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     </List>
                   ) : null}
 
-                  {subscriptions?.length || showNewSyncronization ? null : (
+                  {fetching && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width: "100%",
+                        gap: 1,
+                        ml: 1,
+                        py: 1,
+                      }}
+                    >
+                      <SkeletonList n={2} height={50}>
+                        {/* make a skeleton with a avatar, then a text */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <Skeleton variant="circular" height={32} width={32} />
+                          <Skeleton variant="text" height={50} width="50%" />
+                        </Box>
+                      </SkeletonList>
+                    </Box>
+                  )}
+
+                  {subscriptions?.length || showNewSyncronization || fetching ? null : (
                     <NoData iconSize="sm" textProps={{ variant: "body1" }}>
                       No rewards are synchronized
                     </NoData>
@@ -354,7 +375,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: subscriptions?.length ? "start" : "center",
+                        justifyContent: subscriptions?.length || fetching ? "start" : "center",
                       }}
                     >
                       <Button
@@ -378,7 +399,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                   type="submit"
                   variant="contained"
                   loading={isSubmitting}
-                  disabled={!dirty}
+                  disabled={!dirty || fetching}
                   form="redemptionSyncForm"
                 >
                   Update

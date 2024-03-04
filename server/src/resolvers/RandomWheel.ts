@@ -141,7 +141,7 @@ const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const fallbackMembers: ResolveTree | FieldsByTypeName | null | undefined = (<Record<string, any>>(
       resolveInfo?.fieldsByTypeName.RandomWheel
-    )).members
+    ))?.members
 
     const membersFields: ResolveTree | FieldsByTypeName | null | undefined =
       "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {}) ? resolveInfo : fallbackMembers

@@ -1,5 +1,5 @@
 import { Skeleton } from "@mui/material"
-import { FC } from "react"
+import { FC, Fragment, ReactNode } from "react"
 
 interface Props {
   n?: number
@@ -7,16 +7,21 @@ interface Props {
   animation?: false | "pulse" | "wave"
   width?: string | number
   height?: string | number
+  animationDelay?: number
+  children?: ReactNode
 }
 
-export const SkeletonList: FC<Props> = ({ n, variant = "rectangular", ...props }) => {
+export const SkeletonList: FC<Props> = ({ n, variant = "rectangular", animationDelay, children, ...props }) => {
   const items = Array(n).fill(0)
 
   return (
     <>
-      {items.map((_, i) => (
-        <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * 50}ms` }} {...props} />
-      ))}
+      {items.map(
+        (_, i) =>
+          <Fragment key={i}>{children}</Fragment> ?? (
+            <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * (animationDelay ?? 50)}ms` }} {...props} />
+          )
+      )}
     </>
   )
 }
