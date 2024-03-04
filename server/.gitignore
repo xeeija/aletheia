@@ -14,7 +14,7 @@ node_modules/
 # Build folder
 dist/
 src/generated/*
-!src/generated/tsconfig.json
+# !src/generated/tsconfig.json
 
 # next.js
 .next/
