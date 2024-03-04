@@ -39,7 +39,8 @@
     "jsx-quotes": ["warn", "prefer-double"],
     // "prettier/prettier": "warn",
     // "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-misused-promises": "off",
+    // maybe enable floating promises again, and mark them with 'void' instead
+    "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/ban-types": [
       "warn",
       {
