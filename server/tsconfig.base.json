@@ -3,9 +3,7 @@
     /* Basic Options */
     "target": "es2022",
     "module": "node16",
-    "lib": [
-      "es2023"
-    ],
+    "lib": ["es2023"],
     "incremental": true,
     "moduleResolution": "node16",
 
@@ -38,6 +36,6 @@
     /* Experimental Options */
     // needed for type-graphql decotators
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
+    "emitDecoratorMetadata": true
+  }
 }
