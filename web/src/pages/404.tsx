@@ -19,7 +19,17 @@ const NotFoundPage: LayoutNextPage = () => (
       <title>{getTitle("Not Found")}</title>
     </Head>
 
-    <Image src="/img/mathematics.svg" alt="" width={300} height={240} draggable="false" />
+    <Image
+      src="/img/mathematics.svg"
+      alt=""
+      width={300}
+      height={240}
+      draggable="false"
+      style={{
+        maxWidth: "100%",
+        height: "auto",
+      }}
+    />
 
     <Box>
       <Typography variant="h4" className="muted">

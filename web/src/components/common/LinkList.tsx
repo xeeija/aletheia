@@ -99,7 +99,7 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     return !href ? (
       linkItem
     ) : (
-      <Link href={href} passHref>
+      <Link href={href} passHref legacyBehavior>
         {linkItem}
       </Link>
     )

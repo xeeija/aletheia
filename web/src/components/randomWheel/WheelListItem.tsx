@@ -12,7 +12,7 @@ interface Props {
 export const WheelListItem: FC<Props> = ({ wheel }) => {
   return (
     <Card>
-      <Link href={`randomwheel/${wheel.slug}`} passHref>
+      <Link href={`randomwheel/${wheel.slug}`} passHref legacyBehavior>
         <CardActionArea sx={{ height: "100%" }}>
           <CardContent>
             <Typography variant="h6">{wheel.name || `Wheel #${wheel.slug}`}</Typography>

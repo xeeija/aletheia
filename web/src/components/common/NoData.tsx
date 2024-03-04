@@ -33,7 +33,17 @@ export const NoData: FC<Props> = ({ iconSize = "lg", direction = "column", textP
         ...boxProps.sx,
       }}
     >
-      <Image src="/img/void.svg" alt="" width={iconSizeNumber} height={iconSizeNumber} draggable="false" />
+      <Image
+        src="/img/void.svg"
+        alt=""
+        width={iconSizeNumber}
+        height={iconSizeNumber}
+        draggable="false"
+        style={{
+          maxWidth: "100%",
+          height: "auto",
+        }}
+      />
 
       {typeof children === "object" ? (
         children
