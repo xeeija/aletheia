@@ -10,6 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// graphql-fields is a runtime dependency for typegraphql-prisma
 generator typegraphql {
   provider           = "typegraphql-prisma"
   output             = "../src/generated/typegraphql"
