@@ -37,7 +37,7 @@
     "react/jsx-uses-vars": "error",
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
     "jsx-quotes": ["warn", "prefer-double"],
-    // "prettier/prettier": "warn",
+    "prettier/prettier": "warn",
     // "@typescript-eslint/no-explicit-any": "off",
     // maybe enable floating promises again, and mark them with 'void' instead
     "@typescript-eslint/no-floating-promises": "off",

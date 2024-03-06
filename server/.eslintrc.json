@@ -21,8 +21,8 @@
     // "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     // "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "quotes": ["error", "double", { "allowTemplateLiterals": true }]
-    // "prettier/prettier": "warn",
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "prettier/prettier": "warn"
   }
   // ignorePatterns: ["src/services/*"],
 }

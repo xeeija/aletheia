@@ -23,13 +23,17 @@ services:
       - server/.env
     environment:
       DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
+      NODE_ENV: development
 
   web:
-    image: xeeija/aletheia-web:1.5.0
-    build:
-      context: server
+    image: xeeija/aletheia-web:1.6.0
+    # build:
+    #   context: web
     restart: unless-stopped
     ports:
       - 3000:3000
+    env_file:
+      - web/.env
     environment:
       SERVER_URL: http://server:4000
+      SOCKET_SERVER_URL: http://server:4000
