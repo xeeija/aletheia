@@ -1,10 +1,11 @@
 import { Fade, Popover } from "@mui/material"
-import React, { FC } from "react"
+import { FC, ReactNode, SetStateAction } from "react"
 
 interface Props {
   anchor: Element | null
-  setAnchor: (value: React.SetStateAction<Element | null>) => void
+  setAnchor: (value: SetStateAction<Element | null>) => void
   onClose?: (event: Record<string, never>, reason: "backdropClick" | "escapeKeyDown") => void
+  children?: ReactNode
 }
 
 export const Dropdown: FC<Props> = ({ children, anchor, setAnchor }) => {

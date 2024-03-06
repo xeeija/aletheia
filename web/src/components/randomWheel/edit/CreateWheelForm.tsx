@@ -2,11 +2,20 @@ import { LoadingButton } from "@/components"
 import { WheelFormFields } from "@/components/randomWheel"
 import { useCreateRandomWheelMutation } from "@/generated/graphql"
 import { Portal } from "@mui/material"
-import { Form, Formik, FormikProps, FormikValues } from "formik"
+import { Form, Formik, FormikProps } from "formik"
 import { useRouter } from "next/router"
 import { FC, RefObject } from "react"
 
-const wheelDraft = {
+export type WheelValues = {
+  name: string
+  accessType: string
+  spinDuration: number
+  fadeDuration: number
+  editAnonymous: boolean
+  theme: string
+}
+
+const wheelDraft: WheelValues = {
   name: "",
   accessType: "PUBLIC",
   spinDuration: 8000,
@@ -17,7 +26,7 @@ const wheelDraft = {
 
 interface Props {
   dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<FormikValues>>
+  formRef?: RefObject<FormikProps<WheelValues>>
 }
 
 export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {

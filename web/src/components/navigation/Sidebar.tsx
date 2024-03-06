@@ -1,6 +1,6 @@
 import { LinkItem, LinkList, LinkListItem, LogoIcon } from "@/components"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
-import React, { FC } from "react"
+import { Dispatch, FC, ReactNode, SetStateAction } from "react"
 
 // Animate expand (transition)
 export const transitionMixin = (theme: Theme): CSSObject => ({
@@ -31,7 +31,8 @@ interface Props {
   items: LinkItem[]
   openedWidth: number
   open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setOpen: Dispatch<SetStateAction<boolean>>
+  children?: ReactNode
 }
 
 // #BetterMiniDrawer

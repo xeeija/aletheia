@@ -1,10 +1,11 @@
 import { Alert, AlertColor, Collapse } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, ReactNode, useState } from "react"
 import { TiWarning } from "react-icons/ti"
 
 interface Props {
   severity?: AlertColor
   onExited?: (node: HTMLElement) => void
+  children: ReactNode
 }
 
 export const CollapsedAlert: FC<Props> = ({ children, severity, onExited }) => {

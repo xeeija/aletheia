@@ -1,23 +1,14 @@
 import { LoadingButton } from "@/components"
-import { WheelFormFields } from "@/components/randomWheel"
+import { WheelFormFields, WheelValues } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
 
-type Values = {
-  name: string
-  accessType: string
-  spinDuration: number
-  fadeDuration: number
-  editAnonymous: boolean
-  theme: string
-}
-
 interface Props {
   slug: string
   dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<Values>>
+  formRef?: RefObject<FormikProps<WheelValues>>
 }
 
 export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
@@ -29,7 +20,7 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
     return null
   }
 
-  const initialValues: Values = {
+  const initialValues: WheelValues = {
     name: wheel.name ?? "",
     accessType: wheel.accessType,
     spinDuration: wheel.spinDuration,
