@@ -1,6 +1,6 @@
+import { ColorTheme } from "@/generated/typegraphql"
+import { GraphqlContext } from "@/types"
 import { Arg, Ctx, Field, InputType, Query, Resolver } from "type-graphql"
-import { ColorTheme } from "../generated/typegraphql"
-import { GraphqlContext } from "../types"
 
 @InputType()
 export class ColorThemeInput {

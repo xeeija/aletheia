@@ -1,9 +1,9 @@
+import { activeSubscriptions } from "@/twitch"
+import { SocketServer, SubscriptionConfig, SubscriptionType } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import crypto from "crypto"
-import { SocketServer, SubscriptionConfig, SubscriptionType } from "../../types"
-import { activeSubscriptions } from "../eventsub"
 
 export const addSubscriptionRedemptionAdd = (
   eventSub: EventSubMiddleware,

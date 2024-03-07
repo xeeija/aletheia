@@ -1,3 +1,17 @@
+import {
+  AccessType,
+  ColorTheme,
+  RandomWheel,
+  RandomWheelEntry,
+  RandomWheelLike,
+  RandomWheelMember,
+  RandomWheelRole,
+  RandomWheelWinner,
+  User,
+} from "@/generated/typegraphql"
+import { AppError, createAppErrorUnion } from "@/resolvers/types"
+import { GraphqlContext } from "@/types"
+import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
 import { GraphQLError, GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
@@ -15,21 +29,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import {
-  AccessType,
-  ColorTheme,
-  RandomWheel,
-  RandomWheelEntry,
-  RandomWheelLike,
-  RandomWheelMember,
-  RandomWheelRole,
-  RandomWheelWinner,
-  User,
-} from "../generated/typegraphql"
-import { GraphqlContext } from "../types"
-import { random, randomNumber, slugify } from "../utils"
 import { ColorThemeInput } from "./ColorTheme"
-import { AppError, createAppErrorUnion } from "./types"
 
 /*
   @ObjectType()

@@ -1,11 +1,11 @@
+import { authProvider } from "@/twitch"
+import { addSubscriptionRedemptionAdd } from "@/twitch/events"
+import { EventSubType, SocketServer, SubscriptionType } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import "dotenv/config"
-import { EventSubType, SocketServer, SubscriptionType } from "../types"
-import { authProvider } from "./auth"
-import { addSubscriptionRedemptionAdd } from "./events/redemptionAdd"
 
 export const apiClient = new ApiClient({
   authProvider,

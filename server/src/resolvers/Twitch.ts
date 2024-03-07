@@ -1,3 +1,13 @@
+import { EventSubscription } from "@/generated/typegraphql"
+import {
+  addExistingRedemptions,
+  addSubscriptionRedemptionAdd,
+  deleteManySubscriptionRedemptionAdd,
+  deleteSubscriptionRedemptionAdd,
+  findSubscriptionRedemptionAdd,
+} from "@/twitch/events"
+import { getRewards } from "@/twitch/mock"
+import { EventSubType, GraphqlContext, SubscriptionType } from "@/types"
 import { HelixCustomReward } from "@twurple/api"
 import {
   Arg,
@@ -12,16 +22,6 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import { EventSubscription } from "../generated/typegraphql"
-import {
-  addExistingRedemptions,
-  addSubscriptionRedemptionAdd,
-  deleteManySubscriptionRedemptionAdd,
-  deleteSubscriptionRedemptionAdd,
-  findSubscriptionRedemptionAdd,
-} from "../twitch/events"
-import { getRewards } from "../twitch/mock"
-import { EventSubType, GraphqlContext, SubscriptionType } from "../types"
 
 // same properties as HelixCustomReward
 @ObjectType("CustomReward")

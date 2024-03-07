@@ -1,3 +1,16 @@
+import "reflect-metadata" // must be before any resolvers or type-graphql imports
+
+import { Resolvers } from "@/resolvers"
+import { randomWheelHandlers } from "@/socket"
+import {
+  apiClient,
+  eventSubMiddleware,
+  handleEventSub,
+  handleTokenValidation,
+  setupAuthProvider,
+  handleTwitchRoutes as twitchRouter,
+} from "@/twitch"
+import { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import {
   ApolloServerPluginLandingPageDisabled,
@@ -8,17 +21,9 @@ import PGStore from "connect-pg-simple"
 import cors from "cors"
 import express from "express"
 import session from "express-session"
-import "reflect-metadata"
-import { buildSchema } from "type-graphql"
-import { Resolvers } from "./resolvers"
-import { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "./types"
-// import { slugTest } from "./utils/slug"
 import { createServer } from "http"
 import { Server } from "socket.io"
-import { randomWheelHandlers } from "./socket"
-import { handleTwitchRoutes as twitchRouter } from "./twitch/api"
-import { handleTokenValidation, setupAuthProvider } from "./twitch/auth"
-import { apiClient, eventSubMiddleware, handleEventSub } from "./twitch/eventsub"
+import { buildSchema } from "type-graphql"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma

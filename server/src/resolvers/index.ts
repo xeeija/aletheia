@@ -18,3 +18,5 @@ export const Resolvers: NonEmptyArray<Function> = [
   CustomRewardResolver,
   EventSubscriptionResolver,
 ]
+
+export * from "./types"
