@@ -45,6 +45,9 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
+  // "tsc-alias": {
+  //   "resolveFullPaths": true,
+  // },
   "include": [
     "./src/**/*.ts",
     // "./src/**/*.tsx"
