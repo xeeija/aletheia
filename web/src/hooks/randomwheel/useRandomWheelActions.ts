@@ -102,11 +102,11 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     return data?.updateRandomWheelMembers
   }
 
-  return <RandomWheelActions>{
+  return {
     clear,
     updateWheel,
     updateMembers,
     deleteEntry,
     deleteWheel,
-  }
+  } as RandomWheelActions
 }

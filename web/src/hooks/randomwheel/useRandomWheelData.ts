@@ -65,25 +65,25 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
     variables: { slug },
     pause: !options?.details || options.fetchOnly,
   })
-  const wheel = <RandomWheelDetailsQuery | undefined>wheelData?.randomWheelBySlug
+  const wheel = wheelData?.randomWheelBySlug as RandomWheelDetailsQuery | undefined
 
   const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
     variables: { slug },
     pause: !options?.entries || options.fetchOnly,
   })
-  const entries = <RandomWheelEntryFragment[] | undefined>entriesData?.randomWheelBySlug?.entries
+  const entries = entriesData?.randomWheelBySlug?.entries as RandomWheelEntryFragment[] | undefined
 
   const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
     variables: { slug },
     pause: !options?.winners || options.fetchOnly,
   })
-  const winners = <RandomWheelWinnerFragment[] | undefined>winnersData?.randomWheelBySlug?.winners
+  const winners = winnersData?.randomWheelBySlug?.winners as RandomWheelWinnerFragment[] | undefined
 
   const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelBySlugMembersQuery({
     variables: { slug },
     pause: !options?.members || options.fetchOnly,
   })
-  const members = <RandomWheelMemberFragment[] | undefined>membersData?.randomWheelBySlug?.members
+  const members = membersData?.randomWheelBySlug?.members as RandomWheelMemberFragment[] | undefined
 
   const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheelBySlug?.id
 
@@ -95,7 +95,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
     wheel?.members.some((member) => member.userId === user?.id)
 
   return [
-    <RandomWheelData>{
+    {
       id,
       wheel: wheel
         ? {
@@ -113,12 +113,12 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
         members: fetchingMembers,
       },
       // lastWinnerEntry,
-    },
-    <RandomWheelFetch>{
+    } as RandomWheelData,
+    {
       fetchWheel,
       fetchEntries,
       fetchWinners,
       fetchMembers,
-    },
+    } as RandomWheelFetch,
   ] as const
 }

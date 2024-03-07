@@ -6,7 +6,7 @@ export const useChannelRewards = () => {
   })
 
   return {
-    channelRewards: <CustomRewardFragment[] | undefined>data?.channelRewards,
+    channelRewards: data?.channelRewards as CustomRewardFragment[] | undefined,
     fetching,
     error,
   }
