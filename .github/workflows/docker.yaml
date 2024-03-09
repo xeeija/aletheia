@@ -21,14 +21,23 @@ jobs:
           # include adds properties to matrix configurations that match (and dont override anything)
           # so the first "project: web" include only adds to the 'web' configuration, as there is only 1 dimension
           - project: web
-            context: "./web"
+            context: ./web
             image: ${{ vars.IMAGE_NAME_WEB }}
 
           - project: server
-            context: "./server"
+            context: ./server
             image: ${{ vars.IMAGE_NAME_SERVER }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
