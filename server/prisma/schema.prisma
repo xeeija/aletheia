@@ -167,6 +167,10 @@ model UserAccessToken {
   twitchUsername      String?
 }
 
+model TwitchState {
+  state String @id @unique
+}
+
 model EventSubscription {
   id               String       @id @default(uuid()) @db.Uuid
   user             User?        @relation(fields: [userId], references: [id])

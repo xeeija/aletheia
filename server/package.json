@@ -7,7 +7,7 @@
     "dev": "nodemon --delay 2 dist/index.js",
     "start": "node dist/index.js",
     "build": "tsc --build && tsc-alias",
-    "watch": "concurrently --kill-others -n \"tsc,alias\" \"npm run watch-tsc\" \"npm run watch-alias\"",
+    "watch": "concurrently --kill-others -c auto -n \"tsc,alias\" \"npm run watch-tsc\" \"npm run watch-alias\"",
     "watch-tsc": "tsc --build --watch",
     "watch-alias": "tsc-alias --watch --verbose",
     "eventsub": "node dist/twitch/eventsub.js",
