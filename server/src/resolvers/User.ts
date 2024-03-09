@@ -1,6 +1,6 @@
 import { User, UserAccessToken } from "@/generated/typegraphql"
 import { FieldError } from "@/resolvers"
-import { GraphqlContext } from "@/types"
+import type { GraphqlContext } from "@/types"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import argon2 from "argon2"
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"

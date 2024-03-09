@@ -1,5 +1,5 @@
 import { activeSubscriptions } from "@/twitch"
-import { SocketServer, SubscriptionConfig, SubscriptionType } from "@/types"
+import { SubscriptionType, type SocketServer, type SubscriptionConfig } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"

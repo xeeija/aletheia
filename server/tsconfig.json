@@ -21,6 +21,7 @@
     "importHelpers": true,
     "declaration": true,
     // "declarationMap": true,
+    "isolatedModules": true,
 
     /* Module Resolution Options */
     // "baseUrl": "./src", // not required anymore for paths

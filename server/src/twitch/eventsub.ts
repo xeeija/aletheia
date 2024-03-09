@@ -1,6 +1,6 @@
 import { authProvider } from "@/twitch"
 import { addSubscriptionRedemptionAdd } from "@/twitch/events"
-import { EventSubType, SocketServer, SubscriptionType } from "@/types"
+import { EventSubType, SubscriptionType, type SocketServer } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubSubscription } from "@twurple/eventsub-base"

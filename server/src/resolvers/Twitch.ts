@@ -7,7 +7,7 @@ import {
   findSubscriptionRedemptionAdd,
 } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
-import { EventSubType, GraphqlContext, SubscriptionType } from "@/types"
+import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
 import { HelixCustomReward } from "@twurple/api"
 import {
   Arg,

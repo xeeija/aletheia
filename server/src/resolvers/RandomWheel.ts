@@ -10,10 +10,10 @@ import {
   User,
 } from "@/generated/typegraphql"
 import { AppError, createAppErrorUnion } from "@/resolvers/types"
-import { GraphqlContext } from "@/types"
+import type { GraphqlContext } from "@/types"
 import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
-import { GraphQLError, GraphQLResolveInfo } from "graphql"
+import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
 import {
   Arg,

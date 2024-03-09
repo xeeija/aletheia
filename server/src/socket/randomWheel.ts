@@ -1,4 +1,4 @@
-import { SocketHandler } from "@/types"
+import type { SocketHandler } from "@/types"
 
 // const prefix = "wheel"
 

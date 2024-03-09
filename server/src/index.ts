@@ -10,7 +10,7 @@ import {
   setupAuthProvider,
   handleTwitchRoutes as twitchRouter,
 } from "@/twitch"
-import { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
+import type { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import {
   ApolloServerPluginLandingPageDisabled,

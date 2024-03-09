@@ -1,5 +1,5 @@
 import { LinkListItem } from "@/components"
-import { ThemeColor } from "@/types"
+import type { ThemeColor } from "@/types"
 import { List, ListProps } from "@mui/material"
 import { FC, MouseEventHandler, ReactNode } from "react"
 
