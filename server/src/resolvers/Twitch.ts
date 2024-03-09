@@ -1,5 +1,14 @@
+import { EventSubscription } from "@/generated/typegraphql"
+import {
+  addExistingRedemptions,
+  addSubscriptionRedemptionAdd,
+  deleteManySubscriptionRedemptionAdd,
+  deleteSubscriptionRedemptionAdd,
+  findSubscriptionRedemptionAdd,
+} from "@/twitch/events"
+import { getRewards } from "@/twitch/mock"
+import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
 import { HelixCustomReward } from "@twurple/api"
-import { GraphQLJSON } from "graphql-scalars"
 import {
   Arg,
   Ctx,
@@ -13,16 +22,6 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import { EventSubscription } from "../../dist/generated/typegraphql-prisma"
-import {
-  addExistingRedemptions,
-  addSubscriptionRedemptionAdd,
-  deleteManySubscriptionRedemptionAdd,
-  deleteSubscriptionRedemptionAdd,
-  findSubscriptionRedemptionAdd,
-} from "../twitch/events"
-import { getRewards } from "../twitch/mock"
-import { EventSubType, GraphqlContext, SubscriptionType } from "../types"
 
 // same properties as HelixCustomReward
 @ObjectType("CustomReward")
@@ -287,26 +286,28 @@ export class TwitchResolver {
     }
   }
 
-  @Query(() => GraphQLJSON)
-  async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
-    const subs = await apiClient.eventSub.getSubscriptions()
+  // Only for testing
 
-    return subs
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // @Query(() => GraphQLJSON)
+  // async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
+  //   const subs = await apiClient.eventSub.getSubscriptions()
+  //   return subs
+  // }
 
-  @Mutation(() => Boolean)
-  async eventSubDeleteAllSubscriptions(
-    @Ctx() { apiClient }: GraphqlContext,
-    @Arg("all", { nullable: true }) all?: boolean
-  ) {
-    if (all) {
-      await apiClient.eventSub.deleteAllSubscriptions()
-    } else {
-      await apiClient.eventSub.deleteBrokenSubscriptions()
-    }
+  // @Mutation(() => Boolean)
+  // async eventSubDeleteAllSubscriptions(
+  //   @Ctx() { apiClient }: GraphqlContext,
+  //   @Arg("all", { nullable: true }) all?: boolean
+  // ) {
+  //   if (all) {
+  //     await apiClient.eventSub.deleteAllSubscriptions()
+  //   } else {
+  //     await apiClient.eventSub.deleteBrokenSubscriptions()
+  //   }
 
-    return true
-  }
+  //   return true
+  // }
 
   @Mutation(() => EventSubscriptionFull, { nullable: true })
   async syncEntriesWithRedemption(

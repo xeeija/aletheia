@@ -1,15 +1,16 @@
 import { Box, Button, ButtonProps, CircularProgress, CircularProgressProps, useTheme } from "@mui/material"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 
 type Props = ButtonProps & {
   loading?: boolean
   position?: "start" | "end"
-  startIcon?: JSX.Element
-  endIcon?: JSX.Element
-  loadingIndicator?: string | JSX.Element
+  startIcon?: ReactNode
+  endIcon?: ReactNode
+  loadingIndicator?: ReactNode
   noProgress?: boolean
   progressProps?: CircularProgressProps
   fade?: boolean // if true, overlaps children, otherwise hides children
+  children?: ReactNode
 }
 
 export const LoadingButton: FC<Props> = ({

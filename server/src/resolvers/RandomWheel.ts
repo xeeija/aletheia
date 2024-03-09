@@ -1,7 +1,20 @@
+import {
+  AccessType,
+  ColorTheme,
+  RandomWheel,
+  RandomWheelEntry,
+  RandomWheelLike,
+  RandomWheelMember,
+  RandomWheelRole,
+  RandomWheelWinner,
+  User,
+} from "@/generated/typegraphql"
+import { AppError, createAppErrorUnion } from "@/resolvers/types"
+import type { GraphqlContext } from "@/types"
+import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
-import { GraphQLError, GraphQLResolveInfo } from "graphql"
+import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
-import { GraphqlContext } from "src/types"
 import {
   Arg,
   Ctx,
@@ -16,21 +29,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import {
-  AccessType,
-  ColorTheme,
-  RandomWheel,
-  RandomWheelEntry,
-  RandomWheelLike,
-  RandomWheelMember,
-  RandomWheelRole,
-  RandomWheelWinner,
-  User,
-} from "../../dist/generated/typegraphql-prisma"
-import { random, randomNumber } from "../utils/math"
-import { slugify } from "../utils/slug"
 import { ColorThemeInput } from "./ColorTheme"
-import { AppError, createAppErrorUnion } from "./common/types"
 
 /*
   @ObjectType()
@@ -142,7 +141,7 @@ const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const fallbackMembers: ResolveTree | FieldsByTypeName | null | undefined = (<Record<string, any>>(
       resolveInfo?.fieldsByTypeName.RandomWheel
-    )).members
+    ))?.members
 
     const membersFields: ResolveTree | FieldsByTypeName | null | undefined =
       "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {}) ? resolveInfo : fallbackMembers
@@ -165,31 +164,31 @@ const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
 @ObjectType("RandomWheel")
 class RandomWheelFull extends RandomWheel {
   @Field(() => [RandomWheelEntry])
-  entries: RandomWheelEntry[]
+  declare entries: RandomWheelEntry[]
 
   @Field(() => [RandomWheelWinner])
-  winners: RandomWheelWinner[]
+  declare winners: RandomWheelWinner[]
 
   @Field(() => [RandomWheelMemberFull])
-  members: RandomWheelMember[]
+  declare members: RandomWheelMember[]
 
   @Field(() => AccessType)
-  access: AccessType
+  declare access: AccessType
 
   @Field(() => User, { nullable: true })
-  owner?: User
+  declare owner?: User
 
   @Field(() => ColorTheme, { nullable: true })
-  theme?: ColorTheme
+  declare theme?: ColorTheme
 }
 
 @ObjectType("RandomWheelMember")
 class RandomWheelMemberFull extends RandomWheelMember {
   @Field(() => User)
-  user: User
+  declare user: User
 
   @Field(() => RandomWheelRole)
-  role: RandomWheelRole
+  declare role: RandomWheelRole
 }
 
 // @ObjectType()

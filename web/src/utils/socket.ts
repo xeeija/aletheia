@@ -1,4 +1,4 @@
-import { Socket } from "@/types"
+import type { Socket } from "@/types"
 import { io } from "socket.io-client"
 
 // TODO: Socket Remarks

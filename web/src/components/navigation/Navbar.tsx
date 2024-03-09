@@ -1,11 +1,12 @@
 import { transitionMixin } from "@/components"
 import { AppBar, Toolbar, useTheme } from "@mui/material"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 
 interface Props {
   open?: boolean
   borderRadius?: number | string
   marginLeft?: number
+  children?: ReactNode
 }
 
 export const Navbar: FC<Props> = ({ children, open = false, marginLeft = 0, borderRadius }) => {

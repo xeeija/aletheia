@@ -47,6 +47,7 @@ jobs:
         uses: ataylorme/eslint-annotate-action@v2
         with:
           report-json: ./web/eslint_report.json
+          check-name: ESLint Report Web
         # Continue to the next step even if this fails
         continue-on-error: true
         # Run this, even if the previous step fails
@@ -115,6 +116,7 @@ jobs:
         uses: ataylorme/eslint-annotate-action@v2
         with:
           report-json: ./server/eslint_report.json
+          check-name: ESLint Report Server
         # Continue to the next step even if this fails
         continue-on-error: true
         # Run this, even if the previous step fails

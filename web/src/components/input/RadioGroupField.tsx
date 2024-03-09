@@ -15,6 +15,7 @@ interface Props {
   label?: ReactNode
   row?: boolean
   options?: RadioOption[]
+  children?: ReactNode
 }
 
 export const RadioGroupField: FC<Props> = ({ name, label, row, options, children }) => {

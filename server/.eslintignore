@@ -4,3 +4,4 @@ tsconfig.json
 # next.config.js
 README.md
 src/twitch/mock
+src/generated

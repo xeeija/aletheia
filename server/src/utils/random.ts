@@ -1,4 +1,4 @@
-import { randomInt } from "crypto"
+import { randomBytes, randomInt } from "crypto"
 
 /**
  * Generates a secure random number between 0 and `max` (exclusive)
@@ -18,3 +18,11 @@ export const randomNumber = async (min: number, max: number) => {
 }
 
 export const random = (min: number, max: number) => Math.random() * (max - min) + min
+
+export const randomHex = (bytes: number) => {
+  return randomBytes(bytes).toString("hex")
+}
+
+export const randomBase64Url = (bytes: number) => {
+  return randomBytes(bytes).toString("base64url")
+}

@@ -168,12 +168,12 @@ export const UserMenu: FC<Props> = () => {
 
       {!user && !fetchingUser && (
         <>
-          <Link href="/register" passHref>
+          <Link href="/register" passHref legacyBehavior>
             <Button variant="outlined" color="secondary">
               Register
             </Button>
           </Link>
-          <Link href="/login" passHref>
+          <Link href="/login" passHref legacyBehavior>
             <Button variant="outlined" color="primary">
               Login
             </Button>

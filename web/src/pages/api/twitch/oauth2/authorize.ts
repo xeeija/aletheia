@@ -1,13 +1,23 @@
-import { ApiHandler } from "@/types"
-import { randomBase64Url } from "@/utils/random"
+import type { ApiHandler } from "@/types"
 
-const handler: ApiHandler = (_, res) => {
+const handler: ApiHandler = async (_, res) => {
   if (!process.env.TWITCH_REDIRECT_URI) {
     res.status(500).send({ message: "redirect_uri is not set" })
     return
   }
 
-  const state = randomBase64Url(32)
+  // const state = randomBase64Url(32)
+  const stateResponse = await fetch(`${process.env.SERVER_URL ?? "http://localhost:4000"}/api/twitch/state`, {
+    method: "POST",
+  })
+
+  if (!stateResponse.ok) {
+    // res.status(500).send({ message: "Failed to generate state" })
+    res.redirect(`/settings#error1`)
+    return
+  }
+
+  const state = await stateResponse.text()
 
   const params = {
     response_type: "code",
@@ -16,6 +26,10 @@ const handler: ApiHandler = (_, res) => {
     // force_verify: "true",
     state: state,
   }
+
+  // console.log("state1", state, twitchAuthState)
+
+  // const stateUrl = `${process.env.SERVER_URL ?? "http://localhost:4000"}/api/twitch/state`
 
   const paramsString = new URLSearchParams(params).toString()
 

@@ -1,6 +1,6 @@
-import { CreateWheelForm, EditWheelForm } from "@/components/randomWheel"
+import { CreateWheelForm, EditWheelForm, WheelValues } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
-import { FormikProps, FormikValues } from "formik"
+import { FormikProps } from "formik"
 import { FC, useRef } from "react"
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) => {
   const actionsRef = useRef(null)
-  const formRef = useRef<FormikProps<FormikValues>>(null)
+  const formRef = useRef<FormikProps<WheelValues>>(null)
 
   const closeHandler = () => {
     onClose()

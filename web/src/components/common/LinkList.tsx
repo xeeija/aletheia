@@ -1,30 +1,19 @@
-import { ThemeColor } from "@/types"
-import {
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemTextProps,
-  ListProps,
-  Theme,
-  useTheme,
-} from "@mui/material"
-import { SxProps } from "@mui/system"
-import Link from "next/link"
-import { FC, MouseEventHandler, ReactNode, forwardRef } from "react"
+import { LinkListItem } from "@/components"
+import type { ThemeColor } from "@/types"
+import { List, ListProps } from "@mui/material"
+import { FC, MouseEventHandler, ReactNode } from "react"
 
 export interface LinkItem {
   name?: string
-  icon?: JSX.Element
-  divider?: boolean | JSX.Element
+  icon?: ReactNode
+  divider?: ReactNode
   onClick?: MouseEventHandler
   href?: string
   disabled?: boolean
   color?: ThemeColor
 }
 
-type LinkListProps = ListProps & {
+type LinkListProps = Omit<ListProps, "children"> & {
   items: LinkItem[]
   children?: ((item: LinkItem, index: number) => ReactNode) | ReactNode
 }
@@ -52,56 +41,3 @@ export const LinkList: FC<LinkListProps> = ({ children, items, ...listProps }) =
     </List>
   )
 }
-
-type ItemProps = LinkItem & {
-  sx?: SxProps<Theme>
-  textProps?: ListItemTextProps
-}
-
-// Display name is shown in debugger instead of underlying element name
-// eslint-disable-next-line react/display-name
-export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
-  ({ name = "", icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
-    const theme = useTheme()
-    const themeColor = color ? theme.palette[color].main : undefined
-
-    const linkItem = (
-      <ListItem
-        button
-        ref={ref}
-        component={href ? "a" : "button"}
-        disabled={disabled}
-        sx={{
-          color: themeColor,
-          "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined },
-          ...sx,
-        }}
-        {...props}
-      >
-        <ListItemIcon
-          sx={{
-            minWidth: 48,
-            color: "inherit",
-          }}
-        >
-          {icon}
-        </ListItemIcon>
-        <ListItemText primary={name} {...textProps} />
-      </ListItem>
-    )
-
-    const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
-
-    if (divider) {
-      return divider === true ? defaultDivider : divider
-    }
-
-    return !href ? (
-      linkItem
-    ) : (
-      <Link href={href} passHref>
-        {linkItem}
-      </Link>
-    )
-  }
-)

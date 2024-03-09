@@ -26,7 +26,7 @@ export const useEventSubscriptionsWheel = (config: { randomWheelId: string; fetc
   const [{ fetching: fetchingDelete, error: errorDelete }, deleteEntriesSync] = useDeleteEntriesRedemptionSyncMutation()
 
   return {
-    subscriptions: <EventSubscriptionFragment[] | undefined>data?.eventSubscriptionsForWheel,
+    subscriptions: data?.eventSubscriptionsForWheel as EventSubscriptionFragment[] | undefined,
     fetching,
     fetchingSync,
     fetchingPause,

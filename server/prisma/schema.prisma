@@ -10,10 +10,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// graphql-fields is a runtime dependency for typegraphql-prisma
 generator typegraphql {
   provider           = "typegraphql-prisma"
-  output             = "../dist/generated/typegraphql-prisma"
-  emitTranspiledCode = true
+  output             = "../src/generated/typegraphql"
+  emitTranspiledCode = false
 }
 
 model User {
@@ -164,6 +165,10 @@ model UserAccessToken {
   obtainmentTimestamp BigInt
   twitchUserId        String?
   twitchUsername      String?
+}
+
+model TwitchState {
+  state String @id @unique
 }
 
 model EventSubscription {

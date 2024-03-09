@@ -1,9 +1,9 @@
+import { authProvider } from "@/twitch"
+import type { AccessTokenResponse } from "@/types"
+import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
-import fetch from "node-fetch"
-import { AccessTokenResponse } from "src/types"
-import { authProvider } from "./auth"
 
 export const handleTwitchRoutes = (prisma: PrismaClient) => {
   const router = Router()
@@ -13,6 +13,24 @@ export const handleTwitchRoutes = (prisma: PrismaClient) => {
       res.status(400).send({ error: req.query.error, errorMessage: req.query.error_message })
 
       return
+    }
+
+    if (req.query.state) {
+      const state = typeof req.query.state === "string" ? req.query.state : ""
+
+      const validState = await prisma.twitchState.findFirst({
+        where: {
+          state: state ?? "-",
+        },
+      })
+
+      if (!validState?.state) {
+        console.warn("[twitch] invalid state")
+        res.status(401).send({ error: "invalid state" })
+        return
+      }
+
+      await prisma.twitchState.delete({ where: { state: validState.state ?? "" } })
     }
 
     // get access token for user with code
@@ -75,6 +93,23 @@ export const handleTwitchRoutes = (prisma: PrismaClient) => {
 
       res.send(500).send({ error: "unkown error" })
     }
+  })
+
+  router.post("/state", async (req, res) => {
+    const state = randomBase64Url(16)
+
+    const result = await prisma.twitchState.create({ data: { state } })
+
+    // remove state after 1 minute
+    setTimeout(async () => {
+      await prisma.twitchState.delete({
+        where: {
+          state: result.state ?? "",
+        },
+      })
+    }, 60 * 1000)
+
+    res.send(result.state)
   })
 
   // eventSubMiddleware.apply(app);

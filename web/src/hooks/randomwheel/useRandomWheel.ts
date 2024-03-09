@@ -55,7 +55,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   useRandomWheelSocket(wheelSlug, setSpinning, setRotation, setLastWinnerEntry, options?.socket)
 
   return [
-    <RandomWheelData>{
+    {
       ...randomWheelData,
       id,
       wheel: {
@@ -65,12 +65,12 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
         liked: liked ?? wheel?.liked ?? false,
       },
       lastWinnerEntry,
-    },
-    <RandomWheelHandlers>{
+    } as RandomWheelData,
+    {
       ...randomWheelActions,
       ...randomWheelFetch,
       spin: spin,
       like: like,
-    },
+    } as RandomWheelHandlers,
   ] as const
 }

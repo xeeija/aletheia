@@ -1,4 +1,4 @@
-import { ThemeColor } from "@/types"
+import type { ThemeColor } from "@/types"
 
 const strengthLevels = [
   {

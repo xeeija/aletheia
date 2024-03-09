@@ -1,12 +1,9 @@
+import { deleteManySubscriptionRedemptionAdd } from "@/twitch/events"
+import type { HttpError } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
-import { config } from "dotenv"
-import fetch from "node-fetch"
-import { HttpError } from "src/types"
-import { deleteManySubscriptionRedemptionAdd } from "./events"
-
-config()
+import "dotenv/config"
 
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""

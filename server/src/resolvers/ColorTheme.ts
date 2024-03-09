@@ -1,5 +1,5 @@
-import { ColorTheme } from "../../dist/generated/typegraphql-prisma"
-import { GraphqlContext } from "src/types"
+import { ColorTheme } from "@/generated/typegraphql"
+import type { GraphqlContext } from "@/types"
 import { Arg, Ctx, Field, InputType, Query, Resolver } from "type-graphql"
 
 @InputType()

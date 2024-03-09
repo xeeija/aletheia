@@ -9,6 +9,7 @@ export interface NavigationProps {
   noAppbar?: boolean
   noPadding?: boolean
   navTitle?: ReactNode
+  children?: ReactNode
 }
 
 const sidebarItems: LinkItem[] = [
