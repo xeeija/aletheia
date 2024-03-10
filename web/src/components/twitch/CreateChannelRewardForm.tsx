@@ -51,7 +51,8 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
         // Yup Validation
       }}
       onSubmit={(values) => {
-        console.warn(values.backgroundColor)
+        console.warn(values)
+        return
       }}
     >
       {({ isSubmitting, dirty, isValid }) => {

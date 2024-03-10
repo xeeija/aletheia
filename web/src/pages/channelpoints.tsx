@@ -1,5 +1,5 @@
 import { FormDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
-import { CreateChannelRewardForm } from "@/components/twitch"
+import { CreateChannelRewardForm, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import { FormikProps } from "formik"
@@ -18,6 +18,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const { channelRewards, fetching: fetchingRewards } = useChannelRewards()
 
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
+  const rewardGroupsEmpty = true
 
   return (
     <>
@@ -41,7 +42,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
               onClick={() => setCreateRewardDialogOpen(true)}
             >
-              Create
+              New Reward
             </Button>
 
             <Tooltip placement="bottom-end" title="More options">
@@ -53,15 +54,16 @@ export const ChannelPointsPage: LayoutNextPage = () => {
         )}
         {tab === 1 && (
           <Box>
+            {/* {!rewardGroupsEmpty && ( */}
             <Button
               variant="outlined"
               color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
               onClick={() => setCreateGroupDialogOpen(true)}
             >
-              Create
+              New Group
             </Button>
-
+            {/* )} */}
             <Tooltip placement="bottom-end" title="More options">
               <IconButton color="secondary" sx={{ ml: 1 }} disabled>
                 <HiDotsVertical />
@@ -73,7 +75,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
       <Box sx={{ mt: 2 }}>
         {tab === 0 && (
-          <Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {/* <Link href="/channelpoints/create" passHref>
               <Button
                 color="success"
@@ -85,10 +87,13 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               </Button>
             </Link> */}
 
-            {channelRewards?.map((reward) => <pre key={reward.id}>{reward.title}</pre>)}
+            {/* {channelRewards?.map((reward) => <pre key={reward.id}>{reward.title}</pre>)} */}
+            {channelRewards?.map((reward) => (
+              <CustomRewardListItem key={reward.id} reward={reward} onEdit={() => setCreateRewardDialogOpen(true)} />
+            ))}
 
             {channelRewardsEmpty && !fetchingRewards && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                 <NoData>{"You don't have any channel point rewards yet."}</NoData>
 
                 <Box>
@@ -98,7 +103,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                     endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                     onClick={() => setCreateRewardDialogOpen(true)}
                   >
-                    Create reward
+                    New Reward
                   </Button>
                 </Box>
               </Box>
@@ -125,9 +130,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
         {tab === 1 && (
           <Box>
-            {channelRewardsEmpty && !fetchingRewards && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <NoData>{"You don't have any rewards groups yet."}</NoData>
+            {rewardGroupsEmpty && !fetchingRewards && (
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                <NoData>{"You don't have any reward groups yet."}</NoData>
 
                 <Box>
                   <Button
@@ -136,7 +141,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                     endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                     onClick={() => setCreateGroupDialogOpen(true)}
                   >
-                    Create group
+                    New Group
                   </Button>
                 </Box>
               </Box>
