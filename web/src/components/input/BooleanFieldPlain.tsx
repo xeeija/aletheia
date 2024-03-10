@@ -1,10 +1,10 @@
-import { BooleanFieldHelper, BooleanFieldLabel } from "@/components"
 import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
-import { useField } from "formik"
 import { FC, ReactNode } from "react"
+import { BooleanFieldHelper } from "./BooleanFieldHelper"
+import { BooleanFieldLabel } from "./BooleanFieldLabel"
 
 type Props = CheckboxProps & {
-  name: string
+  name?: string
   label?: ReactNode
   labelProps?: Partial<FormControlLabelProps>
   labelPlacement?: "end" | "start" | "top" | "bottom"
@@ -14,9 +14,10 @@ type Props = CheckboxProps & {
   helperText?: ReactNode
   toggle?: boolean
   fullWidth?: boolean
+  error?: string
 }
 
-export const BooleanField: FC<Props> = ({
+export const BooleanFieldPlain: FC<Props> = ({
   name,
   label,
   labelProps,
@@ -25,19 +26,17 @@ export const BooleanField: FC<Props> = ({
   noClickLabel,
   tooltip,
   tooltipProps,
+  error,
+  checked,
   toggle,
   fullWidth,
   size,
   ...props
 }) => {
-  const [field, { error, touched }] = useField<boolean>(name ?? "")
-
   const hasLabel = label !== undefined && label !== null
   const labelId = name ? `${name}Label` : label?.toString().slice(0, 16).toLowerCase().replaceAll(" ", "_")
 
-  const hasError = error !== undefined && touched
-
-  const marginLeft = labelPlacement === "start" ? 1 : undefined
+  const hasError = error !== undefined
 
   const BooleanComponent = toggle ? Switch : Checkbox
 
@@ -47,17 +46,14 @@ export const BooleanField: FC<Props> = ({
       aria-describedby={!hasLabel ? tooltip || name : undefined}
       name={name}
       {...props}
-      checked={Boolean(field.value) ?? false}
+      checked={checked}
       color={error ? "error" : props.color}
       // fix this inputProps
       size={size === "large" ? "medium" : size}
-      inputProps={{
-        ...props.inputProps,
-        ...field,
-        value: `${field.value}`,
-      }}
     />
   )
+
+  const marginLeft = labelPlacement === "start" ? 1 : undefined
 
   return (
     <Box>

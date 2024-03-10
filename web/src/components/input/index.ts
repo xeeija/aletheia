@@ -1,4 +1,7 @@
 export * from "./BooleanField"
+export * from "./BooleanFieldHelper"
+export * from "./BooleanFieldLabel"
+export * from "./BooleanFieldPlain"
 export * from "./ColorMenuItem"
 export * from "./FormDialog"
 export * from "./InputField"
