@@ -47,7 +47,7 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
             <Tooltip
               arrow
               placement="bottom"
-              title={`${redemptions ?? 0}/${maxRedemptions ?? 1} redemption${redemptions === 1 ? "s" : ""} this stream`}
+              title={`${redemptions ?? 0}${maxRedemptions ? `/${maxRedemptions}` : ""} redemption${redemptions === 1 ? "s" : ""} this stream`}
             >
               <Chip
                 size="small"
