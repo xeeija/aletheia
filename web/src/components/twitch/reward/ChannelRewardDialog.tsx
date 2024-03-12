@@ -37,8 +37,12 @@ export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type }) 
       }}
       actionsRef={actionsRef}
     >
-      {type === "edit" && reward && <EditChannelRewardForm actionsRef={actionsRef} formRef={formRef} reward={reward} />}
-      {type === "create" && <CreateChannelRewardForm actionsRef={actionsRef} formRef={formRef} />}
+      {type === "edit" && reward && (
+        <EditChannelRewardForm actionsRef={actionsRef} formRef={formRef} reward={reward} onClose={closeHandler} />
+      )}
+      {type === "create" && (
+        <CreateChannelRewardForm actionsRef={actionsRef} formRef={formRef} onClose={closeHandler} />
+      )}
     </FormDialog>
   )
 }

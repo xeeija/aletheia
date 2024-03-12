@@ -149,7 +149,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 
@@ -159,6 +159,7 @@ export class TwitchResolver {
 
     // try {
     const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, reward)
+
     // {
     //   title: reward.title,
     //   prompt: reward.prompt,
@@ -192,7 +193,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 

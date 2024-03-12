@@ -1,5 +1,6 @@
 import { LoadingButton } from "@/components"
 import { RewardFormFields } from "@/components/twitch"
+import { useChannelRewards } from "@/hooks"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
@@ -25,9 +26,12 @@ export interface ChannelRewardValues {
 interface Props {
   formRef?: RefObject<FormikProps<ChannelRewardValues>>
   actionsRef?: RefObject<Element>
+  onClose?: () => void
 }
 
-export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
+export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
+  const { createReward, fetchingCreate, errorCreate } = useChannelRewards(false)
+
   const initialValues: ChannelRewardValues = {
     title: "",
     prompt: "",
@@ -35,7 +39,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
     userInputRequired: false,
     isEnabled: true,
     autoFulfill: false,
-    backgroundColor: "",
+    backgroundColor: "#000000",
     globalCooldown: "",
     maxRedemptionsPerStream: "",
     maxRedemptionsPerUser: "",
@@ -48,14 +52,34 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef }) => {
       initialValues={initialValues}
       enableReinitialize
       validate={() => {
-        // Yup Validation
+        // TODO: Yup Validation
       }}
-      onSubmit={(values) => {
+      onSubmit={async (values) => {
         console.warn(values)
-        return
+
+        const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
+
+        const response = await createReward({
+          title: values.title,
+          cost: Number(values.cost) || 0,
+          prompt: values.prompt || null,
+          globalCooldown: cooldownSec || null,
+          maxRedemptionsPerStream: Number(values.maxRedemptionsPerStream) || null,
+          maxRedemptionsPerUser: Number(values.maxRedemptionsPerUser) || null,
+          backgroundColor: values.backgroundColor || null,
+          autoFulfill: values.autoFulfill,
+          isEnabled: values.isEnabled,
+          userInputRequired: values.userInputRequired,
+        })
+
+        if (response.reward) {
+          onClose?.()
+        } else {
+          // TODO: handle error
+        }
       }}
     >
-      {({ isSubmitting, dirty, isValid }) => (
+      {({ isSubmitting, dirty, isValid, values }) => (
         <Form id="createChennelRewardForm">
           <Box
             sx={{

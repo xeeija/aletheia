@@ -6,9 +6,9 @@ const handler: ApiHandler = async (req, res) => {
     return
   }
 
-  const state = typeof req.query.state === "string" ? req.query.state : req.query.state?.[0]
+  // const state = typeof req.query.state === "string" ? req.query.state : req.query.state?.[0]
 
-  console.log("state2", state)
+  // console.log("state2", state)
 
   // handle errors
   const errorCode = typeof req.query.error === "string" ? req.query.error : req.query.error?.[0]

@@ -1,0 +1,5 @@
+mutation UpdateChannelReward($rewardId: String!, $reward: CustomRewardInput!) {
+  updateChannelReward(rewardId: $rewardId, reward: $reward) {
+    ...CustomReward
+  }
+}

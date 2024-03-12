@@ -108,7 +108,7 @@ export const RewardFormFields: FC<Props> = () => {
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* <BooleanField name="enableMaxRedemptionsPerUser" label="Limit redemptions per user" /> */}
         <Typography>Limit redemptions per user</Typography>
-        <NumberField name="maxRedemptionsPerUserPerUser" placeholder="disabled" hiddenLabel sx={{ width: 220 }} />
+        <NumberField name="maxRedemptionsPerUser" placeholder="disabled" hiddenLabel sx={{ width: 220 }} />
       </Box>
     </>
   )

@@ -1,6 +1,7 @@
 import { LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
+import { useChannelRewards } from "@/hooks"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { FC, RefObject } from "react"
@@ -9,9 +10,12 @@ interface Props {
   reward: CustomRewardFragment
   formRef?: RefObject<FormikProps<ChannelRewardValues>>
   actionsRef?: RefObject<Element>
+  onClose?: () => void
 }
 
-export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef }) => {
+export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose }) => {
+  const { updateReward, fetchingUpdate, errorUpdate } = useChannelRewards(false)
+
   const initialValues: ChannelRewardValues = {
     title: reward.title,
     prompt: reward.prompt,
@@ -35,9 +39,27 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef }
       validate={() => {
         // Yup Validation
       }}
-      onSubmit={(values) => {
-        console.warn(values)
-        return
+      onSubmit={async (values) => {
+        const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
+
+        const response = await updateReward(reward.id, {
+          title: values.title,
+          cost: Number(values.cost) || 0,
+          prompt: values.prompt || null,
+          globalCooldown: cooldownSec || null,
+          maxRedemptionsPerStream: Number(values.maxRedemptionsPerStream) || null,
+          maxRedemptionsPerUser: Number(values.maxRedemptionsPerUser) || null,
+          backgroundColor: values.backgroundColor || null,
+          autoFulfill: values.autoFulfill,
+          isEnabled: values.isEnabled,
+          userInputRequired: values.userInputRequired,
+        })
+
+        if (response.reward) {
+          onClose?.()
+        } else {
+          // TODO: handle error
+        }
       }}
     >
       {({ isSubmitting, dirty, isValid }) => (
