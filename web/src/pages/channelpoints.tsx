@@ -11,10 +11,13 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
   // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
+  const [editRewardOpen, setEditRewardOpen] = useState(false)
   const [editReward, setEditReward] = useState<string | null>(null)
 
-  const { channelRewards, fetching: fetchingRewards } = useChannelRewards()
+  const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards()
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
+
+  // TODO: Delete reward
 
   // Reward Groups
   const [, setCreateGroupDialogOpen] = useState(false)
@@ -82,7 +85,11 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                 key={reward.id}
                 reward={reward}
                 onEdit={() => {
+                  setEditRewardOpen(true)
                   setEditReward(reward.id)
+                }}
+                onDelete={(rewardId) => {
+                  // console.warn("delete", rewardId)
                 }}
               />
             ))}
@@ -107,9 +114,12 @@ export const ChannelPointsPage: LayoutNextPage = () => {
             <ChannelRewardDialog
               onClose={() => {
                 setCreateRewardOpen(false)
-                setEditReward(null)
+                setEditRewardOpen(false)
+                setTimeout(() => {
+                  setEditReward(null)
+                }, 350)
               }}
-              open={createRewardOpen || editReward !== null}
+              open={createRewardOpen || editRewardOpen}
               type={editReward ? "edit" : "create"}
               reward={channelRewards?.find((r) => r.id === editReward)}
             />

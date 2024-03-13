@@ -1,5 +1,7 @@
 import { RandomWheelEntry, RandomWheelWinner } from "@/generated/graphql"
+import { FormikProps } from "formik"
 import { NextApiRequest, NextApiResponse } from "next"
+import { RefObject } from "react"
 import { Socket as SocketDefault } from "socket.io-client"
 
 export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
@@ -19,4 +21,10 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
   "wheel:entries": (type: "add" | "update", wheelId: string) => void
+}
+
+export type FormDialogProps<T> = {
+  formRef?: RefObject<FormikProps<T>>
+  actionsRef?: RefObject<Element>
+  onClose?: () => void
 }

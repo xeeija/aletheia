@@ -3,6 +3,7 @@ import {
   CustomRewardInput,
   useChannelRewardsQuery,
   useCreateChannelRewardMutation,
+  useDeleteChannelRewardMutation,
   useUpdateChannelRewardMutation,
 } from "@/generated/graphql"
 
@@ -15,6 +16,8 @@ export const useChannelRewards = (fetchRewards = true) => {
   const [{ fetching: fetchingCreate, error: errorCreate }, createChannelReward] = useCreateChannelRewardMutation()
 
   const [{ fetching: fetchingUpdate, error: errorUpdate }, updateChannelReward] = useUpdateChannelRewardMutation()
+
+  const [{ fetching: fetchingDelete, error: errorDelete }, deleteChannelReward] = useDeleteChannelRewardMutation()
 
   return {
     channelRewards: data?.channelRewards as CustomRewardFragment[] | undefined,
@@ -55,5 +58,21 @@ export const useChannelRewards = (fetchRewards = true) => {
     },
     fetchingUpdate,
     errorUpdate,
+    deleteReward: async (rewardId: string) => {
+      const response = await deleteChannelReward(
+        { rewardId },
+        {
+          additionalTypenames: ["CustomReward"],
+          requestPolicy: "cache-and-network",
+        }
+      )
+
+      return {
+        deleted: response.data?.deleteChannelReward,
+        error: response.error,
+      }
+    },
+    fetchingDelete,
+    errorDelete,
   }
 }

@@ -11,9 +11,10 @@ interface Props {
   reward: CustomRewardFragment
   readonly?: boolean
   onEdit?: (reward: CustomRewardFragment) => void
+  onDelete?: (rewardId: string) => void
 }
 
-export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit }) => {
+export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream
   const maxRedemptions = reward.maxRedemptionsPerStream
@@ -103,7 +104,7 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
                   Edit
                 </Button>
 
-                <IconButton color="error">
+                <IconButton color="error" onClick={() => onDelete?.(reward.id)}>
                   <HiTrash />
                 </IconButton>
               </>

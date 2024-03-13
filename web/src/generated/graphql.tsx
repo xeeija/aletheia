@@ -1207,6 +1207,13 @@ export type CreateChannelRewardMutationVariables = Exact<{
 
 export type CreateChannelRewardMutation = { __typename?: 'Mutation', createChannelReward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
 
+export type DeleteChannelRewardMutationVariables = Exact<{
+  rewardId: Scalars['String'];
+}>;
+
+
+export type DeleteChannelRewardMutation = { __typename?: 'Mutation', deleteChannelReward: boolean };
+
 export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
 }>;
@@ -1619,6 +1626,15 @@ export const CreateChannelRewardDocument = gql`
 
 export function useCreateChannelRewardMutation() {
   return Urql.useMutation<CreateChannelRewardMutation, CreateChannelRewardMutationVariables>(CreateChannelRewardDocument);
+};
+export const DeleteChannelRewardDocument = gql`
+    mutation DeleteChannelReward($rewardId: String!) {
+  deleteChannelReward(rewardId: $rewardId)
+}
+    `;
+
+export function useDeleteChannelRewardMutation() {
+  return Urql.useMutation<DeleteChannelRewardMutation, DeleteChannelRewardMutationVariables>(DeleteChannelRewardDocument);
 };
 export const DeleteEntriesRedemptionSyncDocument = gql`
     mutation DeleteEntriesRedemptionSync($ids: [String!]!) {

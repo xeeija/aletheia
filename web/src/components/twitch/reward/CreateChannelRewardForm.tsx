@@ -1,9 +1,10 @@
 import { LoadingButton } from "@/components"
 import { RewardFormFields } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
+import { FormDialogProps } from "@/types"
 import { Box, Portal } from "@mui/material"
-import { Form, Formik, FormikProps } from "formik"
-import { FC, RefObject } from "react"
+import { Form, Formik } from "formik"
+import { FC } from "react"
 
 export interface ChannelRewardValues {
   // max 40 char
@@ -23,14 +24,14 @@ export interface ChannelRewardValues {
   cooldownUnit: number
 }
 
-interface Props {
-  formRef?: RefObject<FormikProps<ChannelRewardValues>>
-  actionsRef?: RefObject<Element>
-  onClose?: () => void
+type Props = FormDialogProps<ChannelRewardValues> & {
+  // formRef?: RefObject<FormikProps<ChannelRewardValues>>
+  // actionsRef?: RefObject<Element>
+  // onClose?: () => void
 }
 
 export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
-  const { createReward, fetchingCreate, errorCreate } = useChannelRewards(false)
+  const { createReward, fetchingCreate } = useChannelRewards(false)
 
   const initialValues: ChannelRewardValues = {
     title: "",
@@ -79,7 +80,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
         }
       }}
     >
-      {({ isSubmitting, dirty, isValid, values }) => (
+      {({ isSubmitting, dirty, isValid }) => (
         <Form id="createChennelRewardForm">
           <Box
             sx={{
@@ -96,7 +97,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
                 variant="contained"
                 color="success"
                 loading={isSubmitting}
-                disabled={!dirty || !isValid}
+                disabled={!dirty || !isValid || fetchingCreate}
                 form="createChennelRewardForm"
               >
                 Create

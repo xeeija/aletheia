@@ -2,19 +2,20 @@ import { LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useChannelRewards } from "@/hooks"
+import { FormDialogProps } from "@/types"
 import { Box, Portal } from "@mui/material"
-import { Form, Formik, FormikProps } from "formik"
-import { FC, RefObject } from "react"
+import { Form, Formik } from "formik"
+import { FC } from "react"
 
-interface Props {
+type Props = FormDialogProps<ChannelRewardValues> & {
   reward: CustomRewardFragment
-  formRef?: RefObject<FormikProps<ChannelRewardValues>>
-  actionsRef?: RefObject<Element>
-  onClose?: () => void
+  // formRef?: RefObject<FormikProps<ChannelRewardValues>>
+  // actionsRef?: RefObject<Element>
+  // onClose?: () => void
 }
 
 export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose }) => {
-  const { updateReward, fetchingUpdate, errorUpdate } = useChannelRewards(false)
+  const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
   const initialValues: ChannelRewardValues = {
     title: reward.title,
@@ -79,7 +80,7 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
                 variant="contained"
                 // color="primary"
                 loading={isSubmitting}
-                disabled={!dirty || !isValid}
+                disabled={!dirty || !isValid || fetchingUpdate}
                 form="editChennelRewardForm"
               >
                 Update

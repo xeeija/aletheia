@@ -223,7 +223,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 
