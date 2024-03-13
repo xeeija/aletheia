@@ -1,10 +1,10 @@
 import { BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
-import { CustomRewardIcon } from "@/components/twitch"
+import { CustomRewardIcon, RewardLinksDropdown } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
-import { FC } from "react"
-import { HiCollection, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
+import { FC, useState } from "react"
+import { HiCollection, HiLink, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
 import { TiChartBar, TiMediaFastForward } from "react-icons/ti"
 
 interface Props {
@@ -15,16 +15,20 @@ interface Props {
 }
 
 export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
+  const [linkAnchor, setLinkAnchor] = useState<Element | null>(null)
+
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream
   const maxRedemptions = reward.maxRedemptionsPerStream
+
+  const redemptionsCount = `${redemptions ?? 0}${maxRedemptions ? `/${maxRedemptions}` : ""}`
 
   return (
     <Card>
       {/* <Link href={`randomwheel/${wheel.slug}`} passHref legacyBehavior> */}
       {/* <CardActionArea sx={{ height: "100%" }}> */}
       <CardContent sx={{ mx: 1, mb: -1 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
           {/* Left */}
           <Box sx={{ width: "max(40%, 260px)", display: "flex", gap: 2, alignItems: "center" }}>
             <CustomRewardIcon reward={reward} size="md" />
@@ -38,7 +42,7 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
           </Box>
 
           {/* Middle */}
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+          <Box sx={{ width: "80px", display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
             <ChannelPoints viewBox="0 -2 22 22" color="primary" />
             <Typography color="text.secondary">{reward.cost}</Typography>
           </Box>
@@ -48,7 +52,7 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
             <Tooltip
               arrow
               placement="bottom"
-              title={`${redemptions ?? 0}${maxRedemptions ? `/${maxRedemptions}` : ""} redemption${redemptions === 1 ? "s" : ""} this stream`}
+              title={`${redemptionsCount} redemption${redemptions === 1 ? "" : "s"} this stream`}
             >
               <Chip
                 size="small"
@@ -91,9 +95,18 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
           </Box>
 
           {/* right */}
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
             {!readonly && (
               <>
+                <Tooltip arrow placement="bottom" title="Generate links">
+                  <IconButton color="secondary" onClick={(ev) => setLinkAnchor(ev.currentTarget)}>
+                    <HiLink />
+                    {/* <HiAdjustments /> */}
+                  </IconButton>
+                </Tooltip>
+
+                <RewardLinksDropdown reward={reward} anchor={linkAnchor} setAnchor={setLinkAnchor} />
+
                 <Button
                   variant="contained"
                   color="inherit"
@@ -104,9 +117,11 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
                   Edit
                 </Button>
 
-                <IconButton color="error" onClick={() => onDelete?.(reward.id)}>
-                  <HiTrash />
-                </IconButton>
+                <Tooltip arrow placement="bottom" title="Delete">
+                  <IconButton color="error" onClick={() => onDelete?.(reward.id)}>
+                    <HiTrash />
+                  </IconButton>
+                </Tooltip>
               </>
             )}
           </Box>

@@ -1,7 +1,7 @@
 import { DeleteDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
 import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
-import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
+import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
@@ -81,6 +81,23 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       <Box sx={{ mt: 2 }}>
         {tab === 0 && (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                color: "text.secondary",
+                gap: 1,
+                mx: 3,
+              }}
+            >
+              <Typography sx={{ width: "max(40%, 260px)" }}>Title</Typography>
+              <Typography sx={{ width: "80px" }}>Cost</Typography>
+              <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
+              <Typography sx={{ width: "132px" }}>Paused / Enabled</Typography>
+              {/* <Typography sx={{ width: "136px" }}></Typography> */}
+              <Typography sx={{ width: "178px" }}></Typography>
+            </Box>
+
             {channelRewards?.map((reward) => (
               <CustomRewardListItem
                 key={reward.id}
