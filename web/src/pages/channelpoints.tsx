@@ -1,4 +1,4 @@
-import { LayoutNextPage, NoData, defaultLayout } from "@/components"
+import { DeleteDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
 import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
@@ -13,6 +13,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
   const [editRewardOpen, setEditRewardOpen] = useState(false)
   const [editReward, setEditReward] = useState<string | null>(null)
+  const [deleteRewardOpen, setDeleteRewardOpen] = useState<string | null>(null)
 
   const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards()
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
@@ -89,6 +90,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                   setEditReward(reward.id)
                 }}
                 onDelete={(rewardId) => {
+                  setDeleteRewardOpen(rewardId)
                   // console.warn("delete", rewardId)
                 }}
               />
@@ -123,6 +125,28 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               type={editReward ? "edit" : "create"}
               reward={channelRewards?.find((r) => r.id === editReward)}
             />
+
+            <DeleteDialog
+              title="Delete Reward"
+              open={deleteRewardOpen !== null}
+              onClose={() => setDeleteRewardOpen(null)}
+              onConfirm={async () => {
+                if (deleteRewardOpen) {
+                  const response = await deleteReward(deleteRewardOpen)
+
+                  if (response.deleted) {
+                    // TODO: show sucess toast
+                  } else {
+                    // TODO: handle error
+                  }
+
+                  setDeleteRewardOpen(null)
+                }
+              }}
+            >
+              Do you really want to delete this reward? <br />
+              This cannot be undone. It will be lost <b>forever</b>.
+            </DeleteDialog>
           </Box>
         )}
 
