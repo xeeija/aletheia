@@ -1,0 +1,5 @@
+mutation CreateRewardLink($rewardId: String!, $type: String!) {
+  createRewardLink(rewardId: $rewardId, type: $type) {
+    ...RewardLink
+  }
+}

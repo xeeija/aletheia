@@ -28,3 +28,5 @@ export type FormDialogProps<T> = {
   actionsRef?: RefObject<Element>
   onClose?: () => void
 }
+
+export type RewardLinkType = "enable" | "pause"

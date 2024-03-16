@@ -279,11 +279,13 @@ export type Mutation = {
   clearRandomWheel: Scalars['Int'];
   createChannelReward?: Maybe<CustomReward>;
   createRandomWheel: RandomWheel;
+  createRewardLink?: Maybe<RewardLink>;
   deleteChannelReward: Scalars['Boolean'];
   deleteEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
   deleteRandomWheelMember?: Maybe<Scalars['Boolean']>;
+  deleteRewardLink: Scalars['Boolean'];
   disconnectAccessToken: Scalars['Boolean'];
   likeRandomWheel?: Maybe<RandomWheelLike>;
   login: UserResponse;
@@ -326,6 +328,12 @@ export type MutationCreateRandomWheelArgs = {
 };
 
 
+export type MutationCreateRewardLinkArgs = {
+  rewardId: Scalars['String'];
+  type: Scalars['String'];
+};
+
+
 export type MutationDeleteChannelRewardArgs = {
   rewardId: Scalars['String'];
 };
@@ -347,6 +355,11 @@ export type MutationDeleteRandomWheelEntryArgs = {
 
 
 export type MutationDeleteRandomWheelMemberArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteRewardLinkArgs = {
   id: Scalars['String'];
 };
 
@@ -540,6 +553,7 @@ export type Query = {
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
+  rewardLinks: Array<RewardLink>;
   userAccesToken: UserAccessToken;
 };
 
@@ -566,6 +580,11 @@ export type QueryMyRandomWheelsArgs = {
 
 export type QueryRandomWheelBySlugArgs = {
   slug: Scalars['String'];
+};
+
+
+export type QueryRewardLinksArgs = {
+  rewardIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum QueryMode {
@@ -879,6 +898,33 @@ export type RewardGroupWhereInput = {
   triggerSelected?: Maybe<BoolFilter>;
 };
 
+export type RewardLink = {
+  __typename?: 'RewardLink';
+  id: Scalars['String'];
+  rewardId: Scalars['String'];
+  token: Scalars['String'];
+  type: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+export type RewardLinkListRelationFilter = {
+  every?: Maybe<RewardLinkWhereInput>;
+  none?: Maybe<RewardLinkWhereInput>;
+  some?: Maybe<RewardLinkWhereInput>;
+};
+
+export type RewardLinkWhereInput = {
+  AND?: Maybe<Array<RewardLinkWhereInput>>;
+  NOT?: Maybe<Array<RewardLinkWhereInput>>;
+  OR?: Maybe<Array<RewardLinkWhereInput>>;
+  id?: Maybe<UuidFilter>;
+  rewardId?: Maybe<StringFilter>;
+  token?: Maybe<StringFilter>;
+  type?: Maybe<StringFilter>;
+  user?: Maybe<UserRelationFilter>;
+  userId?: Maybe<UuidFilter>;
+};
+
 export type StringFilter = {
   contains?: Maybe<Scalars['String']>;
   endsWith?: Maybe<Scalars['String']>;
@@ -969,6 +1015,7 @@ export type UserCount = {
   likes: Scalars['Int'];
   randomWheelMember: Scalars['Int'];
   randomWheels: Scalars['Int'];
+  rewardLinks: Scalars['Int'];
   userAccessTokens: Scalars['Int'];
 };
 
@@ -1000,6 +1047,11 @@ export type UserCountRandomWheelMemberArgs = {
 
 export type UserCountRandomWheelsArgs = {
   where?: Maybe<RandomWheelWhereInput>;
+};
+
+
+export type UserCountRewardLinksArgs = {
+  where?: Maybe<RewardLinkWhereInput>;
 };
 
 
@@ -1048,6 +1100,7 @@ export type UserWhereInput = {
   password?: Maybe<StringFilter>;
   randomWheelMember?: Maybe<RandomWheelMemberListRelationFilter>;
   randomWheels?: Maybe<RandomWheelListRelationFilter>;
+  rewardLinks?: Maybe<RewardLinkListRelationFilter>;
   standardTheme?: Maybe<ColorThemeNullableRelationFilter>;
   standardThemeId?: Maybe<UuidNullableFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
@@ -1092,6 +1145,8 @@ export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: st
 export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> };
 
 export type RandomWheelMemberFragment = { __typename?: 'RandomWheelMember', id: string, roleName: string, user: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> } };
+
+export type RewardLinkFragment = { __typename?: 'RewardLink', id: string, userId: string, rewardId: string, token: string, type: string };
 
 export type NormalUserFragment = { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> };
 
@@ -1207,6 +1262,14 @@ export type CreateChannelRewardMutationVariables = Exact<{
 
 export type CreateChannelRewardMutation = { __typename?: 'Mutation', createChannelReward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
 
+export type CreateRewardLinkMutationVariables = Exact<{
+  rewardId: Scalars['String'];
+  type: Scalars['String'];
+}>;
+
+
+export type CreateRewardLinkMutation = { __typename?: 'Mutation', createRewardLink?: Maybe<{ __typename?: 'RewardLink', id: string, userId: string, rewardId: string, token: string, type: string }> };
+
 export type DeleteChannelRewardMutationVariables = Exact<{
   rewardId: Scalars['String'];
 }>;
@@ -1220,6 +1283,13 @@ export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
 
 
 export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
+
+export type DeleteRewardLinkMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteRewardLinkMutation = { __typename?: 'Mutation', deleteRewardLink: boolean };
 
 export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -1319,6 +1389,13 @@ export type ChannelRewardsQueryVariables = Exact<{
 
 
 export type ChannelRewardsQuery = { __typename?: 'Query', channelRewards: Array<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
+
+export type RewardLinksQueryVariables = Exact<{
+  rewardIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type RewardLinksQuery = { __typename?: 'Query', rewardLinks: Array<{ __typename?: 'RewardLink', id: string, userId: string, rewardId: string, token: string, type: string }> };
 
 export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1435,6 +1512,15 @@ export const RandomWheelMemberFragmentDoc = gql`
   }
 }
     ${UserNameFragmentDoc}`;
+export const RewardLinkFragmentDoc = gql`
+    fragment RewardLink on RewardLink {
+  id
+  userId
+  rewardId
+  token
+  type
+}
+    `;
 export const NormalUserFragmentDoc = gql`
     fragment NormalUser on User {
   id
@@ -1627,6 +1713,17 @@ export const CreateChannelRewardDocument = gql`
 export function useCreateChannelRewardMutation() {
   return Urql.useMutation<CreateChannelRewardMutation, CreateChannelRewardMutationVariables>(CreateChannelRewardDocument);
 };
+export const CreateRewardLinkDocument = gql`
+    mutation CreateRewardLink($rewardId: String!, $type: String!) {
+  createRewardLink(rewardId: $rewardId, type: $type) {
+    ...RewardLink
+  }
+}
+    ${RewardLinkFragmentDoc}`;
+
+export function useCreateRewardLinkMutation() {
+  return Urql.useMutation<CreateRewardLinkMutation, CreateRewardLinkMutationVariables>(CreateRewardLinkDocument);
+};
 export const DeleteChannelRewardDocument = gql`
     mutation DeleteChannelReward($rewardId: String!) {
   deleteChannelReward(rewardId: $rewardId)
@@ -1644,6 +1741,15 @@ export const DeleteEntriesRedemptionSyncDocument = gql`
 
 export function useDeleteEntriesRedemptionSyncMutation() {
   return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
+};
+export const DeleteRewardLinkDocument = gql`
+    mutation DeleteRewardLink($id: String!) {
+  deleteRewardLink(id: $id)
+}
+    `;
+
+export function useDeleteRewardLinkMutation() {
+  return Urql.useMutation<DeleteRewardLinkMutation, DeleteRewardLinkMutationVariables>(DeleteRewardLinkDocument);
 };
 export const DisconnectAccessTokenDocument = gql`
     mutation DisconnectAccessToken {
@@ -1824,6 +1930,21 @@ export const ChannelRewardsDocument = gql`
 
 export function useChannelRewardsQuery(options?: Omit<Urql.UseQueryArgs<ChannelRewardsQueryVariables>, 'query'>) {
   return Urql.useQuery<ChannelRewardsQuery, ChannelRewardsQueryVariables>({ query: ChannelRewardsDocument, ...options });
+};
+export const RewardLinksDocument = gql`
+    query RewardLinks($rewardIds: [String!]) {
+  rewardLinks(rewardIds: $rewardIds) {
+    id
+    userId
+    rewardId
+    token
+    type
+  }
+}
+    `;
+
+export function useRewardLinksQuery(options?: Omit<Urql.UseQueryArgs<RewardLinksQueryVariables>, 'query'>) {
+  return Urql.useQuery<RewardLinksQuery, RewardLinksQueryVariables>({ query: RewardLinksDocument, ...options });
 };
 export const UserAccessTokenDocument = gql`
     query UserAccessToken {

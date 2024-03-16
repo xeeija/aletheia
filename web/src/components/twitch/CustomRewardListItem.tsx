@@ -1,6 +1,6 @@
 import { BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
-import { CustomRewardIcon, RewardLinksDropdown } from "@/components/twitch"
+import { CustomRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { FC, useState } from "react"
@@ -15,7 +15,8 @@ interface Props {
 }
 
 export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
-  const [linkAnchor, setLinkAnchor] = useState<Element | null>(null)
+  // const [linkAnchor, setLinkAnchor] = useState<Element | null>(null)
+  const [linkOpen, setLinkOpen] = useState(false)
 
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream
@@ -99,13 +100,25 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
             {!readonly && (
               <>
                 <Tooltip arrow placement="bottom" title="Generate links">
-                  <IconButton color="secondary" onClick={(ev) => setLinkAnchor(ev.currentTarget)}>
+                  <IconButton
+                    color="secondary"
+                    onClick={() => {
+                      // setLinkAnchor(ev.currentTarget)
+                      setLinkOpen(true)
+                    }}
+                  >
                     <HiLink />
                     {/* <HiAdjustments /> */}
                   </IconButton>
                 </Tooltip>
 
-                <RewardLinksDropdown reward={reward} anchor={linkAnchor} setAnchor={setLinkAnchor} />
+                <RewardLinksDialog
+                  reward={reward}
+                  // anchor={linkAnchor}
+                  // setAnchor={setLinkAnchor}
+                  open={linkOpen}
+                  onClose={() => setLinkOpen(false)}
+                />
 
                 <Button
                   variant="contained"

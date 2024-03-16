@@ -1,0 +1,7 @@
+fragment RewardLink on RewardLink {
+  id
+  userId
+  rewardId
+  token
+  type
+}

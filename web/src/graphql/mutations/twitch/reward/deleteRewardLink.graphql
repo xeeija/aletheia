@@ -1,0 +1,3 @@
+mutation DeleteRewardLink($id: String!) {
+  deleteRewardLink(id: $id)
+}
