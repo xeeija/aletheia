@@ -34,6 +34,7 @@ model User {
   colorThemes        ColorTheme[]        @relation(name: "fk_creator")
   userAccessTokens   UserAccessToken[]
   eventSubscriptions EventSubscription[]
+  rewardLinks        RewardLink[]
 }
 
 // Session store table
@@ -202,4 +203,15 @@ model RewardGroupItem {
   rewardGroup   RewardGroup @relation(references: [id], fields: [rewardGroupId], onDelete: Cascade)
   rewardGroupId String      @db.Uuid
   trigger       Boolean     @default(false)
+}
+
+model RewardLink {
+  id       String @id @default(uuid()) @db.Uuid
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @db.Uuid
+  rewardId String
+  token    String @unique
+  type     String
+
+  @@index([token])
 }

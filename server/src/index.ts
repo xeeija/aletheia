@@ -8,7 +8,7 @@ import {
   handleEventSub,
   handleTokenValidation,
   setupAuthProvider,
-  handleTwitchRoutes as twitchRouter,
+  twitchRouter,
 } from "@/twitch"
 import type { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
 import { PrismaClient } from "@prisma/client"
@@ -127,7 +127,7 @@ const main = async () => {
   eventSubMiddleware.apply(app)
   await setupAuthProvider(prisma)
 
-  app.use("/api/twitch", twitchRouter(prisma))
+  app.use("/api/twitch", twitchRouter(apiClient, prisma))
 
   const APP_PORT = process.env.APP_PORT ?? 4000
 

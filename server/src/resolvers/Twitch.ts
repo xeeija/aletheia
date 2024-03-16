@@ -1,4 +1,4 @@
-import { EventSubscription } from "@/generated/typegraphql"
+import { EventSubscription, RewardLink } from "@/generated/typegraphql"
 import {
   addExistingRedemptions,
   addSubscriptionRedemptionAdd,
@@ -8,6 +8,7 @@ import {
 } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
 import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
+import { randomBase64Url } from "@/utils"
 import { HelixCustomReward } from "@twurple/api"
 import {
   Arg,
@@ -84,6 +85,104 @@ export class CustomRewardResolver {
   @FieldResolver(() => String)
   image(@Root() reward: HelixCustomReward) {
     return reward.getImageUrl(1)
+  }
+
+  @Query(() => [RewardLink])
+  async rewardLinks(
+    @Ctx() { req, prisma }: GraphqlContext,
+    @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[]
+    // @Arg("userId", { nullable: true }) userId: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
+      },
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    const rewardLinks = await prisma.rewardLink.findMany({
+      where: {
+        userId: req.session.userId ?? "",
+        rewardId: rewardIds ? { in: rewardIds } : undefined,
+      },
+    })
+
+    return rewardLinks
+  }
+
+  @Mutation(() => RewardLink, { nullable: true })
+  async createRewardLink(
+    @Ctx() { req, prisma }: GraphqlContext,
+    // @Arg("rewardLink") rewardLink: RewardLinkInput
+    @Arg("rewardId") rewardId: string,
+    @Arg("type") type: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const accessToken = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
+      },
+    })
+
+    if (!accessToken?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    const token = randomBase64Url(48)
+
+    const rewardLink = await prisma.rewardLink.create({
+      data: {
+        rewardId,
+        type,
+        token,
+        userId: req.session.userId,
+      },
+    })
+
+    return rewardLink
+
+    // try {
+    // }
+    // catch (err: unknown) {
+    //   throw err
+    // }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteRewardLink(@Ctx() { req, prisma }: GraphqlContext, @Arg("id") id: string) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const rewardLink = await prisma.rewardLink.findUnique({
+      where: { id },
+    })
+
+    if (rewardLink?.userId !== req.session.userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const deleted = await prisma.rewardLink.delete({
+      where: { id: id ?? "" },
+    })
+
+    return deleted !== null
+
+    // try {
+    // }
+    // catch (err: unknown) {
+    //   throw err
+    // }
   }
 }
 
