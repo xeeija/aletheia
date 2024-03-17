@@ -1,3 +1,4 @@
+import { ThemeColor } from "@/types"
 import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip } from "@mui/material"
 import { FC, MouseEventHandler } from "react"
 import { IconType } from "react-icons"
@@ -6,10 +7,11 @@ import { HiClipboardCopy, HiLink } from "react-icons/hi"
 type Props = TextFieldProps & {
   // onCopy?: MouseEventHandler<HTMLButtonElement>
   copyIcon?: IconType
+  copyColor?: ThemeColor
   position?: "start" | "end"
 }
 
-export const LinkInputField: FC<Props> = ({ copyIcon, position: position = "end", InputProps, ...props }) => {
+export const LinkInputField: FC<Props> = ({ copyIcon, position = "end", copyColor, InputProps, ...props }) => {
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     void navigator.clipboard.writeText(`${window.location.protocol}//${props.value as string}`)
   }
@@ -19,7 +21,11 @@ export const LinkInputField: FC<Props> = ({ copyIcon, position: position = "end"
       {position === "end" && InputProps?.endAdornment}
       <Tooltip arrow placement="bottom" title="Copy to clipboard">
         <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
-          <SvgIcon color="secondary" component={copyIcon ?? HiClipboardCopy ?? HiLink} viewBox="-1 -1 22 22" />
+          <SvgIcon
+            color={copyColor ?? "secondary"}
+            component={copyIcon ?? HiClipboardCopy ?? HiLink}
+            viewBox="-1 -1 22 22"
+          />
         </IconButton>
       </Tooltip>
       {position === "start" && InputProps?.startAdornment}

@@ -9,11 +9,14 @@ interface Props {
   onClose: () => void
   reward?: CustomRewardFragment
   type: "create" | "edit"
+  readonly?: boolean
 }
 
-export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type }) => {
+export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type, readonly }) => {
   const formRef = useRef<FormikProps<ChannelRewardValues>>(null)
   const actionsRef = useRef(null)
+
+  const title = type === "create" ? "Create Channel Reward" : "Edit Channel Reward"
 
   const closeHandler = () => {
     onClose()
@@ -26,7 +29,7 @@ export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type }) 
     <FormDialog
       keepMounted
       maxWidth="sm"
-      title={type === "create" ? "Create Channel Reward" : "Edit Channel Reward"}
+      title={readonly ? "Channel Reward" : title}
       open={open}
       onClose={() => {
         closeHandler()
@@ -35,10 +38,17 @@ export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type }) 
           setTimeout(() => formRef.current?.resetForm(), 350)
         }
       }}
+      cancelText={readonly ? "Close" : undefined}
       actionsRef={actionsRef}
     >
       {type === "edit" && reward && (
-        <EditChannelRewardForm actionsRef={actionsRef} formRef={formRef} reward={reward} onClose={closeHandler} />
+        <EditChannelRewardForm
+          actionsRef={actionsRef}
+          formRef={formRef}
+          reward={reward}
+          onClose={closeHandler}
+          readonly={readonly}
+        />
       )}
       {type === "create" && (
         <CreateChannelRewardForm actionsRef={actionsRef} formRef={formRef} onClose={closeHandler} />

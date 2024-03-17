@@ -156,6 +156,12 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
                 </Tooltip>
               </>
             )}
+
+            {readonly && (
+              <IconButton color="info" onClick={() => onEdit?.(reward)}>
+                <HiPencil />
+              </IconButton>
+            )}
           </Box>
         </Box>
       </CardContent>

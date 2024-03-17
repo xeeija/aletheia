@@ -45,6 +45,33 @@ class CustomReward {
   @Field(() => Int, { nullable: true }) redemptionsThisStream: number | null
   @Field() autoFulfill: boolean
   @Field(() => Date, { nullable: true }) cooldownExpiryDate: Date | null
+
+  // @Field({ nullable: true }) manageable?: boolean
+
+  // constructor(reward?: HelixCustomReward, manageable?: boolean) {
+  //   if (!reward) {
+  //     return
+  //   }
+  //   this.id = reward.id
+  //   this.autoFulfill = reward.autoFulfill
+  //   this.backgroundColor = reward.backgroundColor
+  //   this.cost = reward.cost
+  //   this.globalCooldown = reward.globalCooldown
+  //   this.broadcasterDisplayName = reward.broadcasterDisplayName
+  //   this.broadcasterId = reward.broadcasterId
+  //   this.broadcasterName = reward.broadcasterName
+  //   this.cooldownExpiryDate = reward.cooldownExpiryDate
+  //   this.isEnabled = reward.isEnabled
+  //   this.isInStock = reward.isInStock
+  //   this.isPaused = reward.isPaused
+  //   this.maxRedemptionsPerStream = reward.maxRedemptionsPerStream
+  //   this.maxRedemptionsPerUserPerStream = reward.maxRedemptionsPerUserPerStream
+  //   this.prompt = reward.prompt
+  //   this.redemptionsThisStream = reward.redemptionsThisStream
+  //   this.title = reward.title
+  //   this.userInputRequired = reward.userInputRequired
+  //   this.manageable = manageable
+  // }
 }
 
 @InputType()
@@ -123,7 +150,7 @@ class CustomRewardUpdateInput {
 export class CustomRewardResolver {
   @FieldResolver(() => String)
   image(@Root() reward: HelixCustomReward) {
-    return reward.getImageUrl(1)
+    return reward.getImageUrl(2)
   }
 
   @Query(() => [RewardLink])
@@ -280,11 +307,53 @@ export class TwitchResolver {
     }
 
     try {
+      // // Option 1: only get all or manageable rewards
       const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId, onlyManageable)
       return rewards
+
+      // Option 2: return all rewards always and set manageable flag
+      // const [allRewards, managableRewards] = await Promise.all([
+      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, false),
+      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, true),
+      // ])
+
+      // const rewards = allRewards.map(
+      //   (reward) =>
+      //     new CustomReward(
+      //       reward,
+      //       managableRewards.some((mr) => mr.id === reward.id)
+      //     )
+      // )
+      // (r) =>
+      //   ({
+      //     autoFulfill: r.autoFulfill,
+      //     backgroundColor: r.backgroundColor,
+      //     cost: r.cost,
+      //     globalCooldown: r.globalCooldown,
+      //     id: r.id,
+      //     broadcasterDisplayName: r.broadcasterDisplayName,
+      //     broadcasterId: r.broadcasterId,
+      //     broadcasterName: r.broadcasterName,
+      //     cooldownExpiryDate: r.cooldownExpiryDate,
+      //     isEnabled: r.isEnabled,
+      //     isInStock: r.isInStock,
+      //     isPaused: r.isPaused,
+      //     maxRedemptionsPerStream: r.maxRedemptionsPerStream,
+      //     maxRedemptionsPerUserPerStream: r.maxRedemptionsPerUserPerStream,
+      //     prompt: r.prompt,
+      //     redemptionsThisStream: r.redemptionsThisStream,
+      //     title: r.title,
+      //     userInputRequired: r.userInputRequired,
+      //     manageable: managableRewards.some((mr) => mr.id === r.id),
+      //   }) as CustomReward
+
+      // return rewards
     } catch {
       const rewards = await getRewards()
       return !onlyManageable ? rewards : rewards.filter((_, i) => i % 2 === 0)
+      // return !onlyManageable
+      // ? rewards.map((r, i) => new CustomReward(r, i % 2 === 0))
+      // : rewards.filter((_, i) => i % 2 === 0).map((r) => new CustomReward(r, true))
     }
   }
 

@@ -13,9 +13,10 @@ type Props = FormDialogProps<ChannelRewardValues> & {
   // formRef?: RefObject<FormikProps<ChannelRewardValues>>
   // actionsRef?: RefObject<Element>
   // onClose?: () => void
+  readonly?: boolean
 }
 
-export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose }) => {
+export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose, readonly }) => {
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
   const cooldownUnit = reward.globalCooldown ? getDurationUnit(reward.globalCooldown) : 60
@@ -78,19 +79,21 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
               gap: 1,
             }}
           >
-            <RewardFormFields />
+            <RewardFormFields readonly={readonly} />
 
             <Portal container={actionsRef?.current}>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                // color="primary"
-                loading={isSubmitting}
-                disabled={!dirty || !isValid || fetchingUpdate}
-                form="editChennelRewardForm"
-              >
-                Update
-              </LoadingButton>
+              {!readonly && (
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  // color="primary"
+                  loading={isSubmitting}
+                  disabled={!dirty || !isValid || fetchingUpdate}
+                  form="editChennelRewardForm"
+                >
+                  Update
+                </LoadingButton>
+              )}
             </Portal>
           </Box>
         </Form>
