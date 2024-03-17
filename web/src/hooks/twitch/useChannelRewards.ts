@@ -8,9 +8,11 @@ import {
   useUpdateChannelRewardMutation,
 } from "@/generated/graphql"
 
-export const useChannelRewards = (fetchRewards = true) => {
-  const [{ data, fetching, error }] = useChannelRewardsQuery({
-    variables: {},
+export const useChannelRewards = (fetchRewards = true, onlyManageable?: boolean) => {
+  const [{ data, fetching, error }, refetch] = useChannelRewardsQuery({
+    variables: {
+      onlyManageable: onlyManageable,
+    },
     pause: !fetchRewards,
   })
 
@@ -22,6 +24,7 @@ export const useChannelRewards = (fetchRewards = true) => {
     channelRewards: data?.channelRewards as CustomRewardFragment[] | undefined,
     fetching,
     error,
+    refetch: () => refetch({ requestPolicy: "cache-and-network" }),
     createReward: async (reward: CustomRewardCreateInput) => {
       const response = await createChannelReward(
         {

@@ -84,21 +84,6 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
             <BooleanFieldPlain
-              name="isPaused"
-              toggle
-              checked={reward.isPaused}
-              tooltip={reward.isPaused ? "Paused" : "Not paused"}
-              disabled={readonly || fetchingUpdate}
-              onChange={async (ev) => {
-                // console.warn("paused", ev.target.checked)
-                await updateReward(reward.id, {
-                  ...reward,
-                  isPaused: ev.target.checked,
-                })
-              }}
-            />
-
-            <BooleanFieldPlain
               name="isEnabled"
               toggle
               checked={reward.isEnabled}
@@ -109,6 +94,21 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
                 await updateReward(reward.id, {
                   ...reward,
                   isEnabled: ev.target.checked,
+                })
+              }}
+            />
+
+            <BooleanFieldPlain
+              name="isPaused"
+              toggle
+              checked={reward.isPaused}
+              tooltip={reward.isPaused ? "Paused" : "Not paused"}
+              disabled={readonly || fetchingUpdate}
+              onChange={async (ev) => {
+                // console.warn("paused", ev.target.checked)
+                await updateReward(reward.id, {
+                  ...reward,
+                  isPaused: ev.target.checked,
                 })
               }}
             />

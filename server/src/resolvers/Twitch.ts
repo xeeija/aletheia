@@ -262,7 +262,8 @@ export class TwitchResolver {
   @Query(() => [CustomReward])
   async channelRewards(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("userId", { nullable: true }) userId: string
+    @Arg("userId", { nullable: true }) userId?: string,
+    @Arg("onlyManageable", { nullable: true }) onlyManageable?: boolean
   ) {
     if (!req.session.userId) {
       return []
@@ -279,11 +280,11 @@ export class TwitchResolver {
     }
 
     try {
-      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
+      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId, onlyManageable)
       return rewards
     } catch {
       const rewards = await getRewards()
-      return rewards
+      return !onlyManageable ? rewards : rewards.filter((_, i) => i % 2 === 0)
     }
   }
 

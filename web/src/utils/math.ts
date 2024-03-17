@@ -45,3 +45,11 @@ export function shuffle<T>(arr: T[]): T[] {
   }
   return array
 }
+
+export const getDurationUnit = (duration: number) => {
+  if (duration < 60) return 1
+  if (duration < 3600) return 60
+  if (duration < 3600 * 24) return 3600
+
+  return 3600 * 24
+}

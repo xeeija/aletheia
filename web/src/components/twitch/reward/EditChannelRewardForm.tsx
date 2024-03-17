@@ -3,6 +3,7 @@ import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useChannelRewards } from "@/hooks"
 import { FormDialogProps } from "@/types"
+import { getDurationUnit } from "@/utils/math"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC } from "react"
@@ -17,6 +18,9 @@ type Props = FormDialogProps<ChannelRewardValues> & {
 export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose }) => {
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
+  const cooldownUnit = reward.globalCooldown ? getDurationUnit(reward.globalCooldown) : 60
+  const cooldown = reward.globalCooldown ? reward.globalCooldown / cooldownUnit : ""
+
   const initialValues: ChannelRewardValues = {
     title: reward.title,
     prompt: reward.prompt,
@@ -25,12 +29,14 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
     isEnabled: reward.isEnabled,
     autoFulfill: reward.autoFulfill,
     backgroundColor: reward.backgroundColor,
-    globalCooldown: reward.globalCooldown ?? "",
+    globalCooldown: cooldown,
     maxRedemptionsPerStream: reward.maxRedemptionsPerStream ?? "",
     maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerUserPerStream ?? "",
-    cooldownUnit: 60,
+    cooldownUnit: cooldownUnit,
   }
-  // TODO: show cooldown correctly (divide to show in biggest time unit)
+
+  // TODO: fix numbers in formik: they are saved as string, eg, "60" instead of 60
+  // they are messing with dirty, because 60 !== "60"
 
   return (
     <Formik

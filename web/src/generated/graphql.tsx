@@ -574,6 +574,7 @@ export type Query = {
 
 
 export type QueryChannelRewardsArgs = {
+  onlyManageable?: Maybe<Scalars['Boolean']>;
   userId?: Maybe<Scalars['String']>;
 };
 
@@ -1400,6 +1401,7 @@ export type RandomWheelBySlugWinnersQuery = { __typename?: 'Query', randomWheelB
 
 export type ChannelRewardsQueryVariables = Exact<{
   userId?: Maybe<Scalars['String']>;
+  onlyManageable?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -1936,8 +1938,8 @@ export function useRandomWheelBySlugWinnersQuery(options: Omit<Urql.UseQueryArgs
   return Urql.useQuery<RandomWheelBySlugWinnersQuery, RandomWheelBySlugWinnersQueryVariables>({ query: RandomWheelBySlugWinnersDocument, ...options });
 };
 export const ChannelRewardsDocument = gql`
-    query ChannelRewards($userId: String) {
-  channelRewards(userId: $userId) {
+    query ChannelRewards($userId: String, $onlyManageable: Boolean) {
+  channelRewards(userId: $userId, onlyManageable: $onlyManageable) {
     ...CustomReward
   }
 }

@@ -11,13 +11,13 @@ const rewards = [
     "image": null,
     "background_color": "#9146FF",
     "is_enabled": true,
-    "cost": 1,
+    "cost": 4000,
     "title": "Test reward for 57084058",
     "prompt": "",
     "is_user_input_required": false,
     "max_per_stream_setting": {
-      "is_enabled": false,
-      "max_per_stream": 0
+      "is_enabled": true,
+      "max_per_stream": 14
     },
     "max_per_user_per_stream_setting": {
       "is_enabled": false,
@@ -35,7 +35,7 @@ const rewards = [
       "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
     },
     "should_redemptions_skip_request_queue": false,
-    "redemptions_redeemed_current_stream": null,
+    "redemptions_redeemed_current_stream": 3,
     "cooldown_expires_at": null
   },
   {
@@ -46,7 +46,7 @@ const rewards = [
     "image": null,
     "background_color": "#7cb995",
     "is_enabled": true,
-    "cost": 1,
+    "cost": 42,
     "title": "Test reward 2",
     "prompt": "",
     "is_user_input_required": false,
@@ -62,8 +62,43 @@ const rewards = [
       "is_enabled": false,
       "global_cooldown_seconds": 0
     },
-    "is_paused": false,
+    "is_paused": true,
     "is_in_stock": true,
+    "default_image": {
+      "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
+      "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
+      "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
+    },
+    "should_redemptions_skip_request_queue": true,
+    "redemptions_redeemed_current_stream": null,
+    "cooldown_expires_at": null
+  },
+  {
+    "id": "9d50fb8c-0125-c849-120b-658e0635f831",
+    "broadcaster_id": "57084058",
+    "broadcaster_login": "marcusshepard362",
+    "broadcaster_name": "MarcusShepard362",
+    "image": null,
+    "background_color": "#3c399d",
+    "is_enabled": false,
+    "cost": 100,
+    "title": "Third Test reward manageable",
+    "prompt": "With a short prompt",
+    "is_user_input_required": false,
+    "max_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_stream": 0
+    },
+    "max_per_user_per_stream_setting": {
+      "is_enabled": false,
+      "max_per_user_per_stream": 0
+    },
+    "global_cooldown_setting": {
+      "is_enabled": true,
+      "global_cooldown_seconds": 300
+    },
+    "is_paused": false,
+    "is_in_stock": false,
     "default_image": {
       "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
       "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",

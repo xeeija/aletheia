@@ -1,5 +1,5 @@
-query ChannelRewards($userId: String) {
-  channelRewards(userId: $userId) {
+query ChannelRewards($userId: String, $onlyManageable: Boolean) {
+  channelRewards(userId: $userId, onlyManageable: $onlyManageable) {
     ...CustomReward
   }
 }

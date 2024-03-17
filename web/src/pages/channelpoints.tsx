@@ -1,9 +1,10 @@
-import { DeleteDialog, LayoutNextPage, NoData, SkeletonList, defaultLayout } from "@/components"
+import { DeleteDialog, LayoutNextPage, NoData, SelectField, SkeletonList, defaultLayout } from "@/components"
 import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
-import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
+import { Box, Button, IconButton, InputAdornment, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
+import { Formik } from "formik"
 import { useState } from "react"
-import { HiDotsVertical } from "react-icons/hi"
+import { HiDotsVertical, HiFilter } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
@@ -15,7 +16,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const [editReward, setEditReward] = useState<string | null>(null)
   const [deleteRewardOpen, setDeleteRewardOpen] = useState<string | null>(null)
 
-  const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards()
+  const [filterRewards, setFilterRewards] = useState(false)
+
+  const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards(true, filterRewards)
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
 
   // TODO: Delete reward
@@ -40,7 +43,50 @@ export const ChannelPointsPage: LayoutNextPage = () => {
         </Tabs>
 
         {tab === 0 && (
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Formik initialValues={{ filter: "all" }} onSubmit={() => {}}>
+              {({ setFieldValue }) => (
+                <SelectField
+                  name="filter"
+                  options={[
+                    { value: "all", label: "All rewards" },
+                    { value: "manageable", label: "Manageable rewards" },
+                  ]}
+                  required
+                  hiddenLabel
+                  onChange={async (ev) => {
+                    console.warn("filter", "'", ev.target.value, "'")
+                    await setFieldValue("filter", ev.target.value)
+                    setFilterRewards(ev.target.value === "manageable")
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start" sx={{ color: "text.secondary" }}>
+                        <SvgIcon component={HiFilter} viewBox="-1 -1 22 22" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  // sx={{ width: "240px" }}
+                />
+              )}
+            </Formik>
+
+            {/*
+            <BooleanFieldPlain
+              name="isPaused"
+              toggle
+              checked={filterRewards}
+              label="Only show manageable"
+              onChange={async (ev) => {
+                setFilterRewards((x) => !x)
+                // console.warn("paused", ev.target.checked)
+                // await updateReward(reward.id, {
+                //   ...reward,
+                //   isPaused: ev.target.checked,
+                // })
+              }}
+            /> */}
+
             <Button
               variant="outlined"
               color="success"
@@ -51,7 +97,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
             </Button>
 
             <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" sx={{ ml: 1 }} disabled>
+              <IconButton color="secondary" disabled>
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
@@ -93,7 +139,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               <Typography sx={{ width: "max(40%, 260px)" }}>Title</Typography>
               <Typography sx={{ width: "80px" }}>Cost</Typography>
               <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
-              <Typography sx={{ width: "132px" }}>Paused / Enabled</Typography>
+              <Typography sx={{ width: "130px" }}>Enabled / Paused</Typography>
               <Typography sx={{ width: "178px" }}></Typography>
               {/* <Typography sx={{ width: "0" }}></Typography> */}
             </Box>
