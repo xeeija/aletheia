@@ -1,15 +1,30 @@
 import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip } from "@mui/material"
 import { FC, MouseEventHandler } from "react"
-import { HiLink } from "react-icons/hi"
+import { IconType } from "react-icons"
+import { HiClipboardCopy, HiLink } from "react-icons/hi"
 
 type Props = TextFieldProps & {
   // onCopy?: MouseEventHandler<HTMLButtonElement>
+  copyIcon?: IconType
+  position?: "start" | "end"
 }
 
-export const LinkInputField: FC<Props> = ({ InputProps, ...props }) => {
+export const LinkInputField: FC<Props> = ({ copyIcon, position: position = "end", InputProps, ...props }) => {
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
     void navigator.clipboard.writeText(`${window.location.protocol}//${props.value as string}`)
   }
+
+  const copyAdornment = (
+    <InputAdornment position={position} sx={{ gap: 0.5 }}>
+      {position === "end" && InputProps?.endAdornment}
+      <Tooltip arrow placement="bottom" title="Copy to clipboard">
+        <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
+          <SvgIcon color="secondary" component={copyIcon ?? HiClipboardCopy ?? HiLink} viewBox="-1 -1 22 22" />
+        </IconButton>
+      </Tooltip>
+      {position === "start" && InputProps?.startAdornment}
+    </InputAdornment>
+  )
 
   return (
     <TextField
@@ -19,20 +34,14 @@ export const LinkInputField: FC<Props> = ({ InputProps, ...props }) => {
       fullWidth
       InputProps={{
         readOnly: true,
-        sx: { pl: 1 },
-        startAdornment: (
-          <InputAdornment position="start">
-            <Tooltip arrow placement="bottom" title="Copy">
-              <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
-                <SvgIcon color="secondary" component={HiLink} viewBox="-1 -1 22 22" />
-              </IconButton>
-            </Tooltip>
-          </InputAdornment>
-        ),
+        sx: {
+          ...InputProps?.sx,
+          pl: position === "start" ? 0.5 : undefined,
+          pr: position === "end" ? 0.5 : undefined,
+        },
         ...InputProps,
-        // endAdornment: (<InputAdornment position="end">
-        //   <SvgIcon color="secondary" component={HiClipboardCopy} />
-        // </InputAdornment>)
+        startAdornment: position === "start" ? copyAdornment : InputProps?.startAdornment,
+        endAdornment: position === "end" ? copyAdornment : InputProps?.endAdornment,
       }}
       onFocus={(ev) => {
         ev.currentTarget.select()
