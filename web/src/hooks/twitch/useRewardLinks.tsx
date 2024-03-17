@@ -6,18 +6,19 @@ import {
 } from "@/generated/graphql"
 import { RewardLinkType } from "@/types"
 
-// type RewardLinkConfig = {
-//   rewardIds?: string | string[]
-//   pause?: boolean
-// }
+type RewardLinkConfig = {
+  type: RewardLinkType
+  rewardIds?: string | string[]
+  pause?: boolean
+}
 
-export const useRewardLinks = (rewardIds?: string | string[], pause?: boolean) => {
+export const useRewardLinks = ({ type, rewardIds, pause }: RewardLinkConfig) => {
   const [{ data, fetching, error }, fetchRewardLinks] = useRewardLinksQuery({
     variables: {
       rewardIds: rewardIds,
     },
     pause: pause,
-    requestPolicy: "cache-first",
+    requestPolicy: "cache-and-network",
   })
 
   const [{ fetching: fetchingCreate, error: errorCreate }, createRewardLink] = useCreateRewardLinkMutation()
@@ -27,7 +28,7 @@ export const useRewardLinks = (rewardIds?: string | string[], pause?: boolean) =
     rewardLinks: data?.rewardLinks as RewardLinkFragment[] | undefined,
     fetching,
     error,
-    createRewardLink: async (rewardId: string, type: RewardLinkType) => {
+    createRewardLink: async (rewardId: string) => {
       const response = await createRewardLink(
         {
           rewardId,
@@ -35,6 +36,7 @@ export const useRewardLinks = (rewardIds?: string | string[], pause?: boolean) =
         },
         {
           requestPolicy: "cache-and-network",
+          additionalTypenames: ["RewardLink"],
         }
       )
 
