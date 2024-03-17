@@ -48,7 +48,7 @@ class CustomReward {
 }
 
 @InputType()
-class CustomRewardInput {
+class CustomRewardCreateInput {
   @Field(() => String)
   title: string
 
@@ -67,17 +67,56 @@ class CustomRewardInput {
   @Field(() => Boolean, { nullable: true })
   isEnabled?: boolean
 
-  @Field(() => Int, { nullable: true })
-  globalCooldown?: number
+  @Field(() => Boolean, { nullable: true })
+  isPaused?: boolean
 
   @Field(() => Int, { nullable: true })
-  maxRedemptionsPerStream?: number
+  globalCooldown?: number | null
 
   @Field(() => Int, { nullable: true })
-  maxRedemptionsPerUser?: number
+  maxRedemptionsPerStream?: number | null
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerUserPerStream?: number | null
 
   @Field(() => Boolean, { nullable: true })
   autoFulfill?: boolean
+}
+
+@InputType()
+class CustomRewardUpdateInput {
+  @Field(() => Boolean, { nullable: true })
+  autoFulfill?: boolean
+
+  @Field(() => String, { nullable: true })
+  backgroundColor?: string
+
+  @Field(() => Int, { nullable: true })
+  cost?: number
+
+  @Field(() => Int, { nullable: true })
+  globalCooldown?: number | null
+
+  @Field(() => Boolean, { nullable: true })
+  isEnabled?: boolean
+
+  @Field(() => Boolean, { nullable: true })
+  isPaused?: boolean
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerStream?: number | null
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerUserPerStream?: number | null
+
+  @Field(() => String, { nullable: true })
+  prompt?: string
+
+  @Field(() => String, { nullable: true })
+  title?: string
+
+  @Field(() => Boolean, { nullable: true })
+  userInputRequired?: boolean
 }
 
 @Resolver(() => CustomReward)
@@ -138,9 +177,21 @@ export class CustomRewardResolver {
       throw new Error("No connected twitch account found")
     }
 
+    const existingRewardLink = await prisma.rewardLink.findFirst({
+      where: {
+        rewardId,
+        type,
+        userId: req.session.userId,
+      },
+    })
+
+    if (existingRewardLink) {
+      return existingRewardLink
+    }
+
     const token = randomBase64Url(48)
 
-    const rewardLink = await prisma.rewardLink.create({
+    const newRewardLink = await prisma.rewardLink.create({
       data: {
         rewardId,
         type,
@@ -149,7 +200,7 @@ export class CustomRewardResolver {
       },
     })
 
-    return rewardLink
+    return newRewardLink
 
     // try {
     // }
@@ -239,7 +290,7 @@ export class TwitchResolver {
   @Mutation(() => CustomReward, { nullable: true })
   async createChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("reward") reward: CustomRewardInput
+    @Arg("reward") rewardInput: CustomRewardCreateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     if (!req.session.userId) {
@@ -257,7 +308,7 @@ export class TwitchResolver {
     }
 
     // try {
-    const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, reward)
+    const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, rewardInput)
 
     // {
     //   title: reward.title,
@@ -283,7 +334,7 @@ export class TwitchResolver {
   async updateChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("rewardId") rewardId: string,
-    @Arg("reward") reward: CustomRewardInput
+    @Arg("reward") rewardInput: CustomRewardUpdateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     if (!req.session.userId) {
@@ -301,7 +352,20 @@ export class TwitchResolver {
     }
 
     // try {
-    const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, reward)
+    const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, rewardInput)
+    //   {
+    //   autoFulfill: reward.autoFulfill,
+    //   backgroundColor: reward.backgroundColor,
+    //   cost: reward.cost,
+    //   globalCooldown: reward.globalCooldown,
+    //   isEnabled: reward.isEnabled,
+    //   isPaused: reward.isPaused,
+    //   maxRedemptionsPerStream: reward.maxRedemptionsPerStream,
+    //   maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerUser,
+    //   prompt: reward.prompt,
+    //   title: reward.title,
+    //   userInputRequired: reward.userInputRequired,
+    // })
 
     return newReward
     // }

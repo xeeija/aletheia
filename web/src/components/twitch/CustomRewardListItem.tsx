@@ -2,6 +2,7 @@ import { BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { CustomRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
+import { useChannelRewards } from "@/hooks"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiCollection, HiLink, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
@@ -15,8 +16,9 @@ interface Props {
 }
 
 export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
-  // const [linkAnchor, setLinkAnchor] = useState<Element | null>(null)
   const [linkOpen, setLinkOpen] = useState(false)
+
+  const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream
@@ -71,27 +73,44 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
               </SvgIcon>
             </Tooltip>
 
-            <Tooltip arrow placement="bottom" title="Skip reward queue">
-              <SvgIcon color="info">
-                <TiMediaFastForward />
-              </SvgIcon>
-            </Tooltip>
+            {reward.autoFulfill && (
+              <Tooltip arrow placement="bottom" title="Skip reward queue">
+                <SvgIcon color="info">
+                  <TiMediaFastForward />
+                </SvgIcon>
+              </Tooltip>
+            )}
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
             <BooleanFieldPlain
               name="isPaused"
               toggle
+              checked={reward.isPaused}
               tooltip={reward.isPaused ? "Paused" : "Not paused"}
-              disabled={readonly}
+              disabled={readonly || fetchingUpdate}
+              onChange={async (ev) => {
+                // console.warn("paused", ev.target.checked)
+                await updateReward(reward.id, {
+                  ...reward,
+                  isPaused: ev.target.checked,
+                })
+              }}
             />
 
             <BooleanFieldPlain
               name="isEnabled"
               toggle
+              checked={reward.isEnabled}
               tooltip={reward.isEnabled ? "Enabled" : "Disabled"}
-              // checked={reward.isEnabled}
-              disabled={readonly}
+              disabled={readonly || fetchingUpdate}
+              onChange={async (ev) => {
+                // console.warn("enabled", ev.target.checked)
+                await updateReward(reward.id, {
+                  ...reward,
+                  isEnabled: ev.target.checked,
+                })
+              }}
             />
           </Box>
 

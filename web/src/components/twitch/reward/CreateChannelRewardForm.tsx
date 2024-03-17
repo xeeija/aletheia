@@ -19,7 +19,7 @@ export interface ChannelRewardValues {
   isEnabled: boolean
   globalCooldown: number | ""
   maxRedemptionsPerStream: number | ""
-  maxRedemptionsPerUser: number | ""
+  maxRedemptionsPerUserPerStream: number | ""
   autoFulfill: boolean
   cooldownUnit: number
 }
@@ -43,7 +43,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
     backgroundColor: "#000000",
     globalCooldown: "",
     maxRedemptionsPerStream: "",
-    maxRedemptionsPerUser: "",
+    maxRedemptionsPerUserPerStream: "",
     cooldownUnit: 60,
   }
 
@@ -66,7 +66,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
           prompt: values.prompt || null,
           globalCooldown: cooldownSec || null,
           maxRedemptionsPerStream: Number(values.maxRedemptionsPerStream) || null,
-          maxRedemptionsPerUser: Number(values.maxRedemptionsPerUser) || null,
+          maxRedemptionsPerUserPerStream: Number(values.maxRedemptionsPerUserPerStream) || null,
           backgroundColor: values.backgroundColor || null,
           autoFulfill: values.autoFulfill,
           isEnabled: values.isEnabled,

@@ -1,6 +1,7 @@
 import {
+  CustomRewardCreateInput,
   CustomRewardFragment,
-  CustomRewardInput,
+  CustomRewardUpdateInput,
   useChannelRewardsQuery,
   useCreateChannelRewardMutation,
   useDeleteChannelRewardMutation,
@@ -14,18 +15,30 @@ export const useChannelRewards = (fetchRewards = true) => {
   })
 
   const [{ fetching: fetchingCreate, error: errorCreate }, createChannelReward] = useCreateChannelRewardMutation()
-
   const [{ fetching: fetchingUpdate, error: errorUpdate }, updateChannelReward] = useUpdateChannelRewardMutation()
-
   const [{ fetching: fetchingDelete, error: errorDelete }, deleteChannelReward] = useDeleteChannelRewardMutation()
 
   return {
     channelRewards: data?.channelRewards as CustomRewardFragment[] | undefined,
     fetching,
     error,
-    createReward: async (reward: CustomRewardInput) => {
+    createReward: async (reward: CustomRewardCreateInput) => {
       const response = await createChannelReward(
-        { reward },
+        {
+          reward: {
+            title: reward.title,
+            cost: reward.cost,
+            autoFulfill: reward.autoFulfill,
+            backgroundColor: reward.backgroundColor,
+            globalCooldown: reward.globalCooldown,
+            isEnabled: reward.isEnabled,
+            isPaused: reward.isPaused,
+            maxRedemptionsPerStream: reward.maxRedemptionsPerStream,
+            maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerUserPerStream,
+            prompt: reward.prompt,
+            userInputRequired: reward.userInputRequired,
+          },
+        },
         {
           // additionalTypenames: ["CustomReward"],
           requestPolicy: "cache-and-network",
@@ -39,11 +52,23 @@ export const useChannelRewards = (fetchRewards = true) => {
     },
     fetchingCreate,
     errorCreate,
-    updateReward: async (rewardId: string, reward: CustomRewardInput) => {
+    updateReward: async (rewardId: string, reward: CustomRewardUpdateInput) => {
       const response = await updateChannelReward(
         {
           rewardId,
-          reward,
+          reward: {
+            autoFulfill: reward.autoFulfill,
+            backgroundColor: reward.backgroundColor,
+            cost: reward.cost,
+            globalCooldown: reward.globalCooldown,
+            isEnabled: reward.isEnabled,
+            isPaused: reward.isPaused,
+            maxRedemptionsPerStream: reward.maxRedemptionsPerStream,
+            maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerUserPerStream,
+            prompt: reward.prompt,
+            title: reward.title,
+            userInputRequired: reward.userInputRequired,
+          },
         },
         {
           // additionalTypenames: ["CustomReward"],

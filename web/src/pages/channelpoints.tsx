@@ -1,4 +1,4 @@
-import { DeleteDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
+import { DeleteDialog, LayoutNextPage, NoData, SkeletonList, defaultLayout } from "@/components"
 import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
@@ -94,24 +94,27 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               <Typography sx={{ width: "80px" }}>Cost</Typography>
               <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
               <Typography sx={{ width: "132px" }}>Paused / Enabled</Typography>
-              {/* <Typography sx={{ width: "136px" }}></Typography> */}
               <Typography sx={{ width: "178px" }}></Typography>
+              {/* <Typography sx={{ width: "0" }}></Typography> */}
             </Box>
 
-            {channelRewards?.map((reward) => (
-              <CustomRewardListItem
-                key={reward.id}
-                reward={reward}
-                onEdit={() => {
-                  setEditRewardOpen(true)
-                  setEditReward(reward.id)
-                }}
-                onDelete={(rewardId) => {
-                  setDeleteRewardOpen(rewardId)
-                  // console.warn("delete", rewardId)
-                }}
-              />
-            ))}
+            {fetchingRewards && <SkeletonList n={4} height={72} />}
+
+            {!fetchingRewards &&
+              channelRewards?.map((reward) => (
+                <CustomRewardListItem
+                  key={reward.id}
+                  reward={reward}
+                  onEdit={() => {
+                    setEditRewardOpen(true)
+                    setEditReward(reward.id)
+                  }}
+                  onDelete={(rewardId) => {
+                    setDeleteRewardOpen(rewardId)
+                    // console.warn("delete", rewardId)
+                  }}
+                />
+              ))}
 
             {channelRewardsEmpty && !fetchingRewards && (
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>

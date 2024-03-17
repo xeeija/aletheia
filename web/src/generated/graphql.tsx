@@ -149,16 +149,31 @@ export type CustomReward = {
   userInputRequired: Scalars['Boolean'];
 };
 
-export type CustomRewardInput = {
+export type CustomRewardCreateInput = {
   autoFulfill?: Maybe<Scalars['Boolean']>;
   backgroundColor?: Maybe<Scalars['String']>;
   cost: Scalars['Int'];
   globalCooldown?: Maybe<Scalars['Int']>;
   isEnabled?: Maybe<Scalars['Boolean']>;
+  isPaused?: Maybe<Scalars['Boolean']>;
   maxRedemptionsPerStream?: Maybe<Scalars['Int']>;
-  maxRedemptionsPerUser?: Maybe<Scalars['Int']>;
+  maxRedemptionsPerUserPerStream?: Maybe<Scalars['Int']>;
   prompt?: Maybe<Scalars['String']>;
   title: Scalars['String'];
+  userInputRequired?: Maybe<Scalars['Boolean']>;
+};
+
+export type CustomRewardUpdateInput = {
+  autoFulfill?: Maybe<Scalars['Boolean']>;
+  backgroundColor?: Maybe<Scalars['String']>;
+  cost?: Maybe<Scalars['Int']>;
+  globalCooldown?: Maybe<Scalars['Int']>;
+  isEnabled?: Maybe<Scalars['Boolean']>;
+  isPaused?: Maybe<Scalars['Boolean']>;
+  maxRedemptionsPerStream?: Maybe<Scalars['Int']>;
+  maxRedemptionsPerUserPerStream?: Maybe<Scalars['Int']>;
+  prompt?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
   userInputRequired?: Maybe<Scalars['Boolean']>;
 };
 
@@ -315,7 +330,7 @@ export type MutationClearRandomWheelArgs = {
 
 
 export type MutationCreateChannelRewardArgs = {
-  reward: CustomRewardInput;
+  reward: CustomRewardCreateInput;
 };
 
 
@@ -403,7 +418,7 @@ export type MutationSyncEntriesWithRedemptionArgs = {
 
 
 export type MutationUpdateChannelRewardArgs = {
-  reward: CustomRewardInput;
+  reward: CustomRewardUpdateInput;
   rewardId: Scalars['String'];
 };
 
@@ -1255,8 +1270,28 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
+export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
+
+export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
+
+export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
+  id: Scalars['String'];
+  pause: Scalars['Boolean'];
+}>;
+
+
+export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
+
 export type CreateChannelRewardMutationVariables = Exact<{
-  reward: CustomRewardInput;
+  reward: CustomRewardCreateInput;
 }>;
 
 
@@ -1277,13 +1312,6 @@ export type DeleteChannelRewardMutationVariables = Exact<{
 
 export type DeleteChannelRewardMutation = { __typename?: 'Mutation', deleteChannelReward: boolean };
 
-export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
-  ids: Array<Scalars['String']> | Scalars['String'];
-}>;
-
-
-export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
-
 export type DeleteRewardLinkMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -1291,18 +1319,13 @@ export type DeleteRewardLinkMutationVariables = Exact<{
 
 export type DeleteRewardLinkMutation = { __typename?: 'Mutation', deleteRewardLink: boolean };
 
-export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
-
-export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
-  id: Scalars['String'];
-  pause: Scalars['Boolean'];
+export type UpdateChannelRewardMutationVariables = Exact<{
+  rewardId: Scalars['String'];
+  reward: CustomRewardUpdateInput;
 }>;
 
 
-export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
+export type UpdateChannelRewardMutation = { __typename?: 'Mutation', updateChannelReward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
 
 export type SyncEntriesWithRedemptionMutationVariables = Exact<{
   rewardId: Scalars['String'];
@@ -1313,14 +1336,6 @@ export type SyncEntriesWithRedemptionMutationVariables = Exact<{
 
 
 export type SyncEntriesWithRedemptionMutation = { __typename?: 'Mutation', syncEntriesWithRedemption?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
-
-export type UpdateChannelRewardMutationVariables = Exact<{
-  rewardId: Scalars['String'];
-  reward: CustomRewardInput;
-}>;
-
-
-export type UpdateChannelRewardMutation = { __typename?: 'Mutation', updateChannelReward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
 
 export type UpdateUserMutationVariables = Exact<{
   user: UserInput;
@@ -1702,8 +1717,37 @@ export const RegisterDocument = gql`
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
+export const DeleteEntriesRedemptionSyncDocument = gql`
+    mutation DeleteEntriesRedemptionSync($ids: [String!]!) {
+  deleteEntriesRedemptionSync(ids: $ids)
+}
+    `;
+
+export function useDeleteEntriesRedemptionSyncMutation() {
+  return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
+};
+export const DisconnectAccessTokenDocument = gql`
+    mutation DisconnectAccessToken {
+  disconnectAccessToken
+}
+    `;
+
+export function useDisconnectAccessTokenMutation() {
+  return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
+};
+export const PauseEntriesRedemptionSyncDocument = gql`
+    mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
+  pauseEntriesRedemptionSync(id: $id, pause: $pause) {
+    ...EventSubscription
+  }
+}
+    ${EventSubscriptionFragmentDoc}`;
+
+export function usePauseEntriesRedemptionSyncMutation() {
+  return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
+};
 export const CreateChannelRewardDocument = gql`
-    mutation CreateChannelReward($reward: CustomRewardInput!) {
+    mutation CreateChannelReward($reward: CustomRewardCreateInput!) {
   createChannelReward(reward: $reward) {
     ...CustomReward
   }
@@ -1733,15 +1777,6 @@ export const DeleteChannelRewardDocument = gql`
 export function useDeleteChannelRewardMutation() {
   return Urql.useMutation<DeleteChannelRewardMutation, DeleteChannelRewardMutationVariables>(DeleteChannelRewardDocument);
 };
-export const DeleteEntriesRedemptionSyncDocument = gql`
-    mutation DeleteEntriesRedemptionSync($ids: [String!]!) {
-  deleteEntriesRedemptionSync(ids: $ids)
-}
-    `;
-
-export function useDeleteEntriesRedemptionSyncMutation() {
-  return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
-};
 export const DeleteRewardLinkDocument = gql`
     mutation DeleteRewardLink($id: String!) {
   deleteRewardLink(id: $id)
@@ -1751,25 +1786,16 @@ export const DeleteRewardLinkDocument = gql`
 export function useDeleteRewardLinkMutation() {
   return Urql.useMutation<DeleteRewardLinkMutation, DeleteRewardLinkMutationVariables>(DeleteRewardLinkDocument);
 };
-export const DisconnectAccessTokenDocument = gql`
-    mutation DisconnectAccessToken {
-  disconnectAccessToken
-}
-    `;
-
-export function useDisconnectAccessTokenMutation() {
-  return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
-};
-export const PauseEntriesRedemptionSyncDocument = gql`
-    mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
-  pauseEntriesRedemptionSync(id: $id, pause: $pause) {
-    ...EventSubscription
+export const UpdateChannelRewardDocument = gql`
+    mutation UpdateChannelReward($rewardId: String!, $reward: CustomRewardUpdateInput!) {
+  updateChannelReward(rewardId: $rewardId, reward: $reward) {
+    ...CustomReward
   }
 }
-    ${EventSubscriptionFragmentDoc}`;
+    ${CustomRewardFragmentDoc}`;
 
-export function usePauseEntriesRedemptionSyncMutation() {
-  return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
+export function useUpdateChannelRewardMutation() {
+  return Urql.useMutation<UpdateChannelRewardMutation, UpdateChannelRewardMutationVariables>(UpdateChannelRewardDocument);
 };
 export const SyncEntriesWithRedemptionDocument = gql`
     mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
@@ -1786,17 +1812,6 @@ export const SyncEntriesWithRedemptionDocument = gql`
 
 export function useSyncEntriesWithRedemptionMutation() {
   return Urql.useMutation<SyncEntriesWithRedemptionMutation, SyncEntriesWithRedemptionMutationVariables>(SyncEntriesWithRedemptionDocument);
-};
-export const UpdateChannelRewardDocument = gql`
-    mutation UpdateChannelReward($rewardId: String!, $reward: CustomRewardInput!) {
-  updateChannelReward(rewardId: $rewardId, reward: $reward) {
-    ...CustomReward
-  }
-}
-    ${CustomRewardFragmentDoc}`;
-
-export function useUpdateChannelRewardMutation() {
-  return Urql.useMutation<UpdateChannelRewardMutation, UpdateChannelRewardMutationVariables>(UpdateChannelRewardDocument);
 };
 export const UpdateUserDocument = gql`
     mutation UpdateUser($user: UserInput!) {

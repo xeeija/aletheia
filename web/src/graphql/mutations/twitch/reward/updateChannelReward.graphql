@@ -1,4 +1,4 @@
-mutation UpdateChannelReward($rewardId: String!, $reward: CustomRewardInput!) {
+mutation UpdateChannelReward($rewardId: String!, $reward: CustomRewardUpdateInput!) {
   updateChannelReward(rewardId: $rewardId, reward: $reward) {
     ...CustomReward
   }
