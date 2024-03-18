@@ -1,6 +1,7 @@
 import { InputField, LoadingButton, NoData, SelectField } from "@/components"
 import { useRandomWheel } from "@/hooks"
 import {
+  Box,
   Button,
   Grid,
   IconButton,
@@ -37,11 +38,11 @@ interface Props {
 }
 
 export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, readonly }) => {
-  const [{ members, fetching }, { updateMembers, fetchMembers }] = useRandomWheel(slug, {
+  const [{ members: defaultMembers, fetching }, { updateMembers, fetchMembers }] = useRandomWheel(slug, {
     members: true,
   })
 
-  const initialMembers: Record<string, MemberFormEntry> = (members ?? []).reduce(
+  const initialMembers: Record<string, MemberFormEntry> = (defaultMembers ?? []).reduce(
     (acc, member) => ({
       ...acc,
       [member.user.username]: {
@@ -89,7 +90,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
       }}
     >
       {({ isSubmitting, values, initialValues, setFieldValue, isValid }) => {
-        const members = Object.entries(values.members).filter(([, member]) => !member.delete)
+        const members = Object.entries(values.members) //.filter(([, member]) => !member.delete)
 
         return (
           <Form id="editMembersForm" autoComplete="off">
@@ -98,18 +99,76 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                 <List role="list">
                   {members.map(([key, member]) => (
                     <ListItem key={member.id} role="listitem" dense>
-                      <ListItemText
-                        primary={member.displayname}
-                        secondary={`@${member.username}`}
-                        primaryTypographyProps={{
-                          fontSize: "1rem",
-                          fontWeight: 500,
-                        }}
-                        secondaryTypographyProps={{
-                          fontSize: "0.925rem",
-                        }}
-                        sx={{ my: 0 }}
+                      {!member.delete ? (
+                        <>
+                          <ListItemText
+                            primary={member.displayname}
+                            secondary={`@${member.username}`}
+                            primaryTypographyProps={{
+                              fontSize: "1rem",
+                              fontWeight: 500,
+                            }}
+                            secondaryTypographyProps={{
+                              fontSize: "0.925rem",
+                            }}
+                            sx={{ my: 0 }}
+                          />
+                          <ListItemSecondaryAction
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <SelectField
+                              name={`members.${key}.role`}
+                              options={[
+                                { value: "VIEW", label: "View" },
+                                { value: "EDIT", label: "Edit" },
+                              ]}
+                              required
+                              hiddenLabel
+                              disabled={readonly}
+                              sx={{ width: "7rem" }}
+                            />
+                            {!readonly && (
+                              <IconButton
+                                onClick={() => {
+                                  // setDeletedMembers([...deletedMembers, member.id])
+                                  setFieldValue(`members.${key}.delete`, true)
+                                }}
+                                role="button"
+                                aria-label={`Delete member '${member.username}'`}
+                              >
+                                <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                              </IconButton>
+                            )}
+                          </ListItemSecondaryAction>
+                        </>
+                      ) : (
+                        <ListItemText
+                          primary={`Deleted ${member.displayname ?? member.username}`}
+                          primaryTypographyProps={{
+                            fontSize: "1rem",
+                            fontWeight: 500,
+                            color: "text.secondary",
+                          }}
+                          sx={{ my: 1 }}
+                        />
+                      )}
+                    </ListItem>
+                  ))}
+
+                  {!readonly && values.draft && (
+                    <ListItem role="listitem" dense>
+                      <InputField
+                        name="draft.username"
+                        required
+                        hiddenLabel
+                        placeholder="Username *"
+                        sx={{ width: "13rem", ml: -1 }}
                       />
+
                       <ListItemSecondaryAction
                         sx={{
                           display: "flex",
@@ -118,90 +177,54 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                         }}
                       >
                         <SelectField
-                          name={`members.${key}.role`}
+                          name="draft.role"
                           options={[
                             { value: "VIEW", label: "View" },
                             { value: "EDIT", label: "Edit" },
                           ]}
                           required
                           hiddenLabel
-                          disabled={readonly}
                           sx={{ width: "7rem" }}
                         />
-                        {!readonly && (
-                          <IconButton
-                            onClick={() => {
-                              // setDeletedMembers([...deletedMembers, member.id])
-                              setFieldValue(`members.${key}.delete`, true)
-                            }}
-                            role="button"
-                            aria-label={`Delete member '${member.username}'`}
-                          >
-                            <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
-                          </IconButton>
-                        )}
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-
-                  {!readonly &&
-                    (values.draft ? (
-                      <ListItem role="listitem" dense>
-                        <InputField
-                          name="draft.username"
-                          required
-                          hiddenLabel
-                          placeholder="Username *"
-                          sx={{ width: "13rem", ml: -1 }}
-                        />
-
-                        <ListItemSecondaryAction
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
+                        <IconButton
+                          role="button"
+                          aria-label={`Delete draft member`}
+                          onClick={() => {
+                            setFieldValue("draft", initialValues.draft)
                           }}
                         >
-                          <SelectField
-                            name="draft.role"
-                            options={[
-                              { value: "VIEW", label: "View" },
-                              { value: "EDIT", label: "Edit" },
-                            ]}
-                            required
-                            hiddenLabel
-                            sx={{ width: "7rem" }}
-                          />
-                          <IconButton
-                            role="button"
-                            aria-label={`Delete draft member`}
-                            onClick={() => {
-                              setFieldValue("draft", initialValues.draft)
-                            }}
-                          >
-                            <SvgIcon component={TiTimes} fontSize="small" viewBox="3 2 20 20" color="error" />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    ) : (
-                      <Button
-                        color="success"
-                        variant="outlined"
-                        sx={{ ml: 0.5, mt: 1.25 }}
-                        endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                        onClick={() => {
-                          setFieldValue("draft", { username: "", role: "VIEW" })
-                        }}
-                      >
-                        Add
-                      </Button>
-                    ))}
+                          <SvgIcon component={TiTimes} fontSize="small" viewBox="3 2 20 20" color="error" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
                 </List>
 
-                {members.length === 0 && readonly && (
-                  <NoData iconSize="sm" sx={{ mt: 0 }} textProps={{ sx: { fontSize: "0.925rem" } }}>
-                    There are no members yet.
+                {members.length === 0 && !values.draft && (
+                  <NoData iconSize="sm" sx={{ mt: 0 }} textProps={{ variant: "body1" }}>
+                    There are no members yet
                   </NoData>
+                )}
+
+                {!readonly && !values.draft && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: members.length === 0 ? "center" : "start",
+                    }}
+                  >
+                    <Button
+                      color="success"
+                      variant={members.length === 0 ? "contained" : "outlined"}
+                      sx={{ ml: 0.5, mt: 1.25 }}
+                      endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
+                      onClick={() => {
+                        setFieldValue("draft", { username: "", role: "VIEW" })
+                      }}
+                    >
+                      New
+                    </Button>
+                  </Box>
                 )}
               </Grid>
 

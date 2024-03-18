@@ -66,6 +66,8 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
   // const [, syncEntries] = useSyncEntriesWithRedemptionMutation()
 
+  const noSubscriptions = subscriptions?.length || fetching
+
   const initialValues: InitialValues = {
     // subscriptions: subscriptionData?.eventSubscriptionsForWheel ?? []
     subscriptions: subscriptions ?? [],
@@ -160,7 +162,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
                           {subscription.delete && (
                             <Typography color="textSecondary" sx={{ ml: 1, my: 1 }}>
-                              Deleted
+                              {`Deleted ${subscription.reward?.title ?? ""}`}
                             </Typography>
                           )}
                           {!subscription.rewardId && (
@@ -317,7 +319,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     </Box>
                   )}
 
-                  {subscriptions?.length || showNewSyncronization || fetching ? null : (
+                  {noSubscriptions || showNewSyncronization ? null : (
                     <NoData iconSize="sm" textProps={{ variant: "body1" }}>
                       No rewards are synchronized
                     </NoData>
@@ -361,7 +363,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <BooleanField
                         name="useInput"
                         label="Use input as entry"
-                        helperText="Use redemption input as entry. By default, the display name is used."
+                        helperText="If checked, use entered text of redemption as entry in the wheel. Otherwise, use the display name of the user who redeemed it as entry."
                       />
 
                       <BooleanField
@@ -375,12 +377,12 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: subscriptions?.length || fetching ? "start" : "center",
+                        justifyContent: noSubscriptions ? "start" : "center",
                       }}
                     >
                       <Button
                         color="success"
-                        variant="outlined"
+                        variant={noSubscriptions ? "outlined" : "contained"}
                         sx={{ ml: 0.5, mt: 1.25 }}
                         endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                         onClick={() => {
