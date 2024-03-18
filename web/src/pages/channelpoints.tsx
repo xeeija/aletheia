@@ -55,7 +55,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                   required
                   hiddenLabel
                   onChange={async (ev) => {
-                    console.warn("filter", "'", ev.target.value, "'")
+                    // console.warn("filter", "'", ev.target.value, "'")
                     await setFieldValue("filter", ev.target.value)
                     setFilterRewards(ev.target.value === "manageable")
                   }}

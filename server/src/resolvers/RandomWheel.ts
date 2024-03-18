@@ -698,6 +698,32 @@ export class RandomWheelResolver {
     @Arg("id") id: string,
     @Arg("entry") entry: RandomWheelEntryInput
   ) {
+    // only fetch wheel for duplicate check if name is updated
+    if (entry.name) {
+      const existingEntry = await prisma.randomWheelEntry.findUnique({
+        where: { id: id },
+        include: {
+          randomWheel: true,
+        },
+      })
+
+      if (existingEntry?.randomWheel?.uniqueEntries) {
+        const duplicateEntry = await prisma.randomWheelEntry.findFirst({
+          where: {
+            randomWheelId: existingEntry.randomWheelId,
+            name: {
+              equals: entry.name ?? existingEntry.name,
+              mode: "insensitive",
+            },
+          },
+        })
+
+        if (duplicateEntry) {
+          throw new GraphQLError("Entry already exists in wheel")
+        }
+      }
+    }
+
     const updatedEntry = await prisma.randomWheelEntry.update({
       where: { id },
       data: entry,

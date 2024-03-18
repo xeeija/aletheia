@@ -236,7 +236,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                   icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
                                   checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
                                   onClick={() => {
-                                    console.log("pause", subscription.paused)
+                                    // console.log("pause", subscription.paused)
                                     void pauseEntriesSync(subscription.id, !subscription.paused)
                                   }}
                                 />
@@ -326,7 +326,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                   )}
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ pt: 0 }}>
                   {showNewSyncronization && (
                     <>
                       <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
@@ -378,6 +378,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       sx={{
                         display: "flex",
                         justifyContent: noSubscriptions ? "start" : "center",
+                        mt: -1,
                       }}
                     >
                       <Button

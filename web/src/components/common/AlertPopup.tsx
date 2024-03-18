@@ -1,12 +1,12 @@
 import { Alert, AlertColor, Snackbar, SnackbarCloseReason, useTheme } from "@mui/material"
-import { Dispatch, FC, SetStateAction, SyntheticEvent, useEffect, useState } from "react"
+import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useEffect, useState } from "react"
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi"
 import { TiWarning } from "react-icons/ti"
 
 interface Props {
   severity?: AlertColor
   hideDuration?: number | null
-  messageState: [JSX.Element | string | null, Dispatch<SetStateAction<JSX.Element | string | null>>]
+  messageState: [ReactNode, Dispatch<SetStateAction<ReactNode>>]
 }
 
 const alertIcons: { [key in AlertColor | "default"]: JSX.Element | null } = {

@@ -6,7 +6,7 @@ import {
 } from "@/generated/graphql"
 import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, ReactNode, useEffect, useRef, useState } from "react"
 import { HiTrash } from "react-icons/hi"
 
 interface Props {
@@ -67,7 +67,7 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
 
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
   const [, updateEntry] = useUpdateRandomWheelEntryMutation()
-  const [showError, setShowError] = useState<JSX.Element | string | null>(null)
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   const onDelete = async (entry: RandomWheelEntryFragment) => {
     const { data } = await deleteEntry(

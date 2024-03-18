@@ -56,7 +56,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
         // TODO: Yup Validation
       }}
       onSubmit={async (values) => {
-        console.warn(values)
+        // console.warn(values)
 
         const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
 
