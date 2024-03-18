@@ -20,10 +20,29 @@ export const addSubscriptionRedemptionAdd = (
       )
 
       if (event.status === "unfulfilled") {
+        const entryName = subConfig.useInput ? event.input || event.userDisplayName : event.userDisplayName
+
+        if (subConfig.uniqueEntries) {
+          const existingEntry = await prisma.randomWheelEntry.findFirst({
+            where: {
+              randomWheelId: subConfig.randomWheelId,
+              name: {
+                equals: entryName,
+                mode: "insensitive",
+              },
+            },
+          })
+
+          if (existingEntry) {
+            console.log(`[eventsub] skipped duplicate redemption '${entryName}'`)
+            return
+          }
+        }
+
         await prisma.randomWheelEntry.create({
           data: {
-            name: subConfig.useInput ? event.input || event.userDisplayName : event.userDisplayName,
             randomWheelId: subConfig.randomWheelId,
+            name: entryName,
           },
         })
 

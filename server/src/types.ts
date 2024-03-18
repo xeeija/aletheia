@@ -70,6 +70,7 @@ export type SubscriptionConfig = {
   rewardId: string
   randomWheelId: string
   useInput: boolean
+  uniqueEntries?: boolean
   id?: string
 }
 

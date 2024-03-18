@@ -363,7 +363,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <BooleanField
                         name="useInput"
                         label="Use input as entry"
-                        helperText="If checked, use entered text of redemption as entry in the wheel. Otherwise, use the display name of the user who redeemed it as entry."
+                        helperText="If checked, use entered text of the redemption as entry in the wheel. Otherwise, use the display name of the user who redeemed it as entry."
                       />
 
                       <BooleanField

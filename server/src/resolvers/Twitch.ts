@@ -9,7 +9,8 @@ import {
 import { getRewards } from "@/twitch/mock"
 import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
 import { randomBase64Url } from "@/utils"
-import { HelixCustomReward } from "@twurple/api"
+import { HelixCustomReward, HelixEventSubSubscription } from "@twurple/api"
+import { GraphQLError } from "graphql"
 import {
   Arg,
   Ctx,
@@ -575,23 +576,53 @@ export class TwitchResolver {
       },
     })
 
+    const wheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWheelId },
+    })
+
     const subscriptionId = addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
       twitchUserId: token.twitchUserId,
       rewardId,
       randomWheelId,
       useInput,
+      uniqueEntries: wheel?.uniqueEntries,
       id: existingSubscription?.id,
     })
 
-    // wait a bit for the twitch API
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // TODO: make a new function "retryWithBackoff" for this
+    const maxRetries = 3
+    const maxDelay = 8
+    let retries = 0
 
-    const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+    let helixSub: HelixEventSubSubscription | undefined
 
-    if (!helixSub) {
-      console.log("[eventsub] Failed to create subscription: no response from twitch")
-      throw new Error("Failed to create subscription: no response from twitch")
+    while (retries <= maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.min(maxDelay, Math.pow(2, retries))))
+
+      helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
+      if (helixSub) {
+        console.log(`[eventsub] Created subscription after ${retries} retries`)
+        break
+      }
+
+      if (!helixSub && retries >= maxRetries) {
+        console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
+        throw new GraphQLError("Failed to create subscription: no response from twitch")
+      }
+
+      retries++
     }
+
+    // // wait a bit for the twitch API
+    // await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
+    // if (!helixSub) {
+    //   console.log("[eventsub] Failed to create subscription: no response from twitch")
+    //   throw new Error("Failed to create subscription: no response from twitch")
+    // }
 
     const condition = helixSub?.condition as Record<string, string> | undefined
 
@@ -691,19 +722,39 @@ export class TwitchResolver {
         return false
       }
 
-      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
-        ...sub,
-        rewardId: sub.rewardId ?? "",
-        randomWheelId: sub.randomWheelId ?? "",
+      const wheel = await prisma.randomWheel.findUnique({
+        where: { id: sub.randomWheelId },
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+        id: sub.id,
+        twitchUserId: sub.twitchUserId,
+        useInput: sub.useInput,
+        rewardId: sub.rewardId,
+        randomWheelId: sub.randomWheelId,
+        uniqueEntries: wheel?.uniqueEntries,
+      })
 
-      const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+      const maxRetries = 3
+      const maxDelay = 8
+      let retries = 0
 
-      if (!helixSub) {
-        console.log("[eventsub] Failed to reactivate subscription")
-        throw new Error("Failed to receive subscription from Twitch")
+      while (retries <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * Math.min(maxDelay, Math.pow(2, retries))))
+
+        const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+
+        if (helixSub) {
+          console.log(`[eventsub] Reactivated subscription after ${retries} retries`)
+          break
+        }
+
+        if (!helixSub && retries >= maxRetries) {
+          console.log(`[eventsub] Failed to reactivate subscription after ${retries} retries`)
+          throw new Error("Failed to receive subscription from Twitch")
+        }
+
+        retries++
       }
     }
 

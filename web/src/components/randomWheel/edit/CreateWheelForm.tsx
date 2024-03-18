@@ -12,6 +12,7 @@ export type WheelValues = {
   spinDuration: number
   fadeDuration: number
   editAnonymous: boolean
+  uniqueEntries: boolean
   theme: string
 }
 
@@ -21,6 +22,7 @@ const wheelDraft: WheelValues = {
   spinDuration: 8000,
   fadeDuration: 8000,
   editAnonymous: true,
+  uniqueEntries: false,
   theme: "",
 }
 
