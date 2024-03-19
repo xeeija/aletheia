@@ -29,4 +29,10 @@ export type FormDialogProps<T> = {
   onClose?: () => void
 }
 
+export type TwitchError = {
+  status: number
+  error: string
+  message: string
+}
+
 export type RewardLinkType = "enable" | "pause"

@@ -1,14 +1,25 @@
-import { DeleteDialog, LayoutNextPage, NoData, SelectField, SkeletonList, defaultLayout } from "@/components"
+import {
+  AlertPopup,
+  DeleteDialog,
+  LayoutNextPage,
+  NoData,
+  SelectField,
+  SkeletonList,
+  defaultLayout,
+} from "@/components"
 import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
+import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, IconButton, InputAdornment, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
 import { Formik } from "formik"
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 import { HiDotsVertical, HiFilter } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
   const [tab, setTab] = useState(0)
+
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
@@ -36,6 +47,8 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           justifyContent: "space-between",
         }}
       >
+        <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
+
         <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="Rewards" itemType="capitalize" />
@@ -203,7 +216,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
                   if (response.deleted) {
                     // TODO: show sucess toast
                   } else {
-                    // TODO: handle error
+                    if (!handleTwitchApiError(response.error, setShowError)) {
+                      setShowError(response.error?.message || "An error occurred")
+                    }
                   }
 
                   setDeleteRewardOpen(null)

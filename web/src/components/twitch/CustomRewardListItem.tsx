@@ -1,10 +1,11 @@
-import { BooleanFieldPlain } from "@/components"
+import { AlertPopup, BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { CustomRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useChannelRewards } from "@/hooks"
+import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, ReactNode, useState } from "react"
 import { HiCollection, HiLink, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
 import { TiChartBar, TiMediaFastForward } from "react-icons/ti"
 
@@ -17,6 +18,8 @@ interface Props {
 
 export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
   const [linkOpen, setLinkOpen] = useState(false)
+
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
@@ -90,11 +93,18 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
               tooltip={reward.isEnabled ? "Enabled" : "Disabled"}
               disabled={readonly || fetchingUpdate}
               onChange={async (ev) => {
-                // console.warn("enabled", ev.target.checked)
-                await updateReward(reward.id, {
+                const response = await updateReward(reward.id, {
                   ...reward,
                   isEnabled: ev.target.checked,
                 })
+
+                if (response.reward) {
+                  // setShowSuccess(`'${response.reward.title}' created successfully`)
+                } else {
+                  if (!handleTwitchApiError(response.error, setShowError)) {
+                    setShowError(response.error?.message || "An error occurred")
+                  }
+                }
               }}
             />
 
@@ -106,12 +116,22 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
               disabled={readonly || fetchingUpdate}
               onChange={async (ev) => {
                 // console.warn("paused", ev.target.checked)
-                await updateReward(reward.id, {
+                const response = await updateReward(reward.id, {
                   ...reward,
                   isPaused: ev.target.checked,
                 })
+
+                if (response.reward) {
+                  // setShowSuccess(`'${response.reward.title}' created successfully`)
+                } else {
+                  if (!handleTwitchApiError(response.error, setShowError)) {
+                    setShowError(response.error?.message || "An error occurred")
+                  }
+                }
               }}
             />
+
+            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
           </Box>
 
           {/* right */}

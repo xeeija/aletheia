@@ -1,23 +1,25 @@
-import { LoadingButton } from "@/components"
+import { AlertPopup, LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useChannelRewards } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { getDurationUnit } from "@/utils/math"
+import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC } from "react"
+import { FC, ReactNode, useState } from "react"
+import { boolean, number, object, string } from "yup"
 
 type Props = FormDialogProps<ChannelRewardValues> & {
   reward: CustomRewardFragment
-  // formRef?: RefObject<FormikProps<ChannelRewardValues>>
-  // actionsRef?: RefObject<Element>
-  // onClose?: () => void
   readonly?: boolean
 }
 
 export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose, readonly }) => {
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
+
+  const [showError, setShowError] = useState<ReactNode>(null)
+  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
 
   const cooldownUnit = reward.globalCooldown ? getDurationUnit(reward.globalCooldown) : 60
   const cooldown = reward.globalCooldown ? reward.globalCooldown / cooldownUnit : ""
@@ -36,17 +38,33 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
     cooldownUnit: cooldownUnit,
   }
 
-  // TODO: fix numbers in formik: they are saved as string, eg, "60" instead of 60
-  // they are messing with dirty, because 60 !== "60"
+  const validationSchema = object().shape({
+    title: string().required("Required"),
+    cost: number().required("Required").min(1, "Must be at least 1"),
+    prompt: string(),
+    userInputRequired: boolean(),
+    isEnabled: boolean(),
+    autoFulfill: boolean(),
+    backgroundColor: string(),
+    globalCooldown: number()
+      .min(60, "Must be at least 1")
+      .when("cooldownUnit", {
+        is: (val: number) => val < 60,
+        then: (schema) => schema.min(60, "Must be at least 60"),
+        otherwise: (schema) => schema.min(1, "Must be at least 1"),
+      }),
+    maxRedemptionsPerStream: number().min(1, "Must be at least 1"),
+    maxRedemptionsPerUserPerStream: number().min(1, "Must be at least 1"),
+    cooldownUnit: number(),
+  })
 
   return (
     <Formik
       innerRef={formRef}
       initialValues={initialValues}
       enableReinitialize
-      validate={() => {
-        // Yup Validation
-      }}
+      validationSchema={validationSchema}
+      validateOnChange={false}
       onSubmit={async (values) => {
         const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
 
@@ -64,9 +82,12 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
         })
 
         if (response.reward) {
+          setShowSuccess(`'${response.reward.title}' created successfully`)
           onClose?.()
         } else {
-          // TODO: handle error
+          if (!handleTwitchApiError(response.error, setShowError)) {
+            setShowError(response.error?.message || "An error occurred")
+          }
         }
       }}
     >
@@ -80,6 +101,9 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
             }}
           >
             <RewardFormFields readonly={readonly} />
+
+            <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
+            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
 
             <Portal container={actionsRef?.current}>
               {!readonly && (
