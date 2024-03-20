@@ -7,7 +7,7 @@ interface Props {
   size?: "sm" | "md" | "lg" | "xl"
 }
 
-export const CustomRewardIcon: FC<Props> = ({ reward, size = "sm" }) => {
+export const ChannelRewardIcon: FC<Props> = ({ reward, size = "sm" }) => {
   const sizes = {
     sm: 28,
     md: 40,

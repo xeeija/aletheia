@@ -1,4 +1,4 @@
-import { CustomRewardIcon } from "@/components/twitch"
+import { ChannelRewardIcon } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { Box, ListItemText, MenuItem, MenuItemProps } from "@mui/material"
 import { FC } from "react"
@@ -8,7 +8,7 @@ type Props = MenuItemProps & {
   noMenuItem?: boolean
 }
 
-export const CustomRewardMenuItem: FC<Props> = ({ reward, noMenuItem, ...props }) => {
+export const ChannelRewardMenuItem: FC<Props> = ({ reward, noMenuItem, ...props }) => {
   // const colorList = typeof colors === "string" ? [colors] : colors
   const label = (
     <Box
@@ -21,7 +21,7 @@ export const CustomRewardMenuItem: FC<Props> = ({ reward, noMenuItem, ...props }
         gap: 2,
       }}
     >
-      <CustomRewardIcon reward={reward} />
+      <ChannelRewardIcon reward={reward} />
       <ListItemText primary={reward.title}>{reward.title}</ListItemText>
     </Box>
   )

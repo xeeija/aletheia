@@ -1,6 +1,6 @@
 import { AlertPopup, BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
-import { CustomRewardIcon, RewardLinksDialog } from "@/components/twitch"
+import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useChannelRewards } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
@@ -16,7 +16,7 @@ interface Props {
   onDelete?: (rewardId: string) => void
 }
 
-export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
+export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
   const [linkOpen, setLinkOpen] = useState(false)
 
   const [showError, setShowError] = useState<ReactNode>(null)
@@ -37,7 +37,7 @@ export const CustomRewardListItem: FC<Props> = ({ reward, readonly = false, onEd
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
           {/* Left */}
           <Box sx={{ width: "max(40%, 260px)", display: "flex", gap: 2, alignItems: "center" }}>
-            <CustomRewardIcon reward={reward} size="md" />
+            <ChannelRewardIcon reward={reward} size="md" />
 
             <Box>
               <Typography variant="h6">{reward.title}</Typography>

@@ -1,5 +1,5 @@
 import { BooleanField, LoadingButton, NoData, SelectField, SkeletonList } from "@/components"
-import { CustomRewardMenuItem } from "@/components/twitch"
+import { ChannelRewardMenuItem } from "@/components/twitch"
 import { EventSubscriptionFragment } from "@/generated/graphql"
 import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "@/hooks"
 import {
@@ -148,7 +148,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                 alignItems: "center",
                               }}
                             >
-                              <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
+                              <ChannelRewardMenuItem reward={subscription.reward} noMenuItem />
                               <BooleanField
                                 name={`subscriptions[${i}].useInput`}
                                 // size="small"
@@ -337,7 +337,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           name="rewardId"
                           options={rewards?.map((reward) => ({
                             value: reward.id,
-                            label: <CustomRewardMenuItem reward={reward} noMenuItem />,
+                            label: <ChannelRewardMenuItem reward={reward} noMenuItem />,
                           }))}
                           required
                           fullWidth

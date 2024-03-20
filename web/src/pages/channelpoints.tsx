@@ -7,7 +7,7 @@ import {
   SkeletonList,
   defaultLayout,
 } from "@/components"
-import { ChannelRewardDialog, CustomRewardListItem } from "@/components/twitch"
+import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, IconButton, InputAdornment, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
@@ -161,7 +161,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
             {!fetchingRewards &&
               channelRewards?.map((reward) => (
-                <CustomRewardListItem
+                <ChannelRewardListItem
                   key={reward.id}
                   reward={reward}
                   onEdit={() => {
