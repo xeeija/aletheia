@@ -1,19 +1,18 @@
 import {
   AlertPopup,
   DeleteDialog,
+  FilterSelect,
   LayoutNextPage,
   NoData,
-  SelectField,
   SkeletonList,
   defaultLayout,
 } from "@/components"
 import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
 import { useChannelRewards } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
-import { Box, Button, IconButton, InputAdornment, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
-import { Formik } from "formik"
+import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
 import { ReactNode, useState } from "react"
-import { HiDotsVertical, HiFilter } from "react-icons/hi"
+import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
@@ -57,48 +56,15 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
         {tab === 0 && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Formik initialValues={{ filter: "all" }} onSubmit={() => {}}>
-              {({ setFieldValue }) => (
-                <SelectField
-                  name="filter"
-                  options={[
-                    { value: "all", label: "All rewards" },
-                    { value: "manageable", label: "Manageable rewards" },
-                  ]}
-                  required
-                  hiddenLabel
-                  onChange={async (ev) => {
-                    // console.warn("filter", "'", ev.target.value, "'")
-                    await setFieldValue("filter", ev.target.value)
-                    setFilterRewards(ev.target.value === "manageable")
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start" sx={{ color: "text.secondary" }}>
-                        <SvgIcon component={HiFilter} viewBox="-1 -1 22 22" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  // sx={{ width: "240px" }}
-                />
-              )}
-            </Formik>
-
-            {/*
-            <BooleanFieldPlain
-              name="isPaused"
-              toggle
-              checked={filterRewards}
-              label="Only show manageable"
-              onChange={async (ev) => {
-                setFilterRewards((x) => !x)
-                // console.warn("paused", ev.target.checked)
-                // await updateReward(reward.id, {
-                //   ...reward,
-                //   isPaused: ev.target.checked,
-                // })
+            <FilterSelect
+              options={[
+                { value: "all", label: "All rewards" },
+                { value: "manageable", label: "Manageable rewards" },
+              ]}
+              onChange={(ev) => {
+                setFilterRewards(ev.target.value === "manageable")
               }}
-            /> */}
+            />
 
             <Button
               variant="outlined"
