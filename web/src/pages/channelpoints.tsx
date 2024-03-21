@@ -1,16 +1,6 @@
-import {
-  AlertPopup,
-  DeleteDialog,
-  FilterSelect,
-  LayoutNextPage,
-  NoData,
-  SkeletonList,
-  defaultLayout,
-} from "@/components"
-import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
-import { useChannelRewards } from "@/hooks"
-import { handleTwitchApiError } from "@/utils/twitch"
-import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip, Typography } from "@mui/material"
+import { AlertPopup, FilterSelect, LayoutNextPage, NoData, defaultLayout } from "@/components"
+import { ChannelRewardDialog, ChannelRewards } from "@/components/twitch"
+import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import { ReactNode, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
@@ -20,16 +10,8 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
   const [showError, setShowError] = useState<ReactNode>(null)
 
-  // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
-  const [editRewardOpen, setEditRewardOpen] = useState(false)
-  const [editReward, setEditReward] = useState<string | null>(null)
-  const [deleteRewardOpen, setDeleteRewardOpen] = useState<string | null>(null)
-
   const [filterRewards, setFilterRewards] = useState(false)
-
-  const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards(true, filterRewards)
-  const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
 
   // TODO: Delete reward
 
@@ -37,6 +19,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const [, setCreateGroupDialogOpen] = useState(false)
 
   const rewardGroupsEmpty = true
+  const fetchingRewardGroups = true
 
   return (
     <>
@@ -75,6 +58,8 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               New Reward
             </Button>
 
+            <ChannelRewardDialog onClose={() => setCreateRewardOpen(false)} open={createRewardOpen} type="create" />
+
             <Tooltip placement="bottom-end" title="More options">
               <IconButton color="secondary" disabled>
                 <HiDotsVertical />
@@ -104,102 +89,11 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        {tab === 0 && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                color: "text.secondary",
-                gap: 1,
-                mx: 3,
-              }}
-            >
-              <Typography sx={{ width: "max(40%, 260px)" }}>Title</Typography>
-              <Typography sx={{ width: "80px" }}>Cost</Typography>
-              <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
-              <Typography sx={{ width: "130px" }}>Enabled / Paused</Typography>
-              <Typography sx={{ width: "178px" }}></Typography>
-              {/* <Typography sx={{ width: "0" }}></Typography> */}
-            </Box>
-
-            {fetchingRewards && <SkeletonList n={4} height={72} />}
-
-            {!fetchingRewards &&
-              channelRewards?.map((reward) => (
-                <ChannelRewardListItem
-                  key={reward.id}
-                  reward={reward}
-                  onEdit={() => {
-                    setEditRewardOpen(true)
-                    setEditReward(reward.id)
-                  }}
-                  onDelete={(rewardId) => {
-                    setDeleteRewardOpen(rewardId)
-                    // console.warn("delete", rewardId)
-                  }}
-                />
-              ))}
-
-            {channelRewardsEmpty && !fetchingRewards && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                <NoData>{"You don't have any channel point rewards yet."}</NoData>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                    onClick={() => setCreateRewardOpen(true)}
-                  >
-                    New Reward
-                  </Button>
-                </Box>
-              </Box>
-            )}
-
-            <ChannelRewardDialog
-              onClose={() => {
-                setCreateRewardOpen(false)
-                setEditRewardOpen(false)
-                setTimeout(() => {
-                  setEditReward(null)
-                }, 350)
-              }}
-              open={createRewardOpen || editRewardOpen}
-              type={editReward ? "edit" : "create"}
-              reward={channelRewards?.find((r) => r.id === editReward)}
-            />
-
-            <DeleteDialog
-              title="Delete Reward"
-              open={deleteRewardOpen !== null}
-              onClose={() => setDeleteRewardOpen(null)}
-              onConfirm={async () => {
-                if (deleteRewardOpen) {
-                  const response = await deleteReward(deleteRewardOpen)
-
-                  if (response.deleted) {
-                    // TODO: show sucess toast
-                  } else {
-                    if (!handleTwitchApiError(response.error, setShowError)) {
-                      setShowError(response.error?.message || "An error occurred")
-                    }
-                  }
-
-                  setDeleteRewardOpen(null)
-                }
-              }}
-            >
-              Do you really want to delete this reward? <br />
-              This cannot be undone. It will be lost <b>forever</b>.
-            </DeleteDialog>
-          </Box>
-        )}
+        {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
         {tab === 1 && (
           <Box>
-            {rewardGroupsEmpty && !fetchingRewards && (
+            {rewardGroupsEmpty && !fetchingRewardGroups && (
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                 <NoData>{"You don't have any reward groups yet."}</NoData>
 

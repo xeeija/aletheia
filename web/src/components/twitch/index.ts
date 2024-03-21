@@ -1,3 +1,4 @@
+export * from "./ChannelRewards"
 export * from "./reward/ChannelRewardDialog"
 export * from "./reward/ChannelRewardIcon"
 export * from "./reward/ChannelRewardListItem"
