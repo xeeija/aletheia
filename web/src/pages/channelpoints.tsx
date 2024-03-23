@@ -1,25 +1,19 @@
-import { AlertPopup, FilterSelect, LayoutNextPage, NoData, defaultLayout } from "@/components"
-import { ChannelRewardDialog, ChannelRewards } from "@/components/twitch"
+import { FilterSelect, LayoutNextPage, defaultLayout } from "@/components"
+import { ChannelRewardDialog, ChannelRewards, RewardGroups } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
-import { ReactNode, useState } from "react"
+import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
   const [tab, setTab] = useState(0)
 
-  const [showError, setShowError] = useState<ReactNode>(null)
-
+  // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
   const [filterRewards, setFilterRewards] = useState(false)
 
-  // TODO: Delete reward
-
   // Reward Groups
   const [, setCreateGroupDialogOpen] = useState(false)
-
-  const rewardGroupsEmpty = true
-  const fetchingRewardGroups = true
 
   return (
     <>
@@ -29,7 +23,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           justifyContent: "space-between",
         }}
       >
-        <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
+        {/* <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} /> */}
 
         <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
@@ -68,7 +62,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           </Box>
         )}
         {tab === 1 && (
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {/* {!rewardGroupsEmpty && ( */}
             <Button
               variant="outlined"
@@ -80,7 +74,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
             </Button>
             {/* )} */}
             <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" sx={{ ml: 1 }} disabled>
+              <IconButton color="secondary" disabled>
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
@@ -91,26 +85,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       <Box sx={{ mt: 2 }}>
         {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
-        {tab === 1 && (
-          <Box>
-            {rewardGroupsEmpty && !fetchingRewardGroups && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                <NoData>{"You don't have any reward groups yet."}</NoData>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                    onClick={() => setCreateGroupDialogOpen(true)}
-                  >
-                    New Group
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </Box>
-        )}
+        {tab === 1 && <RewardGroups />}
       </Box>
     </>
   )
