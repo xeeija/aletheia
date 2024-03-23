@@ -26,6 +26,7 @@ export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
     spinDuration: wheel.spinDuration,
     fadeDuration: wheel.fadeDuration,
     editAnonymous: wheel.editAnonymous,
+    uniqueEntries: wheel.uniqueEntries,
     theme: wheel.theme?.id ?? "",
   }
 

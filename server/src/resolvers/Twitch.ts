@@ -1,4 +1,4 @@
-import { EventSubscription } from "@/generated/typegraphql"
+import { EventSubscription, RewardLink } from "@/generated/typegraphql"
 import {
   addExistingRedemptions,
   addSubscriptionRedemptionAdd,
@@ -8,7 +8,9 @@ import {
 } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
 import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
-import { HelixCustomReward } from "@twurple/api"
+import { randomBase64Url } from "@/utils"
+import { HelixCustomReward, HelixEventSubSubscription } from "@twurple/api"
+import { GraphQLError } from "graphql"
 import {
   Arg,
   Ctx,
@@ -44,10 +46,37 @@ class CustomReward {
   @Field(() => Int, { nullable: true }) redemptionsThisStream: number | null
   @Field() autoFulfill: boolean
   @Field(() => Date, { nullable: true }) cooldownExpiryDate: Date | null
+
+  // @Field({ nullable: true }) manageable?: boolean
+
+  // constructor(reward?: HelixCustomReward, manageable?: boolean) {
+  //   if (!reward) {
+  //     return
+  //   }
+  //   this.id = reward.id
+  //   this.autoFulfill = reward.autoFulfill
+  //   this.backgroundColor = reward.backgroundColor
+  //   this.cost = reward.cost
+  //   this.globalCooldown = reward.globalCooldown
+  //   this.broadcasterDisplayName = reward.broadcasterDisplayName
+  //   this.broadcasterId = reward.broadcasterId
+  //   this.broadcasterName = reward.broadcasterName
+  //   this.cooldownExpiryDate = reward.cooldownExpiryDate
+  //   this.isEnabled = reward.isEnabled
+  //   this.isInStock = reward.isInStock
+  //   this.isPaused = reward.isPaused
+  //   this.maxRedemptionsPerStream = reward.maxRedemptionsPerStream
+  //   this.maxRedemptionsPerUserPerStream = reward.maxRedemptionsPerUserPerStream
+  //   this.prompt = reward.prompt
+  //   this.redemptionsThisStream = reward.redemptionsThisStream
+  //   this.title = reward.title
+  //   this.userInputRequired = reward.userInputRequired
+  //   this.manageable = manageable
+  // }
 }
 
 @InputType()
-class CustomRewardInput {
+class CustomRewardCreateInput {
   @Field(() => String)
   title: string
 
@@ -66,24 +95,173 @@ class CustomRewardInput {
   @Field(() => Boolean, { nullable: true })
   isEnabled?: boolean
 
-  @Field(() => Int, { nullable: true })
-  globalCooldown?: number
+  @Field(() => Boolean, { nullable: true })
+  isPaused?: boolean
 
   @Field(() => Int, { nullable: true })
-  maxRedemptionsPerStream?: number
+  globalCooldown?: number | null
 
   @Field(() => Int, { nullable: true })
-  maxRedemptionsPerUser?: number
+  maxRedemptionsPerStream?: number | null
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerUserPerStream?: number | null
 
   @Field(() => Boolean, { nullable: true })
   autoFulfill?: boolean
+}
+
+@InputType()
+class CustomRewardUpdateInput {
+  @Field(() => Boolean, { nullable: true })
+  autoFulfill?: boolean
+
+  @Field(() => String, { nullable: true })
+  backgroundColor?: string
+
+  @Field(() => Int, { nullable: true })
+  cost?: number
+
+  @Field(() => Int, { nullable: true })
+  globalCooldown?: number | null
+
+  @Field(() => Boolean, { nullable: true })
+  isEnabled?: boolean
+
+  @Field(() => Boolean, { nullable: true })
+  isPaused?: boolean
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerStream?: number | null
+
+  @Field(() => Int, { nullable: true })
+  maxRedemptionsPerUserPerStream?: number | null
+
+  @Field(() => String, { nullable: true })
+  prompt?: string
+
+  @Field(() => String, { nullable: true })
+  title?: string
+
+  @Field(() => Boolean, { nullable: true })
+  userInputRequired?: boolean
 }
 
 @Resolver(() => CustomReward)
 export class CustomRewardResolver {
   @FieldResolver(() => String)
   image(@Root() reward: HelixCustomReward) {
-    return reward.getImageUrl(1)
+    return reward.getImageUrl(2)
+  }
+
+  @Query(() => [RewardLink])
+  async rewardLinks(
+    @Ctx() { req, prisma }: GraphqlContext,
+    @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[]
+    // @Arg("userId", { nullable: true }) userId: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
+      },
+    })
+
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    const rewardLinks = await prisma.rewardLink.findMany({
+      where: {
+        userId: req.session.userId ?? "",
+        rewardId: rewardIds ? { in: rewardIds } : undefined,
+      },
+    })
+
+    return rewardLinks
+  }
+
+  @Mutation(() => RewardLink, { nullable: true })
+  async createRewardLink(
+    @Ctx() { req, prisma }: GraphqlContext,
+    // @Arg("rewardLink") rewardLink: RewardLinkInput
+    @Arg("rewardId") rewardId: string,
+    @Arg("type") type: string
+  ) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const accessToken = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
+      },
+    })
+
+    if (!accessToken?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    const existingRewardLink = await prisma.rewardLink.findFirst({
+      where: {
+        rewardId,
+        type,
+        userId: req.session.userId,
+      },
+    })
+
+    if (existingRewardLink) {
+      return existingRewardLink
+    }
+
+    const token = randomBase64Url(48)
+
+    const newRewardLink = await prisma.rewardLink.create({
+      data: {
+        rewardId,
+        type,
+        token,
+        userId: req.session.userId,
+      },
+    })
+
+    return newRewardLink
+
+    // try {
+    // }
+    // catch (err: unknown) {
+    //   throw err
+    // }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteRewardLink(@Ctx() { req, prisma }: GraphqlContext, @Arg("id") id: string) {
+    if (!req.session.userId) {
+      throw new Error("Not logged in")
+    }
+
+    const rewardLink = await prisma.rewardLink.findUnique({
+      where: { id },
+    })
+
+    if (rewardLink?.userId !== req.session.userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const deleted = await prisma.rewardLink.delete({
+      where: { id: id ?? "" },
+    })
+
+    return deleted !== null
+
+    // try {
+    // }
+    // catch (err: unknown) {
+    //   throw err
+    // }
   }
 }
 
@@ -112,7 +290,8 @@ export class TwitchResolver {
   @Query(() => [CustomReward])
   async channelRewards(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("userId", { nullable: true }) userId: string
+    @Arg("userId", { nullable: true }) userId?: string,
+    @Arg("onlyManageable", { nullable: true }) onlyManageable?: boolean
   ) {
     if (!req.session.userId) {
       return []
@@ -129,18 +308,60 @@ export class TwitchResolver {
     }
 
     try {
-      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId)
+      // // Option 1: only get all or manageable rewards
+      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId, onlyManageable)
       return rewards
+
+      // Option 2: return all rewards always and set manageable flag
+      // const [allRewards, managableRewards] = await Promise.all([
+      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, false),
+      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, true),
+      // ])
+
+      // const rewards = allRewards.map(
+      //   (reward) =>
+      //     new CustomReward(
+      //       reward,
+      //       managableRewards.some((mr) => mr.id === reward.id)
+      //     )
+      // )
+      // (r) =>
+      //   ({
+      //     autoFulfill: r.autoFulfill,
+      //     backgroundColor: r.backgroundColor,
+      //     cost: r.cost,
+      //     globalCooldown: r.globalCooldown,
+      //     id: r.id,
+      //     broadcasterDisplayName: r.broadcasterDisplayName,
+      //     broadcasterId: r.broadcasterId,
+      //     broadcasterName: r.broadcasterName,
+      //     cooldownExpiryDate: r.cooldownExpiryDate,
+      //     isEnabled: r.isEnabled,
+      //     isInStock: r.isInStock,
+      //     isPaused: r.isPaused,
+      //     maxRedemptionsPerStream: r.maxRedemptionsPerStream,
+      //     maxRedemptionsPerUserPerStream: r.maxRedemptionsPerUserPerStream,
+      //     prompt: r.prompt,
+      //     redemptionsThisStream: r.redemptionsThisStream,
+      //     title: r.title,
+      //     userInputRequired: r.userInputRequired,
+      //     manageable: managableRewards.some((mr) => mr.id === r.id),
+      //   }) as CustomReward
+
+      // return rewards
     } catch {
       const rewards = await getRewards()
-      return rewards
+      return !onlyManageable ? rewards : rewards.filter((_, i) => i % 2 === 0)
+      // return !onlyManageable
+      // ? rewards.map((r, i) => new CustomReward(r, i % 2 === 0))
+      // : rewards.filter((_, i) => i % 2 === 0).map((r) => new CustomReward(r, true))
     }
   }
 
   @Mutation(() => CustomReward, { nullable: true })
   async createChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("reward") reward: CustomRewardInput
+    @Arg("reward") rewardInput: CustomRewardCreateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     if (!req.session.userId) {
@@ -149,7 +370,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 
@@ -158,7 +379,8 @@ export class TwitchResolver {
     }
 
     // try {
-    const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, reward)
+    const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, rewardInput)
+
     // {
     //   title: reward.title,
     //   prompt: reward.prompt,
@@ -183,7 +405,7 @@ export class TwitchResolver {
   async updateChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("rewardId") rewardId: string,
-    @Arg("reward") reward: CustomRewardInput
+    @Arg("reward") rewardInput: CustomRewardUpdateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     if (!req.session.userId) {
@@ -192,7 +414,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 
@@ -201,7 +423,20 @@ export class TwitchResolver {
     }
 
     // try {
-    const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, reward)
+    const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, rewardInput)
+    //   {
+    //   autoFulfill: reward.autoFulfill,
+    //   backgroundColor: reward.backgroundColor,
+    //   cost: reward.cost,
+    //   globalCooldown: reward.globalCooldown,
+    //   isEnabled: reward.isEnabled,
+    //   isPaused: reward.isPaused,
+    //   maxRedemptionsPerStream: reward.maxRedemptionsPerStream,
+    //   maxRedemptionsPerUserPerStream: reward.maxRedemptionsPerUser,
+    //   prompt: reward.prompt,
+    //   title: reward.title,
+    //   userInputRequired: reward.userInputRequired,
+    // })
 
     return newReward
     // }
@@ -222,7 +457,7 @@ export class TwitchResolver {
 
     const token = await prisma.userAccessToken.findFirst({
       where: {
-        userId: req.session.userId ?? req.session.userId ?? "",
+        userId: req.session.userId ?? "",
       },
     })
 
@@ -341,23 +576,53 @@ export class TwitchResolver {
       },
     })
 
+    const wheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWheelId },
+    })
+
     const subscriptionId = addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
       twitchUserId: token.twitchUserId,
       rewardId,
       randomWheelId,
       useInput,
+      uniqueEntries: wheel?.uniqueEntries,
       id: existingSubscription?.id,
     })
 
-    // wait a bit for the twitch API
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // TODO: make a new function "retryWithBackoff" for this
+    const maxRetries = 3
+    const maxDelay = 8
+    let retries = 0
 
-    const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+    let helixSub: HelixEventSubSubscription | undefined
 
-    if (!helixSub) {
-      console.log("[eventsub] Failed to create subscription: no response from twitch")
-      throw new Error("Failed to create subscription: no response from twitch")
+    while (retries <= maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.min(maxDelay, Math.pow(2, retries))))
+
+      helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
+      if (helixSub) {
+        console.log(`[eventsub] Created subscription after ${retries} retries`)
+        break
+      }
+
+      if (!helixSub && retries >= maxRetries) {
+        console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
+        throw new GraphQLError("Failed to create subscription: no response from twitch")
+      }
+
+      retries++
     }
+
+    // // wait a bit for the twitch API
+    // await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // const helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId, rewardId)
+
+    // if (!helixSub) {
+    //   console.log("[eventsub] Failed to create subscription: no response from twitch")
+    //   throw new Error("Failed to create subscription: no response from twitch")
+    // }
 
     const condition = helixSub?.condition as Record<string, string> | undefined
 
@@ -457,19 +722,39 @@ export class TwitchResolver {
         return false
       }
 
-      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
-        ...sub,
-        rewardId: sub.rewardId ?? "",
-        randomWheelId: sub.randomWheelId ?? "",
+      const wheel = await prisma.randomWheel.findUnique({
+        where: { id: sub.randomWheelId },
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+        id: sub.id,
+        twitchUserId: sub.twitchUserId,
+        useInput: sub.useInput,
+        rewardId: sub.rewardId,
+        randomWheelId: sub.randomWheelId,
+        uniqueEntries: wheel?.uniqueEntries,
+      })
 
-      const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+      const maxRetries = 3
+      const maxDelay = 8
+      let retries = 0
 
-      if (!helixSub) {
-        console.log("[eventsub] Failed to reactivate subscription")
-        throw new Error("Failed to receive subscription from Twitch")
+      while (retries <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * Math.min(maxDelay, Math.pow(2, retries))))
+
+        const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+
+        if (helixSub) {
+          console.log(`[eventsub] Reactivated subscription after ${retries} retries`)
+          break
+        }
+
+        if (!helixSub && retries >= maxRetries) {
+          console.log(`[eventsub] Failed to reactivate subscription after ${retries} retries`)
+          throw new Error("Failed to receive subscription from Twitch")
+        }
+
+        retries++
       }
     }
 

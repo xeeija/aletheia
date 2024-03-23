@@ -1,5 +1,5 @@
 import { BooleanField, LoadingButton, NoData, SelectField, SkeletonList } from "@/components"
-import { CustomRewardMenuItem } from "@/components/twitch"
+import { ChannelRewardMenuItem } from "@/components/twitch"
 import { EventSubscriptionFragment } from "@/generated/graphql"
 import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "@/hooks"
 import {
@@ -65,6 +65,8 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
   // console.log(subscriptionData?.eventSubscriptionsForWheel)
 
   // const [, syncEntries] = useSyncEntriesWithRedemptionMutation()
+
+  const noSubscriptions = subscriptions?.length || fetching
 
   const initialValues: InitialValues = {
     // subscriptions: subscriptionData?.eventSubscriptionsForWheel ?? []
@@ -146,7 +148,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                 alignItems: "center",
                               }}
                             >
-                              <CustomRewardMenuItem reward={subscription.reward} noMenuItem />
+                              <ChannelRewardMenuItem reward={subscription.reward} noMenuItem />
                               <BooleanField
                                 name={`subscriptions[${i}].useInput`}
                                 // size="small"
@@ -160,7 +162,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
                           {subscription.delete && (
                             <Typography color="textSecondary" sx={{ ml: 1, my: 1 }}>
-                              Deleted
+                              {`Deleted ${subscription.reward?.title ?? ""}`}
                             </Typography>
                           )}
                           {!subscription.rewardId && (
@@ -234,7 +236,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                   icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
                                   checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
                                   onClick={() => {
-                                    console.log("pause", subscription.paused)
+                                    // console.log("pause", subscription.paused)
                                     void pauseEntriesSync(subscription.id, !subscription.paused)
                                   }}
                                 />
@@ -317,14 +319,14 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     </Box>
                   )}
 
-                  {subscriptions?.length || showNewSyncronization || fetching ? null : (
+                  {noSubscriptions || showNewSyncronization ? null : (
                     <NoData iconSize="sm" textProps={{ variant: "body1" }}>
                       No rewards are synchronized
                     </NoData>
                   )}
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ pt: 0 }}>
                   {showNewSyncronization && (
                     <>
                       <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
@@ -335,7 +337,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           name="rewardId"
                           options={rewards?.map((reward) => ({
                             value: reward.id,
-                            label: <CustomRewardMenuItem reward={reward} noMenuItem />,
+                            label: <ChannelRewardMenuItem reward={reward} noMenuItem />,
                           }))}
                           required
                           fullWidth
@@ -361,7 +363,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <BooleanField
                         name="useInput"
                         label="Use input as entry"
-                        helperText="Use redemption input as entry. By default, the display name is used."
+                        helperText="If checked, use entered text of the redemption as entry in the wheel. Otherwise, use the display name of the user who redeemed it as entry."
                       />
 
                       <BooleanField
@@ -375,12 +377,13 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: subscriptions?.length || fetching ? "start" : "center",
+                        justifyContent: noSubscriptions ? "start" : "center",
+                        mt: -1,
                       }}
                     >
                       <Button
                         color="success"
-                        variant="outlined"
+                        variant={noSubscriptions ? "outlined" : "contained"}
                         sx={{ ml: 0.5, mt: 1.25 }}
                         endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                         onClick={() => {

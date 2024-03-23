@@ -100,7 +100,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     )
   }
 
-  helixSubs.data.forEach((helixSub) => {
+  helixSubs.data.forEach(async (helixSub) => {
     if (helixSub.type === SubscriptionType.redemptionAdd.toString()) {
       const condition = helixSub.condition as Record<string, string>
 
@@ -109,10 +109,19 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       )
 
       if (stored?.type === EventSubType.wheelSync) {
+        const wheel = await prisma.randomWheel.findUnique({
+          where: {
+            id: stored.randomWheelId ?? "",
+          },
+        })
+
         addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
-          ...stored,
-          randomWheelId: stored.randomWheelId ?? "",
+          id: stored.id,
+          twitchUserId: stored.twitchUserId,
           rewardId: stored.rewardId ?? "",
+          randomWheelId: stored.randomWheelId ?? "",
+          useInput: stored.useInput,
+          uniqueEntries: wheel?.uniqueEntries,
         })
       }
 

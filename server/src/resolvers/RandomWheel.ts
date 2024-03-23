@@ -13,6 +13,7 @@ import { AppError, createAppErrorUnion } from "@/resolvers/types"
 import type { GraphqlContext } from "@/types"
 import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
+import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
 import {
@@ -82,6 +83,9 @@ class RandomWheelInput implements Partial<RandomWheel> {
   @Field(() => Boolean, { nullable: true })
   editAnonymous?: boolean
 
+  @Field(() => Boolean, { nullable: true })
+  uniqueEntries?: boolean
+
   @Field(() => ColorThemeInput, { nullable: true })
   theme?: ColorTheme | null // ColorThemeInput
 }
@@ -105,6 +109,9 @@ class RandomWheelMemberInput {
 class RandomWheelEntryInput {
   @Field(() => String, { nullable: true })
   name?: string
+
+  @Field(() => String, { nullable: true })
+  color?: string
 
   @Field(() => Int, { nullable: true })
   weight?: number
@@ -367,31 +374,37 @@ export class RandomWheelResolver {
     @Arg("accessType", { nullable: true }) accessType?: string,
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
-    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean
+    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
+    @Arg("uniqueEntries", { nullable: true }) uniqueEntries?: boolean
   ): Promise<typeof RandomWheelResponse> {
-    const tempSlug = `slug-${Date.now()}`
+    // const tempSlug = `slug-${Date.now()}`
 
     try {
+      const id = randomUUID()
+      const slug = slugify(id, 6)
+
       const randomWheel = await prisma.randomWheel.create({
         data: {
-          slug: tempSlug,
+          id,
+          slug,
           ownerId: req.session.userId || null,
           name: name,
           accessType,
           spinDuration,
           fadeDuration,
           editAnonymous,
+          uniqueEntries,
         },
       })
 
-      const slug = slugify(randomWheel.id, 6)
+      // const slug = slugify(randomWheel.id, 6)
       // TODO: Use default value for slug in schema to avoid a second update?
-      const newWheel = await prisma.randomWheel.update({
-        where: { id: randomWheel.id },
-        data: { slug: slug },
-      })
+      // const newWheel = await prisma.randomWheel.update({
+      //   where: { id: randomWheel.id },
+      //   data: { slug: slug },
+      // })
 
-      return newWheel
+      return randomWheel
     } catch (ex: unknown) {
       if (ex instanceof Prisma.PrismaClientKnownRequestError) {
         if (ex.code === "P2002") {
@@ -640,12 +653,36 @@ export class RandomWheelResolver {
   async addRandomWheelEntry(
     @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
-    @Arg("name") name: string
+    @Arg("name") name: string,
+    @Arg("color", () => String, { nullable: true }) color?: string | null,
+    @Arg("weight", { nullable: true }) weight?: number
   ) {
+    const wheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWheelId },
+    })
+
+    if (wheel?.uniqueEntries) {
+      const existingEntry = await prisma.randomWheelEntry.findFirst({
+        where: {
+          randomWheelId: randomWheelId,
+          name: {
+            equals: name,
+            mode: "insensitive",
+          },
+        },
+      })
+
+      if (existingEntry) {
+        throw new GraphQLError("Entry already exists in wheel")
+      }
+    }
+
     const entry = await prisma.randomWheelEntry.create({
       data: {
         randomWheelId,
         name,
+        color,
+        weight,
       },
     })
 
@@ -661,6 +698,32 @@ export class RandomWheelResolver {
     @Arg("id") id: string,
     @Arg("entry") entry: RandomWheelEntryInput
   ) {
+    // only fetch wheel for duplicate check if name is updated
+    if (entry.name) {
+      const existingEntry = await prisma.randomWheelEntry.findUnique({
+        where: { id: id },
+        include: {
+          randomWheel: true,
+        },
+      })
+
+      if (existingEntry?.randomWheel?.uniqueEntries) {
+        const duplicateEntry = await prisma.randomWheelEntry.findFirst({
+          where: {
+            randomWheelId: existingEntry.randomWheelId,
+            name: {
+              equals: entry.name ?? existingEntry.name,
+              mode: "insensitive",
+            },
+          },
+        })
+
+        if (duplicateEntry) {
+          throw new GraphQLError("Entry already exists in wheel")
+        }
+      }
+    }
+
     const updatedEntry = await prisma.randomWheelEntry.update({
       where: { id },
       data: entry,

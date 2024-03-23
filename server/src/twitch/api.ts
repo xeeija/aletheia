@@ -2,10 +2,11 @@ import { authProvider } from "@/twitch"
 import type { AccessTokenResponse } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
+import { ApiClient, HelixCustomReward, HelixUpdateCustomRewardData } from "@twurple/api"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
 
-export const handleTwitchRoutes = (prisma: PrismaClient) => {
+export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
   const router = Router()
 
   router.get("/oauth2/token", async (req, res) => {
@@ -95,7 +96,7 @@ export const handleTwitchRoutes = (prisma: PrismaClient) => {
     }
   })
 
-  router.post("/state", async (req, res) => {
+  router.post("/state", async (_, res) => {
     const state = randomBase64Url(16)
 
     const result = await prisma.twitchState.create({ data: { state } })
@@ -112,10 +113,94 @@ export const handleTwitchRoutes = (prisma: PrismaClient) => {
     res.send(result.state)
   })
 
+  router.get("/reward/enable/:token", async (req, res) => {
+    const token = req.params.token
+    const enable = typeof req.query.enable === "string" ? req.query.enable === "true" : null
+
+    try {
+      const updatedReward = await updateRewardByLink(apiClient, prisma, token, "enable", (reward) => ({
+        isEnabled: enable ?? !reward.isEnabled,
+      }))
+
+      res.send(updatedReward)
+    } catch (err) {
+      if (err instanceof Error) {
+        res.status(400).send(err.message)
+        return
+      }
+
+      res.status(500).send("Unknown error")
+    }
+  })
+
+  router.get("/reward/pause/:token", async (req, res) => {
+    const token = req.params.token
+    const pause = typeof req.query.pause === "string" ? req.query.enable === "true" : null
+
+    try {
+      const updatedReward = await updateRewardByLink(apiClient, prisma, token, "pause", (reward) => ({
+        isPaused: pause ?? !reward.isPaused,
+      }))
+
+      res.send(updatedReward)
+    } catch (err) {
+      if (err instanceof Error) {
+        res.status(400).send(err.message)
+        return
+      }
+
+      res.status(500).send("Unknown error")
+    }
+  })
+
   // eventSubMiddleware.apply(app);
   // await setupAuthProvider(prisma)
 
   // app.use("/api/twitch", router)
 
   return router
+}
+
+const updateRewardByLink = async (
+  apiClient: ApiClient,
+  prisma: PrismaClient,
+  token: string,
+  type: "enable" | "pause",
+  update: (reward: HelixCustomReward) => HelixUpdateCustomRewardData
+) => {
+  const rewardLink = await prisma.rewardLink.findUnique({
+    where: { token },
+  })
+
+  if (!rewardLink || rewardLink.type !== type) {
+    throw Error("Invalid token")
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: rewardLink.userId,
+    },
+    include: {
+      userAccessTokens: true,
+    },
+  })
+
+  const twitchUserId = user?.userAccessTokens[0].twitchUserId
+
+  if (!twitchUserId) {
+    throw Error("No twitch account connected")
+  }
+
+  const reward = await apiClient.channelPoints.getCustomRewardById(twitchUserId, rewardLink.rewardId)
+
+  if (!reward) {
+    throw Error("Reward not found")
+  }
+
+  const updatedReward = await apiClient.channelPoints.updateCustomReward(twitchUserId, rewardLink.rewardId, {
+    ...reward,
+    ...update(reward),
+  })
+
+  return updatedReward
 }

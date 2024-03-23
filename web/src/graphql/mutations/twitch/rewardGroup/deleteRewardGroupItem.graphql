@@ -1,0 +1,3 @@
+mutation DeleteRewardGroupItem($id: String!) {
+  deleteRewardGroupItem(id: $id)
+}

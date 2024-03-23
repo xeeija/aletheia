@@ -1,0 +1,3 @@
+mutation DeleteChannelReward($rewardId: String!) {
+  deleteChannelReward(rewardId: $rewardId)
+}

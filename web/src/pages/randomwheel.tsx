@@ -38,18 +38,18 @@ const RandomWheelPage: LayoutNextPage = () => {
           <Tab label="Favorites" itemType="capitalize" />
         </Tabs>
 
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="outlined"
             color="success"
             endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
             onClick={() => setCreateDialogOpen(true)}
           >
-            New
+            New Wheel
           </Button>
 
           <Tooltip placement="bottom-end" title="More options">
-            <IconButton color="secondary" sx={{ ml: 1 }} disabled>
+            <IconButton color="secondary" disabled>
               <HiDotsVertical />
             </IconButton>
           </Tooltip>

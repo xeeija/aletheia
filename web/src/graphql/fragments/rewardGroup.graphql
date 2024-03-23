@@ -1,0 +1,22 @@
+fragment RewardGroup on RewardGroup {
+  ...RewardGroupDetails
+  items {
+    ...RewardGroupItem
+  }
+}
+
+fragment RewardGroupDetails on RewardGroup {
+  id
+  name
+  active
+  triggerSelected
+  userId
+}
+
+fragment RewardGroupItem on RewardGroupItem {
+  id
+  rewardGroupId
+  rewardId
+  rewardEnabled
+  triggerCooldown
+}

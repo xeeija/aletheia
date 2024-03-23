@@ -37,7 +37,7 @@ export const DeleteWheelDialog: FC<Props> = ({ open, onClose, onDelete }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" variant="outlined" onClick={onClose}>
+        <Button color="secondary" variant="outlined" onClick={onClose}>
           Cancel
         </Button>
 

@@ -1,0 +1,9 @@
+query RewardLinks($rewardIds: [String!]) {
+  rewardLinks(rewardIds: $rewardIds) {
+    id
+    userId
+    rewardId
+    token
+    type
+  }
+}

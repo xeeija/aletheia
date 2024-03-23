@@ -52,10 +52,10 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const navbarBorderRadius =
-    typeof theme.shape.borderRadius === "number"
-      ? theme.shape.borderRadius * 2
-      : `calc(${theme.shape.borderRadius} * 2)`
+  const navbarBorderRadius = theme.shape.borderRadius * 2
+  // typeof theme.shape.borderRadius === "number"
+  //   ? theme.shape.borderRadius * 2
+  //   : `calc(${theme.shape.borderRadius} * 2)`
 
   return (
     <Sidebar items={sidebarItems} openedWidth={sidebarWidth} open={sidebarOpen} setOpen={setSidebarOpen}>

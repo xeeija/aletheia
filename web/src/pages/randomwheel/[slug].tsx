@@ -422,7 +422,11 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     />
 
                     {(wheel.editable || wheel.editAnonymous) && (
-                      <AddEntryForm wheelId={wheel.id} spinning={wheel.spinning} />
+                      <AddEntryForm
+                        wheelId={wheel.id}
+                        spinning={wheel.spinning}
+                        entries={wheel.uniqueEntries ? entries?.map((e) => e.name) : undefined}
+                      />
                     )}
                   </Box>
                 </TabPanel>

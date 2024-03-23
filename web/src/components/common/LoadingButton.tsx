@@ -33,7 +33,7 @@ export const LoadingButton: FC<Props> = ({
       sx={{
         m: 1,
         my: 0.5,
-        color: theme.palette.grey[500],
+        color: "text.disabled",
         ...(loadingIndicator === "" && { position: "absolute" }),
       }}
       {...progressProps}
@@ -44,7 +44,14 @@ export const LoadingButton: FC<Props> = ({
     loading && loadingIndicator === "" ? <Box sx={{ opacity: fade ? 0.3 : 0 }}>{children}</Box> : children
 
   return (
-    <Button {...props} disabled={loading || props.disabled}>
+    <Button
+      {...props}
+      sx={{
+        gap: 1,
+        ...props.sx,
+      }}
+      disabled={loading || props.disabled}
+    >
       {loading && !noProgress && position === "start" ? loadingSpinner : startIcon}
 
       {loading && loadingIndicator ? loadingIndicator : childrenWrapper}

@@ -1,23 +1,19 @@
-import { FormDialog, LayoutNextPage, NoData, defaultLayout } from "@/components"
-import { CreateChannelRewardForm } from "@/components/twitch"
-import { useChannelRewards } from "@/hooks"
+import { FilterSelect, LayoutNextPage, defaultLayout } from "@/components"
+import { ChannelRewardDialog, ChannelRewards, RewardGroups } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
-import { FormikProps } from "formik"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
-  const [createRewardDialogOpen, setCreateRewardDialogOpen] = useState(false)
-  const [, setCreateGroupDialogOpen] = useState(false)
   const [tab, setTab] = useState(0)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formRef = useRef<FormikProps<any>>(null)
-  const actionsRef = useRef(null)
 
-  const { channelRewards, fetching: fetchingRewards } = useChannelRewards()
+  // Rewards
+  const [createRewardOpen, setCreateRewardOpen] = useState(false)
+  const [filterRewards, setFilterRewards] = useState(false)
 
-  const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
+  // Reward Groups
+  const [, setCreateGroupDialogOpen] = useState(false)
 
   return (
     <>
@@ -27,6 +23,8 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           justifyContent: "space-between",
         }}
       >
+        {/* <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} /> */}
+
         <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
           {/* itemType prop for new variant, because there is no variant prop */}
           <Tab label="Rewards" itemType="capitalize" />
@@ -34,36 +32,49 @@ export const ChannelPointsPage: LayoutNextPage = () => {
         </Tabs>
 
         {tab === 0 && (
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <FilterSelect
+              options={[
+                { value: "all", label: "All rewards" },
+                { value: "manageable", label: "Manageable rewards" },
+              ]}
+              onChange={(ev) => {
+                setFilterRewards(ev.target.value === "manageable")
+              }}
+            />
+
             <Button
               variant="outlined"
               color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-              onClick={() => setCreateRewardDialogOpen(true)}
+              onClick={() => setCreateRewardOpen(true)}
             >
-              Create
+              New Reward
             </Button>
 
+            <ChannelRewardDialog onClose={() => setCreateRewardOpen(false)} open={createRewardOpen} type="create" />
+
             <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" sx={{ ml: 1 }} disabled>
+              <IconButton color="secondary" disabled>
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
           </Box>
         )}
         {tab === 1 && (
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            {/* {!rewardGroupsEmpty && ( */}
             <Button
               variant="outlined"
               color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
               onClick={() => setCreateGroupDialogOpen(true)}
             >
-              Create
+              New Group
             </Button>
-
+            {/* )} */}
             <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" sx={{ ml: 1 }} disabled>
+              <IconButton color="secondary" disabled>
                 <HiDotsVertical />
               </IconButton>
             </Tooltip>
@@ -72,77 +83,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        {tab === 0 && (
-          <Box>
-            {/* <Link href="/channelpoints/create" passHref>
-              <Button
-                color="success"
-                variant="contained"
-                startIcon={<SvgIcon component={TiPlus} inheritViewBox />}
-                onClick={() => setCreateRewardDialogOpen(true)}
-              >
-                Create Reward
-              </Button>
-            </Link> */}
+        {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
-            {channelRewards?.map((reward) => <pre key={reward.id}>{reward.title}</pre>)}
-
-            {channelRewardsEmpty && !fetchingRewards && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <NoData>{"You don't have any channel point rewards yet."}</NoData>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                    onClick={() => setCreateRewardDialogOpen(true)}
-                  >
-                    Create reward
-                  </Button>
-                </Box>
-              </Box>
-            )}
-
-            <FormDialog
-              keepMounted
-              maxWidth="sm"
-              title={"Create Channel Reward"}
-              open={createRewardDialogOpen}
-              onClose={() => {
-                setCreateRewardDialogOpen(false)
-
-                if (formRef.current) {
-                  setTimeout(() => formRef.current?.resetForm(), 350)
-                }
-              }}
-              actionsRef={actionsRef}
-            >
-              <CreateChannelRewardForm actionsRef={actionsRef} formRef={formRef} />
-            </FormDialog>
-          </Box>
-        )}
-
-        {tab === 1 && (
-          <Box>
-            {channelRewardsEmpty && !fetchingRewards && (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <NoData>{"You don't have any rewards groups yet."}</NoData>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-                    onClick={() => setCreateGroupDialogOpen(true)}
-                  >
-                    Create group
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </Box>
-        )}
+        {tab === 1 && <RewardGroups />}
       </Box>
     </>
   )

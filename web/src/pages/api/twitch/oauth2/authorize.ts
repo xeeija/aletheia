@@ -1,4 +1,5 @@
 import type { ApiHandler } from "@/types"
+import { AuthCodeParams, scopes } from "@/utils/twitch"
 
 const handler: ApiHandler = async (_, res) => {
   if (!process.env.TWITCH_REDIRECT_URI) {
@@ -19,12 +20,13 @@ const handler: ApiHandler = async (_, res) => {
 
   const state = await stateResponse.text()
 
-  const params = {
+  // Todo: Type für twitch auth params
+  const params: AuthCodeParams = {
     response_type: "code",
     client_id: process.env.TWITCH_CLIENT_ID ?? "",
-    scope: ["channel:read:redemptions", "channel:manage:redemptions"].join(" "),
-    // force_verify: "true",
+    scope: scopes.join(" "),
     state: state,
+    // force_verify: "true",
   }
 
   // console.log("state1", state, twitchAuthState)

@@ -1,0 +1,5 @@
+query RewardGroups($items: Boolean) {
+  rewardGroups(items: $items) {
+    ...RewardGroup
+  }
+}

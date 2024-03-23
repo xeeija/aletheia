@@ -10,6 +10,7 @@ type Props = DialogProps & {
   formRef?: RefObject<FormikProps<unknown>>
   actionsRef?: RefObject<Element>
   closeOnBackdrop?: boolean
+  cancelText?: ReactNode
 }
 
 // onClose, id, form, title, children
@@ -22,6 +23,7 @@ export const FormDialog: FC<Props> = ({
   formRef,
   actionsRef,
   children,
+  cancelText,
   ...props
 }) => {
   return (
@@ -58,7 +60,7 @@ export const FormDialog: FC<Props> = ({
             }
           }}
         >
-          Cancel
+          {cancelText ?? "Cancel"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -41,6 +41,7 @@
     // "@typescript-eslint/no-explicit-any": "off",
     // maybe enable floating promises again, and mark them with 'void' instead
     "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/ban-types": [
       "warn",
       {
