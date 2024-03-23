@@ -291,15 +291,19 @@ export type JsonNullableFilter = {
 export type Mutation = {
   __typename?: 'Mutation';
   addRandomWheelEntry: RandomWheelEntry;
+  addRewardGroupItem?: Maybe<RewardGroupItem>;
   clearRandomWheel: Scalars['Int'];
   createChannelReward?: Maybe<CustomReward>;
   createRandomWheel: RandomWheel;
+  createRewardGroup?: Maybe<RewardGroup>;
   createRewardLink?: Maybe<RewardLink>;
   deleteChannelReward: Scalars['Boolean'];
   deleteEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
   deleteRandomWheelMember?: Maybe<Scalars['Boolean']>;
+  deleteRewardGroup?: Maybe<Scalars['Boolean']>;
+  deleteRewardGroupItem?: Maybe<Scalars['Boolean']>;
   deleteRewardLink: Scalars['Boolean'];
   disconnectAccessToken: Scalars['Boolean'];
   likeRandomWheel?: Maybe<RandomWheelLike>;
@@ -313,14 +317,25 @@ export type Mutation = {
   updateRandomWheel?: Maybe<RandomWheel>;
   updateRandomWheelEntry: RandomWheelEntry;
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>;
+  updateRewardGroup?: Maybe<RewardGroup>;
+  updateRewardGroupItem?: Maybe<RewardGroupItem>;
   updateUser: UserResponse;
   usernameExists: Scalars['Boolean'];
 };
 
 
 export type MutationAddRandomWheelEntryArgs = {
+  color?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   randomWheelId: Scalars['String'];
+  weight?: Maybe<Scalars['Float']>;
+};
+
+
+export type MutationAddRewardGroupItemArgs = {
+  rewardGroupId: Scalars['String'];
+  rewardId: Scalars['String'];
+  triggerCooldown?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -341,6 +356,12 @@ export type MutationCreateRandomWheelArgs = {
   name?: Maybe<Scalars['String']>;
   spinDuration?: Maybe<Scalars['Int']>;
   uniqueEntries?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateRewardGroupArgs = {
+  items: Array<RewardGroupItemInput>;
+  rewardGroup: RewardGroupInput;
 };
 
 
@@ -371,6 +392,16 @@ export type MutationDeleteRandomWheelEntryArgs = {
 
 
 export type MutationDeleteRandomWheelMemberArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteRewardGroupArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteRewardGroupItemArgs = {
   id: Scalars['String'];
 };
 
@@ -439,6 +470,19 @@ export type MutationUpdateRandomWheelEntryArgs = {
 export type MutationUpdateRandomWheelMembersArgs = {
   members: Array<RandomWheelMemberInput>;
   randomWheelId: Scalars['String'];
+};
+
+
+export type MutationUpdateRewardGroupArgs = {
+  id: Scalars['String'];
+  rewardGroup: RewardGroupInput;
+};
+
+
+export type MutationUpdateRewardGroupItemArgs = {
+  id: Scalars['String'];
+  rewardEnabled?: Maybe<Scalars['Boolean']>;
+  triggerCooldown?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -569,6 +613,8 @@ export type Query = {
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
+  rewardGroup: RewardGroup;
+  rewardGroups: Array<RewardGroup>;
   rewardLinks: Array<RewardLink>;
   userAccesToken: UserAccessToken;
 };
@@ -597,6 +643,16 @@ export type QueryMyRandomWheelsArgs = {
 
 export type QueryRandomWheelBySlugArgs = {
   slug: Scalars['String'];
+};
+
+
+export type QueryRewardGroupArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryRewardGroupsArgs = {
+  items?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -680,6 +736,7 @@ export type RandomWheelEntry = {
 };
 
 export type RandomWheelEntryInput = {
+  color?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Int']>;
 };
@@ -879,6 +936,53 @@ export type RandomWheelWinnerWhereInput = {
   winnerIndex?: Maybe<IntNullableFilter>;
 };
 
+export type RewardGroup = {
+  __typename?: 'RewardGroup';
+  _count?: Maybe<RewardGroupCount>;
+  active: Scalars['Boolean'];
+  id: Scalars['String'];
+  items?: Maybe<Array<RewardGroupItem>>;
+  name?: Maybe<Scalars['String']>;
+  triggerSelected: Scalars['Boolean'];
+  userId: Scalars['String'];
+};
+
+export type RewardGroupCount = {
+  __typename?: 'RewardGroupCount';
+  eventSubscriptions: Scalars['Int'];
+  items: Scalars['Int'];
+};
+
+
+export type RewardGroupCountEventSubscriptionsArgs = {
+  where?: Maybe<EventSubscriptionWhereInput>;
+};
+
+
+export type RewardGroupCountItemsArgs = {
+  where?: Maybe<RewardGroupItemWhereInput>;
+};
+
+export type RewardGroupInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  name?: Maybe<Scalars['String']>;
+  triggerSelected?: Maybe<Scalars['Boolean']>;
+};
+
+export type RewardGroupItem = {
+  __typename?: 'RewardGroupItem';
+  id: Scalars['String'];
+  rewardEnabled: Scalars['Boolean'];
+  rewardGroupId: Scalars['String'];
+  rewardId: Scalars['String'];
+  triggerCooldown: Scalars['Boolean'];
+};
+
+export type RewardGroupItemInput = {
+  rewardId: Scalars['String'];
+  triggerCooldown?: Maybe<Scalars['Boolean']>;
+};
+
 export type RewardGroupItemListRelationFilter = {
   every?: Maybe<RewardGroupItemWhereInput>;
   none?: Maybe<RewardGroupItemWhereInput>;
@@ -890,9 +994,17 @@ export type RewardGroupItemWhereInput = {
   NOT?: Maybe<Array<RewardGroupItemWhereInput>>;
   OR?: Maybe<Array<RewardGroupItemWhereInput>>;
   id?: Maybe<UuidFilter>;
+  rewardEnabled?: Maybe<BoolFilter>;
   rewardGroup?: Maybe<RewardGroupRelationFilter>;
   rewardGroupId?: Maybe<UuidFilter>;
-  trigger?: Maybe<BoolFilter>;
+  rewardId?: Maybe<StringFilter>;
+  triggerCooldown?: Maybe<BoolFilter>;
+};
+
+export type RewardGroupListRelationFilter = {
+  every?: Maybe<RewardGroupWhereInput>;
+  none?: Maybe<RewardGroupWhereInput>;
+  some?: Maybe<RewardGroupWhereInput>;
 };
 
 export type RewardGroupNullableRelationFilter = {
@@ -907,13 +1019,16 @@ export type RewardGroupRelationFilter = {
 
 export type RewardGroupWhereInput = {
   AND?: Maybe<Array<RewardGroupWhereInput>>;
-  EventSubscription?: Maybe<EventSubscriptionListRelationFilter>;
   NOT?: Maybe<Array<RewardGroupWhereInput>>;
   OR?: Maybe<Array<RewardGroupWhereInput>>;
-  RewardGroupItem?: Maybe<RewardGroupItemListRelationFilter>;
+  active?: Maybe<BoolFilter>;
+  eventSubscriptions?: Maybe<EventSubscriptionListRelationFilter>;
   id?: Maybe<UuidFilter>;
+  items?: Maybe<RewardGroupItemListRelationFilter>;
   name?: Maybe<StringNullableFilter>;
   triggerSelected?: Maybe<BoolFilter>;
+  user?: Maybe<UserRelationFilter>;
+  userId?: Maybe<UuidFilter>;
 };
 
 export type RewardLink = {
@@ -1033,6 +1148,7 @@ export type UserCount = {
   likes: Scalars['Int'];
   randomWheelMember: Scalars['Int'];
   randomWheels: Scalars['Int'];
+  rewardGroups: Scalars['Int'];
   rewardLinks: Scalars['Int'];
   userAccessTokens: Scalars['Int'];
 };
@@ -1065,6 +1181,11 @@ export type UserCountRandomWheelMemberArgs = {
 
 export type UserCountRandomWheelsArgs = {
   where?: Maybe<RandomWheelWhereInput>;
+};
+
+
+export type UserCountRewardGroupsArgs = {
+  where?: Maybe<RewardGroupWhereInput>;
 };
 
 
@@ -1118,6 +1239,7 @@ export type UserWhereInput = {
   password?: Maybe<StringFilter>;
   randomWheelMember?: Maybe<RandomWheelMemberListRelationFilter>;
   randomWheels?: Maybe<RandomWheelListRelationFilter>;
+  rewardGroups?: Maybe<RewardGroupListRelationFilter>;
   rewardLinks?: Maybe<RewardLinkListRelationFilter>;
   standardTheme?: Maybe<ColorThemeNullableRelationFilter>;
   standardThemeId?: Maybe<UuidNullableFilter>;
@@ -1163,6 +1285,12 @@ export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: st
 export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> };
 
 export type RandomWheelMemberFragment = { __typename?: 'RandomWheelMember', id: string, roleName: string, user: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> } };
+
+export type RewardGroupFragment = { __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> };
+
+export type RewardGroupDetailsFragment = { __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string };
+
+export type RewardGroupItemFragment = { __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean };
 
 export type RewardLinkFragment = { __typename?: 'RewardLink', id: string, userId: string, rewardId: string, token: string, type: string };
 
@@ -1330,6 +1458,54 @@ export type UpdateChannelRewardMutationVariables = Exact<{
 
 export type UpdateChannelRewardMutation = { __typename?: 'Mutation', updateChannelReward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
 
+export type AddRewardGroupItemMutationVariables = Exact<{
+  rewardGroupId: Scalars['String'];
+  rewardId: Scalars['String'];
+  triggerCooldown?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type AddRewardGroupItemMutation = { __typename?: 'Mutation', addRewardGroupItem?: Maybe<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }> };
+
+export type CreateRewardGroupMutationVariables = Exact<{
+  rewardGroup: RewardGroupInput;
+  items: Array<RewardGroupItemInput> | RewardGroupItemInput;
+}>;
+
+
+export type CreateRewardGroupMutation = { __typename?: 'Mutation', createRewardGroup?: Maybe<{ __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> }> };
+
+export type DeleteRewardGroupMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteRewardGroupMutation = { __typename?: 'Mutation', deleteRewardGroup?: Maybe<boolean> };
+
+export type DeleteRewardGroupItemMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteRewardGroupItemMutation = { __typename?: 'Mutation', deleteRewardGroupItem?: Maybe<boolean> };
+
+export type UpdateRewardGroupMutationVariables = Exact<{
+  id: Scalars['String'];
+  rewardGroup: RewardGroupInput;
+}>;
+
+
+export type UpdateRewardGroupMutation = { __typename?: 'Mutation', updateRewardGroup?: Maybe<{ __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> }> };
+
+export type UpdateRewardGroupItemMutationVariables = Exact<{
+  id: Scalars['String'];
+  rewardEnabled?: Maybe<Scalars['Boolean']>;
+  triggerCooldown?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type UpdateRewardGroupItemMutation = { __typename?: 'Mutation', updateRewardGroupItem?: Maybe<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }> };
+
 export type SyncEntriesWithRedemptionMutationVariables = Exact<{
   rewardId: Scalars['String'];
   randomWheelId: Scalars['String'];
@@ -1408,6 +1584,20 @@ export type ChannelRewardsQueryVariables = Exact<{
 
 
 export type ChannelRewardsQuery = { __typename?: 'Query', channelRewards: Array<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
+
+export type RewardGroupQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type RewardGroupQuery = { __typename?: 'Query', rewardGroup: { __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> } };
+
+export type RewardGroupsQueryVariables = Exact<{
+  items?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type RewardGroupsQuery = { __typename?: 'Query', rewardGroups: Array<{ __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> }> };
 
 export type RewardLinksQueryVariables = Exact<{
   rewardIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
@@ -1532,6 +1722,33 @@ export const RandomWheelMemberFragmentDoc = gql`
   }
 }
     ${UserNameFragmentDoc}`;
+export const RewardGroupDetailsFragmentDoc = gql`
+    fragment RewardGroupDetails on RewardGroup {
+  id
+  name
+  active
+  triggerSelected
+  userId
+}
+    `;
+export const RewardGroupItemFragmentDoc = gql`
+    fragment RewardGroupItem on RewardGroupItem {
+  id
+  rewardGroupId
+  rewardId
+  rewardEnabled
+  triggerCooldown
+}
+    `;
+export const RewardGroupFragmentDoc = gql`
+    fragment RewardGroup on RewardGroup {
+  ...RewardGroupDetails
+  items {
+    ...RewardGroupItem
+  }
+}
+    ${RewardGroupDetailsFragmentDoc}
+${RewardGroupItemFragmentDoc}`;
 export const RewardLinkFragmentDoc = gql`
     fragment RewardLink on RewardLink {
   id
@@ -1802,6 +2019,76 @@ export const UpdateChannelRewardDocument = gql`
 export function useUpdateChannelRewardMutation() {
   return Urql.useMutation<UpdateChannelRewardMutation, UpdateChannelRewardMutationVariables>(UpdateChannelRewardDocument);
 };
+export const AddRewardGroupItemDocument = gql`
+    mutation AddRewardGroupItem($rewardGroupId: String!, $rewardId: String!, $triggerCooldown: Boolean) {
+  addRewardGroupItem(
+    rewardId: $rewardId
+    rewardGroupId: $rewardGroupId
+    triggerCooldown: $triggerCooldown
+  ) {
+    ...RewardGroupItem
+  }
+}
+    ${RewardGroupItemFragmentDoc}`;
+
+export function useAddRewardGroupItemMutation() {
+  return Urql.useMutation<AddRewardGroupItemMutation, AddRewardGroupItemMutationVariables>(AddRewardGroupItemDocument);
+};
+export const CreateRewardGroupDocument = gql`
+    mutation CreateRewardGroup($rewardGroup: RewardGroupInput!, $items: [RewardGroupItemInput!]!) {
+  createRewardGroup(rewardGroup: $rewardGroup, items: $items) {
+    ...RewardGroup
+  }
+}
+    ${RewardGroupFragmentDoc}`;
+
+export function useCreateRewardGroupMutation() {
+  return Urql.useMutation<CreateRewardGroupMutation, CreateRewardGroupMutationVariables>(CreateRewardGroupDocument);
+};
+export const DeleteRewardGroupDocument = gql`
+    mutation DeleteRewardGroup($id: String!) {
+  deleteRewardGroup(id: $id)
+}
+    `;
+
+export function useDeleteRewardGroupMutation() {
+  return Urql.useMutation<DeleteRewardGroupMutation, DeleteRewardGroupMutationVariables>(DeleteRewardGroupDocument);
+};
+export const DeleteRewardGroupItemDocument = gql`
+    mutation DeleteRewardGroupItem($id: String!) {
+  deleteRewardGroupItem(id: $id)
+}
+    `;
+
+export function useDeleteRewardGroupItemMutation() {
+  return Urql.useMutation<DeleteRewardGroupItemMutation, DeleteRewardGroupItemMutationVariables>(DeleteRewardGroupItemDocument);
+};
+export const UpdateRewardGroupDocument = gql`
+    mutation UpdateRewardGroup($id: String!, $rewardGroup: RewardGroupInput!) {
+  updateRewardGroup(id: $id, rewardGroup: $rewardGroup) {
+    ...RewardGroup
+  }
+}
+    ${RewardGroupFragmentDoc}`;
+
+export function useUpdateRewardGroupMutation() {
+  return Urql.useMutation<UpdateRewardGroupMutation, UpdateRewardGroupMutationVariables>(UpdateRewardGroupDocument);
+};
+export const UpdateRewardGroupItemDocument = gql`
+    mutation UpdateRewardGroupItem($id: String!, $rewardEnabled: Boolean, $triggerCooldown: Boolean) {
+  updateRewardGroupItem(
+    id: $id
+    rewardEnabled: $rewardEnabled
+    triggerCooldown: $triggerCooldown
+  ) {
+    ...RewardGroupItem
+  }
+}
+    ${RewardGroupItemFragmentDoc}`;
+
+export function useUpdateRewardGroupItemMutation() {
+  return Urql.useMutation<UpdateRewardGroupItemMutation, UpdateRewardGroupItemMutationVariables>(UpdateRewardGroupItemDocument);
+};
 export const SyncEntriesWithRedemptionDocument = gql`
     mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
   syncEntriesWithRedemption(
@@ -1950,6 +2237,28 @@ export const ChannelRewardsDocument = gql`
 
 export function useChannelRewardsQuery(options?: Omit<Urql.UseQueryArgs<ChannelRewardsQueryVariables>, 'query'>) {
   return Urql.useQuery<ChannelRewardsQuery, ChannelRewardsQueryVariables>({ query: ChannelRewardsDocument, ...options });
+};
+export const RewardGroupDocument = gql`
+    query RewardGroup($id: String!) {
+  rewardGroup(id: $id) {
+    ...RewardGroup
+  }
+}
+    ${RewardGroupFragmentDoc}`;
+
+export function useRewardGroupQuery(options: Omit<Urql.UseQueryArgs<RewardGroupQueryVariables>, 'query'>) {
+  return Urql.useQuery<RewardGroupQuery, RewardGroupQueryVariables>({ query: RewardGroupDocument, ...options });
+};
+export const RewardGroupsDocument = gql`
+    query RewardGroups($items: Boolean) {
+  rewardGroups(items: $items) {
+    ...RewardGroup
+  }
+}
+    ${RewardGroupFragmentDoc}`;
+
+export function useRewardGroupsQuery(options?: Omit<Urql.UseQueryArgs<RewardGroupsQueryVariables>, 'query'>) {
+  return Urql.useQuery<RewardGroupsQuery, RewardGroupsQueryVariables>({ query: RewardGroupsDocument, ...options });
 };
 export const RewardLinksDocument = gql`
     query RewardLinks($rewardIds: [String!]) {

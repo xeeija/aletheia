@@ -1,0 +1,5 @@
+mutation CreateRewardGroup($rewardGroup: RewardGroupInput!, $items: [RewardGroupItemInput!]!) {
+  createRewardGroup(rewardGroup: $rewardGroup, items: $items) {
+    ...RewardGroup
+  }
+}
