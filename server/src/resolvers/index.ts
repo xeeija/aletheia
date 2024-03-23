@@ -1,6 +1,7 @@
 import { NonEmptyArray } from "type-graphql"
 import { ColorThemeResolver } from "./ColorTheme"
 import { RandomWheelResolver } from "./RandomWheel"
+import { RewardGroupResolver } from "./RewardGroup"
 import { CustomRewardResolver, EventSubscriptionResolver, TwitchResolver } from "./Twitch"
 import { UserResolver } from "./User"
 
@@ -11,12 +12,13 @@ import { UserResolver } from "./User"
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const Resolvers: NonEmptyArray<Function> = [
-  UserResolver,
-  RandomWheelResolver,
   ColorThemeResolver,
-  TwitchResolver,
+  RandomWheelResolver,
   CustomRewardResolver,
   EventSubscriptionResolver,
+  RewardGroupResolver,
+  TwitchResolver,
+  UserResolver,
 ]
 
 export * from "./types"
