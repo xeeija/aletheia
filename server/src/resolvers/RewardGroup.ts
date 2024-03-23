@@ -1,19 +1,32 @@
 import { RewardGroup, RewardGroupItem } from "@/generated/typegraphql"
 import { getRewards } from "@/twitch/mock"
 import type { GraphqlContext } from "@/types"
+import { randomBase64Url } from "@/utils"
 import { HelixCustomReward } from "@twurple/api"
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
+
+@InputType()
+class RewardGroupInput {
+  @Field(() => String, { nullable: true })
+  name?: string
+
+  @Field({ nullable: true })
+  active?: boolean
+
+  @Field({ nullable: true })
+  triggerSelected?: boolean
+}
 
 @InputType()
 class RewardGroupItemInput {
   @Field(() => String)
   rewardId: string
 
-  // @Field({ nullable: true })
-  // rewardEnabled?: boolean
-
   @Field({ nullable: true })
   triggerCooldown?: boolean
+
+  // @Field({ nullable: true })
+  // rewardEnabled?: boolean
 }
 
 @ObjectType("RewardGroup")
@@ -33,6 +46,9 @@ export class RewardGroupResolver {
     const rewardGroups = await prisma.rewardGroup.findMany({
       where: {
         userId: req.session.userId ?? "",
+      },
+      orderBy: {
+        name: "asc",
       },
       include: {
         items: items === true,
@@ -64,9 +80,11 @@ export class RewardGroupResolver {
   @Mutation(() => RewardGroupFull, { nullable: true })
   async createRewardGroup(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("name") name: string,
-    @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[],
-    @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
+    @Arg("rewardGroup", () => RewardGroupInput) input: RewardGroupInput,
+    @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[]
+    // @Arg("name") name: string,
+    // @Arg("active", { defaultValue: true }) active?: boolean,
+    // @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
   ) {
     if (!req.session.userId) {
       throw new Error("Not logged in")
@@ -92,11 +110,14 @@ export class RewardGroupResolver {
       rewards = await getRewards()
     }
 
+    const defaultName = `Reward Group ${randomBase64Url(4)}`
+
     const newRewardGroup = await prisma.rewardGroup.create({
       data: {
-        name,
+        name: input?.name ?? defaultName,
+        active: input?.active ?? true,
+        triggerSelected: input?.triggerSelected,
         userId: req.session.userId,
-        triggerSelected,
         items: {
           createMany: {
             data: items.map((item) => {
@@ -122,9 +143,11 @@ export class RewardGroupResolver {
   async updateRewardGroup(
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("name", { nullable: true }) name?: string,
+    @Arg("rewardGroup", () => RewardGroupInput) input?: RewardGroupInput
+    // @Arg("name", { nullable: true }) name?: string,
     // @Arg("items") items: RewardGroupItemInput[],
-    @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
+    // @Arg("active", { nullable: true }) active?: boolean,
+    // @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
   ) {
     if (!req.session.userId) {
       throw new Error("Not logged in")
@@ -143,8 +166,7 @@ export class RewardGroupResolver {
     const rewardGroup = await prisma.rewardGroup.update({
       where: { id },
       data: {
-        name,
-        triggerSelected,
+        ...input,
       },
     })
 
@@ -175,7 +197,7 @@ export class RewardGroupResolver {
   }
 
   @Mutation(() => RewardGroupItem, { nullable: true })
-  async createRewardGroupItem(
+  async addRewardGroupItem(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("rewardGroupId") rewardGroupId: string,
     @Arg("rewardId") rewardId: string,
