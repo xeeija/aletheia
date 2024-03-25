@@ -69,7 +69,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
               />
             </Tooltip>
 
-            <Tooltip arrow placement="bottom" title={inStock ? "In stock" : "Not in stock"}>
+            <Tooltip arrow placement="bottom" title={inStock ? "In stock" : "Out of stock"}>
               <SvgIcon color={inStock ? "info" : "disabled"}>
                 {inStock ? <HiCollection /> : <HiOutlineCollection />}
                 {/* <HiOutlineCollection /> */}

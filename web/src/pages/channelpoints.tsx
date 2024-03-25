@@ -1,19 +1,19 @@
 import { FilterSelect, LayoutNextPage, defaultLayout } from "@/components"
-import { ChannelRewardDialog, ChannelRewards, RewardGroups } from "@/components/twitch"
+import { ChannelRewardDialog, ChannelRewards, RewardGroupDialog, RewardGroups } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
-  const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState(1)
 
   // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
   const [filterRewards, setFilterRewards] = useState(false)
 
   // Reward Groups
-  const [, setCreateGroupDialogOpen] = useState(false)
+  const [createGroupOpen, setCreateGroupOpen] = useState(false)
 
   return (
     <>
@@ -68,10 +68,13 @@ export const ChannelPointsPage: LayoutNextPage = () => {
               variant="outlined"
               color="success"
               endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-              onClick={() => setCreateGroupDialogOpen(true)}
+              onClick={() => setCreateGroupOpen(true)}
             >
               New Group
             </Button>
+
+            <RewardGroupDialog onClose={() => setCreateGroupOpen(false)} open={createGroupOpen} type="create" />
+
             {/* )} */}
             <Tooltip placement="bottom-end" title="More options">
               <IconButton color="secondary" disabled>

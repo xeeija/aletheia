@@ -82,7 +82,7 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
         })
 
         if (response.reward) {
-          setShowSuccess(`'${response.reward.title}' created successfully`)
+          setShowSuccess(`'${response.reward.title}' updated successfully`)
           onClose?.()
         } else {
           if (!handleTwitchApiError(response.error, setShowError)) {

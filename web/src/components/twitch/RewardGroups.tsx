@@ -1,5 +1,5 @@
-import { AlertPopup, NoData, SkeletonList } from "@/components"
-import { RewardGroupListItem } from "@/components/twitch"
+import { AlertPopup, DeleteDialog, NoData, SkeletonList } from "@/components"
+import { RewardGroupDialog, RewardGroupListItem } from "@/components/twitch"
 import { useRewardGroups } from "@/hooks"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
@@ -8,11 +8,15 @@ import { TiPlus } from "react-icons/ti"
 interface Props {}
 
 export const RewardGroups: FC<Props> = () => {
-  const [, setCreateGroupDialogOpen] = useState(false)
+  const [createGroupOpen, setCreateGroupDialogOpen] = useState(false)
+
+  const [editGroupOpen, setEditGroupOpen] = useState(false)
+  const [editGroup, setEditGroup] = useState<string | null>(null)
+  const [deleteGroupOpen, setDeleteGroupOpen] = useState<string | null>(null)
 
   const [showError, setShowError] = useState<ReactNode>(null)
 
-  const { rewardGroups, fetching } = useRewardGroups({ fetchGroups: true })
+  const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ fetchGroups: true })
 
   const rewardGroupsEmpty = (rewardGroups?.length ?? 0) === 0
 
@@ -42,8 +46,11 @@ export const RewardGroups: FC<Props> = () => {
             key={group.id}
             rewardGroup={group}
             onEdit={() => {
-              // setEditRewardOpen(true)
-              // setEditReward(reward.id)
+              setEditGroupOpen(true)
+              setEditGroup(group.id)
+            }}
+            onDelete={(group) => {
+              setDeleteGroupOpen(group.id)
             }}
           />
         ))}
@@ -66,6 +73,43 @@ export const RewardGroups: FC<Props> = () => {
           </Box>
         </Box>
       )}
+
+      <RewardGroupDialog
+        onClose={() => {
+          setCreateGroupDialogOpen(false)
+          setEditGroupOpen(false)
+          setTimeout(() => {
+            setEditGroup(null)
+          }, 350)
+        }}
+        open={createGroupOpen || editGroupOpen}
+        type={editGroup ? "edit" : "create"}
+        rewardGroup={rewardGroups?.find((r) => r.id === editGroup)}
+      />
+
+      <DeleteDialog
+        title="Delete Reward Group"
+        open={deleteGroupOpen !== null}
+        onClose={() => setDeleteGroupOpen(null)}
+        onConfirm={async () => {
+          if (deleteGroupOpen) {
+            const response = await deleteGroup(deleteGroupOpen)
+
+            if (response.deleted) {
+              // TODO: show sucess toast
+            } else {
+              // if (!handleTwitchApiError(response.error, setShowError)) {
+              setShowError(response.error?.message || "An error occurred")
+              // }
+            }
+
+            setDeleteGroupOpen(null)
+          }
+        }}
+      >
+        Do you really want to delete this reward group? <br />
+        This cannot be undone. It will be lost <b>forever</b>.
+      </DeleteDialog>
     </Box>
   )
 }
