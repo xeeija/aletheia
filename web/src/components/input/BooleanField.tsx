@@ -50,7 +50,7 @@ export const BooleanField: FC<Props> = ({
       checked={Boolean(field.value) ?? false}
       color={error ? "error" : props.color}
       // fix this inputProps
-      size={size === "large" ? "medium" : size}
+      size={(toggle && size === "large" ? "medium" : size) as "small" | "medium"}
       inputProps={{
         ...props.inputProps,
         ...field,

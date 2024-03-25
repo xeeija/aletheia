@@ -46,7 +46,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
       >
         {typeof title === "string" ? (
           <>
-            {icon && <SvgIcon component={icon} color={type} />}
+            {icon && <SvgIcon component={icon} color={type} viewBox="0 -1 24 24" />}
             <span>{title}</span>
           </>
         ) : (
