@@ -67,11 +67,16 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     },
     fetchingCreate,
     errorCreate,
-    updateGroup: async (id: string, rewardGroup: RewardGroupInput) => {
+    updateGroup: async (
+      id: string,
+      rewardGroup?: RewardGroupInput,
+      items?: RewardGroupItemInput | RewardGroupItemInput[]
+    ) => {
       const response = await updateRewardGroup(
         {
           id,
           rewardGroup,
+          items,
         },
         {
           requestPolicy: "cache-and-network",

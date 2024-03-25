@@ -475,7 +475,8 @@ export type MutationUpdateRandomWheelMembersArgs = {
 
 export type MutationUpdateRewardGroupArgs = {
   id: Scalars['String'];
-  rewardGroup: RewardGroupInput;
+  items?: Maybe<Array<RewardGroupItemInput>>;
+  rewardGroup?: Maybe<RewardGroupInput>;
 };
 
 
@@ -1491,7 +1492,8 @@ export type DeleteRewardGroupItemMutation = { __typename?: 'Mutation', deleteRew
 
 export type UpdateRewardGroupMutationVariables = Exact<{
   id: Scalars['String'];
-  rewardGroup: RewardGroupInput;
+  rewardGroup?: Maybe<RewardGroupInput>;
+  items?: Maybe<Array<RewardGroupItemInput> | RewardGroupItemInput>;
 }>;
 
 
@@ -2064,8 +2066,8 @@ export function useDeleteRewardGroupItemMutation() {
   return Urql.useMutation<DeleteRewardGroupItemMutation, DeleteRewardGroupItemMutationVariables>(DeleteRewardGroupItemDocument);
 };
 export const UpdateRewardGroupDocument = gql`
-    mutation UpdateRewardGroup($id: String!, $rewardGroup: RewardGroupInput!) {
-  updateRewardGroup(id: $id, rewardGroup: $rewardGroup) {
+    mutation UpdateRewardGroup($id: String!, $rewardGroup: RewardGroupInput, $items: [RewardGroupItemInput!]) {
+  updateRewardGroup(id: $id, rewardGroup: $rewardGroup, items: $items) {
     ...RewardGroup
   }
 }

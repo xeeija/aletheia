@@ -46,10 +46,17 @@ export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRe
       validationSchema={validationSchema}
       validateOnChange={false}
       onSubmit={async (values) => {
-        const response = await updateGroup(rewardGroup.id, {
-          name: values.name,
-          active: values.active,
-        })
+        const response = await updateGroup(
+          rewardGroup.id,
+          {
+            name: values.name,
+            active: values.active,
+          },
+          values.items.map((item) => ({
+            rewardId: item.rewardId,
+            triggerCooldown: item.triggerCooldown,
+          }))
+        )
 
         if (response.rewardGroup) {
           setShowSuccess(`'${response.rewardGroup.name}' updated successfully`)

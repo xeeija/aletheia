@@ -1,5 +1,5 @@
-mutation UpdateRewardGroup($id: String!, $rewardGroup: RewardGroupInput!) {
-  updateRewardGroup(id: $id, rewardGroup: $rewardGroup) {
+mutation UpdateRewardGroup($id: String!, $rewardGroup: RewardGroupInput, $items: [RewardGroupItemInput!]) {
+  updateRewardGroup(id: $id, rewardGroup: $rewardGroup, items: $items) {
     ...RewardGroup
   }
 }

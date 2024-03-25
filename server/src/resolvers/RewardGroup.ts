@@ -141,9 +141,10 @@ export class RewardGroupResolver {
 
   @Mutation(() => RewardGroupFull, { nullable: true })
   async updateRewardGroup(
-    @Ctx() { req, prisma }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("rewardGroup", () => RewardGroupInput) input?: RewardGroupInput
+    @Arg("rewardGroup", () => RewardGroupInput, { nullable: true }) input?: RewardGroupInput,
+    @Arg("items", () => [RewardGroupItemInput], { nullable: true }) items?: RewardGroupItemInput[]
     // @Arg("name", { nullable: true }) name?: string,
     // @Arg("items") items: RewardGroupItemInput[],
     // @Arg("active", { nullable: true }) active?: boolean,
@@ -153,24 +154,119 @@ export class RewardGroupResolver {
       throw new Error("Not logged in")
     }
 
-    const existingGroup = await prisma.rewardGroup.findUnique({
+    const group = await prisma.rewardGroup.findUnique({
       where: {
         id: id ?? "",
       },
+      include: { items: true },
     })
 
-    if (existingGroup?.userId !== req.session.userId) {
+    if (group?.userId !== req.session.userId) {
       throw new Error("Unauthorized")
     }
 
-    const rewardGroup = await prisma.rewardGroup.update({
-      where: { id },
-      data: {
-        ...input,
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
       },
     })
 
-    return rewardGroup
+    if (!token?.twitchUserId) {
+      throw new Error("No connected twitch account found")
+    }
+
+    // load rewards from twitch to check if enabled
+    const rewardIds = items?.map((item) => item.rewardId) ?? []
+
+    let rewards: HelixCustomReward[]
+    try {
+      rewards = await apiClient.channelPoints.getCustomRewardsByIds(token.twitchUserId, rewardIds)
+    } catch {
+      rewards = await getRewards()
+    }
+
+    // check which rewards are changed and create, update or delete the rewardItems accordingly
+    // check everything by rewardId
+    // -> update all items, that are in new and existing items (stay "the same")
+    // -> create all items, that are in new items but not in existing items, filter out items to update
+    // -> delete all items, that are in existing items but not in new items, filter out items to update
+
+    const updateItems = items?.filter((u) => group.items.some((i) => i.rewardId === u.rewardId))
+
+    const createItems = items?.filter(
+      (c) =>
+        !group.items.map((i) => i.rewardId).includes(c.rewardId) &&
+        updateItems &&
+        !updateItems.map((i) => i.rewardId).includes(c.rewardId)
+    )
+
+    const deleteItems = group.items?.filter(
+      (d) =>
+        items &&
+        !items.map((i) => i.rewardId).includes(d.rewardId) &&
+        updateItems &&
+        !updateItems.map((i) => i.rewardId).includes(d.rewardId)
+    )
+
+    // console.log("update", updateItems)
+    // console.log("create", createItems)
+    // console.log("delete", deleteItems)
+
+    const updateItemsFalse = updateItems?.filter((i) => i.triggerCooldown === false)
+
+    if ((updateItemsFalse?.length ?? 0) > 1) {
+      // update existing items, with triggerCooldown false, rest is updated below, to minimize DB queries
+      await prisma.rewardGroupItem.updateMany({
+        where: {
+          rewardGroupId: group.id,
+          rewardId: { in: updateItemsFalse?.map((i) => i.rewardId) },
+        },
+        data: {
+          triggerCooldown: { set: false },
+        },
+      })
+    }
+
+    const updatedGroup = await prisma.rewardGroup.update({
+      where: { id },
+      data: {
+        ...input,
+        items: {
+          // create new items
+          createMany: {
+            skipDuplicates: true,
+            data: (createItems ?? []).map((item) => {
+              const reward = rewards.find((r) => r.id === item.rewardId)
+              return {
+                rewardId: item.rewardId,
+                triggerCooldown: item.triggerCooldown,
+                rewardEnabled: (reward?.isEnabled || reward?.isPaused) ?? undefined,
+              }
+            }),
+          },
+          // delete old items
+          deleteMany: {
+            id: { in: deleteItems?.map((i) => i.id) },
+          },
+          // update existing items, with triggerCooldown true, rest is updated above
+          updateMany: {
+            where: {
+              rewardGroupId: group.id,
+              rewardId: { in: updateItems?.filter((i) => i.triggerCooldown)?.map((i) => i.rewardId) },
+            },
+            data: {
+              triggerCooldown: { set: true },
+            },
+          },
+        },
+      },
+      include: { items: true },
+    })
+
+    // Update eventsub subscriptions for rewards
+    // TODO
+
+    return updatedGroup
   }
 
   @Mutation(() => Boolean, { nullable: true })
