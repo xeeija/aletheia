@@ -1,5 +1,5 @@
 import { authProvider } from "@/twitch"
-import { addSubscriptionRedemptionAdd } from "@/twitch/events"
+import { addSubscriptionSync } from "@/twitch/events"
 import { EventSubType, SubscriptionType, type SocketServer } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -115,7 +115,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
           },
         })
 
-        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+        addSubscriptionSync(eventSub, prisma, socketIo, {
           id: stored.id,
           twitchUserId: stored.twitchUserId,
           rewardId: stored.rewardId ?? "",

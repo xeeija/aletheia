@@ -1,9 +1,9 @@
 import { EventSubscription, RewardLink } from "@/generated/typegraphql"
 import {
-  addExistingRedemptions,
-  addSubscriptionRedemptionAdd,
-  deleteManySubscriptionRedemptionAdd,
-  deleteSubscriptionRedemptionAdd,
+  addExistingRedemptionsSync,
+  addSubscriptionSync,
+  deleteManySubscriptionsSync,
+  deleteSubscriptionSync,
   findSubscriptionRedemptionAdd,
 } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
@@ -580,7 +580,7 @@ export class TwitchResolver {
       where: { id: randomWheelId },
     })
 
-    const subscriptionId = addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+    const subscriptionId = addSubscriptionSync(eventSub, prisma, socketIo, {
       twitchUserId: token.twitchUserId,
       rewardId,
       randomWheelId,
@@ -616,7 +616,7 @@ export class TwitchResolver {
     // add entries for existing unfullfiled redemptions
 
     if (addExisting) {
-      await addExistingRedemptions(apiClient, prisma, socketIo, {
+      await addExistingRedemptionsSync(apiClient, prisma, socketIo, {
         twitchUserId: token.twitchUserId,
         rewardId: rewardId,
         randomWheelId: randomWheelId,
@@ -663,7 +663,7 @@ export class TwitchResolver {
     @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("ids", () => [String]) ids: string[]
   ) {
-    return await deleteManySubscriptionRedemptionAdd(apiClient, prisma, ids)
+    return await deleteManySubscriptionsSync(apiClient, prisma, ids)
   }
 
   // async findByCondition(apiClient: ApiClient, type: string, condition: Record<string, unknown>) {
@@ -687,7 +687,7 @@ export class TwitchResolver {
     // })
 
     if (pause) {
-      await deleteSubscriptionRedemptionAdd(apiClient, prisma, id, true)
+      await deleteSubscriptionSync(apiClient, prisma, id, true)
 
       // const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
 
@@ -713,7 +713,7 @@ export class TwitchResolver {
         where: { id: sub.randomWheelId },
       })
 
-      addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
+      addSubscriptionSync(eventSub, prisma, socketIo, {
         id: sub.id,
         twitchUserId: sub.twitchUserId,
         useInput: sub.useInput,

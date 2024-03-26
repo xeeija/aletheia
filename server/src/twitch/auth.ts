@@ -1,4 +1,4 @@
-import { deleteManySubscriptionRedemptionAdd } from "@/twitch/events"
+import { deleteManySubscriptionsSync } from "@/twitch/events"
 import type { HttpError } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -162,7 +162,7 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
 
       if (subscriptionsToDelete.length > 0) {
         console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
-        await deleteManySubscriptionRedemptionAdd(
+        await deleteManySubscriptionsSync(
           apiClient,
           prisma,
           subscriptionsToDelete.map((s) => s.id)

@@ -1,22 +1,22 @@
 import { activeSubscriptions } from "@/twitch"
-import { SubscriptionType, type SocketServer, type SubscriptionConfig } from "@/types"
+import { SubscriptionType, type EventSubConfigSync, type SocketServer } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
-import crypto from "crypto"
+import { randomUUID } from "crypto"
 
-export const addSubscriptionRedemptionAdd = (
+export const addSubscriptionSync = (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: SubscriptionConfig
+  subConfig: EventSubConfigSync
 ) => {
   const addedSubscription = eventSub.onChannelRedemptionAddForReward(
     subConfig.twitchUserId,
     subConfig.rewardId,
     async (event) => {
       console.log(
-        `[eventsub] received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
+        `[eventsub] sync: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
       )
 
       if (event.status === "unfulfilled") {
@@ -34,7 +34,7 @@ export const addSubscriptionRedemptionAdd = (
           })
 
           if (existingEntry) {
-            console.log(`[eventsub] skipped duplicate redemption '${entryName}'`)
+            console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}'`)
             return
           }
         }
@@ -52,7 +52,7 @@ export const addSubscriptionRedemptionAdd = (
     }
   )
 
-  const id = subConfig.id ?? crypto.randomUUID()
+  const id = subConfig.id ?? randomUUID()
 
   activeSubscriptions.set(id, addedSubscription)
 
@@ -79,7 +79,7 @@ export const findSubscriptionRedemptionAdd = async (
   )
 }
 
-export const deleteSubscriptionRedemptionAdd = async (
+export const deleteSubscriptionSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   id: string,
@@ -91,7 +91,7 @@ export const deleteSubscriptionRedemptionAdd = async (
 
   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
     console.warn(
-      `[eventsub] delete redemptionAdd: invalid ID ${id}: a required related ID is undefined`,
+      `[eventsub] sync: delete: invalid ID ${id}: a required related ID is undefined`,
       !!sub?.twitchUserId,
       !!sub?.rewardId,
       !!sub?.randomWheelId
@@ -119,7 +119,7 @@ export const deleteSubscriptionRedemptionAdd = async (
   return sub
 }
 
-export const deleteManySubscriptionRedemptionAdd = async (
+export const deleteManySubscriptionsSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   ids: string[],
@@ -134,13 +134,13 @@ export const deleteManySubscriptionRedemptionAdd = async (
   const validSubs = subs.filter((s) => s.twitchUserId && s.rewardId && s.randomWheelId)
 
   if (validSubs.length === 0) {
-    console.warn(`[eventsub] delete many redemptionAdd: no valid subscriptions`)
+    console.warn(`[eventsub] sync: no valid subscriptions to delete`)
     return false
   }
 
   const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
 
-  console.log(`[eventsub] deleting ${validSubs.length} subscriptions`)
+  console.log(`[eventsub] sync: deleting ${validSubs.length} subscriptions`)
 
   // validSubs.forEach(async (sub) => {
   for (const sub of validSubs) {
@@ -154,7 +154,7 @@ export const deleteManySubscriptionRedemptionAdd = async (
         activeSubscriptions.delete(sub.id)
       }
     } else {
-      console.log(`[eventsub] found no matching subscription to delete`)
+      console.log(`[eventsub] sync: found no matching subscription to delete`)
     }
   }
 
@@ -165,17 +165,17 @@ export const deleteManySubscriptionRedemptionAdd = async (
       },
     })
 
-    console.log(`[eventsub] deleted ${deleted.count} subscriptions`)
+    console.log(`[eventsub] sync: deleted ${deleted.count} subscriptions`)
   }
 
   return true
 }
 
-export const addExistingRedemptions = async (
+export const addExistingRedemptionsSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: SubscriptionConfig
+  subConfig: EventSubConfigSync
 ) => {
   const redemptions = apiClient.channelPoints.getRedemptionsForBroadcasterPaginated(
     subConfig.twitchUserId,
@@ -193,7 +193,7 @@ export const addExistingRedemptions = async (
   let redemptionsCount = 0
 
   console.log(
-    `[eventsub] adding existing redemptions of ${redemptions.current?.[0].broadcaster_name} for ${redemptions.current?.[0].reward.title}`
+    `[eventsub] sync: adding existing redemptions of ${redemptions.current?.[0].broadcaster_name} for ${redemptions.current?.[0].reward.title}`
   )
 
   while (redemptions.current?.length !== 0) {
@@ -209,7 +209,7 @@ export const addExistingRedemptions = async (
     await redemptions.getNext()
   }
 
-  console.log(`[eventsub] added ${redemptionsCount} existing redemptions`)
+  console.log(`[eventsub] sync: added ${redemptionsCount} existing redemptions`)
 
   socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
 }
