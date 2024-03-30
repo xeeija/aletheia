@@ -75,9 +75,12 @@ export type EventSubConfigSync = {
 }
 
 export type EventSubConfigGroup = {
+  userId: string
   twitchUserId: string
-  rewardId: string
-  rewardGroupId: string
+  // id?: string
+  // rewardId: string
+  // rewardGroupId: string
+  // rewardGroup: RewardGroup
 }
 
 export type AccessTokenResponse = {
@@ -92,3 +95,5 @@ export type HttpError = Error & {
   statusCode: number
   body: string
 }
+
+// export type RewardGroupIE = RewardGroup & { items: RewardGroupItem[] } & { eventSubscriptions: EventSubscription[] }

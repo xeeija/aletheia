@@ -1,6 +1,7 @@
 import { RewardGroup, RewardGroupItem } from "@/generated/typegraphql"
+import { handleSubscriptionRewardGroup } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
-import type { GraphqlContext } from "@/types"
+import { type GraphqlContext } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { HelixCustomReward } from "@twurple/api"
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
@@ -79,7 +80,7 @@ export class RewardGroupResolver {
 
   @Mutation(() => RewardGroupFull, { nullable: true })
   async createRewardGroup(
-    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient, eventSub }: GraphqlContext,
     @Arg("rewardGroup", () => RewardGroupInput) input: RewardGroupInput,
     @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[]
     // @Arg("name") name: string,
@@ -136,12 +137,20 @@ export class RewardGroupResolver {
       },
     })
 
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+      twitchUserId: token.twitchUserId,
+      userId: req.session.userId,
+      // rewardGroup: newRewardGroup,
+      // rewardId: "",
+      // id: existingSub?.id,
+    })
+
     return newRewardGroup
   }
 
   @Mutation(() => RewardGroupFull, { nullable: true })
   async updateRewardGroup(
-    @Ctx() { req, prisma, apiClient }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient, eventSub }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("rewardGroup", () => RewardGroupInput, { nullable: true }) input?: RewardGroupInput,
     @Arg("items", () => [RewardGroupItemInput], { nullable: true }) items?: RewardGroupItemInput[]
@@ -265,12 +274,38 @@ export class RewardGroupResolver {
 
     // Update eventsub subscriptions for rewards
     // TODO
+    // const existingSub = await prisma.eventSubscription.findFirst({
+    //   where: {
+    //     type: EventSubType.rewardGroup,
+    //     twitchUserId: token.twitchUserId,
+    //   },
+    // })
+
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+      twitchUserId: token.twitchUserId,
+      userId: req.session.userId,
+      // rewardGroup: updatedGroup,
+      // rewardId: "",
+      // id: existingSub?.id,
+    })
+
+    // const helixSubs = existingResult ?? (await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd))
+
+    // const subscription = await prisma.eventSubscription.create({
+    //   data: {
+    //     type: EventSubType.rewardGroup,
+    //     userId: req.session.userId,
+    //     twitchUserId: token.twitchUserId,
+    //     subscriptionType: EventSubType.rewardGroup,
+    //     rewardGroupId: updatedGroup.id,
+    //   },
+    // })
 
     return updatedGroup
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteRewardGroup(@Ctx() { req, prisma }: GraphqlContext, @Arg("id") id: string) {
+  async deleteRewardGroup(@Ctx() { req, prisma, eventSub, apiClient }: GraphqlContext, @Arg("id") id: string) {
     if (!req.session.userId) {
       throw new Error("Not logged in")
     }
@@ -287,6 +322,20 @@ export class RewardGroupResolver {
 
     const deleted = await prisma.rewardGroup.delete({
       where: { id: id ?? "" },
+    })
+
+    const token = await prisma.userAccessToken.findFirst({
+      where: {
+        userId: req.session.userId ?? "",
+      },
+    })
+
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+      twitchUserId: token?.twitchUserId ?? "",
+      userId: req.session.userId,
+      // rewardGroup: deleted,
+      // rewardId: "",
+      // id: existingSub?.id,
     })
 
     return deleted !== null

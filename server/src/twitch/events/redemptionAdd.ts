@@ -1,6 +1,12 @@
 import { activeSubscriptions } from "@/twitch"
-import { SubscriptionType, type EventSubConfigSync, type SocketServer } from "@/types"
-import { PrismaClient } from "@prisma/client"
+import {
+  EventSubConfigGroup,
+  EventSubType,
+  SubscriptionType,
+  type EventSubConfigSync,
+  type SocketServer,
+} from "@/types"
+import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
@@ -61,6 +67,175 @@ export const addSubscriptionSync = (
   // }
 
   return id
+}
+
+export const handleSubscriptionRewardGroup = async (
+  eventSub: EventSubMiddleware,
+  prisma: PrismaClient,
+  apiClient: ApiClient,
+  subConfig: EventSubConfigGroup
+) => {
+  // TODO: eventsub for reward groups, seperate function?
+  // Update or UpdateForReward? - subscription for each reward or one for all and then check, if its in the group?
+  // eventSub.onChannelRedemptionAddForReward
+  // eventSub.onChannelRewardUpdate
+
+  const existingSub = await prisma.eventSubscription.findFirst({
+    where: {
+      type: EventSubType.rewardGroup,
+      twitchUserId: subConfig.twitchUserId,
+    },
+  })
+
+  const userRewardGroups: (RewardGroup & { items: RewardGroupItem[] })[] = await prisma.rewardGroup.findMany({
+    where: {
+      active: true,
+      userId: subConfig.userId,
+      items: {
+        some: {
+          OR: [{ rewardEnabled: true }, { triggerCooldown: true }],
+        },
+      },
+    },
+    include: {
+      items: true,
+      // eventSubscriptions: true,
+    },
+  })
+
+  // delete subscription if no groups are active
+  if (userRewardGroups.length === 0) {
+    console.log("[eventsub] reward group: no groups active, removing subscription")
+
+    activeSubscriptions.get(existingSub?.id ?? "")?.stop()
+
+    await prisma.eventSubscription.delete({
+      where: { id: existingSub?.id ?? "" },
+    })
+
+    return
+  }
+
+  const addedSub = eventSub.onChannelRedemptionAdd(subConfig.twitchUserId, async (event) => {
+    console.log(
+      `[eventsub] reward group: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
+    )
+
+    const eventRewardId = "7d50fb8c-0125-c849-120b-658e0635f83f" // event.rewardId
+
+    const relevantGroups = userRewardGroups.filter((g) =>
+      g.items.some((i) => i.rewardId === eventRewardId && i.triggerCooldown)
+    )
+
+    if (relevantGroups.length === 0) {
+      console.log("[eventsub] reward group: no groups found")
+      return
+    }
+
+    // const eventReward = await event.getReward()
+    // const cooldown = eventReward.globalCooldown
+    // const cooldownExpiry = eventReward.cooldownExpiryDate
+    const cooldown = 30
+
+    if (cooldown === null) {
+      return
+    }
+
+    // handle all reward groups the redeemed reward is part of, and await them all
+    await Promise.all(
+      relevantGroups.map(async (group) => {
+        // disable all items in the same group for the duration of the cooldown
+        const rewardItems = group.items.filter((i) => i.rewardEnabled && i.rewardId !== eventRewardId)
+
+        if (rewardItems.length === 0) {
+          return
+        }
+
+        const disableRewards = rewardItems.map(async (item) => {
+          try {
+            await apiClient.channelPoints.updateCustomReward(subConfig.twitchUserId, item.rewardId, {
+              isPaused: true,
+            })
+          } catch (ex) {
+            // HttpStatusCodeError from @twurple/api-call
+            const errorMessage = ex instanceof Error ? ex.message : null
+            console.error(`[eventsub] reward group: error pausing ${group.name}:`, errorMessage ?? "")
+            console.error(ex)
+          }
+        })
+
+        const reenableRewards = rewardItems.map(async (item) => {
+          try {
+            await apiClient.channelPoints.updateCustomReward(subConfig.twitchUserId, item.rewardId, {
+              isPaused: false,
+            })
+          } catch (ex) {
+            const errorMessage = ex instanceof Error ? ex.message : null
+            console.error(`[eventsub] reward group: error unpausing ${group.name}:`, errorMessage ?? "")
+            console.error(ex)
+          }
+        })
+
+        console.log(
+          `[eventsub] reward group: pause ${group.name}`,
+          disableRewards.length,
+          `rewards for ${cooldown} seconds`
+        )
+
+        await Promise.all(disableRewards)
+
+        // save cooldown expiry or disable timestamp for rewards
+        // to be able to reenable them after server restart
+        // await prisma.rewardGroupItem.updateMany({
+        //   where: { rewardId: { in: rewardItems.map((i) => i.rewardId) } },
+        //   data: {
+        //     // lastPaused: date now + cooldown
+        //   },
+        // })
+
+        // await prisma.rewardGroup.update({
+        //   where: { id: group.id },
+        //   data: {
+        //     cooldownExpiry: cooldownExpiry,
+        //   },
+        // })
+
+        // TODO: save timeout to cancel it, if a reward is disabled/paused manually?
+        setTimeout(async () => {
+          console.log(`[eventsub] reward group: unpause ${group.name}`, disableRewards.length, `rewards`)
+
+          await Promise.all(reenableRewards)
+        }, cooldown * 1000)
+      })
+    )
+  })
+
+  // const id = subConfig?.id ?? randomUUID()
+  const id = existingSub?.id ?? randomUUID()
+
+  const subscription = await prisma.eventSubscription.upsert({
+    where: { id },
+    update: {
+      type: EventSubType.rewardGroup,
+      userId: subConfig.userId,
+      twitchUserId: subConfig.twitchUserId,
+      subscriptionType: SubscriptionType.redemptionAdd,
+    },
+    create: {
+      id,
+      type: EventSubType.rewardGroup,
+      userId: subConfig.userId,
+      twitchUserId: subConfig.twitchUserId,
+      subscriptionType: SubscriptionType.redemptionAdd,
+    },
+  })
+
+  // console.log("id", id, addedSub.id)
+  // console.log("cli: ", await addedSub.getCliTestCommand())
+
+  activeSubscriptions.set(subscription.id, addedSub)
+
+  return subscription.id
 }
 
 export const findSubscriptionRedemptionAdd = async (

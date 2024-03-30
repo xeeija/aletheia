@@ -1,5 +1,5 @@
 import { authProvider } from "@/twitch"
-import { addSubscriptionSync } from "@/twitch/events"
+import { addSubscriptionSync, handleSubscriptionRewardGroup } from "@/twitch/events"
 import { EventSubType, SubscriptionType, type SocketServer } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -124,12 +124,19 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
           uniqueEntries: wheel?.uniqueEntries,
         })
       }
-
-      if (stored?.type === EventSubType.rewardGroup) {
-        // add subscription for reward group handling
-      }
     }
   })
+
+  const storedGroup = storedSubscriptions.filter((s) => s.type === EventSubType.rewardGroup.toString())
+
+  await Promise.all(
+    storedGroup.map(async (sub) => {
+      await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+        twitchUserId: sub?.twitchUserId ?? "",
+        userId: sub.userId ?? "",
+      })
+    })
+  )
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 
