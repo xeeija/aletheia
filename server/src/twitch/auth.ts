@@ -1,4 +1,6 @@
+import { useMockServer } from "@/twitch"
 import { deleteManySubscriptionsSync } from "@/twitch/events"
+import { addMockAccessTokens } from "@/twitch/mock"
 import type { HttpError } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -8,12 +10,28 @@ import "dotenv/config"
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
 
+const mockClientId = process.env.TWITCH_MOCK_CLIENT_ID ?? ""
+const mockClientSecret = process.env.TWITCH_MOCK_CLIENT_SECRET ?? ""
+// const mockAccessToken = process.env.TWITCH_MOCK_ACCESS_TOKEN ?? ""
+
 export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret })
 
+// export const mockAuthProvider = new StaticAuthProvider(mockClientId, mockAccessToken, [
+//   "channel:read:redemptions",
+//   "channel:manage:redemptions",
+// ])
+export const mockAuthProvider = new RefreshingAuthProvider({ clientId: mockClientId, clientSecret: mockClientSecret })
+
 export const setupAuthProvider = async (prisma: PrismaClient) => {
+  if (useMockServer) {
+    console.log("[twitch] using twitch mock server")
+
+    await addMockAccessTokens(mockAuthProvider)
+  }
+
   const accessTokens = await prisma.userAccessToken.findMany()
 
-  console.log("Setup Twitch AuthProvider with", accessTokens.length, "tokens")
+  console.log("[twitch] Setup Twitch AuthProvider with", accessTokens.length, "tokens")
 
   for (const token of accessTokens) {
     const tokenNew: AccessToken = {

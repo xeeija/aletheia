@@ -1,17 +1,22 @@
-import { authProvider } from "@/twitch"
+import { authProvider, mockAuthProvider } from "@/twitch"
 import { addSubscriptionSync, handleSubscriptionRewardGroup } from "@/twitch/events"
-import { EventSubType, SubscriptionType, type SocketServer } from "@/types"
-import { PrismaClient } from "@prisma/client"
+import { EventSubType, type SocketServer } from "@/types"
+import { PrismaClient, UserAccessToken } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import "dotenv/config"
+import { Request } from "express"
+
+const mockServerPort = Number(process.env.TWITCH_MOCK_SERVER_PORT) || undefined
+export const useMockServer = mockServerPort !== undefined
 
 export const apiClient = new ApiClient({
-  authProvider,
+  authProvider: useMockServer ? mockAuthProvider : authProvider,
   batchDelay: Number(process.env.TWITCH_BATCH_DELAY) || 5,
+  mockServerPort: mockServerPort,
   logger: {
-    // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
+    // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug, 7 = trace
     minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
     emoji: false,
     timestamps: false,
@@ -20,8 +25,23 @@ export const apiClient = new ApiClient({
   },
 })
 
+// separated because eventsub is not supported on the mock server, so this always uses the real API
+// only create if using the mock server, otherwise the original authProvider is used below
+const eventSubApiClient = useMockServer
+  ? new ApiClient({
+      authProvider,
+      batchDelay: Number(process.env.TWITCH_BATCH_DELAY) || 5,
+      logger: {
+        // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
+        minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
+        emoji: false,
+        timestamps: false,
+      },
+    })
+  : null
+
 export const eventSubMiddleware = new EventSubMiddleware({
-  apiClient,
+  apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
   hostName: process.env.EVENTSUB_HOSTNAME ?? "",
   pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch",
   secret: process.env.EVENTSUB_SECRET ?? "haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi",
@@ -134,4 +154,41 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // await apiClient.eventSub.deleteAllSubscriptions()
 
   // console.log(await redemptionsSubscription.getCliTestCommand())
+}
+
+export const accessTokenForUser = async (config: {
+  req: Request
+  prisma: PrismaClient
+  userId?: string
+}): Promise<UserAccessToken> => {
+  if (!config.req.session.userId) {
+    throw new Error("Not logged in")
+  }
+
+  const token = await config.prisma.userAccessToken.findFirst({
+    where: {
+      userId: config.userId ?? config.req.session.userId ?? "",
+    },
+  })
+
+  if (!token || !token.twitchUserId) {
+    throw new Error("No connected twitch account found")
+  }
+
+  if (useMockServer) {
+    const mockAccessToken = await mockAuthProvider.getAccessTokenForUser(process.env.TWITCH_MOCK_USER_ID ?? "")
+
+    const mockToken: UserAccessToken & { twitchUserId: string } = {
+      ...token,
+      twitchUserId: mockAccessToken?.userId ?? "",
+    }
+
+    return mockToken
+  }
+
+  if (!token?.twitchUserId) {
+    throw new Error("No connected twitch account found")
+  }
+
+  return token
 }
