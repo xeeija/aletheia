@@ -95,48 +95,32 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     },
   })
 
-  const helixSubs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
+  // initialize wheel sync subscriptions
+  const storedSync = storedSubscriptions.filter((s) => s.type === EventSubType.wheelSync.toString())
 
-  // TODO: check type and resume with the correct listener
+  console.log(`[eventsub] initialize`, storedSync.length, `wheel sync subscriptions`)
 
-  if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
-    const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored:` : ""
-    console.log(
-      `[eventsub] subscriptions active:`,
-      helixSubs.data.length,
-      storedCountText,
-      storedCountText ? storedSubscriptions.length : ""
-    )
-  }
-
-  helixSubs.data.forEach(async (helixSub) => {
-    if (helixSub.type === SubscriptionType.redemptionAdd.toString()) {
-      const condition = helixSub.condition as Record<string, string>
-
-      const stored = storedSubscriptions.find(
-        (s) => s.rewardId === condition.reward_id && s.twitchUserId === condition.broadcaster_user_id
-      )
-
-      if (stored?.type === EventSubType.wheelSync) {
-        const wheel = await prisma.randomWheel.findUnique({
-          where: {
-            id: stored.randomWheelId ?? "",
-          },
-        })
-
-        addSubscriptionSync(eventSub, prisma, socketIo, {
-          id: stored.id,
-          twitchUserId: stored.twitchUserId,
-          rewardId: stored.rewardId ?? "",
-          randomWheelId: stored.randomWheelId ?? "",
-          useInput: stored.useInput,
-          uniqueEntries: wheel?.uniqueEntries,
-        })
-      }
-    }
+  const wheels = await prisma.randomWheel.findMany({
+    where: {
+      id: { in: storedSync.map((s) => s.randomWheelId ?? "").filter((x) => x) },
+    },
   })
 
+  storedSync.forEach((sub) => {
+    addSubscriptionSync(eventSub, prisma, socketIo, {
+      id: sub.id,
+      twitchUserId: sub.twitchUserId,
+      rewardId: sub.rewardId ?? "",
+      randomWheelId: sub.randomWheelId ?? "",
+      useInput: sub.useInput,
+      uniqueEntries: wheels.find((w) => w.id === sub.randomWheelId)?.uniqueEntries,
+    })
+  })
+
+  // initialize reward group subscriptions
   const storedGroup = storedSubscriptions.filter((s) => s.type === EventSubType.rewardGroup.toString())
+
+  console.log(`[eventsub] initialize`, storedGroup.length, `reward group subscriptions`)
 
   await Promise.all(
     storedGroup.map(async (sub) => {
