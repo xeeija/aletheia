@@ -50,40 +50,41 @@ const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 
 export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: PrismaClient, socketIo: SocketServer) => {
   if (showEventSubDebug) {
-    eventSub.onSubscriptionCreateFailure((ev) => {
-      console.log("[eventsub] create failure", eventType(ev.id))
+    eventSub.onSubscriptionCreateFailure((ev, err) => {
+      console.log("[eventsub] create failure", eventType(ev.id), err.name, err.message)
     })
     eventSub.onSubscriptionCreateSuccess((ev) => {
       console.log("[eventsub] create success", eventType(ev.id))
     })
-    eventSub.onSubscriptionDeleteFailure((ev) => {
-      console.log("[eventsub] delete failure", eventType(ev.id))
+    eventSub.onSubscriptionDeleteFailure((ev, err) => {
+      console.log("[eventsub] delete failure", eventType(ev.id), err.name, err.message)
     })
     eventSub.onSubscriptionDeleteSuccess((ev) => {
       console.log("[eventsub] delete success", eventType(ev.id))
     })
-    // TODO: Fix: has type "any" somehow since typescript 5.3 upgrade
-    // eventSub.onVerify((success, ev) => {
-    //   console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
-    // })
+    eventSub.onVerify((success, sub) => {
+      console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(sub.id))
+    })
   }
 
-  eventSub.onRevoke(async (ev) => {
-    console.log("[eventsub] revoked ", ev.authUserId?.slice(0, 4))
+  eventSub.onRevoke(async (sub, status) => {
+    console.log(`[eventsub] revoked ${eventType(sub.id)} ${sub.authUserId?.slice(0, 4)}, Status ${status}`)
 
-    await prisma.eventSubscription.deleteMany({
-      where: {
-        twitchUserId: ev.authUserId ?? "",
-      },
-    })
+    if (status === "authorization_revoked") {
+      await prisma.eventSubscription.deleteMany({
+        where: {
+          twitchUserId: sub.authUserId ?? "",
+        },
+      })
 
-    await prisma.userAccessToken.deleteMany({
-      where: {
-        twitchUserId: ev.authUserId,
-      },
-    })
+      await prisma.userAccessToken.deleteMany({
+        where: {
+          twitchUserId: sub.authUserId,
+        },
+      })
 
-    console.log("[eventsub] revoke: removed token successfully")
+      console.log("[eventsub] revoke: removed token successfully")
+    }
   })
 
   // await apiClient.eventSub.deleteAllSubscriptions()
