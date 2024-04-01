@@ -82,9 +82,6 @@ model RandomWheel {
   members       RandomWheelMember[]
   likes         RandomWheelLike[]
   wheelSync     RandomWheelSync[]
-  // eventSubscription   EventSubscription?  @relation(fields: [eventSubscriptionId], references: [id])
-  // eventSubscriptionId String?             @db.Uuid
-  // eventSubscriptions EventSubscription[]
   // visibility
   // settings:
   // unique entries option
@@ -146,12 +143,15 @@ model RandomWheelLike {
 }
 
 model RandomWheelSync {
-  id                  String            @id @default(uuid()) @db.Uuid
-  randomWheel         RandomWheel       @relation(fields: [randomWheelId], references: [id], onDelete: Cascade)
-  randomWheelId       String            @db.Uuid
-  eventSubscription   EventSubscription @relation(fields: [eventSubscriptionId], references: [id], onDelete: Cascade)
-  eventSubscriptionId String            @db.Uuid
-  paused              Boolean           @default(false)
+  id                  String             @id @default(uuid()) @db.Uuid
+  randomWheel         RandomWheel        @relation(fields: [randomWheelId], references: [id], onDelete: Cascade)
+  randomWheelId       String             @db.Uuid
+  eventSubscription   EventSubscription? @relation(fields: [eventSubscriptionId], references: [id], onDelete: Cascade)
+  eventSubscriptionId String?            @db.Uuid
+  rewardId            String
+  paused              Boolean            @default(false)
+  useInput            Boolean            @default(false)
+  createdAt           DateTime           @default(now())
 
   @@unique([randomWheelId, eventSubscriptionId])
 }
@@ -170,7 +170,7 @@ model ColorTheme {
 // Twitch user access token
 model UserAccessToken {
   id                  String   @id @default(uuid()) @db.Uuid
-  user                User     @relation(fields: [userId], references: [id])
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String   @db.Uuid
   /// @TypeGraphQL.omit(output: true)
   accessToken         String
@@ -189,23 +189,16 @@ model TwitchState {
 
 model EventSubscription {
   id               String            @id @default(uuid()) @db.Uuid
-  user             User?             @relation(fields: [userId], references: [id])
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String?           @db.Uuid
   twitchUserId     String
   type             String
   subscriptionType String
-  rewardId         String?
-  // randomWheel      RandomWheel? @relation(references: [id], fields: [randomWheelId])
-  // randomWheelId    String?      @db.Uuid
-  // rewardGroup      RewardGroup?  @relation(fields: [rewardGroupId], references: [id])
-  // rewardGroupId    String?       @db.Uuid
+  itemId           String?
   subscriptionId   String?
   condition        Json?
   paused           Boolean           @default(false)
-  // randomWheels     RandomWheel[]
   wheelSync        RandomWheelSync[]
-  // randomWheel      RandomWheel[]
-  // rewardGroups     RewardGroup[]
 }
 
 model RewardGroup {
@@ -216,10 +209,7 @@ model RewardGroup {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String            @db.Uuid
   cooldownExpiry  DateTime?
-  // eventSubscriptionId String?
-  // eventSubscription   EventSubscription? @relation(fields: [eventSubscriptionId], references: [id])
   items           RewardGroupItem[]
-  // eventSubscriptions EventSubscription[]
 }
 
 model RewardGroupItem {

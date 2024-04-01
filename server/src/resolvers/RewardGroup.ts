@@ -1,4 +1,5 @@
 import { RewardGroup, RewardGroupItem } from "@/generated/typegraphql"
+import { accessTokenForUser } from "@/twitch"
 import { handleSubscriptionRewardGroup } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"
 import { type GraphqlContext } from "@/types"
@@ -87,19 +88,7 @@ export class RewardGroupResolver {
     // @Arg("active", { defaultValue: true }) active?: boolean,
     // @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     // load rewards from twitch to check if enabled
     const rewardIds = items.map((item) => item.rewardId)
@@ -159,9 +148,7 @@ export class RewardGroupResolver {
     // @Arg("active", { nullable: true }) active?: boolean,
     // @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     const group = await prisma.rewardGroup.findUnique({
       where: {
@@ -174,25 +161,10 @@ export class RewardGroupResolver {
       throw new Error("Unauthorized")
     }
 
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
-
     // load rewards from twitch to check if enabled
     const rewardIds = items?.map((item) => item.rewardId) ?? []
 
-    let rewards: HelixCustomReward[]
-    try {
-      rewards = await apiClient.channelPoints.getCustomRewardsByIds(token.twitchUserId, rewardIds)
-    } catch {
-      rewards = await getRewards()
-    }
+    const rewards = await apiClient.channelPoints.getCustomRewardsByIds(token.twitchUserId, rewardIds)
 
     // check which rewards are changed and create, update or delete the rewardItems accordingly
     // check everything by rewardId
@@ -272,43 +244,17 @@ export class RewardGroupResolver {
       include: { items: true },
     })
 
-    // Update eventsub subscriptions for rewards
-    // TODO
-    // const existingSub = await prisma.eventSubscription.findFirst({
-    //   where: {
-    //     type: EventSubType.rewardGroup,
-    //     twitchUserId: token.twitchUserId,
-    //   },
-    // })
-
     await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
-      twitchUserId: token.twitchUserId,
+      twitchUserId: token.realTwitchUserId,
       userId: req.session.userId,
-      // rewardGroup: updatedGroup,
-      // rewardId: "",
-      // id: existingSub?.id,
     })
-
-    // const helixSubs = existingResult ?? (await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd))
-
-    // const subscription = await prisma.eventSubscription.create({
-    //   data: {
-    //     type: EventSubType.rewardGroup,
-    //     userId: req.session.userId,
-    //     twitchUserId: token.twitchUserId,
-    //     subscriptionType: EventSubType.rewardGroup,
-    //     rewardGroupId: updatedGroup.id,
-    //   },
-    // })
 
     return updatedGroup
   }
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteRewardGroup(@Ctx() { req, prisma, eventSub, apiClient }: GraphqlContext, @Arg("id") id: string) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     const existingGroup = await prisma.rewardGroup.findUnique({
       where: {
@@ -322,12 +268,6 @@ export class RewardGroupResolver {
 
     const deleted = await prisma.rewardGroup.delete({
       where: { id: id ?? "" },
-    })
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
     })
 
     await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {

@@ -1,5 +1,5 @@
 import { authProvider, mockAuthProvider } from "@/twitch"
-import { addSubscriptionSync, handleSubscriptionRewardGroup } from "@/twitch/events"
+import { handleSubscriptionRewardGroup, handleSubscriptionSync } from "@/twitch/events"
 import { EventSubType, type SocketServer } from "@/types"
 import { PrismaClient, UserAccessToken } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -113,6 +113,9 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     where: {
       paused: false,
     },
+    include: {
+      wheelSync: true,
+    },
   })
 
   // initialize wheel sync subscriptions
@@ -120,22 +123,38 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
 
   console.log(`[eventsub] initialize`, storedSync.length, `wheel sync subscriptions`)
 
-  const wheels = await prisma.randomWheel.findMany({
-    where: {
-      id: { in: storedSync.map((s) => s.randomWheelId ?? "").filter((x) => x) },
-    },
-  })
+  // find unique rewardIds
+  const rewardIds = storedSync.flatMap((sub) => sub.wheelSync.map((s) => s.rewardId))
+  const uniqueIds = Object.keys(rewardIds.reduce((acc, r) => ({ ...acc, [r]: "" }), {}))
 
-  storedSync.forEach((sub) => {
-    addSubscriptionSync(eventSub, prisma, socketIo, {
-      id: sub.id,
-      twitchUserId: sub.twitchUserId,
-      rewardId: sub.rewardId ?? "",
-      randomWheelId: sub.randomWheelId ?? "",
-      useInput: sub.useInput,
-      uniqueEntries: wheels.find((w) => w.id === sub.randomWheelId)?.uniqueEntries,
-    })
-  })
+  await Promise.all(
+    storedSync.flatMap((sub) =>
+      uniqueIds.map(async (rewardId) => {
+        await handleSubscriptionSync(eventSub, prisma, socketIo, {
+          twitchUserId: sub.twitchUserId,
+          userId: sub.userId ?? "",
+          rewardId,
+        })
+      })
+    )
+  )
+
+  // const wheels = await prisma.randomWheel.findMany({
+  //   where: {
+  //     id: { in: storedSync.map((s) => s.randomWheelId ?? "").filter((x) => x) },
+  //   },
+  // })
+
+  // storedSync.forEach((sub) => {
+  //   addSubscriptionSync(eventSub, prisma, socketIo, {
+  //     id: sub.id,
+  //     twitchUserId: sub.twitchUserId,
+  //     rewardId: sub.rewardId ?? "",
+  //     randomWheelId: sub.randomWheelId ?? "",
+  //     useInput: sub.useInput,
+  //     uniqueEntries: wheels.find((w) => w.id === sub.randomWheelId)?.uniqueEntries,
+  //   })
+  // })
 
   // initialize reward group subscriptions
   const storedGroup = storedSubscriptions.filter((s) => s.type === EventSubType.rewardGroup.toString())

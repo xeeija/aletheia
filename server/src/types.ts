@@ -66,21 +66,21 @@ export enum EventSubType {
 }
 
 export type EventSubConfigSync = {
+  userId: string
+  twitchUserId: string
+  rewardId: string
+}
+
+export type EventSubConfigSyncAdd = {
   twitchUserId: string
   rewardId: string
   randomWheelId: string
   useInput: boolean
-  uniqueEntries?: boolean
-  id?: string
 }
 
 export type EventSubConfigGroup = {
   userId: string
   twitchUserId: string
-  // id?: string
-  // rewardId: string
-  // rewardGroupId: string
-  // rewardGroup: RewardGroup
 }
 
 export type AccessTokenResponse = {

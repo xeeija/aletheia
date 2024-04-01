@@ -1,23 +1,126 @@
 import { activeSubscriptions, getTwitchUserId, useMockServer } from "@/twitch"
 import {
   EventSubConfigGroup,
+  EventSubConfigSyncAdd,
   EventSubType,
   SubscriptionType,
   type EventSubConfigSync,
   type SocketServer,
 } from "@/types"
 import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
-import { ApiClient, HelixPaginatedEventSubSubscriptionsResult } from "@twurple/api"
+import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
 
-export const addSubscriptionSync = (
+// const timeoutsRewardGroup = new Map<string, NodeJS.Timeout>()
+
+// export const addSubscriptionSync = (
+//   eventSub: EventSubMiddleware,
+//   prisma: PrismaClient,
+//   socketIo: SocketServer,
+//   subConfig: EventSubConfigSync
+// ) => {
+//   const addedSubscription = eventSub.onChannelRedemptionAddForReward(
+//     subConfig.twitchUserId,
+//     subConfig.rewardId,
+//     async (event) => {
+//       console.log(
+//         `[eventsub] sync: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
+//       )
+
+//       if (event.status === "unfulfilled") {
+//         const entryName = subConfig.useInput ? event.input || event.userDisplayName : event.userDisplayName
+
+//         if (subConfig.uniqueEntries) {
+//           const existingEntry = await prisma.randomWheelEntry.findFirst({
+//             where: {
+//               randomWheelId: subConfig.randomWheelId,
+//               name: {
+//                 equals: entryName,
+//                 mode: "insensitive",
+//               },
+//             },
+//           })
+
+//           if (existingEntry) {
+//             console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}'`)
+//             return
+//           }
+//         }
+
+//         await prisma.randomWheelEntry.create({
+//           data: {
+//             randomWheelId: subConfig.randomWheelId,
+//             name: entryName,
+//           },
+//         })
+
+//         // console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
+//         socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
+//       }
+//     }
+//   )
+
+//   const id = subConfig.id ?? randomUUID()
+
+//   activeSubscriptions.set(id, addedSubscription)
+
+//   // if (showEventSubDebug) {
+//   //   addedSubscription.getCliTestCommand().then((command) => console.log("CLI", command))
+//   // }
+
+//   return id
+// }
+
+export const handleSubscriptionSync = async (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   socketIo: SocketServer,
   subConfig: EventSubConfigSync
 ) => {
-  const addedSubscription = eventSub.onChannelRedemptionAddForReward(
+  const existingSub = await prisma.eventSubscription.findFirst({
+    where: {
+      type: EventSubType.wheelSync,
+      twitchUserId: subConfig.twitchUserId,
+      // rewardId: subConfig.rewardId ?? "",
+      // paused: false,
+    },
+    // include: {
+    //   wheelSync: {
+    //     include: {
+    //       randomWheel: true,
+    //     },
+    //   },
+    // },
+  })
+
+  const wheelSync = await prisma.randomWheelSync.findMany({
+    where: {
+      rewardId: subConfig.rewardId,
+      paused: false,
+    },
+    include: {
+      randomWheel: true,
+    },
+  })
+
+  // const wheels = wheelSync.map((w) => w.randomWheel)
+
+  // delete subscription if no wheels need it
+  if (!wheelSync || wheelSync.length === 0) {
+    console.log("[eventsub] sync: no wheels for reward, removing subscription")
+
+    activeSubscriptions.get(existingSub?.id ?? "")?.stop()
+    activeSubscriptions.delete(existingSub?.id ?? "")
+
+    await prisma.eventSubscription.delete({
+      where: { id: existingSub?.id ?? "" },
+    })
+
+    return null
+  }
+
+  const addedSub = eventSub.onChannelRedemptionAddForReward(
     subConfig.twitchUserId,
     subConfig.rewardId,
     async (event) => {
@@ -25,48 +128,72 @@ export const addSubscriptionSync = (
         `[eventsub] sync: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
       )
 
-      if (event.status === "unfulfilled") {
-        const entryName = subConfig.useInput ? event.input || event.userDisplayName : event.userDisplayName
+      await Promise.all(
+        wheelSync.map(async (sync) => {
+          const wheel = sync.randomWheel
+          const entryName = sync.useInput ? event.input || event.userDisplayName : event.userDisplayName
 
-        if (subConfig.uniqueEntries) {
-          const existingEntry = await prisma.randomWheelEntry.findFirst({
-            where: {
-              randomWheelId: subConfig.randomWheelId,
-              name: {
-                equals: entryName,
-                mode: "insensitive",
+          if (wheel.uniqueEntries) {
+            const existingEntry = await prisma.randomWheelEntry.findFirst({
+              where: {
+                randomWheelId: wheel.id,
+                name: {
+                  equals: entryName,
+                  mode: "insensitive",
+                },
               },
+            })
+
+            if (existingEntry) {
+              console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}'`)
+              return
+            }
+          }
+
+          await prisma.randomWheelEntry.create({
+            data: {
+              randomWheelId: wheel.id,
+              name: entryName,
             },
           })
 
-          if (existingEntry) {
-            console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}'`)
-            return
-          }
-        }
-
-        await prisma.randomWheelEntry.create({
-          data: {
-            randomWheelId: subConfig.randomWheelId,
-            name: entryName,
-          },
+          // console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
+          socketIo.to(`wheel/${wheel.id}`).emit("wheel:entries", "add")
         })
-
-        // console.log(`[socket] to wheel/${subConfig.randomWheelId}`)
-        socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
-      }
+      )
     }
   )
 
-  const id = subConfig.id ?? randomUUID()
+  console.log("verified", addedSub.verified)
 
-  activeSubscriptions.set(id, addedSubscription)
+  const id = existingSub?.id ?? randomUUID()
+
+  const subscription = await prisma.eventSubscription.upsert({
+    where: { id },
+    update: {
+      type: EventSubType.wheelSync,
+      userId: subConfig.userId,
+      twitchUserId: subConfig.twitchUserId,
+      subscriptionType: SubscriptionType.redemptionAdd,
+    },
+    create: {
+      id,
+      type: EventSubType.wheelSync,
+      userId: subConfig.userId,
+      twitchUserId: subConfig.twitchUserId,
+      subscriptionType: SubscriptionType.redemptionAdd,
+    },
+  })
+
+  // console.log("id", id, addedSub.id)
+  // console.log("cli: ", await addedSub.getCliTestCommand())
+
+  activeSubscriptions.set(subscription.id, addedSub)
 
   // if (showEventSubDebug) {
   //   addedSubscription.getCliTestCommand().then((command) => console.log("CLI", command))
   // }
-
-  return id
+  return subscription.id
 }
 
 export const handleSubscriptionRewardGroup = async (
@@ -115,6 +242,7 @@ export const handleSubscriptionRewardGroup = async (
     console.log("[eventsub] reward group: no groups active, removing subscription")
 
     activeSubscriptions.get(existingSub?.id ?? "")?.stop()
+    activeSubscriptions.delete(existingSub?.id ?? "")
 
     await prisma.eventSubscription.delete({
       where: { id: existingSub?.id ?? "" },
@@ -255,119 +383,119 @@ export const handleSubscriptionRewardGroup = async (
   return subscription.id
 }
 
-export const findSubscriptionRedemptionAdd = async (
-  apiClient: ApiClient,
-  userId: string,
-  rewardId: string,
-  existingResult?: HelixPaginatedEventSubSubscriptionsResult
-) => {
-  const helixSubs = existingResult ?? (await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd))
+// export const findSubscriptionRedemptionAdd = async (
+//   apiClient: ApiClient,
+//   userId: string,
+//   rewardId: string,
+//   existingResult?: HelixPaginatedEventSubSubscriptionsResult
+// ) => {
+//   const helixSubs = existingResult ?? (await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd))
 
-  return helixSubs.data.find(
-    (sub) =>
-      (sub.status === "enabled" || sub.status === "webhook_callback_verification_pending") &&
-      sub.condition.broadcaster_user_id === userId &&
-      sub.condition.reward_id === rewardId
-  )
-}
+//   return helixSubs.data.find(
+//     (sub) =>
+//       (sub.status === "enabled" || sub.status === "webhook_callback_verification_pending") &&
+//       sub.condition.broadcaster_user_id === userId &&
+//       sub.condition.reward_id === rewardId
+//   )
+// }
 
-export const deleteSubscriptionSync = async (
-  apiClient: ApiClient,
-  prisma: PrismaClient,
-  id: string,
-  skipDelete?: boolean
-) => {
-  const sub = await prisma.eventSubscription.findUnique({
-    where: { id },
-  })
+// export const deleteSubscriptionSync = async (
+//   apiClient: ApiClient,
+//   prisma: PrismaClient,
+//   id: string,
+//   skipDelete?: boolean
+// ) => {
+//   const sub = await prisma.eventSubscription.findUnique({
+//     where: { id },
+//   })
 
-  if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-    console.warn(
-      `[eventsub] sync: delete: invalid ID ${id}: a required related ID is undefined`,
-      !!sub?.twitchUserId,
-      !!sub?.rewardId,
-      !!sub?.randomWheelId
-    )
-    return null
-  }
+//   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
+//     console.warn(
+//       `[eventsub] sync: delete: invalid ID ${id}: a required related ID is undefined`,
+//       !!sub?.twitchUserId,
+//       !!sub?.rewardId,
+//       !!sub?.randomWheelId
+//     )
+//     return null
+//   }
 
-  const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+//   const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
 
-  if (helixSub) {
-    activeSubscriptions.get(sub.id)?.stop()
-    // await apiClient.eventSub.deleteSubscription(helixSub.id)
+//   if (helixSub) {
+//     activeSubscriptions.get(sub.id)?.stop()
+//     // await apiClient.eventSub.deleteSubscription(helixSub.id)
 
-    if (!skipDelete) {
-      activeSubscriptions.delete(sub.id)
-    }
-  }
+//     if (!skipDelete) {
+//       activeSubscriptions.delete(sub.id)
+//     }
+//   }
 
-  if (!skipDelete) {
-    await prisma.eventSubscription.delete({
-      where: { id },
-    })
-  }
+//   if (!skipDelete) {
+//     await prisma.eventSubscription.delete({
+//       where: { id },
+//     })
+//   }
 
-  return sub
-}
+//   return sub
+// }
 
-export const deleteManySubscriptionsSync = async (
-  apiClient: ApiClient,
-  prisma: PrismaClient,
-  ids: string[],
-  skipDelete?: boolean
-) => {
-  const subs = await prisma.eventSubscription.findMany({
-    where: {
-      id: { in: ids },
-    },
-  })
+// export const deleteManySubscriptionsSync = async (
+//   apiClient: ApiClient,
+//   prisma: PrismaClient,
+//   ids: string[],
+//   skipDelete?: boolean
+// ) => {
+//   const subs = await prisma.eventSubscription.findMany({
+//     where: {
+//       id: { in: ids },
+//     },
+//   })
 
-  const validSubs = subs.filter((s) => s.twitchUserId && s.rewardId && s.randomWheelId)
+//   const validSubs = subs.filter((s) => s.twitchUserId && s.rewardId && s.randomWheelId)
 
-  if (validSubs.length === 0) {
-    console.warn(`[eventsub] sync: no valid subscriptions to delete`)
-    return false
-  }
+//   if (validSubs.length === 0) {
+//     console.warn(`[eventsub] sync: no valid subscriptions to delete`)
+//     return false
+//   }
 
-  const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
+//   const helixSubs = await apiClient.eventSub.getSubscriptionsForType(SubscriptionType.redemptionAdd)
 
-  console.log(`[eventsub] sync: deleting ${validSubs.length} subscriptions`)
+//   console.log(`[eventsub] sync: deleting ${validSubs.length} subscriptions`)
 
-  // validSubs.forEach(async (sub) => {
-  for (const sub of validSubs) {
-    const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "", helixSubs)
+//   // validSubs.forEach(async (sub) => {
+//   for (const sub of validSubs) {
+//     const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "", helixSubs)
 
-    if (helixSub) {
-      // await apiClient.eventSub.deleteSubscription(helixSub.id)
-      activeSubscriptions.get(sub.id)?.stop()
+//     if (helixSub) {
+//       // await apiClient.eventSub.deleteSubscription(helixSub.id)
+//       activeSubscriptions.get(sub.id)?.stop()
 
-      if (!skipDelete) {
-        activeSubscriptions.delete(sub.id)
-      }
-    } else {
-      console.log(`[eventsub] sync: found no matching subscription to delete`)
-    }
-  }
+//       if (!skipDelete) {
+//         activeSubscriptions.delete(sub.id)
+//       }
+//     } else {
+//       console.log(`[eventsub] sync: found no matching subscription to delete`)
+//     }
+//   }
 
-  if (!skipDelete) {
-    const deleted = await prisma.eventSubscription.deleteMany({
-      where: {
-        id: { in: validSubs.map((s) => s.id) },
-      },
-    })
+//   if (!skipDelete) {
+//     const deleted = await prisma.eventSubscription.deleteMany({
+//       where: {
+//         id: { in: validSubs.map((s) => s.id) },
+//       },
+//     })
 
-    console.log(`[eventsub] sync: deleted ${deleted.count} subscriptions`)
-  }
+//     console.log(`[eventsub] sync: deleted ${deleted.count} subscriptions`)
+//   }
 
-  return true
-}
+//   return true
+// }
 
 export const addExistingRedemptionsSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: EventSubConfigSync
+  subConfig: EventSubConfigSyncAdd
 ) => {
   const redemptions = apiClient.channelPoints.getRedemptionsForBroadcasterPaginated(
     subConfig.twitchUserId,

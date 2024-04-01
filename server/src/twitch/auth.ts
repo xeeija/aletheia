@@ -1,5 +1,4 @@
 import { useMockServer } from "@/twitch"
-import { deleteManySubscriptionsSync } from "@/twitch/events"
 import { addMockAccessTokens } from "@/twitch/mock"
 import type { HttpError } from "@/types"
 import { PrismaClient } from "@prisma/client"
@@ -180,11 +179,12 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
 
       if (subscriptionsToDelete.length > 0) {
         console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
-        await deleteManySubscriptionsSync(
-          apiClient,
-          prisma,
-          subscriptionsToDelete.map((s) => s.id)
-        )
+        // TODO: delete subscriptions?
+        // await deleteManySubscriptionsSync(
+        //   apiClient,
+        //   prisma,
+        //   subscriptionsToDelete.map((s) => s.id)
+        // )
       }
 
       // if (process.env.NODE_ENV !== "production") {

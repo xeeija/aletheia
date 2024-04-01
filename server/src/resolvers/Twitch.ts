@@ -1,16 +1,9 @@
-import { EventSubscription, RewardLink } from "@/generated/typegraphql"
+import { EventSubscription, RandomWheelSync, RewardLink } from "@/generated/typegraphql"
 import { accessTokenForUser, getTwitchUserId } from "@/twitch"
-import {
-  addExistingRedemptionsSync,
-  addSubscriptionSync,
-  deleteManySubscriptionsSync,
-  deleteSubscriptionSync,
-  findSubscriptionRedemptionAdd,
-} from "@/twitch/events"
-import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
-import { randomBase64Url, retryWithBackoff } from "@/utils"
-import { HelixCustomReward, HelixEventSubSubscription } from "@twurple/api"
-import { GraphQLError } from "graphql"
+import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events"
+import { type GraphqlContext } from "@/types"
+import { randomBase64Url } from "@/utils"
+import { HelixCustomReward } from "@twurple/api"
 import {
   Arg,
   Ctx,
@@ -245,6 +238,21 @@ export class CustomRewardResolver {
 // export class EventSubscriptionFull extends EventSubscription {
 
 // }
+
+@ObjectType("RandomWheelSync")
+export class RandomWheelSyncFull extends RandomWheelSync {
+  @Field(() => CustomReward, { nullable: true })
+  reward?: CustomReward | null
+}
+
+@Resolver(() => RandomWheelSyncFull)
+export class RandomWheelSyncResolver {
+  @FieldResolver(() => Boolean)
+  pending(@Root() sync: RandomWheelSync) {
+    return sync.eventSubscriptionId === undefined
+  }
+}
+
 @ObjectType("EventSubscription")
 export class EventSubscriptionFull extends EventSubscription {
   @Field(() => CustomReward, { nullable: true })
@@ -358,31 +366,33 @@ export class TwitchResolver {
 
   // Eventsub
 
-  @Query(() => [EventSubscriptionFull])
+  @Query(() => [RandomWheelSyncFull])
   async eventSubscriptionsForWheel(
     @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string
-  ): Promise<EventSubscriptionFull[]> {
-    const subscriptions = await prisma.eventSubscription.findMany({
+  ): Promise<RandomWheelSyncFull[]> {
+    const wheelSync = await prisma.randomWheelSync.findMany({
       where: {
-        randomWheelId: randomWheelId,
+        randomWheelId: randomWheelId ?? "",
+      },
+      include: {
+        eventSubscription: true,
       },
     })
 
-    if (subscriptions.length === 0) {
-      return subscriptions
+    if (wheelSync.length === 0) {
+      return wheelSync
     }
 
-    const twitchUserId = getTwitchUserId(subscriptions[0].twitchUserId)
+    const twitchUserId = getTwitchUserId(wheelSync.find((w) => w.eventSubscription)?.eventSubscription?.twitchUserId)
 
-    const rewards = await apiClient.channelPoints.getCustomRewardsByIds(
-      twitchUserId,
-      subscriptions.filter((s) => s.rewardId).map((s) => s.rewardId as string)
-    )
+    const rewardIds = wheelSync.map((w) => w.rewardId ?? "")
 
-    return subscriptions.map((subscription) => ({
-      ...subscription,
-      reward: rewards.find((r) => r.id === subscription.rewardId),
+    const rewards = await apiClient.channelPoints.getCustomRewardsByIds(twitchUserId ?? "", rewardIds)
+
+    return wheelSync.map((sync) => ({
+      ...sync,
+      reward: rewards.find((r) => r.id === sync.rewardId),
     }))
   }
 
@@ -409,7 +419,7 @@ export class TwitchResolver {
   //   return true
   // }
 
-  @Mutation(() => EventSubscriptionFull, { nullable: true })
+  @Mutation(() => RandomWheelSyncFull, { nullable: true })
   async syncEntriesWithRedemption(
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
@@ -419,102 +429,162 @@ export class TwitchResolver {
   ) {
     const token = await accessTokenForUser({ req, prisma })
 
-    // find all susbcriptions with this reward, also other wheels (and override)
-    const existingSubscription = await prisma.eventSubscription.findFirst({
-      where: {
-        // randomWheelId,
+    // create wheelSync
+    const newWheelSync = await prisma.randomWheelSync.create({
+      data: {
+        randomWheelId,
         rewardId,
       },
     })
 
-    const wheel = await prisma.randomWheel.findUnique({
-      where: { id: randomWheelId },
-    })
-
-    const subscriptionId = addSubscriptionSync(eventSub, prisma, socketIo, {
-      twitchUserId: token.twitchUserId,
+    const subscriptionId = await handleSubscriptionSync(eventSub, prisma, socketIo, {
+      twitchUserId: token.realTwitchUserId,
+      userId: req.session.userId,
       rewardId,
-      randomWheelId,
-      useInput,
-      uniqueEntries: wheel?.uniqueEntries,
-      id: existingSubscription?.id,
     })
-
-    let helixSub: HelixEventSubSubscription | undefined
-
-    // wait a bit for the twitch API, and retry
-    await retryWithBackoff(
-      async (finish, retries) => {
-        helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId ?? "", rewardId)
-
-        if (helixSub) {
-          console.log(`[eventsub] Created subscription after ${retries} retries`)
-          finish()
-        }
-      },
-      {
-        finished: (retries) => {
-          if (!helixSub) {
-            console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
-            throw new GraphQLError("Failed to create subscription: no response from twitch")
-          }
-        },
-      }
-    )
-
-    const condition = helixSub?.condition as Record<string, string> | undefined
-
-    // add entries for existing unfullfiled redemptions
 
     if (addExisting) {
       await addExistingRedemptionsSync(apiClient, prisma, socketIo, {
         twitchUserId: token.twitchUserId,
-        rewardId: rewardId,
-        randomWheelId: randomWheelId,
-        useInput: useInput,
+        rewardId,
+        randomWheelId,
+        useInput,
       })
     }
 
-    if (!existingSubscription) {
-      const newSubscription = await prisma.eventSubscription.create({
-        data: {
-          id: subscriptionId,
-          type: EventSubType.wheelSync,
-          subscriptionType: SubscriptionType.redemptionAdd,
-          twitchUserId: token.twitchUserId ?? "",
-          userId: req.session.userId,
-          rewardId: rewardId,
-          randomWheelId: randomWheelId,
-          subscriptionId: helixSub?.id,
-          useInput: useInput,
-          condition: condition,
-        },
-      })
+    const wheelSync = await prisma.randomWheelSync.update({
+      where: { id: newWheelSync.id },
+      data: {
+        eventSubscriptionId: subscriptionId,
+      },
+    })
 
-      return newSubscription
-    } else {
-      const updatedSubscription = await prisma.eventSubscription.update({
-        where: {
-          id: subscriptionId,
-        },
-        data: {
-          twitchUserId: token.twitchUserId ?? "",
-          rewardId: rewardId,
-          randomWheelId: randomWheelId,
-          subscriptionId: helixSub?.id,
-          condition: condition,
-        },
-      })
-      return updatedSubscription
-    }
+    return wheelSync
+
+    // find all susbcriptions with this reward, also other wheels (and override)
+    // const existingSubscription = await prisma.eventSubscription.findFirst({
+    //   where: {
+    //     // randomWheelId,
+    //     rewardId,
+    //   },
+    // })
+
+    // const wheel = await prisma.randomWheel.findUnique({
+    //   where: { id: randomWheelId },
+    // })
+
+    // const subscriptionId = addSubscriptionSync(eventSub, prisma, socketIo, {
+    //   twitchUserId: token.twitchUserId,
+    //   userId: req.session.userId,
+    //   rewardId,
+    //   randomWheelId,
+    //   useInput,
+    //   uniqueEntries: wheel?.uniqueEntries,
+    //   id: existingSubscription?.id,
+    // })
+
+    // let helixSub: HelixEventSubSubscription | undefined
+
+    // wait a bit for the twitch API, and retry
+    // await retryWithBackoff(
+    //   async (finish, retries) => {
+    //     helixSub = await findSubscriptionRedemptionAdd(apiClient, token.twitchUserId ?? "", rewardId)
+
+    //     if (helixSub) {
+    //       console.log(`[eventsub] Created subscription after ${retries} retries`)
+    //       finish()
+    //     }
+    //   },
+    //   {
+    //     finished: (retries) => {
+    //       if (!helixSub) {
+    //         console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
+    //         throw new GraphQLError("Failed to create subscription: no response from twitch")
+    //       }
+    //     },
+    //   }
+    // )
+
+    // const condition = helixSub?.condition as Record<string, string> | undefined
+
+    // add entries for existing unfullfiled redemptions
+
+    // if (addExisting) {
+    //   await addExistingRedemptionsSync(apiClient, prisma, socketIo, {
+    //     twitchUserId: token.twitchUserId,
+    //     rewardId: rewardId,
+    //     randomWheelId: randomWheelId,
+    //     useInput: useInput,
+    //   })
+    // }
+
+    // if (!existingSubscription) {
+    //   const newSubscription = await prisma.eventSubscription.create({
+    //     data: {
+    //       id: subscriptionId,
+    //       type: EventSubType.wheelSync,
+    //       subscriptionType: SubscriptionType.redemptionAdd,
+    //       twitchUserId: token.twitchUserId ?? "",
+    //       userId: req.session.userId,
+    //       rewardId: rewardId,
+    //       randomWheelId: randomWheelId,
+    //       subscriptionId: helixSub?.id,
+    //       useInput: useInput,
+    //       condition: condition,
+    //     },
+    //   })
+
+    //   return newSubscription
+    // } else {
+    //   const updatedSubscription = await prisma.eventSubscription.update({
+    //     where: {
+    //       id: subscriptionId,
+    //     },
+    //     data: {
+    //       twitchUserId: token.twitchUserId ?? "",
+    //       rewardId: rewardId,
+    //       randomWheelId: randomWheelId,
+    //       subscriptionId: helixSub?.id,
+    //       condition: condition,
+    //     },
+    //   })
+    //   return updatedSubscription
+    // }
   }
 
   @Mutation(() => Boolean, { nullable: true })
   async deleteEntriesRedemptionSync(
-    @Ctx() { prisma, apiClient }: GraphqlContext,
+    @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
+    // @Arg("id") id: string
     @Arg("ids", () => [String]) ids: string[]
   ) {
-    return await deleteManySubscriptionsSync(apiClient, prisma, ids)
+    const token = await accessTokenForUser({ req, prisma })
+
+    const wheelSync = await prisma.randomWheelSync.findMany({
+      where: {
+        id: { in: ids },
+      },
+    })
+
+    const deleted = await prisma.randomWheelSync.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    })
+
+    await Promise.all(
+      wheelSync.map(async (sync) => {
+        await handleSubscriptionSync(eventSub, prisma, socketIo, {
+          twitchUserId: token.realTwitchUserId,
+          userId: req.session.userId,
+          rewardId: sync.rewardId,
+        })
+      })
+    )
+
+    return deleted.count > 0
+
+    // return await deleteManySubscriptionsSync(apiClient, prisma, ids)
   }
 
   // async findByCondition(apiClient: ApiClient, type: string, condition: Record<string, unknown>) {
@@ -528,81 +598,98 @@ export class TwitchResolver {
 
   @Mutation(() => EventSubscriptionFull, { nullable: true })
   async pauseEntriesRedemptionSync(
-    @Ctx() { prisma, eventSub, apiClient, socketIo }: GraphqlContext,
+    @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("pause") pause: boolean
+    @Arg("paused") paused: boolean
   ) {
+    const token = await accessTokenForUser({ req, prisma })
+
+    const wheelSync = await prisma.randomWheelSync.update({
+      where: { id },
+      data: {
+        paused,
+      },
+    })
+
+    await handleSubscriptionSync(eventSub, prisma, socketIo, {
+      twitchUserId: token.realTwitchUserId,
+      userId: req.session.userId,
+      rewardId: wheelSync.rewardId,
+    })
+
+    return wheelSync
+
     // this.findByCondition(apiClient, "channel.channel_points_custom_reward_redemption.add", {
     //   broadcaster_user_id: sub?.twitchUserId,
     //   reward_id: sub?.rewardId
     // })
 
-    if (pause) {
-      await deleteSubscriptionSync(apiClient, prisma, id, true)
+    // if (pause) {
+    //   await deleteSubscriptionSync(apiClient, prisma, id, true)
 
-      // const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
+    //   // const helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId)
 
-      // if (helixSub) {
-      //   await apiClient.eventSub.deleteSubscription(helixSub?.id)
-      // }
-    } else {
-      const sub = await prisma.eventSubscription.findUnique({
-        where: { id },
-      })
+    //   // if (helixSub) {
+    //   //   await apiClient.eventSub.deleteSubscription(helixSub?.id)
+    //   // }
+    // } else {
+    //   const sub = await prisma.eventSubscription.findUnique({
+    //     where: { id },
+    //   })
 
-      if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
-        console.warn(
-          `[eventsub] create redemptionAdd: invalid ID ${id}: a required related ID is undefined`,
-          !!sub?.twitchUserId,
-          !!sub?.rewardId,
-          !!sub?.randomWheelId
-        )
-        return false
-      }
+    //   if (!sub?.twitchUserId || !sub.rewardId || !sub.randomWheelId) {
+    //     console.warn(
+    //       `[eventsub] create redemptionAdd: invalid ID ${id}: a required related ID is undefined`,
+    //       !!sub?.twitchUserId,
+    //       !!sub?.rewardId,
+    //       !!sub?.randomWheelId
+    //     )
+    //     return false
+    //   }
 
-      const wheel = await prisma.randomWheel.findUnique({
-        where: { id: sub.randomWheelId },
-      })
+    //   const wheel = await prisma.randomWheel.findUnique({
+    //     where: { id: sub.randomWheelId },
+    //   })
 
-      addSubscriptionSync(eventSub, prisma, socketIo, {
-        id: sub.id,
-        twitchUserId: sub.twitchUserId,
-        useInput: sub.useInput,
-        rewardId: sub.rewardId,
-        randomWheelId: sub.randomWheelId,
-        uniqueEntries: wheel?.uniqueEntries,
-      })
+    //   addSubscriptionSync(eventSub, prisma, socketIo, {
+    //     id: sub.id,
+    //     twitchUserId: sub.twitchUserId,
+    //     useInput: sub.useInput,
+    //     rewardId: sub.rewardId,
+    //     randomWheelId: sub.randomWheelId,
+    //     uniqueEntries: wheel?.uniqueEntries,
+    //   })
 
-      let helixSub: HelixEventSubSubscription | undefined
+    //   let helixSub: HelixEventSubSubscription | undefined
 
-      // wait a bit for the twitch API, and retry
-      await retryWithBackoff(
-        async (finish, retries) => {
-          helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "")
+    //   // wait a bit for the twitch API, and retry
+    //   await retryWithBackoff(
+    //     async (finish, retries) => {
+    //       helixSub = await findSubscriptionRedemptionAdd(apiClient, sub.twitchUserId, sub.rewardId ?? "")
 
-          if (helixSub) {
-            console.log(`[eventsub] Reactivated subscription after ${retries} retries`)
-            finish()
-          }
-        },
-        {
-          finished: (retries) => {
-            if (!helixSub) {
-              console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
-              throw new GraphQLError("Failed to create subscription: no response from twitch")
-            }
-          },
-        }
-      )
-    }
+    //       if (helixSub) {
+    //         console.log(`[eventsub] Reactivated subscription after ${retries} retries`)
+    //         finish()
+    //       }
+    //     },
+    //     {
+    //       finished: (retries) => {
+    //         if (!helixSub) {
+    //           console.log(`[eventsub] Failed to create subscription: no response from twitch after ${retries} retries`)
+    //           throw new GraphQLError("Failed to create subscription: no response from twitch")
+    //         }
+    //       },
+    //     }
+    //   )
+    // }
 
-    const newSubscription = await prisma.eventSubscription.updateMany({
-      where: { id },
-      data: {
-        paused: pause,
-      },
-    })
+    // const newSubscription = await prisma.eventSubscription.updateMany({
+    //   where: { id },
+    //   data: {
+    //     paused: pause,
+    //   },
+    // })
 
-    return newSubscription
+    // return newSubscription
   }
 }
