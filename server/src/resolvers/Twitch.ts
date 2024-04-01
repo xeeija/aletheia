@@ -1,4 +1,5 @@
 import { EventSubscription, RewardLink } from "@/generated/typegraphql"
+import { accessTokenForUser, getTwitchUserId } from "@/twitch"
 import {
   addExistingRedemptionsSync,
   addSubscriptionSync,
@@ -6,7 +7,6 @@ import {
   deleteSubscriptionSync,
   findSubscriptionRedemptionAdd,
 } from "@/twitch/events"
-import { getRewards } from "@/twitch/mock"
 import { EventSubType, SubscriptionType, type GraphqlContext } from "@/types"
 import { randomBase64Url, retryWithBackoff } from "@/utils"
 import { HelixCustomReward, HelixEventSubSubscription } from "@twurple/api"
@@ -160,19 +160,7 @@ export class CustomRewardResolver {
     @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[]
     // @Arg("userId", { nullable: true }) userId: string
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    await accessTokenForUser({ req, prisma })
 
     const rewardLinks = await prisma.rewardLink.findMany({
       where: {
@@ -191,19 +179,7 @@ export class CustomRewardResolver {
     @Arg("rewardId") rewardId: string,
     @Arg("type") type: string
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const accessToken = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!accessToken?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    await accessTokenForUser({ req, prisma })
 
     const existingRewardLink = await prisma.rewardLink.findFirst({
       where: {
@@ -293,69 +269,11 @@ export class TwitchResolver {
     @Arg("userId", { nullable: true }) userId?: string,
     @Arg("onlyManageable", { nullable: true }) onlyManageable?: boolean
   ) {
-    if (!req.session.userId) {
-      return []
-    }
+    const token = await accessTokenForUser({ req, prisma, userId })
 
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: userId ?? req.session.userId ?? "",
-      },
-    })
+    const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId, onlyManageable)
 
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
-
-    try {
-      // // Option 1: only get all or manageable rewards
-      const rewards = await apiClient.channelPoints.getCustomRewards(token.twitchUserId, onlyManageable)
-      return rewards
-
-      // Option 2: return all rewards always and set manageable flag
-      // const [allRewards, managableRewards] = await Promise.all([
-      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, false),
-      //   apiClient.channelPoints.getCustomRewards(token.twitchUserId, true),
-      // ])
-
-      // const rewards = allRewards.map(
-      //   (reward) =>
-      //     new CustomReward(
-      //       reward,
-      //       managableRewards.some((mr) => mr.id === reward.id)
-      //     )
-      // )
-      // (r) =>
-      //   ({
-      //     autoFulfill: r.autoFulfill,
-      //     backgroundColor: r.backgroundColor,
-      //     cost: r.cost,
-      //     globalCooldown: r.globalCooldown,
-      //     id: r.id,
-      //     broadcasterDisplayName: r.broadcasterDisplayName,
-      //     broadcasterId: r.broadcasterId,
-      //     broadcasterName: r.broadcasterName,
-      //     cooldownExpiryDate: r.cooldownExpiryDate,
-      //     isEnabled: r.isEnabled,
-      //     isInStock: r.isInStock,
-      //     isPaused: r.isPaused,
-      //     maxRedemptionsPerStream: r.maxRedemptionsPerStream,
-      //     maxRedemptionsPerUserPerStream: r.maxRedemptionsPerUserPerStream,
-      //     prompt: r.prompt,
-      //     redemptionsThisStream: r.redemptionsThisStream,
-      //     title: r.title,
-      //     userInputRequired: r.userInputRequired,
-      //     manageable: managableRewards.some((mr) => mr.id === r.id),
-      //   }) as CustomReward
-
-      // return rewards
-    } catch {
-      const rewards = await getRewards()
-      return !onlyManageable ? rewards : rewards.filter((_, i) => i % 2 === 0)
-      // return !onlyManageable
-      // ? rewards.map((r, i) => new CustomReward(r, i % 2 === 0))
-      // : rewards.filter((_, i) => i % 2 === 0).map((r) => new CustomReward(r, true))
-    }
+    return rewards
   }
 
   @Mutation(() => CustomReward, { nullable: true })
@@ -364,19 +282,7 @@ export class TwitchResolver {
     @Arg("reward") rewardInput: CustomRewardCreateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     // try {
     const newReward = await apiClient.channelPoints.createCustomReward(token.twitchUserId, rewardInput)
@@ -408,19 +314,7 @@ export class TwitchResolver {
     @Arg("reward") rewardInput: CustomRewardUpdateInput
     // @Arg("userId", { nullable: true }) userId: string
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     // try {
     const newReward = await apiClient.channelPoints.updateCustomReward(token.twitchUserId, rewardId, rewardInput)
@@ -451,19 +345,7 @@ export class TwitchResolver {
     @Arg("rewardId") rewardId: string
     // @Arg("userId", { nullable: true }) userId: string
   ) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: {
-        userId: req.session.userId ?? "",
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      throw new Error("No connected twitch account found")
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     // try {
     await apiClient.channelPoints.deleteCustomReward(token.twitchUserId, rewardId)
@@ -491,34 +373,17 @@ export class TwitchResolver {
       return subscriptions
     }
 
-    try {
-      // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
+    const twitchUserId = getTwitchUserId(subscriptions[0].twitchUserId)
 
-      // test
-      const rewardsTwitch = await apiClient.channelPoints.getCustomRewardsByIds(
-        subscriptions[0].twitchUserId,
-        subscriptions.filter((s) => s.rewardId).map((s) => s.rewardId as string)
-      )
-      const rewardsTest = (await getRewards()).filter((r) => subscriptions.some((s) => s.rewardId === r.id))
+    const rewards = await apiClient.channelPoints.getCustomRewardsByIds(
+      twitchUserId,
+      subscriptions.filter((s) => s.rewardId).map((s) => s.rewardId as string)
+    )
 
-      const rewards = [...rewardsTwitch, ...rewardsTest]
-      // test end
-
-      return subscriptions.map((subscription) => ({
-        ...subscription,
-        reward: rewards.find((r) => r.id === subscription.rewardId),
-      }))
-    } catch {
-      const rewardsTest = (await getRewards()).filter((r) => subscriptions.some((s) => s.rewardId === r.id))
-      // const rewards = (await getRewards()).filter(r => subscriptions.some(s => s.rewardId === r.id))
-
-      const rewards = [...rewardsTest]
-
-      return subscriptions.map((subscription) => ({
-        ...subscription,
-        reward: rewards.find((r) => r.id === subscription.rewardId),
-      }))
-    }
+    return subscriptions.map((subscription) => ({
+      ...subscription,
+      reward: rewards.find((r) => r.id === subscription.rewardId),
+    }))
   }
 
   // Only for testing
@@ -552,21 +417,7 @@ export class TwitchResolver {
     @Arg("useInput", { defaultValue: false }) useInput: boolean,
     @Arg("addExisting", { defaultValue: false }) addExisting: boolean
   ) {
-    if (!req.session.userId) {
-      return null
-    }
-
-    const token = await prisma.userAccessToken.findFirst({
-      where: { userId: req.session.userId },
-      select: {
-        twitchUserId: true,
-      },
-    })
-
-    if (!token?.twitchUserId) {
-      console.error("sync entries: twitchUserId is not set for token")
-      return null
-    }
+    const token = await accessTokenForUser({ req, prisma })
 
     // find all susbcriptions with this reward, also other wheels (and override)
     const existingSubscription = await prisma.eventSubscription.findFirst({

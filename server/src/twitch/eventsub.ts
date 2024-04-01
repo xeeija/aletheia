@@ -156,11 +156,16 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // console.log(await redemptionsSubscription.getCliTestCommand())
 }
 
+type UserAccessTokenWithId = UserAccessToken & {
+  twitchUserId: string
+  realTwitchUserId: string
+}
+
 export const accessTokenForUser = async (config: {
   req: Request
   prisma: PrismaClient
   userId?: string
-}): Promise<UserAccessToken> => {
+}): Promise<UserAccessTokenWithId> => {
   if (!config.req.session.userId) {
     throw new Error("Not logged in")
   }
@@ -176,11 +181,15 @@ export const accessTokenForUser = async (config: {
   }
 
   if (useMockServer) {
-    const mockAccessToken = await mockAuthProvider.getAccessTokenForUser(process.env.TWITCH_MOCK_USER_ID ?? "")
+    const mockAccessToken = await mockAuthProvider.getAccessTokenForUser(getTwitchUserId(""))
 
-    const mockToken: UserAccessToken & { twitchUserId: string } = {
+    // UserAccessToken & { twitchUserId: string }
+    const mockToken: UserAccessTokenWithId = {
       ...token,
       twitchUserId: mockAccessToken?.userId ?? "",
+      accessToken: mockAccessToken?.accessToken ?? "",
+      refreshToken: mockAccessToken?.refreshToken ?? null,
+      realTwitchUserId: token?.twitchUserId ?? "",
     }
 
     return mockToken
@@ -190,5 +199,17 @@ export const accessTokenForUser = async (config: {
     throw new Error("No connected twitch account found")
   }
 
-  return token
+  return {
+    ...token,
+    twitchUserId: token.twitchUserId ?? "",
+    realTwitchUserId: token.twitchUserId ?? "",
+  }
+}
+
+export const getTwitchUserId = <T = string | null | undefined>(twitchUserId: T) => {
+  if (useMockServer) {
+    return process.env.TWITCH_MOCK_USER_ID ?? ""
+  }
+
+  return twitchUserId
 }

@@ -1,4 +1,4 @@
-import { activeSubscriptions } from "@/twitch"
+import { activeSubscriptions, getTwitchUserId, useMockServer } from "@/twitch"
 import {
   EventSubConfigGroup,
   EventSubType,
@@ -80,6 +80,8 @@ export const handleSubscriptionRewardGroup = async (
   // eventSub.onChannelRedemptionAddForReward
   // eventSub.onChannelRewardUpdate
 
+  const twitchUserId = getTwitchUserId(subConfig.twitchUserId)
+
   const existingSub = await prisma.eventSubscription.findFirst({
     where: {
       type: EventSubType.rewardGroup,
@@ -103,6 +105,11 @@ export const handleSubscriptionRewardGroup = async (
     },
   })
 
+  // const rewards = await apiClient.channelPoints.getCustomRewardsByIds(
+  //   twitchUserId,
+  //   userRewardGroups.flatMap((r) => r.items.map((i) => i.rewardId))
+  // )
+
   // delete subscription if no groups are active
   if (userRewardGroups.length === 0) {
     console.log("[eventsub] reward group: no groups active, removing subscription")
@@ -121,7 +128,7 @@ export const handleSubscriptionRewardGroup = async (
       `[eventsub] reward group: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
     )
 
-    const eventRewardId = "7d50fb8c-0125-c849-120b-658e0635f83f" // event.rewardId
+    const eventRewardId = event.rewardId
 
     const relevantGroups = userRewardGroups.filter((g) =>
       g.items.some((i) => i.rewardId === eventRewardId && i.triggerCooldown)
@@ -133,9 +140,19 @@ export const handleSubscriptionRewardGroup = async (
     }
 
     // const eventReward = await event.getReward()
-    // const cooldown = eventReward.globalCooldown
+    // const eventReward = rewards.find((r) => event.rewardId === r.id)
+    const eventReward = !useMockServer
+      ? await event.getReward()
+      : await apiClient.channelPoints.getCustomRewardById(twitchUserId, event.rewardId)
+
+    if (!eventReward) {
+      console.error("[eventsub] reward group: reward is null, this should never happen")
+      return
+    }
+
+    const cooldown = eventReward.globalCooldown
     // const cooldownExpiry = eventReward.cooldownExpiryDate
-    const cooldown = 30
+    // const cooldown = 30
 
     if (cooldown === null) {
       return
@@ -153,7 +170,7 @@ export const handleSubscriptionRewardGroup = async (
 
         const disableRewards = rewardItems.map(async (item) => {
           try {
-            await apiClient.channelPoints.updateCustomReward(subConfig.twitchUserId, item.rewardId, {
+            await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
               isPaused: true,
             })
           } catch (ex) {
@@ -166,7 +183,7 @@ export const handleSubscriptionRewardGroup = async (
 
         const reenableRewards = rewardItems.map(async (item) => {
           try {
-            await apiClient.channelPoints.updateCustomReward(subConfig.twitchUserId, item.rewardId, {
+            await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
               isPaused: false,
             })
           } catch (ex) {
