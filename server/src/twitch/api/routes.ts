@@ -1,4 +1,4 @@
-import { authProvider } from "@/twitch"
+import { authProvider, getTwitchUserId } from "@/twitch"
 import type { AccessTokenResponse } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
@@ -185,7 +185,7 @@ const updateRewardByLink = async (
     },
   })
 
-  const twitchUserId = user?.userAccessTokens[0].twitchUserId
+  const twitchUserId = getTwitchUserId(user?.userAccessTokens[0].twitchUserId)
 
   if (!twitchUserId) {
     throw Error("No twitch account connected")

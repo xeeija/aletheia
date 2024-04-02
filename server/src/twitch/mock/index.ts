@@ -5,7 +5,7 @@ import { rewards } from "./data/rewards"
 
 let mockRewards: HelixCustomReward[] = []
 
-export const getRewards = async () => {
+export const getRewards = () => {
   if (mockRewards.length === 0) {
     // const rewardData: any[] = (JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")))
 

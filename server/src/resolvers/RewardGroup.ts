@@ -93,12 +93,7 @@ export class RewardGroupResolver {
     // load rewards from twitch to check if enabled
     const rewardIds = items.map((item) => item.rewardId)
 
-    let rewards: HelixCustomReward[]
-    try {
-      rewards = await apiClient.channelPoints.getCustomRewardsByIds(token.twitchUserId, rewardIds)
-    } catch {
-      rewards = await getRewards()
-    }
+    const rewards = await apiClient.channelPoints.getCustomRewardsByIds(token.twitchUserId, rewardIds)
 
     const defaultName = `Reward Group ${randomBase64Url(4)}`
 
