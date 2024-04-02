@@ -3,6 +3,8 @@ import { ColorThemeResolver } from "./ColorTheme"
 import { CustomRewardResolver } from "./CustomReward"
 import { EventSubResolver } from "./EventSub"
 import { RandomWheelResolver } from "./RandomWheel"
+import { RandomWheelEntryResolver } from "./RandomWheelEntry"
+import { RandomWheelMemberResolver } from "./RandomWheelMember"
 import { RewardGroupResolver } from "./RewardGroup"
 import { TwitchResolver } from "./Twitch"
 import { UserResolver } from "./User"
@@ -12,6 +14,8 @@ export const Resolvers: NonEmptyArray<Function> = [
   ColorThemeResolver,
   EventSubResolver,
   RandomWheelResolver,
+  RandomWheelMemberResolver,
+  RandomWheelEntryResolver,
   RewardGroupResolver,
   CustomRewardResolver,
   TwitchResolver,
@@ -24,6 +28,8 @@ export * from "./ColorTheme"
 export * from "./CustomReward"
 export * from "./EventSub"
 export * from "./RandomWheel"
+export * from "./RandomWheelEntry"
+export * from "./RandomWheelMember"
 export * from "./RewardGroup"
 export * from "./Twitch"
 export * from "./User"
