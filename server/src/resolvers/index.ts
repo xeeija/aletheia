@@ -1,7 +1,7 @@
 import { NonEmptyArray } from "type-graphql"
 import { ColorThemeResolver } from "./ColorTheme"
 import { CustomRewardResolver } from "./CustomReward"
-import { EventSubResolver } from "./EventSub"
+import { EventSubResolver, RandomWheelSyncResolver } from "./EventSub"
 import { RandomWheelResolver } from "./RandomWheel"
 import { RandomWheelEntryResolver } from "./RandomWheelEntry"
 import { RandomWheelMemberResolver } from "./RandomWheelMember"
@@ -13,6 +13,7 @@ import { UserResolver } from "./User"
 export const Resolvers: NonEmptyArray<Function> = [
   ColorThemeResolver,
   EventSubResolver,
+  RandomWheelSyncResolver,
   RandomWheelResolver,
   RandomWheelMemberResolver,
   RandomWheelEntryResolver,

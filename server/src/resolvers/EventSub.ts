@@ -45,7 +45,7 @@ export class EventSubResolver {
   // }
 
   @Mutation(() => RandomWheelSyncFull, { nullable: true })
-  async syncEntriesWithRedemption(
+  async addWheelSync(
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
@@ -88,7 +88,7 @@ export class EventSubResolver {
   }
 
   @Mutation(() => RandomWheelSyncFull, { nullable: true })
-  async pauseEntriesRedemptionSync(
+  async pauseWheelSync(
     @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("paused") paused: boolean
@@ -112,7 +112,7 @@ export class EventSubResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteEntriesRedemptionSync(
+  async deleteWheelSync(
     @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     // @Arg("id") id: string
     @Arg("ids", () => [String]) ids: string[]
@@ -158,7 +158,7 @@ export class EventSubResolver {
   // RandomWheel
 
   @Query(() => [RandomWheelSyncFull])
-  async eventSubscriptionsForWheel(
+  async syncForWheel(
     @Ctx() { prisma, apiClient }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string
   ): Promise<RandomWheelSyncFull[]> {

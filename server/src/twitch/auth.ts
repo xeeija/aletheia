@@ -23,7 +23,7 @@ export const mockAuthProvider = new RefreshingAuthProvider({ clientId: mockClien
 
 export const setupAuthProvider = async (prisma: PrismaClient) => {
   if (useMockServer) {
-    console.log("[twitch] using twitch mock server")
+    console.log("[twitch] Using twitch mock API server")
 
     await addMockAccessTokens(mockAuthProvider)
   }
