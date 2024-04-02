@@ -1,4 +1,4 @@
-import { RewardGroup, RewardGroupItem } from "@/generated/typegraphql"
+import { RewardGroup, RewardGroupItem } from "@/generated/graphql"
 import { accessTokenForUser } from "@/twitch"
 import { handleSubscriptionRewardGroup } from "@/twitch/events"
 import { getRewards } from "@/twitch/mock"

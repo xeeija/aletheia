@@ -1,4 +1,4 @@
-import { RewardLink } from "@/generated/typegraphql"
+import { RewardLink } from "@/generated/graphql"
 import { accessTokenForUser } from "@/twitch"
 import type { GraphqlContext } from "@/types"
 import { randomBase64Url } from "@/utils"

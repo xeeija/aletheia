@@ -1,4 +1,4 @@
-import { User, UserAccessToken } from "@/generated/typegraphql"
+import { User, UserAccessToken } from "@/generated/graphql"
 import { FieldError } from "@/resolvers"
 import type { GraphqlContext } from "@/types"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"

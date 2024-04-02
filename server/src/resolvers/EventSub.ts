@@ -1,4 +1,4 @@
-import { RandomWheelSync } from "@/generated/typegraphql"
+import { RandomWheelSync } from "@/generated/graphql"
 import { CustomReward } from "@/resolvers"
 import { accessTokenForUser, getTwitchUserId } from "@/twitch"
 import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events"

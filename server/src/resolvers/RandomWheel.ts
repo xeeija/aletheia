@@ -8,7 +8,7 @@ import {
   RandomWheelRole,
   RandomWheelWinner,
   User,
-} from "@/generated/typegraphql"
+} from "@/generated/graphql"
 import { AppError, createAppErrorUnion } from "@/resolvers/types"
 import type { GraphqlContext } from "@/types"
 import { random, randomNumber, slugify } from "@/utils"
