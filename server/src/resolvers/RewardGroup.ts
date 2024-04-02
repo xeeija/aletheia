@@ -268,9 +268,6 @@ export class RewardGroupResolver {
     await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
       twitchUserId: token?.twitchUserId ?? "",
       userId: req.session.userId,
-      // rewardGroup: deleted,
-      // rewardId: "",
-      // id: existingSub?.id,
     })
 
     return deleted !== null
@@ -311,7 +308,7 @@ export class RewardGroupResolver {
     try {
       reward = await apiClient.channelPoints.getCustomRewardById(token.twitchUserId, rewardId)
     } catch {
-      reward = (await getRewards()).find((r) => r.id === rewardId) ?? null
+      reward = getRewards().find((r) => r.id === rewardId) ?? null
     }
 
     const newItem = await prisma.rewardGroupItem.create({
