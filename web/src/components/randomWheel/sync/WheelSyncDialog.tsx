@@ -1,4 +1,4 @@
-import { RedemptionSyncForm } from "@/components/randomWheel"
+import { WheelSyncForm } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"
 import { FC, useRef } from "react"
@@ -10,7 +10,7 @@ interface Props {
   readonly?: boolean
 }
 
-export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
+export const WheelSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
   const actionsRef = useRef(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
@@ -37,7 +37,7 @@ export const RedemptionSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
       >
         <DialogTitle id="redemption-sync-dialog-title">Synchronize Channel Rewards</DialogTitle>
         <DialogContent>
-          <RedemptionSyncForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
+          <WheelSyncForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
         </DialogContent>
         <DialogActions ref={actionsRef}>
           <Button color="secondary" variant="outlined" onClick={closeHandler}>

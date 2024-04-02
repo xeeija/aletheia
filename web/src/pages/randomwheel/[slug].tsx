@@ -7,8 +7,8 @@ import {
   DeleteWheelDialog,
   EditMembersDialog,
   EntryList,
-  RedemptionSyncDialog,
   Wheel,
+  WheelSyncDialog,
   WinnerDialog,
   WinnerList,
 } from "@/components/randomWheel"
@@ -298,7 +298,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
               )}
 
               {(wheel.editable || wheel.editAnonymous) && (
-                <RedemptionSyncDialog
+                <WheelSyncDialog
                   open={redemptionDialogOpen}
                   slug={wheel.slug}
                   onClose={() => setRedemptionDialogOpen(false)}
@@ -350,7 +350,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             {(wheel.editable || wheel.editAnonymous) && (
               <Box sx={{ gridArea: "controls" }}>
                 <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
-                  <Badge badgeContent={entries?.length} color="success">
+                  <Badge badgeContent={entries?.length} max={9999} color="success">
                     <Button
                       color="primary"
                       variant="contained"

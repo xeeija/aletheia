@@ -1,0 +1,10 @@
+fragment RandomWheelSync on RandomWheelSync {
+  id
+  randomWheelId
+  eventSubscriptionId
+  rewardId
+  paused
+  useInput
+  pending
+  createdAt
+}

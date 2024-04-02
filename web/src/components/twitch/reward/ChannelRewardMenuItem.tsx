@@ -1,10 +1,10 @@
 import { ChannelRewardIcon } from "@/components/twitch"
-import { CustomRewardFragment } from "@/generated/graphql"
+import { CustomRewardMenuItemFragment } from "@/generated/graphql"
 import { Box, ListItemText, MenuItem, MenuItemProps } from "@mui/material"
 import { FC } from "react"
 
 type Props = MenuItemProps & {
-  reward: CustomRewardFragment
+  reward: CustomRewardMenuItemFragment
   noMenuItem?: boolean
 }
 

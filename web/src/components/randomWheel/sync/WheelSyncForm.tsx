@@ -1,7 +1,6 @@
 import { BooleanField, LoadingButton, NoData, SelectField, SkeletonList } from "@/components"
 import { ChannelRewardMenuItem } from "@/components/twitch"
-import { EventSubscriptionFragment } from "@/generated/graphql"
-import { useChannelRewards, useEventSubscriptionsWheel, useRandomWheel } from "@/hooks"
+import { WheelSyncItem, useChannelRewards, useRandomWheel, useWheelSync } from "@/hooks"
 import {
   Box,
   Button,
@@ -28,34 +27,33 @@ interface Props {
   formRef?: RefObject<FormikProps<InitialValues>>
 }
 
-interface SubscriptionEntry extends EventSubscriptionFragment {
+interface WheelSyncEntry extends WheelSyncItem {
   delete?: boolean
 }
 
 interface InitialValues {
-  subscriptions: SubscriptionEntry[]
+  wheelSync: WheelSyncEntry[]
   rewardId: string
   useInput: boolean
   addExisting: boolean
 }
 
-export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
+export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
   const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
 
   const { channelRewards } = useChannelRewards()
 
-  const { subscriptions, fetchingPause, fetching, syncEntries, pauseEntriesSync, deleteEntriesSync } =
-    useEventSubscriptionsWheel({
-      randomWheelId: wheel?.id ?? "",
-    })
+  const { wheelSync, fetchingPause, fetching, addWheelSync, pauseWheelSync, deleteWheelSync } = useWheelSync({
+    randomWheelId: wheel?.id ?? "",
+  })
 
-  const [showNewSyncronization, setShowNewSyncronization] = useState(false)
+  const [showNewSync, setShowNewSync] = useState(false)
 
   if (!wheel) {
     return null
   }
 
-  const rewards = channelRewards?.filter((reward) => !subscriptions?.some((s) => s.rewardId === reward.id))
+  const rewards = channelRewards?.filter((reward) => !wheelSync?.some((s) => s.rewardId === reward.id))
 
   // const [{ data: subscriptionData }] = useEventSubscriptionsForWheelQuery({
   //   variables: {
@@ -66,11 +64,11 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
   // const [, syncEntries] = useSyncEntriesWithRedemptionMutation()
 
-  const noSubscriptions = subscriptions?.length || fetching
+  const noWheelSync = wheelSync?.length || fetching
 
   const initialValues: InitialValues = {
     // subscriptions: subscriptionData?.eventSubscriptionsForWheel ?? []
-    subscriptions: subscriptions ?? [],
+    wheelSync: wheelSync ?? [],
     rewardId: "",
     useInput: false,
     addExisting: false,
@@ -88,7 +86,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         enableReinitialize
         validateOnChange={false}
         validate={(values) => {
-          if (showNewSyncronization && !values.rewardId) {
+          if (showNewSync && !values.rewardId) {
             return { rewardId: "Required" }
           }
 
@@ -96,24 +94,24 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         }}
         onSubmit={async (values, { setFieldValue }) => {
           // only create if new
-          if (showNewSyncronization && values.rewardId) {
-            await syncEntries({
+          if (showNewSync && values.rewardId) {
+            await addWheelSync({
               randomWheelId: wheel.id,
               rewardId: values.rewardId,
               useInput: values.useInput,
               addExisting: values.addExisting,
             })
 
-            setShowNewSyncronization(false)
+            setShowNewSync(false)
             setFieldValue("rewardId", "")
           }
 
-          const deleteEntries = values.subscriptions.filter((s) => s.delete)
+          const deleteEntries = values.wheelSync.filter((s) => s.delete)
 
           // console.log("deleteEntries", deleteEntries)
 
           if (deleteEntries.length > 0) {
-            await deleteEntriesSync(deleteEntries.map((e) => e.id))
+            await deleteWheelSync(deleteEntries.map((e) => e.id))
           }
 
           // const result = await syncEntries({
@@ -129,18 +127,16 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
         }}
       >
         {({ values, isSubmitting, dirty, setFieldValue, setFieldError }) => {
-          // console.log(subscriptions)
-
           return (
             <Form id="redemptionSyncForm">
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  {subscriptions?.length ? (
+                  {wheelSync?.length ? (
                     <List role="list" dense>
-                      {values.subscriptions.map((subscription, i) => (
+                      {values.wheelSync.map((sync, i) => (
                         // subscription.reward &&
-                        <ListItem key={subscription.id} role="listitem" sx={{ width: "100%" }}>
-                          {subscription.reward && !subscription.delete && (
+                        <ListItem key={sync.id} role="listitem" sx={{ width: "100%" }}>
+                          {sync.reward.id && !sync.delete && (
                             <Box
                               sx={{
                                 display: "flex",
@@ -148,11 +144,11 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                 alignItems: "center",
                               }}
                             >
-                              <ChannelRewardMenuItem reward={subscription.reward} noMenuItem />
+                              <ChannelRewardMenuItem reward={sync.reward} noMenuItem />
                               <BooleanField
-                                name={`subscriptions[${i}].useInput`}
+                                name={`wheelSync[${i}].useInput`}
                                 // size="small"
-                                tooltip={subscription.useInput ? "Use input as entry" : "Use display name as entry"}
+                                tooltip={sync.useInput ? "Use input as entry" : "Use display name as entry"}
                                 disabled
                                 checkedIcon={<SvgIcon component={HiAnnotation} viewBox="0 -2 24 24" />}
                                 icon={<SvgIcon component={TiUser} viewBox="0 -1 24 24" />}
@@ -160,17 +156,17 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                             </Box>
                           )}
 
-                          {subscription.delete && (
+                          {sync.delete && (
                             <Typography color="textSecondary" sx={{ ml: 1, my: 1 }}>
-                              {`Deleted ${subscription.reward?.title ?? ""}`}
+                              {`Deleting ${sync.reward?.title ?? ""}`}
                             </Typography>
                           )}
-                          {!subscription.rewardId && (
+                          {!sync.reward.id && (
                             <NoData
                               direction="row"
                               iconSize="xs"
                               textProps={{ variant: "body1", mb: 0 }}
-                              sx={{ mt: 0 }}
+                              sx={{ mt: -0.5 }}
                             >
                               Failed to load reward
                             </NoData>
@@ -179,7 +175,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                             // </Typography>
                           )}
 
-                          {!subscription.delete && (
+                          {!sync.delete && (
                             <ListItemSecondaryAction
                               sx={{
                                 display: "flex",
@@ -188,7 +184,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               }}
                             >
                               <Typography variant="body2" color="textSecondary" sx={{ mr: -0.5 }}>
-                                {subscription.pending ? "Pending" : subscription.paused ? "Paused" : "Active"}
+                                {sync.pending ? "Pending" : sync.paused ? "Paused" : "Active"}
                               </Typography>
 
                               {/* {subscription.pending &&
@@ -205,7 +201,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               </IconButton>
                             } */}
 
-                              {subscription.pending && !subscription.paused && (
+                              {sync.pending && !sync.paused && (
                                 <IconButton color="info" sx={{ mr: 0.25 }}>
                                   <SvgIcon
                                     component={TiRefresh}
@@ -213,23 +209,23 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
                                     onClick={() => {
                                       // await syncEntries(entries.rewardId)
-                                      void pauseEntriesSync(subscription.id, false)
+                                      void pauseWheelSync(sync.id, false)
                                     }}
                                   />
                                 </IconButton>
                               )}
 
-                              {(fetchingPause || subscription.pending) && (
+                              {(fetchingPause || sync.pending) && (
                                 <IconButton disabled sx={{ mr: 1, mt: "2px" }}>
                                   <CircularProgress size={18} color="inherit" />
                                 </IconButton>
                               )}
-                              {!(fetchingPause || subscription.pending) && (
+                              {!(fetchingPause || sync.pending) && (
                                 <BooleanField
-                                  name={`subscriptions[${i}].paused`}
-                                  tooltip={subscription.paused ? "Activate" : "Pause"}
-                                  value={subscription.paused}
-                                  checked={subscription.paused}
+                                  name={`wheelSync[${i}].paused`}
+                                  tooltip={sync.paused ? "Activate" : "Pause"}
+                                  value={sync.paused}
+                                  checked={sync.paused}
                                   // indeterminate={subscription.pending || fetchingPause}
                                   // disabled={subscription.pending || fetchingPause}
                                   // indeterminateIcon={<CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
@@ -237,7 +233,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                   checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
                                   onClick={() => {
                                     // console.log("pause", subscription.paused)
-                                    void pauseEntriesSync(subscription.id, !subscription.paused)
+                                    void pauseWheelSync(sync.id, !sync.paused)
                                   }}
                                 />
                               )}
@@ -264,7 +260,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                               </IconButton>
                             } */}
 
-                              {subscription.pending && !fetchingPause && (
+                              {sync.pending && !fetchingPause && (
                                 <IconButton color="info" sx={{ ml: 0 }}>
                                   <SvgIcon
                                     component={TiRefresh}
@@ -272,7 +268,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                                     // {/* <SvgIcon component={TiWarning} color="warning" */}
                                     onClick={() => {
                                       // await syncEntries(entries.rewardId)
-                                      void pauseEntriesSync(subscription.id, false)
+                                      void pauseWheelSync(sync.id, false)
                                     }}
                                   />
                                 </IconButton>
@@ -280,7 +276,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
 
                               <IconButton
                                 onClick={() => {
-                                  setFieldValue(`subscriptions[${i}].delete`, true)
+                                  setFieldValue(`wheelSync[${i}].delete`, true)
                                 }}
                                 role="button"
                               >
@@ -319,7 +315,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                     </Box>
                   )}
 
-                  {noSubscriptions || showNewSyncronization ? null : (
+                  {noWheelSync || showNewSync ? null : (
                     <NoData iconSize="sm" textProps={{ variant: "body1" }}>
                       No rewards are synchronized
                     </NoData>
@@ -327,7 +323,7 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                 </Grid>
 
                 <Grid item xs={12} sx={{ pt: 0 }}>
-                  {showNewSyncronization && (
+                  {showNewSync && (
                     <>
                       <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                         New synchronization
@@ -342,14 +338,13 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                           required
                           fullWidth
                           label="New Reward"
-                          helperText="This will override synchronization of other wheels with the same reward."
                           sx={{ mb: 1 }}
                         />
                         <Box sx={{ mt: 0.75 }}>
                           <IconButton
                             role="button"
                             onClick={() => {
-                              setShowNewSyncronization(false)
+                              setShowNewSync(false)
                               setFieldValue("useInput", false)
                               setFieldValue("rewardId", "")
                               setFieldError("rewardId", undefined)
@@ -369,25 +364,25 @@ export const RedemptionSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef 
                       <BooleanField
                         name="addExisting"
                         label="Add existing redemptions"
-                        helperText="Add existing unfulfilled redemptions in the queue as entries."
+                        helperText="Add existing unfulfilled redemptions in the reward queue as entries."
                       />
                     </>
                   )}
-                  {!showNewSyncronization && (
+                  {!showNewSync && (
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: noSubscriptions ? "start" : "center",
+                        justifyContent: noWheelSync ? "start" : "center",
                         mt: -1,
                       }}
                     >
                       <Button
                         color="success"
-                        variant={noSubscriptions ? "outlined" : "contained"}
+                        variant={noWheelSync ? "outlined" : "contained"}
                         sx={{ ml: 0.5, mt: 1.25 }}
                         endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
                         onClick={() => {
-                          setShowNewSyncronization(true)
+                          setShowNewSync(true)
                         }}
                       >
                         New

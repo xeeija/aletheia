@@ -18,5 +18,5 @@ export * from "./entry/WinnerList"
 export * from "./member/EditMembersDialog"
 export * from "./member/EditMembersForm"
 
-export * from "./sync/RedemptionSyncDialog"
-export * from "./sync/RedemptionSyncForm"
+export * from "./sync/WheelSyncDialog"
+export * from "./sync/WheelSyncForm"

@@ -1,0 +1,5 @@
+mutation PauseWheelSync($id: String!, $paused: Boolean!) {
+  pauseWheelSync(id: $id, paused: $paused) {
+    ...RandomWheelSync
+  }
+}

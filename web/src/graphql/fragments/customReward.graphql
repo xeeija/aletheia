@@ -19,3 +19,12 @@ fragment CustomReward on CustomReward {
   cooldownExpiryDate
   image
 }
+
+fragment CustomRewardMenuItem on CustomReward {
+  id
+  title
+  backgroundColor
+  isEnabled
+  isPaused
+  image
+}

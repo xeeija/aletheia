@@ -188,22 +188,15 @@ export type DateTimeFilter = {
   notIn?: Maybe<Array<Scalars['DateTime']>>;
 };
 
-export type EventSubscription = {
-  __typename?: 'EventSubscription';
-  condition?: Maybe<Scalars['JSON']>;
-  id: Scalars['String'];
-  paused: Scalars['Boolean'];
-  pending: Scalars['Boolean'];
-  randomWheelId?: Maybe<Scalars['String']>;
-  reward?: Maybe<CustomReward>;
-  rewardGroupId?: Maybe<Scalars['String']>;
-  rewardId?: Maybe<Scalars['String']>;
-  subscriptionId?: Maybe<Scalars['String']>;
-  subscriptionType: Scalars['String'];
-  twitchUserId: Scalars['String'];
-  type: Scalars['String'];
-  useInput: Scalars['Boolean'];
-  userId?: Maybe<Scalars['String']>;
+export type DateTimeNullableFilter = {
+  equals?: Maybe<Scalars['DateTime']>;
+  gt?: Maybe<Scalars['DateTime']>;
+  gte?: Maybe<Scalars['DateTime']>;
+  in?: Maybe<Array<Scalars['DateTime']>>;
+  lt?: Maybe<Scalars['DateTime']>;
+  lte?: Maybe<Scalars['DateTime']>;
+  not?: Maybe<NestedDateTimeNullableFilter>;
+  notIn?: Maybe<Array<Scalars['DateTime']>>;
 };
 
 export type EventSubscriptionListRelationFilter = {
@@ -212,25 +205,26 @@ export type EventSubscriptionListRelationFilter = {
   some?: Maybe<EventSubscriptionWhereInput>;
 };
 
+export type EventSubscriptionNullableRelationFilter = {
+  is?: Maybe<EventSubscriptionWhereInput>;
+  isNot?: Maybe<EventSubscriptionWhereInput>;
+};
+
 export type EventSubscriptionWhereInput = {
   AND?: Maybe<Array<EventSubscriptionWhereInput>>;
   NOT?: Maybe<Array<EventSubscriptionWhereInput>>;
   OR?: Maybe<Array<EventSubscriptionWhereInput>>;
   condition?: Maybe<JsonNullableFilter>;
   id?: Maybe<UuidFilter>;
+  itemId?: Maybe<StringNullableFilter>;
   paused?: Maybe<BoolFilter>;
-  randomWheel?: Maybe<RandomWheelNullableRelationFilter>;
-  randomWheelId?: Maybe<UuidNullableFilter>;
-  rewardGroup?: Maybe<RewardGroupNullableRelationFilter>;
-  rewardGroupId?: Maybe<UuidNullableFilter>;
-  rewardId?: Maybe<StringNullableFilter>;
   subscriptionId?: Maybe<StringNullableFilter>;
   subscriptionType?: Maybe<StringFilter>;
   twitchUserId?: Maybe<StringFilter>;
   type?: Maybe<StringFilter>;
-  useInput?: Maybe<BoolFilter>;
   user?: Maybe<UserNullableRelationFilter>;
   userId?: Maybe<UuidNullableFilter>;
+  wheelSync?: Maybe<RandomWheelSyncListRelationFilter>;
 };
 
 export type FieldError = {
@@ -292,27 +286,27 @@ export type Mutation = {
   __typename?: 'Mutation';
   addRandomWheelEntry: RandomWheelEntry;
   addRewardGroupItem?: Maybe<RewardGroupItem>;
+  addWheelSync?: Maybe<RandomWheelSync>;
   clearRandomWheel: Scalars['Int'];
   createChannelReward?: Maybe<CustomReward>;
   createRandomWheel: RandomWheel;
   createRewardGroup?: Maybe<RewardGroup>;
   createRewardLink?: Maybe<RewardLink>;
   deleteChannelReward: Scalars['Boolean'];
-  deleteEntriesRedemptionSync?: Maybe<Scalars['Boolean']>;
   deleteRandomWheel?: Maybe<AppError>;
   deleteRandomWheelEntry?: Maybe<Scalars['Boolean']>;
   deleteRandomWheelMember?: Maybe<Scalars['Boolean']>;
   deleteRewardGroup?: Maybe<Scalars['Boolean']>;
   deleteRewardGroupItem?: Maybe<Scalars['Boolean']>;
   deleteRewardLink: Scalars['Boolean'];
+  deleteWheelSync?: Maybe<Scalars['Boolean']>;
   disconnectAccessToken: Scalars['Boolean'];
   likeRandomWheel?: Maybe<RandomWheelLike>;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  pauseEntriesRedemptionSync?: Maybe<EventSubscription>;
+  pauseWheelSync?: Maybe<RandomWheelSync>;
   register: UserResponse;
   spinRandomWheel: RandomWheelWinner;
-  syncEntriesWithRedemption?: Maybe<EventSubscription>;
   updateChannelReward?: Maybe<CustomReward>;
   updateRandomWheel?: Maybe<RandomWheel>;
   updateRandomWheelEntry: RandomWheelEntry;
@@ -336,6 +330,14 @@ export type MutationAddRewardGroupItemArgs = {
   rewardGroupId: Scalars['String'];
   rewardId: Scalars['String'];
   triggerCooldown?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationAddWheelSyncArgs = {
+  addExisting?: Maybe<Scalars['Boolean']>;
+  randomWheelId: Scalars['String'];
+  rewardId: Scalars['String'];
+  useInput?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -376,11 +378,6 @@ export type MutationDeleteChannelRewardArgs = {
 };
 
 
-export type MutationDeleteEntriesRedemptionSyncArgs = {
-  ids: Array<Scalars['String']>;
-};
-
-
 export type MutationDeleteRandomWheelArgs = {
   id: Scalars['String'];
 };
@@ -411,6 +408,11 @@ export type MutationDeleteRewardLinkArgs = {
 };
 
 
+export type MutationDeleteWheelSyncArgs = {
+  ids: Array<Scalars['String']>;
+};
+
+
 export type MutationLikeRandomWheelArgs = {
   like: Scalars['Boolean'];
   randomWheelId: Scalars['String'];
@@ -423,9 +425,9 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationPauseEntriesRedemptionSyncArgs = {
+export type MutationPauseWheelSyncArgs = {
   id: Scalars['String'];
-  pause: Scalars['Boolean'];
+  paused: Scalars['Boolean'];
 };
 
 
@@ -438,14 +440,6 @@ export type MutationRegisterArgs = {
 
 export type MutationSpinRandomWheelArgs = {
   randommWheelId: Scalars['String'];
-};
-
-
-export type MutationSyncEntriesWithRedemptionArgs = {
-  addExisting?: Maybe<Scalars['Boolean']>;
-  randomWheelId: Scalars['String'];
-  rewardId: Scalars['String'];
-  useInput?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -520,6 +514,17 @@ export type NestedDateTimeFilter = {
   lt?: Maybe<Scalars['DateTime']>;
   lte?: Maybe<Scalars['DateTime']>;
   not?: Maybe<NestedDateTimeFilter>;
+  notIn?: Maybe<Array<Scalars['DateTime']>>;
+};
+
+export type NestedDateTimeNullableFilter = {
+  equals?: Maybe<Scalars['DateTime']>;
+  gt?: Maybe<Scalars['DateTime']>;
+  gte?: Maybe<Scalars['DateTime']>;
+  in?: Maybe<Array<Scalars['DateTime']>>;
+  lt?: Maybe<Scalars['DateTime']>;
+  lte?: Maybe<Scalars['DateTime']>;
+  not?: Maybe<NestedDateTimeNullableFilter>;
   notIn?: Maybe<Array<Scalars['DateTime']>>;
 };
 
@@ -610,13 +615,13 @@ export type Query = {
   __typename?: 'Query';
   channelRewards: Array<CustomReward>;
   colorThemes: Array<ColorTheme>;
-  eventSubscriptionsForWheel: Array<EventSubscription>;
   me?: Maybe<User>;
   myRandomWheels: Array<RandomWheel>;
   randomWheelBySlug?: Maybe<RandomWheel>;
   rewardGroup: RewardGroup;
   rewardGroups: Array<RewardGroup>;
   rewardLinks: Array<RewardLink>;
+  syncForWheel: Array<RandomWheelSync>;
   userAccesToken: UserAccessToken;
 };
 
@@ -629,11 +634,6 @@ export type QueryChannelRewardsArgs = {
 
 export type QueryColorThemesArgs = {
   type?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryEventSubscriptionsForWheelArgs = {
-  randomWheelId: Scalars['String'];
 };
 
 
@@ -659,6 +659,11 @@ export type QueryRewardGroupsArgs = {
 
 export type QueryRewardLinksArgs = {
   rewardIds?: Maybe<Array<Scalars['String']>>;
+};
+
+
+export type QuerySyncForWheelArgs = {
+  randomWheelId: Scalars['String'];
 };
 
 export enum QueryMode {
@@ -694,20 +699,15 @@ export type RandomWheel = {
 export type RandomWheelCount = {
   __typename?: 'RandomWheelCount';
   entries: Scalars['Int'];
-  eventSubscriptions: Scalars['Int'];
   likes: Scalars['Int'];
   members: Scalars['Int'];
+  wheelSync: Scalars['Int'];
   winners: Scalars['Int'];
 };
 
 
 export type RandomWheelCountEntriesArgs = {
   where?: Maybe<RandomWheelEntryWhereInput>;
-};
-
-
-export type RandomWheelCountEventSubscriptionsArgs = {
-  where?: Maybe<EventSubscriptionWhereInput>;
 };
 
 
@@ -718,6 +718,11 @@ export type RandomWheelCountLikesArgs = {
 
 export type RandomWheelCountMembersArgs = {
   where?: Maybe<RandomWheelMemberWhereInput>;
+};
+
+
+export type RandomWheelCountWheelSyncArgs = {
+  where?: Maybe<RandomWheelSyncWhereInput>;
 };
 
 
@@ -840,11 +845,6 @@ export type RandomWheelMemberWhereInput = {
   userId?: Maybe<UuidFilter>;
 };
 
-export type RandomWheelNullableRelationFilter = {
-  is?: Maybe<RandomWheelWhereInput>;
-  isNot?: Maybe<RandomWheelWhereInput>;
-};
-
 export type RandomWheelRelationFilter = {
   is?: Maybe<RandomWheelWhereInput>;
   isNot?: Maybe<RandomWheelWhereInput>;
@@ -881,6 +881,40 @@ export type RandomWheelRoleWhereInput = {
   name?: Maybe<StringFilter>;
 };
 
+export type RandomWheelSync = {
+  __typename?: 'RandomWheelSync';
+  createdAt: Scalars['DateTime'];
+  eventSubscriptionId?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  paused: Scalars['Boolean'];
+  pending: Scalars['Boolean'];
+  randomWheelId: Scalars['String'];
+  reward?: Maybe<CustomReward>;
+  rewardId: Scalars['String'];
+  useInput: Scalars['Boolean'];
+};
+
+export type RandomWheelSyncListRelationFilter = {
+  every?: Maybe<RandomWheelSyncWhereInput>;
+  none?: Maybe<RandomWheelSyncWhereInput>;
+  some?: Maybe<RandomWheelSyncWhereInput>;
+};
+
+export type RandomWheelSyncWhereInput = {
+  AND?: Maybe<Array<RandomWheelSyncWhereInput>>;
+  NOT?: Maybe<Array<RandomWheelSyncWhereInput>>;
+  OR?: Maybe<Array<RandomWheelSyncWhereInput>>;
+  createdAt?: Maybe<DateTimeFilter>;
+  eventSubscription?: Maybe<EventSubscriptionNullableRelationFilter>;
+  eventSubscriptionId?: Maybe<UuidNullableFilter>;
+  id?: Maybe<UuidFilter>;
+  paused?: Maybe<BoolFilter>;
+  randomWheel?: Maybe<RandomWheelRelationFilter>;
+  randomWheelId?: Maybe<UuidFilter>;
+  rewardId?: Maybe<StringFilter>;
+  useInput?: Maybe<BoolFilter>;
+};
+
 export type RandomWheelWhereInput = {
   AND?: Maybe<Array<RandomWheelWhereInput>>;
   NOT?: Maybe<Array<RandomWheelWhereInput>>;
@@ -890,7 +924,6 @@ export type RandomWheelWhereInput = {
   createdAt?: Maybe<DateTimeFilter>;
   editAnonymous?: Maybe<BoolFilter>;
   entries?: Maybe<RandomWheelEntryListRelationFilter>;
-  eventSubscriptions?: Maybe<EventSubscriptionListRelationFilter>;
   fadeDuration?: Maybe<IntFilter>;
   id?: Maybe<UuidFilter>;
   likes?: Maybe<RandomWheelLikeListRelationFilter>;
@@ -904,6 +937,7 @@ export type RandomWheelWhereInput = {
   theme?: Maybe<ColorThemeNullableRelationFilter>;
   themeId?: Maybe<UuidNullableFilter>;
   uniqueEntries?: Maybe<BoolFilter>;
+  wheelSync?: Maybe<RandomWheelSyncListRelationFilter>;
   winners?: Maybe<RandomWheelWinnerListRelationFilter>;
 };
 
@@ -941,6 +975,7 @@ export type RewardGroup = {
   __typename?: 'RewardGroup';
   _count?: Maybe<RewardGroupCount>;
   active: Scalars['Boolean'];
+  cooldownExpiry?: Maybe<Scalars['DateTime']>;
   id: Scalars['String'];
   items?: Maybe<Array<RewardGroupItem>>;
   name?: Maybe<Scalars['String']>;
@@ -950,13 +985,7 @@ export type RewardGroup = {
 
 export type RewardGroupCount = {
   __typename?: 'RewardGroupCount';
-  eventSubscriptions: Scalars['Int'];
   items: Scalars['Int'];
-};
-
-
-export type RewardGroupCountEventSubscriptionsArgs = {
-  where?: Maybe<EventSubscriptionWhereInput>;
 };
 
 
@@ -1008,11 +1037,6 @@ export type RewardGroupListRelationFilter = {
   some?: Maybe<RewardGroupWhereInput>;
 };
 
-export type RewardGroupNullableRelationFilter = {
-  is?: Maybe<RewardGroupWhereInput>;
-  isNot?: Maybe<RewardGroupWhereInput>;
-};
-
 export type RewardGroupRelationFilter = {
   is?: Maybe<RewardGroupWhereInput>;
   isNot?: Maybe<RewardGroupWhereInput>;
@@ -1023,7 +1047,7 @@ export type RewardGroupWhereInput = {
   NOT?: Maybe<Array<RewardGroupWhereInput>>;
   OR?: Maybe<Array<RewardGroupWhereInput>>;
   active?: Maybe<BoolFilter>;
-  eventSubscriptions?: Maybe<EventSubscriptionListRelationFilter>;
+  cooldownExpiry?: Maybe<DateTimeNullableFilter>;
   id?: Maybe<UuidFilter>;
   items?: Maybe<RewardGroupItemListRelationFilter>;
   name?: Maybe<StringNullableFilter>;
@@ -1277,7 +1301,7 @@ export type ColorThemeFragment = { __typename?: 'ColorTheme', id: string, name?:
 
 export type CustomRewardFragment = { __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string };
 
-export type EventSubscriptionFragment = { __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> };
+export type CustomRewardMenuItemFragment = { __typename?: 'CustomReward', id: string, title: string, backgroundColor: string, isEnabled: boolean, isPaused: boolean, image: string };
 
 export type RandomWheelDetailsFragment = { __typename?: 'RandomWheel', id: string, slug: string, name?: Maybe<string>, createdAt: any, rotation: number, spinDuration: number, fadeDuration: number, accessType: string, editable: boolean, editAnonymous: boolean, uniqueEntries: boolean, liked: boolean, theme?: Maybe<{ __typename?: 'ColorTheme', id: string, name?: Maybe<string>, colors: Array<string> }>, _count?: Maybe<{ __typename?: 'RandomWheelCount', entries: number }> };
 
@@ -1286,6 +1310,8 @@ export type RandomWheelEntryFragment = { __typename?: 'RandomWheelEntry', id: st
 export type RandomWheelWinnerFragment = { __typename?: 'RandomWheelWinner', id: string, name: string, createdAt: any, winnerIndex?: Maybe<number> };
 
 export type RandomWheelMemberFragment = { __typename?: 'RandomWheelMember', id: string, roleName: string, user: { __typename?: 'User', id: string, username: string, displayname?: Maybe<string> } };
+
+export type RandomWheelSyncFragment = { __typename?: 'RandomWheelSync', id: string, randomWheelId: string, eventSubscriptionId?: Maybe<string>, rewardId: string, paused: boolean, useInput: boolean, pending: boolean, createdAt: any };
 
 export type RewardGroupFragment = { __typename?: 'RewardGroup', id: string, name?: Maybe<string>, active: boolean, triggerSelected: boolean, userId: string, items?: Maybe<Array<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }>> };
 
@@ -1402,25 +1428,35 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
 
-export type DeleteEntriesRedemptionSyncMutationVariables = Exact<{
+export type AddWheelSyncMutationVariables = Exact<{
+  rewardId: Scalars['String'];
+  randomWheelId: Scalars['String'];
+  useInput?: Maybe<Scalars['Boolean']>;
+  addExisting?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type AddWheelSyncMutation = { __typename?: 'Mutation', addWheelSync?: Maybe<{ __typename?: 'RandomWheelSync', id: string, randomWheelId: string, eventSubscriptionId?: Maybe<string>, rewardId: string, paused: boolean, useInput: boolean, pending: boolean, createdAt: any }> };
+
+export type DeleteWheelSyncMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
 }>;
 
 
-export type DeleteEntriesRedemptionSyncMutation = { __typename?: 'Mutation', deleteEntriesRedemptionSync?: Maybe<boolean> };
+export type DeleteWheelSyncMutation = { __typename?: 'Mutation', deleteWheelSync?: Maybe<boolean> };
 
 export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DisconnectAccessTokenMutation = { __typename?: 'Mutation', disconnectAccessToken: boolean };
 
-export type PauseEntriesRedemptionSyncMutationVariables = Exact<{
+export type PauseWheelSyncMutationVariables = Exact<{
   id: Scalars['String'];
-  pause: Scalars['Boolean'];
+  paused: Scalars['Boolean'];
 }>;
 
 
-export type PauseEntriesRedemptionSyncMutation = { __typename?: 'Mutation', pauseEntriesRedemptionSync?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
+export type PauseWheelSyncMutation = { __typename?: 'Mutation', pauseWheelSync?: Maybe<{ __typename?: 'RandomWheelSync', id: string, randomWheelId: string, eventSubscriptionId?: Maybe<string>, rewardId: string, paused: boolean, useInput: boolean, pending: boolean, createdAt: any }> };
 
 export type CreateChannelRewardMutationVariables = Exact<{
   reward: CustomRewardCreateInput;
@@ -1508,16 +1544,6 @@ export type UpdateRewardGroupItemMutationVariables = Exact<{
 
 export type UpdateRewardGroupItemMutation = { __typename?: 'Mutation', updateRewardGroupItem?: Maybe<{ __typename?: 'RewardGroupItem', id: string, rewardGroupId: string, rewardId: string, rewardEnabled: boolean, triggerCooldown: boolean }> };
 
-export type SyncEntriesWithRedemptionMutationVariables = Exact<{
-  rewardId: Scalars['String'];
-  randomWheelId: Scalars['String'];
-  useInput?: Maybe<Scalars['Boolean']>;
-  addExisting?: Maybe<Scalars['Boolean']>;
-}>;
-
-
-export type SyncEntriesWithRedemptionMutation = { __typename?: 'Mutation', syncEntriesWithRedemption?: Maybe<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
-
 export type UpdateUserMutationVariables = Exact<{
   user: UserInput;
 }>;
@@ -1536,13 +1562,6 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: string, username: string, displayname?: Maybe<string> }> };
-
-export type EventSubscriptionsForWheelQueryVariables = Exact<{
-  randomWheelId: Scalars['String'];
-}>;
-
-
-export type EventSubscriptionsForWheelQuery = { __typename?: 'Query', eventSubscriptionsForWheel: Array<{ __typename?: 'EventSubscription', id: string, randomWheelId?: Maybe<string>, userId?: Maybe<string>, twitchUserId: string, type: string, rewardId?: Maybe<string>, condition?: Maybe<any>, useInput: boolean, paused: boolean, pending: boolean, reward?: Maybe<{ __typename?: 'CustomReward', id: string, broadcasterId: string, broadcasterName: string, broadcasterDisplayName: string, backgroundColor: string, isEnabled: boolean, cost: number, title: string, prompt: string, userInputRequired: boolean, maxRedemptionsPerStream?: Maybe<number>, maxRedemptionsPerUserPerStream?: Maybe<number>, globalCooldown?: Maybe<number>, isPaused: boolean, isInStock: boolean, redemptionsThisStream?: Maybe<number>, autoFulfill: boolean, cooldownExpiryDate?: Maybe<any>, image: string }> }> };
 
 export type MyRandomWheelsQueryVariables = Exact<{
   type?: Maybe<Scalars['String']>;
@@ -1608,6 +1627,13 @@ export type RewardLinksQueryVariables = Exact<{
 
 export type RewardLinksQuery = { __typename?: 'Query', rewardLinks: Array<{ __typename?: 'RewardLink', id: string, userId: string, rewardId: string, token: string, type: string }> };
 
+export type SyncForWheelQueryVariables = Exact<{
+  randomWheelId: Scalars['String'];
+}>;
+
+
+export type SyncForWheelQuery = { __typename?: 'Query', syncForWheel: Array<{ __typename?: 'RandomWheelSync', id: string, randomWheelId: string, eventSubscriptionId?: Maybe<string>, rewardId: string, paused: boolean, useInput: boolean, pending: boolean, createdAt: any, reward?: Maybe<{ __typename?: 'CustomReward', id: string, title: string, backgroundColor: string, isEnabled: boolean, isPaused: boolean, image: string }> }> };
+
 export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1652,23 +1678,16 @@ export const CustomRewardFragmentDoc = gql`
   image
 }
     `;
-export const EventSubscriptionFragmentDoc = gql`
-    fragment EventSubscription on EventSubscription {
+export const CustomRewardMenuItemFragmentDoc = gql`
+    fragment CustomRewardMenuItem on CustomReward {
   id
-  randomWheelId
-  userId
-  twitchUserId
-  type
-  rewardId
-  condition
-  useInput
-  paused
-  pending
-  reward {
-    ...CustomReward
-  }
+  title
+  backgroundColor
+  isEnabled
+  isPaused
+  image
 }
-    ${CustomRewardFragmentDoc}`;
+    `;
 export const RandomWheelDetailsFragmentDoc = gql`
     fragment RandomWheelDetails on RandomWheel {
   id
@@ -1724,6 +1743,18 @@ export const RandomWheelMemberFragmentDoc = gql`
   }
 }
     ${UserNameFragmentDoc}`;
+export const RandomWheelSyncFragmentDoc = gql`
+    fragment RandomWheelSync on RandomWheelSync {
+  id
+  randomWheelId
+  eventSubscriptionId
+  rewardId
+  paused
+  useInput
+  pending
+  createdAt
+}
+    `;
 export const RewardGroupDetailsFragmentDoc = gql`
     fragment RewardGroupDetails on RewardGroup {
   id
@@ -1941,14 +1972,30 @@ export const RegisterDocument = gql`
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
-export const DeleteEntriesRedemptionSyncDocument = gql`
-    mutation DeleteEntriesRedemptionSync($ids: [String!]!) {
-  deleteEntriesRedemptionSync(ids: $ids)
+export const AddWheelSyncDocument = gql`
+    mutation AddWheelSync($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
+  addWheelSync(
+    rewardId: $rewardId
+    randomWheelId: $randomWheelId
+    useInput: $useInput
+    addExisting: $addExisting
+  ) {
+    ...RandomWheelSync
+  }
+}
+    ${RandomWheelSyncFragmentDoc}`;
+
+export function useAddWheelSyncMutation() {
+  return Urql.useMutation<AddWheelSyncMutation, AddWheelSyncMutationVariables>(AddWheelSyncDocument);
+};
+export const DeleteWheelSyncDocument = gql`
+    mutation DeleteWheelSync($ids: [String!]!) {
+  deleteWheelSync(ids: $ids)
 }
     `;
 
-export function useDeleteEntriesRedemptionSyncMutation() {
-  return Urql.useMutation<DeleteEntriesRedemptionSyncMutation, DeleteEntriesRedemptionSyncMutationVariables>(DeleteEntriesRedemptionSyncDocument);
+export function useDeleteWheelSyncMutation() {
+  return Urql.useMutation<DeleteWheelSyncMutation, DeleteWheelSyncMutationVariables>(DeleteWheelSyncDocument);
 };
 export const DisconnectAccessTokenDocument = gql`
     mutation DisconnectAccessToken {
@@ -1959,16 +2006,16 @@ export const DisconnectAccessTokenDocument = gql`
 export function useDisconnectAccessTokenMutation() {
   return Urql.useMutation<DisconnectAccessTokenMutation, DisconnectAccessTokenMutationVariables>(DisconnectAccessTokenDocument);
 };
-export const PauseEntriesRedemptionSyncDocument = gql`
-    mutation PauseEntriesRedemptionSync($id: String!, $pause: Boolean!) {
-  pauseEntriesRedemptionSync(id: $id, pause: $pause) {
-    ...EventSubscription
+export const PauseWheelSyncDocument = gql`
+    mutation PauseWheelSync($id: String!, $paused: Boolean!) {
+  pauseWheelSync(id: $id, paused: $paused) {
+    ...RandomWheelSync
   }
 }
-    ${EventSubscriptionFragmentDoc}`;
+    ${RandomWheelSyncFragmentDoc}`;
 
-export function usePauseEntriesRedemptionSyncMutation() {
-  return Urql.useMutation<PauseEntriesRedemptionSyncMutation, PauseEntriesRedemptionSyncMutationVariables>(PauseEntriesRedemptionSyncDocument);
+export function usePauseWheelSyncMutation() {
+  return Urql.useMutation<PauseWheelSyncMutation, PauseWheelSyncMutationVariables>(PauseWheelSyncDocument);
 };
 export const CreateChannelRewardDocument = gql`
     mutation CreateChannelReward($reward: CustomRewardCreateInput!) {
@@ -2091,22 +2138,6 @@ export const UpdateRewardGroupItemDocument = gql`
 export function useUpdateRewardGroupItemMutation() {
   return Urql.useMutation<UpdateRewardGroupItemMutation, UpdateRewardGroupItemMutationVariables>(UpdateRewardGroupItemDocument);
 };
-export const SyncEntriesWithRedemptionDocument = gql`
-    mutation SyncEntriesWithRedemption($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
-  syncEntriesWithRedemption(
-    rewardId: $rewardId
-    randomWheelId: $randomWheelId
-    useInput: $useInput
-    addExisting: $addExisting
-  ) {
-    ...EventSubscription
-  }
-}
-    ${EventSubscriptionFragmentDoc}`;
-
-export function useSyncEntriesWithRedemptionMutation() {
-  return Urql.useMutation<SyncEntriesWithRedemptionMutation, SyncEntriesWithRedemptionMutationVariables>(SyncEntriesWithRedemptionDocument);
-};
 export const UpdateUserDocument = gql`
     mutation UpdateUser($user: UserInput!) {
   updateUser(user: $user) {
@@ -2145,17 +2176,6 @@ export const MeDocument = gql`
 
 export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
   return Urql.useQuery<MeQuery, MeQueryVariables>({ query: MeDocument, ...options });
-};
-export const EventSubscriptionsForWheelDocument = gql`
-    query EventSubscriptionsForWheel($randomWheelId: String!) {
-  eventSubscriptionsForWheel(randomWheelId: $randomWheelId) {
-    ...EventSubscription
-  }
-}
-    ${EventSubscriptionFragmentDoc}`;
-
-export function useEventSubscriptionsForWheelQuery(options: Omit<Urql.UseQueryArgs<EventSubscriptionsForWheelQueryVariables>, 'query'>) {
-  return Urql.useQuery<EventSubscriptionsForWheelQuery, EventSubscriptionsForWheelQueryVariables>({ query: EventSubscriptionsForWheelDocument, ...options });
 };
 export const MyRandomWheelsDocument = gql`
     query MyRandomWheels($type: String) {
@@ -2276,6 +2296,21 @@ export const RewardLinksDocument = gql`
 
 export function useRewardLinksQuery(options?: Omit<Urql.UseQueryArgs<RewardLinksQueryVariables>, 'query'>) {
   return Urql.useQuery<RewardLinksQuery, RewardLinksQueryVariables>({ query: RewardLinksDocument, ...options });
+};
+export const SyncForWheelDocument = gql`
+    query SyncForWheel($randomWheelId: String!) {
+  syncForWheel(randomWheelId: $randomWheelId) {
+    ...RandomWheelSync
+    reward {
+      ...CustomRewardMenuItem
+    }
+  }
+}
+    ${RandomWheelSyncFragmentDoc}
+${CustomRewardMenuItemFragmentDoc}`;
+
+export function useSyncForWheelQuery(options: Omit<Urql.UseQueryArgs<SyncForWheelQueryVariables>, 'query'>) {
+  return Urql.useQuery<SyncForWheelQuery, SyncForWheelQueryVariables>({ query: SyncForWheelDocument, ...options });
 };
 export const UserAccessTokenDocument = gql`
     query UserAccessToken {

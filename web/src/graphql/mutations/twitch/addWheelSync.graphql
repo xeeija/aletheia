@@ -1,0 +1,5 @@
+mutation AddWheelSync($rewardId: String!, $randomWheelId: String!, $useInput: Boolean, $addExisting: Boolean) {
+  addWheelSync(rewardId: $rewardId, randomWheelId: $randomWheelId, useInput: $useInput, addExisting: $addExisting) {
+    ...RandomWheelSync
+  }
+}
