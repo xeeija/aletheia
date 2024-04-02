@@ -25,22 +25,24 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          color: "text.secondary",
-          gap: 1,
-          mx: 3,
-        }}
-      >
-        <Typography sx={{ width: "max(40%, 260px)" }}>Title</Typography>
-        <Typography sx={{ width: "80px" }}>Cost</Typography>
-        <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
-        <Typography sx={{ width: "130px" }}>Enabled / Paused</Typography>
-        <Typography sx={{ width: "178px" }}></Typography>
-        {/* <Typography sx={{ width: "0" }}></Typography> */}
-      </Box>
+      {(!channelRewardsEmpty || fetchingRewards) && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            color: "text.secondary",
+            gap: 1,
+            mx: 3,
+          }}
+        >
+          <Typography sx={{ width: "max(40%, 260px)" }}>Title</Typography>
+          <Typography sx={{ width: "80px" }}>Cost</Typography>
+          <Typography sx={{ width: "max(10%, 140px)" }}>Status</Typography>
+          <Typography sx={{ width: "130px" }}>Enabled / Paused</Typography>
+          <Typography sx={{ width: "178px" }}></Typography>
+          {/* <Typography sx={{ width: "0" }}></Typography> */}
+        </Box>
+      )}
 
       {fetchingRewards && <SkeletonList n={4} height={72} />}
 

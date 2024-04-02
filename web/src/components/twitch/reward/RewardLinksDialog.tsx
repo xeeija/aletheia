@@ -67,8 +67,8 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
             <TiWarning />
           </SvgIcon>
           <Typography sx={{ color: "warning.main" }}>
-            Be careful! Everyone with the link can update the respective channel reward without authentication.
-            Don&apos;t share them publicly.
+            <b>Do not share these links publicly! </b>
+            Everyone with the link can update the respective channel reward <u>without authentication</u>.
           </Typography>
         </Box>
 

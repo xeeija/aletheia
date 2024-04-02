@@ -24,21 +24,23 @@ export const RewardGroups: FC<Props> = () => {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          color: "text.secondary",
-          gap: 1,
-          mx: 3,
-        }}
-      >
-        <Typography sx={{ width: "max(30%, 260px)" }}>Name</Typography>
-        <Typography sx={{ width: "max(12%, 180px)" }}>Status</Typography>
-        <Typography sx={{ width: "58px" }}>Active</Typography>
-        <Typography sx={{ width: "130px" }}></Typography>
-        {/* <Typography sx={{ width: "0" }}></Typography> */}
-      </Box>
+      {(!rewardGroupsEmpty || fetching) && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            color: "text.secondary",
+            gap: 1,
+            mx: 3,
+          }}
+        >
+          <Typography sx={{ width: "max(30%, 260px)" }}>Name</Typography>
+          <Typography sx={{ width: "max(12%, 180px)" }}>Status</Typography>
+          <Typography sx={{ width: "58px" }}>Active</Typography>
+          <Typography sx={{ width: "130px" }}></Typography>
+          {/* <Typography sx={{ width: "0" }}></Typography> */}
+        </Box>
+      )}
 
       {!fetching &&
         rewardGroups?.map((group) => (
