@@ -34,7 +34,7 @@ export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) 
       <Dialog
         keepMounted
         fullWidth
-        maxWidth="xs"
+        maxWidth="sm"
         open={open}
         onClose={(_, reason) => {
           if (reason === "backdropClick") {

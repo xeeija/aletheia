@@ -20,7 +20,7 @@ export const Wheel: FC<Props> = ({
   colors = [],
   rotation = 0,
   spinning,
-  spinDuration = 6000,
+  spinDuration = 8000,
 }) => {
   // const spinClickSounds = useMemo(() => Array(10).fill(0).map((v) => new Audio(`/audio/boob6-${v}.wav`)), [])
 

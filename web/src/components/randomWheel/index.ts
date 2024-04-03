@@ -1,7 +1,14 @@
 export * from "./AccessTypeBadge"
-export * from "./Wheel"
-export * from "./WheelList"
-export * from "./WheelListItem"
+
+export * from "./list/WheelList"
+export * from "./list/WheelListItem"
+
+export * from "./wheel/ShareWheelDropdown"
+export * from "./wheel/Wheel"
+export * from "./wheel/WheelControls"
+export * from "./wheel/WheelEntries"
+export * from "./wheel/WheelOptionsDropdown"
+export * from "./wheel/WheelSkeleton"
 
 export * from "./edit/CreateEditWheelDialog"
 export * from "./edit/CreateWheelForm"

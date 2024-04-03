@@ -4,7 +4,7 @@ import { FC } from "react"
 interface Props {
   open: boolean
   onClose: () => void
-  onClear: () => void
+  onClear: () => void | Promise<void>
 }
 
 export const ClearEntriesDialog: FC<Props> = ({ open, onClose, onClear }) => {
@@ -33,8 +33,8 @@ export const ClearEntriesDialog: FC<Props> = ({ open, onClose, onClear }) => {
         <Button
           color="error"
           variant="outlined"
-          onClick={() => {
-            onClear()
+          onClick={async () => {
+            await onClear()
             onClose()
           }}
         >
