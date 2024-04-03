@@ -102,11 +102,22 @@ export class EventSubResolver {
       },
     })
 
-    await handleSubscriptionSync(eventSub, prisma, socketIo, {
+    const newSubscriptionId = await handleSubscriptionSync(eventSub, prisma, socketIo, {
       twitchUserId: token.realTwitchUserId,
       userId: req.session.userId,
       rewardId: wheelSync.rewardId,
     })
+
+    if (newSubscriptionId !== wheelSync.eventSubscriptionId) {
+      const updated = await prisma.randomWheelSync.update({
+        where: { id: wheelSync.id },
+        data: {
+          eventSubscriptionId: newSubscriptionId,
+        },
+      })
+
+      return updated
+    }
 
     return wheelSync
   }

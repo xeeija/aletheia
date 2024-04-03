@@ -24,42 +24,48 @@ export const handleSubscriptionSync = async (
     where: {
       type: EventSubType.wheelSync,
       twitchUserId: subConfig.twitchUserId,
-      // rewardId: subConfig.rewardId ?? "",
-      // paused: false,
+      itemId: subConfig.rewardId,
     },
-    // include: {
-    //   wheelSync: {
-    //     include: {
-    //       randomWheel: true,
-    //     },
-    //   },
-    // },
   })
 
   const wheelSync = await prisma.randomWheelSync.findMany({
     where: {
       rewardId: subConfig.rewardId,
-      paused: false,
     },
     include: {
       randomWheel: true,
     },
   })
 
-  // const wheels = wheelSync.map((w) => w.randomWheel)
+  const activeSync = wheelSync.filter((s) => !s.paused)
 
   // delete subscription if no wheels need it
-  if (!wheelSync || wheelSync.length === 0) {
-    console.log("[eventsub] sync: no wheels for reward, removing subscription")
+  if (!activeSync || activeSync.length === 0) {
+    if (wheelSync.length === 0) {
+      console.log(`[eventsub] sync: no wheels for reward ${subConfig.rewardId}, removing subscription`)
+    } else {
+      console.log(`[eventsub] sync: no active wheels for reward ${subConfig.rewardId}, stopping subscription`)
+    }
 
     activeSubscriptions.get(existingSub?.id ?? "")?.stop()
     activeSubscriptions.delete(existingSub?.id ?? "")
 
-    await prisma.eventSubscription.delete({
-      where: { id: existingSub?.id ?? "" },
-    })
+    if (wheelSync.length === 0) {
+      await prisma.eventSubscription.delete({
+        where: { id: existingSub?.id ?? "" },
+      })
+      return null
+    } else {
+      await prisma.eventSubscription.update({
+        where: { id: existingSub?.id ?? "" },
+        data: {
+          paused: true,
+        },
+      })
+      return existingSub?.id
+    }
 
-    return null
+    // return null
   }
 
   const addedSub = eventSub.onChannelRedemptionAddForReward(
@@ -71,7 +77,7 @@ export const handleSubscriptionSync = async (
       )
 
       await Promise.all(
-        wheelSync.map(async (sync) => {
+        activeSync.map(async (sync) => {
           const wheel = sync.randomWheel
           const entryName = sync.useInput ? event.input || event.userDisplayName : event.userDisplayName
 
@@ -87,7 +93,7 @@ export const handleSubscriptionSync = async (
             })
 
             if (existingEntry) {
-              console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}'`)
+              console.log(`[eventsub] sync: skipped duplicate redemption '${entryName}' for wheel '${wheel.slug}'`)
               return
             }
           }
@@ -106,24 +112,21 @@ export const handleSubscriptionSync = async (
     }
   )
 
-  console.log("verified", addedSub.verified)
-
   const id = existingSub?.id ?? randomUUID()
 
   const subscription = await prisma.eventSubscription.upsert({
     where: { id },
-    update: {
-      type: EventSubType.wheelSync,
-      userId: subConfig.userId,
-      twitchUserId: subConfig.twitchUserId,
-      subscriptionType: SubscriptionType.redemptionAdd,
-    },
     create: {
       id,
       type: EventSubType.wheelSync,
       userId: subConfig.userId,
       twitchUserId: subConfig.twitchUserId,
       subscriptionType: SubscriptionType.redemptionAdd,
+      itemId: subConfig.rewardId,
+      paused: false,
+    },
+    update: {
+      paused: false,
     },
   })
 
@@ -194,6 +197,7 @@ export const handleSubscriptionRewardGroup = async (
   }
 
   const addedSub = eventSub.onChannelRedemptionAdd(subConfig.twitchUserId, async (event) => {
+    // debug
     console.log(
       `[eventsub] reward group: received redemption for ${event.broadcasterName}: '${event.rewardTitle}' from ${event.userName}`
     )
@@ -205,6 +209,7 @@ export const handleSubscriptionRewardGroup = async (
     )
 
     if (relevantGroups.length === 0) {
+      // debug
       console.log("[eventsub] reward group: no groups found")
       return
     }
@@ -302,18 +307,16 @@ export const handleSubscriptionRewardGroup = async (
 
   const subscription = await prisma.eventSubscription.upsert({
     where: { id },
-    update: {
-      type: EventSubType.rewardGroup,
-      userId: subConfig.userId,
-      twitchUserId: subConfig.twitchUserId,
-      subscriptionType: SubscriptionType.redemptionAdd,
-    },
     create: {
       id,
       type: EventSubType.rewardGroup,
       userId: subConfig.userId,
       twitchUserId: subConfig.twitchUserId,
       subscriptionType: SubscriptionType.redemptionAdd,
+      paused: false,
+    },
+    update: {
+      paused: false,
     },
   })
 
@@ -324,7 +327,6 @@ export const handleSubscriptionRewardGroup = async (
 
   return subscription.id
 }
-
 
 export const addExistingRedemptionsSync = async (
   apiClient: ApiClient,
@@ -343,17 +345,18 @@ export const addExistingRedemptionsSync = async (
 
   await redemptions.getNext()
 
-  if ((redemptions.current?.length ?? 0) === 0) {
+  if (!redemptions.current?.length) {
     return
   }
 
   let redemptionsCount = 0
+  let previousCursor: string | undefined = ""
 
   console.log(
     `[eventsub] sync: adding existing redemptions of ${redemptions.current?.[0].broadcaster_name} for ${redemptions.current?.[0].reward.title}`
   )
 
-  while (redemptions.current?.length !== 0) {
+  while (redemptions.current?.length) {
     await prisma.randomWheelEntry.createMany({
       data: (redemptions.current ?? []).map((r) => ({
         name: subConfig.useInput ? r.user_input || r.user_name : r.user_name,
@@ -362,6 +365,18 @@ export const addExistingRedemptionsSync = async (
     })
 
     redemptionsCount += redemptions.current?.length ?? 0
+
+    if (redemptionsCount >= 300) {
+      console.log(`[eventsub] sync: exceeded ${redemptionsCount} existing redemptions, stopping`)
+      break
+    }
+
+    if (redemptions.currentCursor === previousCursor) {
+      console.log(`[eventsub] sync: current cursor is the same as previous cursor, stopping`)
+      break
+    }
+
+    previousCursor = redemptions.currentCursor
 
     await redemptions.getNext()
   }
