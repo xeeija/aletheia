@@ -96,7 +96,7 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             </Box>
           </Box>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ opacity: 0.9 }}>
             {`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}
             {new Date(wheel.createdAt as string).toLocaleString()}
           </Typography>

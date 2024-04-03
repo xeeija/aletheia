@@ -13,6 +13,7 @@ export interface ConfirmDialogProps {
   icon?: ElementType
   children?: ReactNode
   cancelText?: ReactNode
+  id?: string
 }
 
 export const ConfirmDialog: FC<ConfirmDialogProps> = ({
@@ -26,6 +27,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   children,
   confirmText,
   cancelText,
+  id = "confirm",
 }) => {
   return (
     <Dialog
@@ -33,11 +35,11 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
       maxWidth={maxWidth}
       open={open}
       onClose={onClose}
-      aria-labelledby="dialog-title-confirm"
-      aria-describedby="dialog-description-confirm"
+      aria-labelledby={`dialog-title-${id}`}
+      aria-describedby={`dialog-description-${id}`}
     >
       <DialogTitle
-        id="dialog-title-confirm"
+        id={`dialog-title-${id}`}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -46,7 +48,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
       >
         {typeof title === "string" ? (
           <>
-            {icon && <SvgIcon component={icon} color={type} viewBox="0 -1 24 24" />}
+            {icon && <SvgIcon component={icon} color={type} viewBox="0 -2 24 24" />}
             <span>{title}</span>
           </>
         ) : (
@@ -54,7 +56,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         )}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="dialog-description-confirm">{children}</DialogContentText>
+        <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button color="secondary" variant="outlined" onClick={onClose}>
