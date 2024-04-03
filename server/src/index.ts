@@ -27,7 +27,9 @@ import { buildSchema } from "type-graphql"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  errorFormat: process.env.NODE_ENV === "production" ? "minimal" : "pretty",
+})
 
 process.on("beforeExit", async () => {
   await prisma.$disconnect()

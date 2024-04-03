@@ -328,6 +328,11 @@ export const handleSubscriptionRewardGroup = async (
   return subscription.id
 }
 
+type RandomWheelEntryInput = {
+  name: string
+  randomWheelId: string
+}
+
 export const addExistingRedemptionsSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
@@ -351,25 +356,69 @@ export const addExistingRedemptionsSync = async (
 
   let redemptionsCount = 0
   let previousCursor: string | undefined = ""
+  let newEntries: RandomWheelEntryInput[] = []
+  // const maxPerPage = 50
+
+  // only relevant when uniqueEntries is enabled
+  let skippedCount = 0
+  let existingEntries: string[] = []
+  let previousFetched = Date.now()
+
+  if (subConfig.uniqueEntries) {
+    const initialEntries = await prisma.randomWheelEntry.findMany({
+      where: {
+        randomWheelId: subConfig.randomWheelId,
+      },
+    })
+
+    existingEntries = initialEntries.map((e) => e.name)
+  }
 
   console.log(
     `[eventsub] sync: adding existing redemptions of ${redemptions.current?.[0].broadcaster_name} for ${redemptions.current?.[0].reward.title}`
   )
 
   while (redemptions.current?.length) {
+    newEntries = redemptions.current.map((r) => ({
+      name: subConfig.useInput ? r.user_input || r.user_name : r.user_name,
+      randomWheelId: subConfig.randomWheelId,
+    }))
+
+    // filter out duplicates if uniqueEntries is enabled
+    if (subConfig.uniqueEntries) {
+      // only fetch newly created entries again
+      const previousNewEntries = await prisma.randomWheelEntry.findMany({
+        where: {
+          randomWheelId: subConfig.randomWheelId,
+          createdAt: { gt: new Date(previousFetched) },
+        },
+      })
+
+      previousFetched = Date.now()
+
+      existingEntries = [...existingEntries, ...previousNewEntries.map((e) => e.name)]
+      newEntries = newEntries.filter((e) => !existingEntries.includes(e.name))
+    }
+
     await prisma.randomWheelEntry.createMany({
-      data: (redemptions.current ?? []).map((r) => ({
-        name: subConfig.useInput ? r.user_input || r.user_name : r.user_name,
-        randomWheelId: subConfig.randomWheelId,
-      })),
+      data: newEntries,
     })
 
-    redemptionsCount += redemptions.current?.length ?? 0
+    // redemptionsCount += redemptions.current?.length ?? 0
+    redemptionsCount += newEntries.length ?? 0
+    skippedCount += redemptions.current.length - newEntries.length
 
     if (redemptionsCount >= 300) {
       console.log(`[eventsub] sync: exceeded ${redemptionsCount} existing redemptions, stopping`)
       break
     }
+
+    // if (redemptions.current.length < maxPerPage) {
+    //   console.log(
+    //     `[eventsub] sync: page has less than max redemptions (${redemptions.current.length}/${maxPerPage}), stopping`
+    //   )
+    //   break
+    // }
 
     if (redemptions.currentCursor === previousCursor) {
       console.log(`[eventsub] sync: current cursor is the same as previous cursor, stopping`)
@@ -381,7 +430,9 @@ export const addExistingRedemptionsSync = async (
     await redemptions.getNext()
   }
 
-  console.log(`[eventsub] sync: added ${redemptionsCount} existing redemptions`)
+  console.log(
+    `[eventsub] sync: added ${redemptionsCount} existing redemptions${subConfig.uniqueEntries ? `, skipped ${skippedCount} redemptions` : ""}`
+  )
 
   socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
 }

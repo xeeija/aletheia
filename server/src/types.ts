@@ -76,6 +76,7 @@ export type EventSubConfigSyncAdd = {
   rewardId: string
   randomWheelId: string
   useInput: boolean
+  uniqueEntries: boolean
 }
 
 export type EventSubConfigGroup = {

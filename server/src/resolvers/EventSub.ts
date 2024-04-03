@@ -60,6 +60,9 @@ export class EventSubResolver {
         randomWheelId,
         rewardId,
       },
+      include: {
+        randomWheel: addExisting,
+      },
     })
 
     const subscriptionId = await handleSubscriptionSync(eventSub, prisma, socketIo, {
@@ -74,6 +77,7 @@ export class EventSubResolver {
         rewardId,
         randomWheelId,
         useInput,
+        uniqueEntries: newWheelSync.randomWheel.uniqueEntries,
       })
     }
 
