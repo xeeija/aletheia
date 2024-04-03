@@ -1,6 +1,6 @@
-import { Box, List, ListItem, ListItemText, Skeleton, SvgIcon, Typography } from "@mui/material"
+import { NoData } from "@/components"
+import { Box, List, ListItem, ListItemText, Skeleton, Typography } from "@mui/material"
 import { FC } from "react"
-import { HiSpeakerphone } from "react-icons/hi"
 
 interface Winner {
   name: string
@@ -47,10 +47,12 @@ export const WinnerList: FC<Props> = ({ winners, spinning, editable }) => {
   ) : (
     // No winners yet
     <Box sx={{ textAlign: "center", p: 3 }}>
-      <Typography variant="h6" color="textSecondary">
-        <SvgIcon component={HiSpeakerphone} fontSize="large" />
-        <div>No one has won yet ...</div>
-      </Typography>
+      <NoData iconSize="md">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+          <Typography variant="h6">Spin to win!</Typography>
+          <Typography color="text.secondary">No one has won yet.</Typography>
+        </Box>
+      </NoData>
     </Box>
   )
 }

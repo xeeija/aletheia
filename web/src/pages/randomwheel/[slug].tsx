@@ -15,9 +15,9 @@ import {
 import { useAuth, useRandomWheel } from "@/hooks"
 import NotFoundPage from "@/pages/404"
 import {
-  Badge,
   Box,
   Button,
+  Chip,
   IconButton,
   InputAdornment,
   List,
@@ -350,17 +350,17 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
             {(wheel.editable || wheel.editAnonymous) && (
               <Box sx={{ gridArea: "controls" }}>
                 <Paper sx={{ p: 2, display: "flex", gap: 2 }}>
-                  <Badge badgeContent={entries?.length} max={9999} color="success">
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      disabled={!entries?.length || wheel.spinning}
-                      endIcon={<SvgIcon component={HiRefresh} viewBox="0 0 20 20" />}
-                      onClick={() => void spin()}
-                    >
-                      Spin
-                    </Button>
-                  </Badge>
+                  {/* <Badge badgeContent={entries?.length} max={9999} color="success"> */}
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    disabled={!entries?.length || wheel.spinning}
+                    endIcon={<SvgIcon component={HiRefresh} viewBox="0 0 20 20" />}
+                    onClick={() => void spin()}
+                  >
+                    Spin
+                  </Button>
+                  {/* </Badge> */}
 
                   <Button
                     color="error"
@@ -400,8 +400,50 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
                     borderStartEndRadius: 6,
                   }}
                 >
-                  <Tab label="Names" />
-                  <Tab label="Winners" />
+                  {/* <Tooltip
+                    arrow
+                    placement="top"
+                    enterDelay={1000}
+                    title={entries?.length ? `${entries?.length ?? 0} entries` : ""}
+                  > */}
+                  <Tab
+                    sx={{ flexDirection: "row-reverse", gap: 1 }}
+                    itemType="capitalize"
+                    label={
+                      <>
+                        <Chip
+                          label={entries?.length || 1}
+                          size="small"
+                          sx={{
+                            height: 22,
+                            transition: "transform 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                            transform: entries?.length ? "" : "scale(0)",
+                          }}
+                        />
+                        <span>Entries</span>
+                      </>
+                    }
+                  />
+                  {/* </Tooltip> */}
+
+                  <Tab
+                    sx={{ flexDirection: "row-reverse", gap: 1 }}
+                    itemType="capitalize"
+                    label={
+                      <>
+                        <Chip
+                          label={winners?.length || 1}
+                          size="small"
+                          sx={{
+                            height: 22,
+                            transition: "transform 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                            transform: winners?.length ? "" : "scale(0)",
+                          }}
+                        />
+                        <span>Winners</span>
+                      </>
+                    }
+                  />
                 </Tabs>
 
                 <TabPanel index={0} activeTab={entriesTab} fullHeight>

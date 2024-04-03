@@ -34,12 +34,31 @@ export const WheelFormFields: FC<Props> = () => {
           label="Access type"
           row
           options={[
-            { value: "PUBLIC", label: "Public", color: "success" },
-            { value: "PRIVATE", label: "Private", color: "secondary", disabled: !authenticated },
+            {
+              value: "PUBLIC",
+              label: "Public",
+              color: "success",
+              helperText: "Everyone with the link can view the wheel.",
+            },
+            {
+              value: "PRIVATE",
+              label: "Private",
+              color: "secondary",
+              disabled: !authenticated,
+              helperText: "Only members can view the wheel.",
+            },
           ]}
         />
 
-        <BooleanField name="editAnonymous" label="Everyone can edit the wheel" disabled={!authenticated} />
+        <BooleanField
+          name="editAnonymous"
+          label="Everyone can edit the wheel"
+          disabled={!authenticated}
+          helperText={
+            "If checked, everyone who can view the wheel can edit it. " +
+            "Otherwise, only members with the 'Edit' role can edit the wheel."
+          }
+        />
 
         <BooleanField
           name="uniqueEntries"
@@ -58,7 +77,7 @@ export const WheelFormFields: FC<Props> = () => {
             value: option.id,
             label: <ColorMenuItem noMenuItem name={option.name} colors={option.colors} />,
           }))}
-        ></SelectField>
+        />
       </Grid>
 
       <Grid item xs={12}>

@@ -42,6 +42,7 @@ export const NoData: FC<Props> = ({ iconSize = "lg", direction = "column", textP
         style={{
           maxWidth: "100%",
           height: "auto",
+          marginBottom: "0.5rem",
         }}
       />
 
