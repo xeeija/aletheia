@@ -44,9 +44,8 @@ export const WheelFormFields: FC<Props> = () => {
         <BooleanField
           name="uniqueEntries"
           label="Only allow unique entries"
-          // helperText="Changes for synchronized entries take effect only after you pause and resume the synchronization."
-          helperText="For the changes to take effect for synchronized entries, you have to pause and resume synchronizations."
           disabled={!authenticated}
+          helperText="Exisiting duplicate entries in the wheel are not removed."
         />
       </Grid>
 

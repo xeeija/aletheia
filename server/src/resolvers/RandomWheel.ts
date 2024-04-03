@@ -10,6 +10,8 @@ import {
 } from "@/generated/graphql"
 import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers"
 import { AppError, createAppErrorUnion } from "@/resolvers/types"
+import { accessTokenForUser } from "@/twitch"
+import { handleSubscriptionSync } from "@/twitch/events"
 import type { GraphqlContext } from "@/types"
 import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
@@ -366,7 +368,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelFull, { nullable: true })
   async updateRandomWheel(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
+    @Ctx() { prisma, req, socketIo, eventSub }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("id") id: string,
     @Arg("options") { theme, ...wheelOptions }: RandomWheelInput
@@ -441,6 +443,27 @@ export class RandomWheelResolver {
       })
 
       socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")
+
+      // update wheel sync eventsub when uniqueEntries changes
+      if (randomWheel.uniqueEntries !== newWheel.uniqueEntries) {
+        const token = await accessTokenForUser({ req, prisma })
+
+        const wheelSync = await prisma.randomWheelSync.findMany({
+          where: {
+            randomWheelId: newWheel.id,
+          },
+        })
+
+        await Promise.all(
+          wheelSync.map(async (sync) => {
+            await handleSubscriptionSync(eventSub, prisma, socketIo, {
+              twitchUserId: token.realTwitchUserId,
+              userId: req.session.userId,
+              rewardId: sync.rewardId,
+            })
+          })
+        )
+      }
 
       return newWheel
     } catch (ex: unknown) {
