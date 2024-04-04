@@ -3,7 +3,7 @@ import { AddEntryForm, EntryList, WinnerList } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, RandomWheelWinnerFragment } from "@/generated/graphql"
 import { RandomWheelDetails } from "@/hooks"
 import { Box, Chip, Paper, Tab, Tabs } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, useDeferredValue, useState, useTransition } from "react"
 
 interface Props {
   wheel: RandomWheelDetails
@@ -14,13 +14,16 @@ interface Props {
 export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
   const [entriesTab, setEntriesTab] = useState(0)
 
+  const [, startTransition] = useTransition()
+  const deferredTab = useDeferredValue(entriesTab)
+
   // const [{ entries, winners }] = useRandomWheel(wheel.slug, { entries: true, winners: true })
 
   return (
     <Paper sx={{ height: "100%" }}>
       <Tabs
-        value={entriesTab}
-        onChange={(_, value: number) => setEntriesTab(value)}
+        value={deferredTab}
+        onChange={(_, value: number) => startTransition(() => setEntriesTab(value))}
         variant="fullWidth"
         sx={{
           borderStartStartRadius: 6,
@@ -34,10 +37,11 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
         title={entries?.length ? `${entries?.length ?? 0} entries` : ""}
       > */}
         <Tab
-          sx={{ flexDirection: "row-reverse", gap: 1 }}
+          sx={{ flexDirection: "row", gap: 1 }}
           itemType="capitalize"
           label={
             <>
+              <span>Entries</span>
               <Chip
                 label={entries?.length || 1}
                 size="small"
@@ -47,17 +51,17 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
                   transform: entries?.length ? "" : "scale(0)",
                 }}
               />
-              <span>Entries</span>
             </>
           }
         />
         {/* </Tooltip> */}
 
         <Tab
-          sx={{ flexDirection: "row-reverse", gap: 1 }}
+          sx={{ flexDirection: "row", gap: 1 }}
           itemType="capitalize"
           label={
             <>
+              <span>Winners</span>
               <Chip
                 label={winners?.length || 1}
                 size="small"
@@ -67,12 +71,10 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
                   transform: winners?.length ? "" : "scale(0)",
                 }}
               />
-              <span>Winners</span>
             </>
           }
         />
       </Tabs>
-
       <TabPanel index={0} activeTab={entriesTab} fullHeight>
         <Box
           sx={{
@@ -99,7 +101,6 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
           )}
         </Box>
       </TabPanel>
-
       <TabPanel index={1} activeTab={entriesTab} fullHeight>
         <WinnerList
           winners={(winners ?? []).map((winner) => ({

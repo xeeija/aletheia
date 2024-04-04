@@ -19,6 +19,8 @@ export * from "./edit/WheelFormFields"
 export * from "./entry/AddEntryForm"
 export * from "./entry/ClearEntriesDialog"
 export * from "./entry/EntryList"
+export * from "./entry/EntryListItem"
+export * from "./entry/UpdateEntryForm"
 export * from "./entry/WinnerDialog"
 export * from "./entry/WinnerList"
 

@@ -51,7 +51,7 @@ export const RadioGroupField: FC<Props> = ({ name, label, helperText, row, optio
         {children}
       </RadioGroup>
       {(helperText || optionHelperText) && (
-        <FormHelperText sx={{ mt: -0.25, ml: 0, mb: 0.5 }}>
+        <FormHelperText component={"div"} sx={{ mt: -0.25, ml: 0, mb: 0.5 }}>
           <div>{helperText}</div>
           <div>{optionHelperText}</div>
         </FormHelperText>
