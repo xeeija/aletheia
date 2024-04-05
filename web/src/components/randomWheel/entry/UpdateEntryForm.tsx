@@ -44,7 +44,7 @@ export const UpdateEntryForm: FC<Props> = ({ entry, totalWeight, disabled }) => 
             hiddenArrows
             disabled={disabled}
             tooltip={weight}
-            tooltipProps={{ placement: "left" }}
+            tooltipProps={{ placement: "top" }}
             sx={{ width: 48 }}
             inputProps={{
               style: {

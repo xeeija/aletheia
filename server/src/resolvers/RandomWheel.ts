@@ -97,7 +97,7 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
 
   const include: Prisma.RandomWheelInclude = {
     entries: "entries" in fields && {
-      orderBy: { createdAt: "asc" },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     },
     winners: "winners" in fields && {
       orderBy: { createdAt: "desc" },

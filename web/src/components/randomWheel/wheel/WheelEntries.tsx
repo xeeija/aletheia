@@ -82,7 +82,7 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
             flexDirection: "column",
             justifyContent: "space-between",
             height: "100%",
-            gap: 2,
+            gap: 1,
           }}
         >
           <EntryList

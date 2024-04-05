@@ -46,6 +46,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
       dense
       button
       sx={{
+        mt: "3px",
         "&:hover + .hoverItem, &:hover .hoverItem, &:focus-within + .hoverItem, &:focus-within .hoverItem": {
           transition: itemTransition[1],
           visibility: "visible",
@@ -63,7 +64,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
           fontWeight: 500,
         }}
       />
-      {editable && (
+      {editable && !scrolling && (
         <>
           <ListItemSecondaryAction
             className="hoverItem"
@@ -85,28 +86,24 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
               },
             }}
           >
-            {!scrolling && (
-              <>
-                <UpdateEntryForm entry={entry} disabled={disabled} totalWeight={totalWeight} />
+            <UpdateEntryForm entry={entry} disabled={disabled} totalWeight={totalWeight} />
 
-                <Tooltip title="Delete" arrow enterDelay={1000} placement="top">
-                  <IconButton
-                    onClick={() => void onDelete(entry)}
-                    role="button"
-                    disabled={disabled}
-                    aria-label={`Delete entry '${entry.name}'`}
-                  >
-                    <SvgIcon
-                      component={HiTrash}
-                      fontSize="small"
-                      viewBox="0 0 20 20"
-                      color={disabled ? "disabled" : "error"}
-                    />
-                    {/* <TiDelete fontSize="small" color="error" /> */}
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
+            <Tooltip title="Delete" arrow enterDelay={1000} placement="top">
+              <IconButton
+                onClick={() => void onDelete(entry)}
+                role="button"
+                disabled={disabled}
+                aria-label={`Delete entry '${entry.name}'`}
+              >
+                <SvgIcon
+                  component={HiTrash}
+                  fontSize="small"
+                  viewBox="0 0 20 20"
+                  color={disabled ? "disabled" : "error"}
+                />
+                {/* <TiDelete fontSize="small" color="error" /> */}
+              </IconButton>
+            </Tooltip>
           </ListItemSecondaryAction>
         </>
       )}

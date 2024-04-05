@@ -1,9 +1,9 @@
 import { AlertPopup } from "@/components"
+import { EntryListItem } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"
-import { List, ListItem, Skeleton } from "@mui/material"
-import { FC, ReactNode, useEffect, useRef, useState } from "react"
-import { Virtuoso } from "react-virtuoso"
-import { EntryListItem } from "./EntryListItem"
+import { List, Skeleton } from "@mui/material"
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
 interface Props {
   entries: RandomWheelEntryFragment[]
@@ -13,8 +13,8 @@ interface Props {
   autoScrollThreshold?: number
 }
 
-export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 50 }) => {
-  const maxHeight = 470 + (!editable ? 88 + 64 : 0)
+export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 3 }) => {
+  const maxHeight = 480 + (!editable ? 88 + 64 : 0)
 
   // const [deleteEnabled, setDeleteEnabled] = useState(false)
 
@@ -55,37 +55,52 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
 
   const [showError, setShowError] = useState<ReactNode>(null)
   const [scrolling, setScrolling] = useState(false)
+  const [scrolledBottom, setScrolledBottom] = useState(false)
+
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   // auto scroll
-  const listRef = useRef<HTMLUListElement>(null)
   useEffect(() => {
-    const list = listRef?.current
-
-    // scrollHeight - clientHeight = scrollTopMax
-    if (autoScroll && list && list.scrollHeight - list.clientHeight - list.scrollTop < autoScrollThreshold) {
-      list?.scrollTo({ top: list.scrollHeight - list.clientHeight })
+    if (autoScroll && scrolledBottom) {
+      setTimeout(() => {
+        virtuosoRef.current?.scrollToIndex({ index: entries.length, behavior: "smooth" })
+      }, 100)
     }
-  }, [entries, listRef, autoScroll, autoScrollThreshold])
+  }, [entries, autoScroll, scrolledBottom])
 
-  const totalWeight = entries.reduce((acc, entry) => acc + entry.weight, 0)
-  const entriesCount = entries.length
+  const totalWeight = useMemo(() => entries.reduce((acc, entry) => acc + entry.weight, 0), [entries])
+
+  const widths = useMemo(
+    () =>
+      Array(10)
+        .fill(0)
+        .map(() => (2 + Math.round(Math.random() * 3)) * 10),
+    []
+  )
 
   return (
     <>
-      <List role="list" ref={listRef} sx={{ py: 0, overflowY: "auto", maxHeight: maxHeight }}>
+      <List role="list" sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
         {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
         <AlertPopup severity="success" messageState={[showError, setShowError]} />
 
         <Virtuoso
-          style={{ height: maxHeight }}
+          ref={virtuosoRef}
           data={entries}
+          computeItemKey={(_, entry) => entry.id}
           isScrolling={setScrolling}
+          style={{ height: maxHeight }}
+          rangeChanged={({ endIndex }) => {
+            setScrolledBottom(endIndex >= entries.length - autoScrollThreshold)
+          }}
           components={{
-            ScrollSeekPlaceholder: ScrolLSkeleton,
+            ScrollSeekPlaceholder: ({ height, index }) => (
+              <Skeleton width={`${widths[index % widths.length]}%`} height={height} />
+            ),
           }}
           scrollSeekConfiguration={{
-            enter: (velocity) => entriesCount > 100 && Math.abs(velocity) > 120,
-            exit: (velocity) => Math.abs(velocity) < 80,
+            enter: (velocity) => entries.length > 100 && Math.abs(velocity) > 300,
+            exit: (velocity) => Math.abs(velocity) < 120,
           }}
           itemContent={(_, entry) => (
             <EntryListItem
@@ -112,10 +127,19 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
   )
 }
 
-export const ScrolLSkeleton: FC = () => {
+// type ScrollProps = ScrollSeekPlaceholderProps & { widths?: number[]; width?: number }
+type ScrollProps = { height: number; width?: number }
+
+// export const ScrolLSkeleton: FC<ScrollProps> = ({ index, height, widths, width }) => {
+export const ScrolLSkeleton: FC<ScrollProps> = ({ height, width }) => {
+  // const width = widths?.length ? `${widths[index % widths?.length]}%` : "42%"
   return (
-    <ListItem>
-      <Skeleton width="40%" sx={{ mt: 0.125, ml: -1 }} />
-    </ListItem>
+    // <ListItem>
+    <Skeleton width={`${width}%`} height={height} />
+    // sx={{
+    //   mt: 0.125,
+    //   ml: -1,
+    // }}
+    // </ListItem>
   )
 }

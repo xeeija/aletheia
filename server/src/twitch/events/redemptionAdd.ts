@@ -379,9 +379,10 @@ export const addExistingRedemptionsSync = async (
   )
 
   while (redemptions.current?.length) {
-    newEntries = redemptions.current.map((r) => ({
+    newEntries = redemptions.current.map((r, i) => ({
       name: subConfig.useInput ? r.user_input || r.user_name : r.user_name,
       randomWheelId: subConfig.randomWheelId,
+      createdAt: new Date(Date.now() + i),
     }))
 
     // filter out duplicates if uniqueEntries is enabled
