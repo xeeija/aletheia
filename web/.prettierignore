@@ -1,5 +1,5 @@
 tsconfig.json
 # next.config.js
 README.md
-src/generated/graphql.tsx
+# src/generated/graphql.tsx
 eslint_report.json

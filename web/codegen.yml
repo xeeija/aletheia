@@ -7,3 +7,11 @@ generates:
       - "typescript"
       - "typescript-operations"
       - "typescript-urql"
+    config:
+      scalars:
+        DateTime: "Date"
+        BigInt: "bigint"
+        JSON: "Record<string, any>"
+    hooks:
+      afterOneFileWrite:
+      - "prettier --write --log-level warn"
