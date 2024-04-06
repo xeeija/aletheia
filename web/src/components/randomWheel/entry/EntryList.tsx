@@ -1,8 +1,7 @@
-import { AlertPopup } from "@/components"
 import { EntryListItem } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"
 import { List, Skeleton } from "@mui/material"
-import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useMemo, useRef, useState } from "react"
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
 interface Props {
@@ -51,9 +50,6 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
   //   delay: 1000,
   // })
 
-  // map delays
-
-  const [showError, setShowError] = useState<ReactNode>(null)
   const [scrolling, setScrolling] = useState(false)
   const [scrolledBottom, setScrolledBottom] = useState(false)
 
@@ -61,11 +57,22 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
 
   // auto scroll
   useEffect(() => {
-    if (autoScroll && scrolledBottom) {
-      setTimeout(() => {
-        virtuosoRef.current?.scrollToIndex({ index: entries.length, behavior: "smooth" })
-      }, 100)
+    if (!autoScroll) {
+      return
     }
+
+    let timeout: NodeJS.Timeout
+
+    if (scrolledBottom) {
+      // delay scroll to bottom, so the list doesn't jump around, when scrolling up again
+      timeout = setTimeout(() => {
+        virtuosoRef.current?.scrollToIndex({ index: entries.length, behavior: "smooth" })
+      }, 200)
+    }
+
+    // cancel scroll to bottom, if scrolled up again
+    // also fires when entries change, but is started again above if still scrolled to bottom
+    return () => clearTimeout(timeout)
   }, [entries, autoScroll, scrolledBottom])
 
   const totalWeight = useMemo(() => entries.reduce((acc, entry) => acc + entry.weight, 0), [entries])
@@ -82,7 +89,6 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
     <>
       <List role="list" sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
         {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
-        <AlertPopup severity="success" messageState={[showError, setShowError]} />
 
         <Virtuoso
           ref={virtuosoRef}
@@ -98,10 +104,12 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
               <Skeleton width={`${widths[index % widths.length]}%`} height={height} />
             ),
           }}
-          scrollSeekConfiguration={{
-            enter: (velocity) => entries.length > 100 && Math.abs(velocity) > 300,
-            exit: (velocity) => Math.abs(velocity) < 120,
-          }}
+          scrollSeekConfiguration={
+            entries.length > 100 && {
+              enter: (velocity) => Math.abs(velocity) > 300,
+              exit: (velocity) => Math.abs(velocity) < 120,
+            }
+          }
           itemContent={(_, entry) => (
             <EntryListItem
               entry={entry}
