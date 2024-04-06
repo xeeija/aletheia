@@ -1,6 +1,7 @@
+import { NoData } from "@/components"
 import { EntryListItem } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"
-import { List, Skeleton } from "@mui/material"
+import { Box, List, Skeleton, Typography } from "@mui/material"
 import { FC, useEffect, useMemo, useRef, useState } from "react"
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
@@ -90,36 +91,50 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
       <List role="list" sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
         {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
 
-        <Virtuoso
-          ref={virtuosoRef}
-          data={entries}
-          computeItemKey={(_, entry) => entry.id}
-          isScrolling={setScrolling}
-          style={{ height: maxHeight }}
-          rangeChanged={({ endIndex }) => {
-            setScrolledBottom(endIndex >= entries.length - autoScrollThreshold)
-          }}
-          components={{
-            ScrollSeekPlaceholder: ({ height, index }) => (
-              <Skeleton width={`${widths[index % widths.length]}%`} height={height} />
-            ),
-          }}
-          scrollSeekConfiguration={
-            entries.length > 100 && {
-              enter: (velocity) => Math.abs(velocity) > 300,
-              exit: (velocity) => Math.abs(velocity) < 120,
+        {entries.length > 0 && (
+          <Virtuoso
+            ref={virtuosoRef}
+            data={entries}
+            computeItemKey={(_, entry) => entry.id}
+            isScrolling={setScrolling}
+            style={{ height: maxHeight }}
+            rangeChanged={({ endIndex }) => {
+              setScrolledBottom(endIndex >= entries.length - autoScrollThreshold)
+            }}
+            components={{
+              ScrollSeekPlaceholder: ({ height, index }) => (
+                <Skeleton width={`${widths[index % widths.length]}%`} height={height} />
+              ),
+            }}
+            scrollSeekConfiguration={
+              entries.length > 100 && {
+                enter: (velocity) => Math.abs(velocity) > 300,
+                exit: (velocity) => Math.abs(velocity) < 120,
+              }
             }
-          }
-          itemContent={(_, entry) => (
-            <EntryListItem
-              entry={entry}
-              editable={editable}
-              disabled={spinning}
-              totalWeight={totalWeight}
-              scrolling={scrolling}
-            />
-          )}
-        />
+            itemContent={(_, entry) => (
+              <EntryListItem
+                entry={entry}
+                editable={editable}
+                disabled={spinning}
+                totalWeight={totalWeight}
+                scrolling={scrolling}
+              />
+            )}
+          />
+        )}
+
+        {!entries.length && (
+          <Box sx={{ textAlign: "center", p: 3, mt: 0.5 }}>
+            <NoData iconSize="md">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Typography variant="h6" color="text.secondary">
+                  Add an entry below.
+                </Typography>
+              </Box>
+            </NoData>
+          </Box>
+        )}
 
         {/* {entries.map((entry) => (
         <EntryListItem
