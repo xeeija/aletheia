@@ -103,10 +103,7 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
       </TabPanel>
       <TabPanel index={1} activeTab={entriesTab} fullHeight>
         <WinnerList
-          winners={(winners ?? []).map((winner) => ({
-            ...winner,
-            createdAt: new Date(winner.createdAt as string),
-          }))}
+          winners={winners ?? []}
           spinning={wheel.spinning}
           editable={wheel.editable || wheel.editAnonymous}
         />

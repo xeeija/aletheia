@@ -17,7 +17,7 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
           <CardContent>
             <Typography variant="h6">{wheel.name || `Wheel #${wheel.slug}`}</Typography>
             <Typography variant="body2" color="text.secondary">
-              {new Date(wheel.createdAt as string).toLocaleString(undefined, {
+              {new Date(wheel.createdAt).toLocaleString(undefined, {
                 dateStyle: "medium",
                 timeStyle: "short",
               })}
