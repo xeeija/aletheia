@@ -32,7 +32,7 @@ class RewardGroupItemInput {
 }
 
 @ObjectType("RewardGroup")
-class RewardGroupFull extends RewardGroup {
+export class RewardGroupFull extends RewardGroup {
   @Field(() => [RewardGroupItem], { nullable: true })
   declare items?: RewardGroupItem[]
 }

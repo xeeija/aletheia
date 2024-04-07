@@ -1,13 +1,22 @@
+import { RewardGroupFull } from "@/resolvers"
 import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { Request, Response } from "express"
+import { Session } from "express-session"
 import { Socket as SocketDefault, Server as SocketServerDefault } from "socket.io"
 
 // Define custom properties on the session
 declare module "express-session" {
   interface Session {
     userId: string
+  }
+}
+
+// augment the Socket.request type from socket.io (request is of type IncomingMessage) and add session
+declare module "http" {
+  interface IncomingMessage {
+    session: Session
   }
 }
 
@@ -45,11 +54,13 @@ export interface ServerToClientEvents {
   // "wheel:winners": (winner: RandomWheelWinner) => void
   "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
   "wheel:update": (type: string) => void
+  "rewardgroup:pause": (rewardGroup: RewardGroupFull[], paused: boolean) => void
 }
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
   "wheel:entries": (type: "add" | "update", wheelId: string) => void
+  "rewardgroup:join": () => void
 }
 
 export interface InterServerEvents {}

@@ -2,7 +2,7 @@ import type { SocketHandler } from "@/types"
 
 // const prefix = "wheel"
 
-export const randomWheelHandlers: SocketHandler = (socket) => {
+export const randomWheelHandler: SocketHandler = (socket) => {
   socket.on("wheel:join", async (id) => {
     // console.log(`join wheel/${id.substring(0, 6)}`)
 

@@ -1,7 +1,7 @@
 import "reflect-metadata" // must be before any resolvers or type-graphql imports
 
 import { Resolvers } from "@/resolvers"
-import { randomWheelHandlers } from "@/socket"
+import { socketHandlers } from "@/socket"
 import {
   apiClient,
   eventSubMiddleware,
@@ -57,26 +57,26 @@ const main = async () => {
     console.warn("No session secret is set")
   }
 
+  const sessionMiddleware = session({
+    name: "asid",
+    secret: process.env.SESSION_SECRET?.split(" ").filter((s) => s) ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "lax",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      //maxAge: 1000 * 60 * 60 * 24
+    },
+    store: new PostgresStore({
+      tableName: "_session",
+      createTableIfMissing: true,
+      conString: process.env.DATABASE_URL,
+    }),
+  })
+
   // Session
-  app.use(
-    session({
-      name: "asid",
-      secret: process.env.SESSION_SECRET?.split(" ").filter((s) => s) ?? "sh!fAei%shda&Dbffe$uKso/UkdhjLai)sdn",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        sameSite: "lax",
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        //maxAge: 1000 * 60 * 60 * 24
-      },
-      store: new PostgresStore({
-        tableName: "_session",
-        createTableIfMissing: true,
-        conString: process.env.DATABASE_URL,
-      }),
-    })
-  )
+  app.use(sessionMiddleware)
 
   // Websocket
 
@@ -84,15 +84,52 @@ const main = async () => {
   const socketIo = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
     path: process.env.WEBSOCKET_PATH ?? "/socket",
     cors: {
+      credentials: true,
       origin: originUrl,
     },
   })
 
+  socketIo.engine.use(sessionMiddleware)
+
+  // const sessionReloadInterval = 60 * 60 * 1000
+
   socketIo.on("connection", (socket) => {
-    randomWheelHandlers(socket, {
-      socketIo,
-      prisma,
-    })
+    // periodically reload the session
+    // const timer = setInterval(() => {
+    //   socket.request.session.reload((err?: Error) => {
+    //     if (err) {
+    //       // debug
+    //       // console.warn("[websocket] error reloading session:", socket.id, err)
+
+    //       // forces the client to reconnect
+    //       socket.conn.close()
+    //     }
+    //   })
+    // }, sessionReloadInterval)
+
+    // socket.on("disconnect", () => {
+    //   clearInterval(timer)
+    // })
+
+    // reload the session on a connection
+    // reloading fails with an error if the request has no session, so user is not logged in
+    // socket.use((_, next) => {
+    //   socket.request.session.reload((err?: Error) => {
+    //     console.warn("[websocket] Error: id", socket.id.slice(0, 6), err)
+
+    //     if (err) {
+    //       if (err.message !== "failed to load session") {
+    //         console.warn("[websocket] Error: id", socket.id.slice(0, 6), err.message)
+    //       }
+
+    //       socket.disconnect()
+    //     } else {
+    //       next()
+    //     }
+    //   })
+    // })
+
+    socketHandlers.forEach((handler) => handler(socket, { socketIo, prisma }))
   })
 
   // # Graphql Server
