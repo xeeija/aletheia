@@ -1,13 +1,12 @@
 import { RandomWheelEntry } from "@/generated/graphql"
+import { RandomWheelSocketOptions, useRandomWheelSocket } from "@/hooks"
 import {
   RandomWheelActions,
   RandomWheelData,
   RandomWheelFetch,
-  RandomWheelSocketOptions,
   useRandomWheelActions,
   useRandomWheelData,
   useRandomWheelLike,
-  useRandomWheelSocket,
   useRandomWheelSpin,
 } from "@/hooks/randomwheel"
 import { useEffect, useState } from "react"
