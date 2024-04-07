@@ -19,7 +19,8 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
   const { updateGroup, fetchingUpdate } = useRewardGroups()
 
   const groupActive = rewardGroup.active
-  const cooldownActive = true
+  const cooldownActive = !!rewardGroup.cooldownExpiry && rewardGroup.cooldownExpiry > new Date()
+  const cooldownExpiry = rewardGroup.cooldownExpiry?.toLocaleString()
 
   return (
     <Card>
@@ -49,11 +50,13 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
               />
             </Tooltip>
 
-            <Tooltip arrow placement="bottom" title={cooldownActive ? "Cooldown active" : ""}>
-              <SvgIcon color={cooldownActive ? "info" : "disabled"}>
-                {cooldownActive ? <TiStopwatch /> : <TiStopwatch />}
-              </SvgIcon>
-            </Tooltip>
+            {cooldownActive && (
+              <Tooltip arrow placement="bottom" title={`Cooldown until ${cooldownExpiry}`}>
+                <SvgIcon color="info">
+                  <TiStopwatch />
+                </SvgIcon>
+              </Tooltip>
+            )}
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>

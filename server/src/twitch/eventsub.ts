@@ -113,7 +113,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
 
   await Promise.all(
     storedGroup.map(async (sub) => {
-      await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+      await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
         twitchUserId: sub?.twitchUserId ?? "",
         userId: sub.userId ?? "",
       })

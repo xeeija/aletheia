@@ -145,6 +145,7 @@ export const handleSubscriptionRewardGroup = async (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   apiClient: ApiClient,
+  socketIo: SocketServer,
   subConfig: EventSubConfigGroup
 ) => {
   // TODO: eventsub for reward groups, seperate function?
@@ -225,38 +226,71 @@ export const handleSubscriptionRewardGroup = async (
       return
     }
 
-    const cooldown = eventReward.globalCooldown
-    // const cooldownExpiry = eventReward.cooldownExpiryDate
-    // const cooldown = 30
+    const cooldown = eventReward.globalCooldown ?? (useMockServer ? 30 : null)
+    const cooldownExpiry = eventReward.cooldownExpiryDate ?? new Date(Date.now() + (cooldown ?? 0) * 1000)
 
     if (cooldown === null) {
       return
     }
 
-    // handle all reward groups the redeemed reward is part of, and await them all
-    await Promise.all(
-      relevantGroups.map(async (group) => {
-        // disable all items in the same group for the duration of the cooldown
-        const rewardItems = group.items.filter((i) => i.rewardEnabled && i.rewardId !== eventRewardId)
+    const updatedGroups: RewardGroup[] = []
+    const alreadyPausedReward: string[] = []
 
-        if (rewardItems.length === 0) {
-          return
-        }
+    // handle all reward groups the redeemed reward is part of, and await them all (sequentially)
+    for await (const group of relevantGroups) {
+      // disable all items in the same group for the duration of the cooldown
+      const rewardItems = group.items.filter((i) => i.rewardEnabled && i.rewardId !== eventRewardId)
 
-        const disableRewards = rewardItems.map(async (item) => {
+      if (rewardItems.length === 0) {
+        return
+      }
+
+      for await (const item of rewardItems) {
+        if (!alreadyPausedReward.includes(item.rewardId)) {
           try {
             await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
               isPaused: true,
             })
+            alreadyPausedReward.push(item.rewardId)
           } catch (ex) {
             // HttpStatusCodeError from @twurple/api-call
             const errorMessage = ex instanceof Error ? ex.message : null
             console.error(`[eventsub] reward group: error pausing ${group.name}:`, errorMessage ?? "")
             console.error(ex)
           }
-        })
+        }
+        // await new Promise((resolve) => setTimeout(resolve, 50))
+      }
 
-        const reenableRewards = rewardItems.map(async (item) => {
+      console.log(`[eventsub] reward group: pause ${group.name}`, rewardItems.length, `rewards for ${cooldown} seconds`)
+
+      const updatedGroup = await prisma.rewardGroup.update({
+        where: { id: group.id },
+        data: {
+          cooldownExpiry: cooldownExpiry,
+        },
+      })
+
+      updatedGroups.push(updatedGroup)
+      // updatedGroups = [...updatedGroups, updatedGroup]
+
+      // socketIo.to(`rewardgroup/${group.userId}`).emit("rewardgroup:pause", updatedGroup, true)
+
+      // save cooldown expiry or disable timestamp for rewards
+      // to be able to reenable them after server restart
+      // await prisma.rewardGroupItem.updateMany({
+      //   where: { rewardId: { in: rewardItems.map((i) => i.rewardId) } },
+      //   data: {
+      //     // lastPaused: date now + cooldown
+      //   },
+      // })
+
+      // TODO: save timeout to cancel it, if a reward is disabled/paused manually?
+      setTimeout(async () => {
+        // TODO: maybe fetch rewards from twitch again,
+        console.log(`[eventsub] reward group: unpause ${group.name}`, rewardItems.length, `rewards`)
+
+        for await (const item of rewardItems) {
           try {
             await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
               isPaused: false,
@@ -266,40 +300,26 @@ export const handleSubscriptionRewardGroup = async (
             console.error(`[eventsub] reward group: error unpausing ${group.name}:`, errorMessage ?? "")
             console.error(ex)
           }
+          // await new Promise((resolve) => setTimeout(resolve, 50))
+        }
+
+        const updatedGroup = await prisma.rewardGroup.update({
+          where: { id: group.id },
+          data: {
+            cooldownExpiry: null,
+          },
         })
 
-        console.log(
-          `[eventsub] reward group: pause ${group.name}`,
-          disableRewards.length,
-          `rewards for ${cooldown} seconds`
-        )
+        socketIo.to(`rewardgroup/${group.userId}`).emit("rewardgroup:pause", [updatedGroup], false)
+      }, cooldown * 1000)
+      // }, timeoutDuration)
 
-        await Promise.all(disableRewards)
+      // short delay so websocket cooldowns dont overwrite each other
+      // TODO: maybe refetch reward groups completely, when unpaused to mitigate this
+      await new Promise((resolve) => setTimeout(resolve, 500))
+    }
 
-        // save cooldown expiry or disable timestamp for rewards
-        // to be able to reenable them after server restart
-        // await prisma.rewardGroupItem.updateMany({
-        //   where: { rewardId: { in: rewardItems.map((i) => i.rewardId) } },
-        //   data: {
-        //     // lastPaused: date now + cooldown
-        //   },
-        // })
-
-        // await prisma.rewardGroup.update({
-        //   where: { id: group.id },
-        //   data: {
-        //     cooldownExpiry: cooldownExpiry,
-        //   },
-        // })
-
-        // TODO: save timeout to cancel it, if a reward is disabled/paused manually?
-        setTimeout(async () => {
-          console.log(`[eventsub] reward group: unpause ${group.name}`, disableRewards.length, `rewards`)
-
-          await Promise.all(reenableRewards)
-        }, cooldown * 1000)
-      })
-    )
+    socketIo.to(`rewardgroup/${subConfig.userId}`).emit("rewardgroup:pause", updatedGroups, true)
   })
 
   // const id = subConfig?.id ?? randomUUID()

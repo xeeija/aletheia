@@ -81,7 +81,7 @@ export class RewardGroupResolver {
 
   @Mutation(() => RewardGroupFull, { nullable: true })
   async createRewardGroup(
-    @Ctx() { req, prisma, apiClient, eventSub }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("rewardGroup", () => RewardGroupInput) input: RewardGroupInput,
     @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[]
     // @Arg("name") name: string,
@@ -121,7 +121,7 @@ export class RewardGroupResolver {
       },
     })
 
-    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
       twitchUserId: token.twitchUserId,
       userId: req.session.userId,
       // rewardGroup: newRewardGroup,
@@ -134,7 +134,7 @@ export class RewardGroupResolver {
 
   @Mutation(() => RewardGroupFull, { nullable: true })
   async updateRewardGroup(
-    @Ctx() { req, prisma, apiClient, eventSub }: GraphqlContext,
+    @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("rewardGroup", () => RewardGroupInput, { nullable: true }) input?: RewardGroupInput,
     @Arg("items", () => [RewardGroupItemInput], { nullable: true }) items?: RewardGroupItemInput[]
@@ -239,7 +239,7 @@ export class RewardGroupResolver {
       include: { items: true },
     })
 
-    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
       twitchUserId: token.realTwitchUserId,
       userId: req.session.userId,
     })
@@ -248,7 +248,10 @@ export class RewardGroupResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  async deleteRewardGroup(@Ctx() { req, prisma, eventSub, apiClient }: GraphqlContext, @Arg("id") id: string) {
+  async deleteRewardGroup(
+    @Ctx() { req, prisma, eventSub, apiClient, socketIo }: GraphqlContext,
+    @Arg("id") id: string
+  ) {
     const token = await accessTokenForUser({ req, prisma })
 
     const existingGroup = await prisma.rewardGroup.findUnique({
@@ -265,7 +268,7 @@ export class RewardGroupResolver {
       where: { id: id ?? "" },
     })
 
-    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, {
+    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
       twitchUserId: token?.twitchUserId ?? "",
       userId: req.session.userId,
     })

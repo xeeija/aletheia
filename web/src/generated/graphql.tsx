@@ -1337,6 +1337,7 @@ export type RewardGroupFragment = {
   active: boolean
   triggerSelected: boolean
   userId: string
+  cooldownExpiry?: Maybe<Date>
   items?: Maybe<
     Array<{
       __typename?: "RewardGroupItem"
@@ -1356,6 +1357,7 @@ export type RewardGroupDetailsFragment = {
   active: boolean
   triggerSelected: boolean
   userId: string
+  cooldownExpiry?: Maybe<Date>
 }
 
 export type RewardGroupItemFragment = {
@@ -1736,6 +1738,7 @@ export type CreateRewardGroupMutation = {
     active: boolean
     triggerSelected: boolean
     userId: string
+    cooldownExpiry?: Maybe<Date>
     items?: Maybe<
       Array<{
         __typename?: "RewardGroupItem"
@@ -1776,6 +1779,7 @@ export type UpdateRewardGroupMutation = {
     active: boolean
     triggerSelected: boolean
     userId: string
+    cooldownExpiry?: Maybe<Date>
     items?: Maybe<
       Array<{
         __typename?: "RewardGroupItem"
@@ -1994,6 +1998,7 @@ export type RewardGroupQuery = {
     active: boolean
     triggerSelected: boolean
     userId: string
+    cooldownExpiry?: Maybe<Date>
     items?: Maybe<
       Array<{
         __typename?: "RewardGroupItem"
@@ -2020,6 +2025,7 @@ export type RewardGroupsQuery = {
     active: boolean
     triggerSelected: boolean
     userId: string
+    cooldownExpiry?: Maybe<Date>
     items?: Maybe<
       Array<{
         __typename?: "RewardGroupItem"
@@ -2215,6 +2221,7 @@ export const RewardGroupDetailsFragmentDoc = gql`
     active
     triggerSelected
     userId
+    cooldownExpiry
   }
 `
 export const RewardGroupItemFragmentDoc = gql`

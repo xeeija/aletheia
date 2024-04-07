@@ -16,7 +16,7 @@ export const RewardGroups: FC<Props> = () => {
 
   const [showError, setShowError] = useState<ReactNode>(null)
 
-  const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ fetchGroups: true })
+  const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ groups: true, socket: true })
 
   const rewardGroupsEmpty = (rewardGroups?.length ?? 0) === 0
 

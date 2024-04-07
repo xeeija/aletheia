@@ -11,6 +11,7 @@ fragment RewardGroupDetails on RewardGroup {
   active
   triggerSelected
   userId
+  cooldownExpiry
 }
 
 fragment RewardGroupItem on RewardGroupItem {

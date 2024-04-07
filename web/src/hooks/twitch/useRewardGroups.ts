@@ -11,27 +11,58 @@ import {
   useRewardGroupsQuery,
   useUpdateRewardGroupMutation,
 } from "@/generated/graphql"
+import { useRewardGroupSocket } from "@/hooks"
 
 type RewardGroupsConfig = {
-  fetchGroups?: boolean
+  groups?: boolean
   items?: boolean
   id?: string
+  socket?: boolean
 }
 
 export const useRewardGroups = (config?: RewardGroupsConfig) => {
+  // Socket
+
+  const { pausedGroups } = useRewardGroupSocket(!config?.socket)
+
+  // Reward Groups
+
   const [{ data, fetching, error }, refetchRewardGroups] = useRewardGroupsQuery({
     variables: {
       items: config?.items ?? true,
     },
-    pause: !config?.fetchGroups,
+    pause: !config?.groups,
   })
 
-  const [{ data: rewardGroup, fetching: fetchingGroup, error: errorGroup }, refetchRewardGroup] = useRewardGroupQuery({
+  const groupsWithoutDate = config?.socket
+    ? data?.rewardGroups.map((group) => {
+        const paused = pausedGroups.find((g) => g.id === group.id) ?? group
+        return {
+          ...paused,
+          items: group.items,
+        }
+      })
+    : (data?.rewardGroups as RewardGroupFragment[] | undefined)
+
+  const rewardGroups = groupsWithoutDate?.map((group) => ({
+    ...group,
+    cooldownExpiry: new Date(group.cooldownExpiry ?? ""),
+  }))
+
+  // Single Reward Group
+
+  const [{ data: dataGroup, fetching: fetchingGroup, error: errorGroup }, refetchRewardGroup] = useRewardGroupQuery({
     variables: {
       id: config?.id ?? "",
     },
     pause: !config?.id,
   })
+
+  const rewardGroup = config?.socket
+    ? pausedGroups.find((g) => g.id === dataGroup?.rewardGroup.id) ?? dataGroup?.rewardGroup
+    : (dataGroup?.rewardGroup as RewardGroupFragment | undefined)
+
+  // Actions
 
   const [{ fetching: fetchingCreate, error: errorCreate }, createRewardGroup] = useCreateRewardGroupMutation()
   const [{ fetching: fetchingUpdate, error: errorUpdate }, updateRewardGroup] = useUpdateRewardGroupMutation()
@@ -41,10 +72,10 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
   const [{ fetching: fetchingDeleteItem, error: errorDeleteItem }, deleteItem] = useDeleteRewardGroupItemMutation()
 
   return {
-    rewardGroups: data?.rewardGroups as RewardGroupFragment[] | undefined,
+    rewardGroups,
     fetching,
     error,
-    rewardGroup: rewardGroup?.rewardGroup as RewardGroupFragment | undefined,
+    rewardGroup,
     fetchingGroup,
     errorGroup,
     refetch: () => refetchRewardGroups({ requestPolicy: "cache-and-network" }),
