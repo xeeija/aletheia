@@ -1,19 +1,12 @@
-import { FilterSelect, LayoutNextPage, defaultLayout } from "@/components"
-import { ChannelRewardDialog, ChannelRewards, RewardGroupDialog, RewardGroups } from "@/components/twitch"
-import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
+import { LayoutNextPage, defaultLayout } from "@/components"
+import { ChannelRewards, ChannelRewardsToolbar, RewardGroups, RewardGroupsToolbar } from "@/components/twitch"
+import { Box, Tab, Tabs } from "@mui/material"
 import { useState } from "react"
-import { HiDotsVertical } from "react-icons/hi"
-import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
   const [tab, setTab] = useState(0)
 
-  // Rewards
-  const [createRewardOpen, setCreateRewardOpen] = useState(false)
   const [filterRewards, setFilterRewards] = useState(false)
-
-  // Reward Groups
-  const [createGroupOpen, setCreateGroupOpen] = useState(false)
 
   return (
     <>
@@ -31,58 +24,9 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           <Tab label="Reward Groups" itemType="capitalize" />
         </Tabs>
 
-        {tab === 0 && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <FilterSelect
-              options={[
-                { value: "all", label: "All rewards" },
-                { value: "manageable", label: "Manageable rewards" },
-              ]}
-              onChange={(ev) => {
-                setFilterRewards(ev.target.value === "manageable")
-              }}
-            />
+        {tab === 0 && <ChannelRewardsToolbar onFilter={(ev) => setFilterRewards(ev.target.value === "manageable")} />}
 
-            <Button
-              variant="outlined"
-              color="success"
-              endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-              onClick={() => setCreateRewardOpen(true)}
-            >
-              New Reward
-            </Button>
-
-            <ChannelRewardDialog onClose={() => setCreateRewardOpen(false)} open={createRewardOpen} type="create" />
-
-            <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" disabled>
-                <HiDotsVertical />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-        {tab === 1 && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {/* {!rewardGroupsEmpty && ( */}
-            <Button
-              variant="outlined"
-              color="success"
-              endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-              onClick={() => setCreateGroupOpen(true)}
-            >
-              New Group
-            </Button>
-
-            <RewardGroupDialog onClose={() => setCreateGroupOpen(false)} open={createGroupOpen} type="create" />
-
-            {/* )} */}
-            <Tooltip placement="bottom-end" title="More options">
-              <IconButton color="secondary" disabled>
-                <HiDotsVertical />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
+        {tab === 1 && <RewardGroupsToolbar />}
       </Box>
 
       <Box sx={{ mt: 2 }}>
