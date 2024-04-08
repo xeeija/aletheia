@@ -1,7 +1,7 @@
-import { apiClient, eventSubApiClient, useMockServer } from "@/twitch"
-import { handleSubscriptionRewardGroup, handleSubscriptionSync } from "@/twitch/events"
+import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch"
+import { handleSubscriptionRewardGroup, handleSubscriptionSync, unpauseRewardGroup } from "@/twitch/events"
 import { EventSubType, type SocketServer } from "@/types"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import "dotenv/config"
@@ -119,6 +119,38 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       })
     })
   )
+
+  // resuming timeouts to unpause reward group
+
+  const pausedRewardGroups: (RewardGroup & { items: RewardGroupItem[] })[] = await prisma.rewardGroup.findMany({
+    where: {
+      active: true,
+      cooldownExpiry: { not: null },
+    },
+    include: {
+      items: true,
+    },
+  })
+
+  if (pausedRewardGroups.length) {
+    console.log(`[eventsub] reward group: resuming`, pausedRewardGroups.length, `reward groups to unpause`)
+  }
+
+  for (const group of pausedRewardGroups) {
+    const twitchUserId = getTwitchUserId(storedGroup.find((s) => s.userId === group.userId)?.twitchUserId) ?? ""
+
+    unpauseRewardGroup({
+      apiClient,
+      prisma,
+      socketIo,
+      group,
+      rewardItems: group.items,
+      twitchUserId,
+      cooldown: (group.cooldownExpiry?.getTime() || 0) - Date.now() + Math.floor(Math.random() * 3000),
+    })
+
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 

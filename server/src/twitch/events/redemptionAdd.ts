@@ -226,12 +226,15 @@ export const handleSubscriptionRewardGroup = async (
       return
     }
 
-    const cooldown = eventReward.globalCooldown ?? (useMockServer ? 30 : null)
+    const cooldown = eventReward.globalCooldown ?? (useMockServer ? 180 : null)
     const cooldownExpiry = eventReward.cooldownExpiryDate ?? new Date(Date.now() + (cooldown ?? 0) * 1000)
 
     if (cooldown === null) {
       return
     }
+
+    // info
+    // console.log(`[eventsub] reward group: pausing`, relevantGroups.length, `reward groups for`, cooldown, `seconds`)
 
     const updatedGroups: RewardGroup[] = []
     const alreadyPausedReward: string[] = []
@@ -262,6 +265,7 @@ export const handleSubscriptionRewardGroup = async (
         // await new Promise((resolve) => setTimeout(resolve, 50))
       }
 
+      // debug
       console.log(`[eventsub] reward group: pause ${group.name}`, rewardItems.length, `rewards for ${cooldown} seconds`)
 
       const updatedGroup = await prisma.rewardGroup.update({
@@ -285,34 +289,19 @@ export const handleSubscriptionRewardGroup = async (
       //   },
       // })
 
+      // TODO: maybe fetch rewards from twitch again,
       // TODO: save timeout to cancel it, if a reward is disabled/paused manually?
-      setTimeout(async () => {
-        // TODO: maybe fetch rewards from twitch again,
-        console.log(`[eventsub] reward group: unpause ${group.name}`, rewardItems.length, `rewards`)
 
-        for await (const item of rewardItems) {
-          try {
-            await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
-              isPaused: false,
-            })
-          } catch (ex) {
-            const errorMessage = ex instanceof Error ? ex.message : null
-            console.error(`[eventsub] reward group: error unpausing ${group.name}:`, errorMessage ?? "")
-            console.error(ex)
-          }
-          // await new Promise((resolve) => setTimeout(resolve, 50))
-        }
-
-        const updatedGroup = await prisma.rewardGroup.update({
-          where: { id: group.id },
-          data: {
-            cooldownExpiry: null,
-          },
-        })
-
-        socketIo.to(`rewardgroup/${group.userId}`).emit("rewardgroup:pause", [updatedGroup], false)
-      }, cooldown * 1000)
-      // }, timeoutDuration)
+      unpauseRewardGroup({
+        apiClient,
+        prisma,
+        socketIo,
+        group,
+        rewardItems,
+        twitchUserId,
+        cooldown: cooldown * 1000,
+        // cooldown: timeoutDuration,
+      })
 
       // short delay so websocket cooldowns dont overwrite each other
       // TODO: maybe refetch reward groups completely, when unpaused to mitigate this
@@ -456,4 +445,46 @@ export const addExistingRedemptionsSync = async (
   )
 
   socketIo.to(`wheel/${subConfig.randomWheelId}`).emit("wheel:entries", "add")
+}
+
+type UnpauseRewardConfig = {
+  prisma: PrismaClient
+  apiClient: ApiClient
+  socketIo: SocketServer
+  group: RewardGroup
+  rewardItems: RewardGroupItem[]
+  twitchUserId: string
+  cooldown: number
+}
+
+export const unpauseRewardGroup = (config: UnpauseRewardConfig) => {
+  const { prisma, apiClient, socketIo, group, rewardItems, twitchUserId, cooldown } = config
+
+  setTimeout(async () => {
+    // TODO: maybe fetch rewards from twitch again,
+    // debug
+    console.log(`[eventsub] reward group: unpause ${group.name}`, rewardItems.length, `rewards`)
+
+    for await (const item of rewardItems) {
+      try {
+        await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
+          isPaused: false,
+        })
+      } catch (ex) {
+        const errorMessage = ex instanceof Error ? ex.message : null
+        console.error(`[eventsub] reward group: error unpausing ${group.name}:`, errorMessage ?? "")
+        console.error(ex)
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 50))
+    }
+
+    const updatedGroup = await prisma.rewardGroup.update({
+      where: { id: group.id },
+      data: {
+        cooldownExpiry: null,
+      },
+    })
+
+    socketIo.to(`rewardgroup/${group.userId}`).emit("rewardgroup:pause", [updatedGroup], false)
+  }, cooldown)
 }
