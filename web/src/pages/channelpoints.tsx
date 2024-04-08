@@ -6,7 +6,7 @@ import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
 export const ChannelPointsPage: LayoutNextPage = () => {
-  const [tab, setTab] = useState(1)
+  const [tab, setTab] = useState(0)
 
   // Rewards
   const [createRewardOpen, setCreateRewardOpen] = useState(false)

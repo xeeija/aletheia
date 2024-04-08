@@ -38,8 +38,8 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     ? data?.rewardGroups.map((group) => {
         const paused = pausedGroups.find((g) => g.id === group.id) ?? group
         return {
-          ...paused,
-          items: group.items,
+          ...group,
+          cooldownExpiry: paused.cooldownExpiry,
         }
       })
     : (data?.rewardGroups as RewardGroupFragment[] | undefined)

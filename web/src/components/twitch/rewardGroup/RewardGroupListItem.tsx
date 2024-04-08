@@ -1,6 +1,6 @@
 import { AlertPopup, BooleanFieldPlain } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useRewardGroups } from "@/hooks"
+import { useInterval, useRewardGroups } from "@/hooks"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
 import { HiPencil, HiTrash } from "react-icons/hi"
@@ -20,7 +20,31 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
 
   const groupActive = rewardGroup.active
   const cooldownActive = !!rewardGroup.cooldownExpiry && rewardGroup.cooldownExpiry > new Date()
-  const cooldownExpiry = rewardGroup.cooldownExpiry?.toLocaleString()
+  const cooldownExpiry = rewardGroup.cooldownExpiry?.toLocaleString(undefined, {
+    dateStyle: rewardGroup.cooldownExpiry > new Date(Date.now() + 24 * 3600 * 100) ? "medium" : undefined,
+    timeStyle: "medium",
+  })
+
+  const [cooldownLeft, setCooldownLeft] = useState<string>()
+  const cooldownMax = new Date((rewardGroup.cooldownExpiry?.getTime() || 0) - Date.now() + 1000)
+  const cooldownDaysNum = Math.floor(cooldownMax.getTime() / (24 * 3600 * 1000))
+  const cooldownDays = cooldownDaysNum > 0 && cooldownLeft ? `${cooldownDaysNum}d ` : ""
+
+  useInterval(
+    () =>
+      setCooldownLeft(
+        cooldownMax.toLocaleTimeString(undefined, {
+          timeZone: "utc",
+          second: "2-digit",
+          minute: "2-digit",
+          hour: cooldownMax.getUTCHours() > 0 ? "2-digit" : undefined,
+        })
+      ),
+    {
+      ms: 1000,
+      duration: cooldownMax.getTime(),
+    }
+  )
 
   return (
     <Card>
@@ -28,14 +52,7 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
           {/* Left */}
           <Box sx={{ width: "max(30%, 260px)", display: "flex", gap: 2, alignItems: "center" }}>
-            {/* <ChannelRewardIcon reward={rewardGroup} size="md" /> */}
-
-            <Box>
-              <Typography variant="h6">{rewardGroup.name}</Typography>
-              {/* <Typography variant="body2" color="text.secondary">
-                {rewardGroup.id}
-              </Typography> */}
-            </Box>
+            <Typography variant="h6">{rewardGroup.name}</Typography>
           </Box>
 
           {/* Icons für isPaused, isInStock, skipQueue, cooldown expiry etc. */}
@@ -52,9 +69,15 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
 
             {cooldownActive && (
               <Tooltip arrow placement="bottom" title={`Cooldown until ${cooldownExpiry}`}>
-                <SvgIcon color="info">
-                  <TiStopwatch />
-                </SvgIcon>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 0.5 }}>
+                  <SvgIcon color="info">
+                    <TiStopwatch />
+                  </SvgIcon>
+                  <Typography color="text.secondary">
+                    {cooldownDays}
+                    {cooldownLeft}
+                  </Typography>
+                </Box>
               </Tooltip>
             )}
           </Box>

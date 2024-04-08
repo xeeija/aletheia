@@ -1,4 +1,5 @@
 export * from "./useAuth"
+export * from "./useInterval"
 export * from "./useUsernameValidator"
 
 export * from "./randomwheel"
