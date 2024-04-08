@@ -76,7 +76,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
       validationSchema={validationSchema}
       validateOnChange={false}
       onSubmit={async (values) => {
-        const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
+        const cooldownSec = (Number(values.globalCooldown) || 0) * values.cooldownUnit
 
         const response = await createReward({
           title: values.title,

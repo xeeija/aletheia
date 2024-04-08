@@ -20,15 +20,20 @@ export const getRewards = () => {
 export const addMockAccessTokens = async (mockAuthProvider: RefreshingAuthProvider) => {
   // const tokenJson = (await import("./mock/token.json", { assert: { type: "json" } })).default
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const tokenJson: AccessToken = JSON.parse(await readFile("./src/twitch/mock/data/token.json", "utf-8"))
 
-  // const token: AccessToken = {
-  //   accessToken: tokenJson.access_token,
-  //   refreshToken: tokenJson.access_token,
-  //   expiresIn: tokenJson.expires_in as unknown as number,
-  //   obtainmentTimestamp: Date.now(),
-  //   scope: tokenJson.scope as unknown as string[],
-  // }
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tokenJson: AccessToken = JSON.parse(await readFile("./src/twitch/mock/data/token.json", "utf-8"))
 
-  mockAuthProvider.addUser(process.env.TWITCH_MOCK_USER_ID ?? "", tokenJson)
+    // const token: AccessToken = {
+    //   accessToken: tokenJson.access_token,
+    //   refreshToken: tokenJson.access_token,
+    //   expiresIn: tokenJson.expires_in as unknown as number,
+    //   obtainmentTimestamp: Date.now(),
+    //   scope: tokenJson.scope as unknown as string[],
+    // }
+    mockAuthProvider.addUser(process.env.TWITCH_MOCK_USER_ID ?? "", tokenJson)
+  } catch (err) {
+    console.error("[twitch] mock: Error loading mock API token:", err)
+  }
 }

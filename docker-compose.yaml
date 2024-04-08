@@ -12,8 +12,9 @@ services:
       POSTGRES_PASSWORD: aletheia
     volumes:
       - ./docker/data/postgres:/var/lib/postgresql/data
+
   server:
-    image: xeeija/aletheia-server:1.6.0
+    image: xeeija/aletheia-server:1.7.0
     # build:
     #   context: server
     restart: unless-stopped
@@ -24,9 +25,13 @@ services:
     environment:
       DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
       NODE_ENV: development
+    # needed for twitch mock API server
+    # mock-api doesn't work in container currently, because it is not available as 'localhost:8080'
+    volumes:
+      - ./server/src/twitch/mock/data/token.json:/server/src/twitch/mock/data/token.json
 
   web:
-    image: xeeija/aletheia-web:1.6.0
+    image: xeeija/aletheia-web:1.7.0
     # build:
     #   context: web
     restart: unless-stopped

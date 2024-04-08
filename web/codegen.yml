@@ -14,4 +14,4 @@ generates:
         JSON: "Record<string, any>"
     hooks:
       afterOneFileWrite:
-      - "prettier --write --log-level warn"
+        - "prettier --write --log-level warn"

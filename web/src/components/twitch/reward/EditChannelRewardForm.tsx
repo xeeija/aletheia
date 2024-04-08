@@ -66,7 +66,7 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
       validationSchema={validationSchema}
       validateOnChange={false}
       onSubmit={async (values) => {
-        const cooldownSec = Number(values.globalCooldown) || 0 * values.cooldownUnit
+        const cooldownSec = (Number(values.globalCooldown) || 0) * values.cooldownUnit
 
         const response = await updateReward(reward.id, {
           title: values.title,
