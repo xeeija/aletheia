@@ -24,7 +24,7 @@ export const eventSubMiddleware = new EventSubMiddleware({
 export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
 export const showEventSubDebug =
-  process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
+  process.env.TWITCH_DEBUG === "1" || process.env.TWITCH_DEBUG?.toLocaleLowerCase() === "true"
 
 // const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
 const eventTypePattern = /^([a-z_.]+[a-z_])/

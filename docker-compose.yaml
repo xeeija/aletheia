@@ -2,7 +2,7 @@ version: "3.1"
 name: aletheia
 services:
   postgres:
-    image: postgres:14.8
+    image: postgres:14.8-alpine
     restart: unless-stopped
     ports:
       - 5432:5432
