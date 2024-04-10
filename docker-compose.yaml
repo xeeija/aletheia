@@ -29,6 +29,8 @@ services:
     # mock-api doesn't work in container currently, because it is not available as 'localhost:8080'
     volumes:
       - ./server/src/twitch/mock/data/token.json:/server/src/twitch/mock/data/token.json
+    depends_on:
+      - postgres
 
   web:
     image: xeeija/aletheia-web:1.7.0
@@ -36,9 +38,22 @@ services:
     #   context: web
     restart: unless-stopped
     ports:
-      - 3000:3000
+      - 3001:3000
     env_file:
       - web/.env
     environment:
       SERVER_URL: http://server:4000
       SOCKET_SERVER_URL: http://server:4000
+
+  proxy:
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    ports:
+      - 3000:80
+    environment:
+      SERVER_URL: server:4000
+      WEB_URL: web:3000
+    volumes:
+      - ./web/proxy/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+      # - ./docker/data/proxy/logs:/logs
+    command: ["nginx", "-g", "daemon off;"]

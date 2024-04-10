@@ -82,7 +82,7 @@ const main = async () => {
 
   // TODO: Add typescript hints as type params
   const socketIo = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
-    path: process.env.WEBSOCKET_PATH ?? "/socket",
+    path: process.env.SOCKET_PATH ?? "/api/socket",
     cors: {
       credentials: true,
       origin: originUrl,
@@ -159,7 +159,11 @@ const main = async () => {
 
   // Known bug, fix for error "must start before applyMiddleware"
   await apolloServer.start()
-  apolloServer.applyMiddleware({ app, cors: false })
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+    path: "/api/graphql",
+  })
 
   // Twitch Integration
 
