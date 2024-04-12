@@ -33,7 +33,7 @@ export const UserAvatar: FC<Props> = ({ user, setDropdownAnchor }) => {
           alt={user.username}
           // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
           // identicon
-          src={`https://api.dicebear.com/7.x/big-smile/svg?seed=${user.displayname ?? user.username}&flip=true`}
+          src={`https://api.dicebear.com/8.x/big-smile/svg?seed=${user.displayname ?? user.username}&flip=true`}
           sx={{
             width: 36,
             height: 36,

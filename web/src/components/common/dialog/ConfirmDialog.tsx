@@ -8,7 +8,7 @@ export interface ConfirmDialogProps {
   type: ThemeColor
   confirmText: ReactNode
   onClose: () => void
-  onConfirm: () => Promise<void>
+  onConfirm: () => void | Promise<void>
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
   icon?: ElementType
   children?: ReactNode
@@ -66,8 +66,8 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         <Button
           color={type}
           variant="contained"
-          onClick={() => {
-            onConfirm()
+          onClick={async () => {
+            await onConfirm()
             onClose()
           }}
         >

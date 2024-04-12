@@ -1,7 +1,7 @@
 import { DisconnectTwitchDialog, InputField, LayoutNextPage, LoadingButton, defaultLayout } from "@/components"
 import { useUpdateUserMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
-import { Box, Button, Grid, Link, Typography } from "@mui/material"
+import { Button, Grid, Link, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useState } from "react"
 
@@ -70,7 +70,7 @@ const SettingsPage: LayoutNextPage = () => {
       </Typography>
 
       {user && !userAccessToken?.id && (
-        <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ textTransform: "none", mb: 1 }}>
+        <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ mb: 1 }}>
           Connect with Twitch
         </Button>
       )}
@@ -81,7 +81,7 @@ const SettingsPage: LayoutNextPage = () => {
           // variant="text"
           target="_blank"
           href="https://www.twitch.tv/settings/connections"
-          sx={{ textTransform: "none", mx: 0, px: 0, py: 0.5 }}
+          sx={{ mx: 0, px: 0, py: 0.5 }}
         >
           connections
         </Link>
@@ -93,10 +93,7 @@ const SettingsPage: LayoutNextPage = () => {
       {userAccessToken?.id && (
         <>
           <Typography color="text.secondary" sx={{ pb: 1 }}>
-            Connected as{" "}
-            <Box component="span" sx={{ fontWeight: 500 }}>
-              {userAccessToken.twitchUsername}
-            </Box>
+            Connected as <span style={{ fontWeight: 500 }}>{userAccessToken.twitchUsername}</span>
           </Typography>
 
           {/* TODO: make it look nice, maybe with display name or profile picture https://dev.twitch.tv/docs/api/reference/#get-users */}
@@ -108,7 +105,6 @@ const SettingsPage: LayoutNextPage = () => {
             onClick={() => {
               setDisconnectDialogOpen(true)
             }}
-            sx={{ textTransform: "none" }}
           >
             Disconnect
           </LoadingButton>
@@ -118,8 +114,8 @@ const SettingsPage: LayoutNextPage = () => {
       <DisconnectTwitchDialog
         open={disconnectDialogOpen}
         onClose={() => setDisconnectDialogOpen(false)}
-        onDelete={() => {
-          void disconnectAccessToken()
+        onDelete={async () => {
+          await disconnectAccessToken()
         }}
       />
     </>

@@ -1,5 +1,12 @@
-import { LayoutNextPage, defaultLayout } from "@/components"
-import { ChannelRewards, ChannelRewardsToolbar, RewardGroups, RewardGroupsToolbar } from "@/components/twitch"
+import { LayoutNextPage, SkeletonList, defaultLayout } from "@/components"
+import {
+  ChannelRewards,
+  ChannelRewardsToolbar,
+  NoDataTwitch,
+  RewardGroups,
+  RewardGroupsToolbar,
+} from "@/components/twitch"
+import { useAuth } from "@/hooks"
 import { Box, Tab, Tabs } from "@mui/material"
 import { useState } from "react"
 
@@ -7,6 +14,10 @@ export const ChannelPointsPage: LayoutNextPage = () => {
   const [tab, setTab] = useState(0)
 
   const [filterRewards, setFilterRewards] = useState(false)
+  const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({ includeToken: true })
+
+  const tokenAvailable = user?.username && userAccessToken?.twitchUserId
+  const fetching = fetchingUser || fetchingToken
 
   return (
     <>
@@ -24,15 +35,33 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           <Tab label="Reward Groups" itemType="capitalize" />
         </Tabs>
 
-        {tab === 0 && <ChannelRewardsToolbar onFilter={(ev) => setFilterRewards(ev.target.value === "manageable")} />}
+        {tokenAvailable && (
+          <>
+            {tab === 0 && (
+              <ChannelRewardsToolbar onFilter={(ev) => setFilterRewards(ev.target.value === "manageable")} />
+            )}
 
-        {tab === 1 && <RewardGroupsToolbar />}
+            {tab === 1 && <RewardGroupsToolbar />}
+          </>
+        )}
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
+        {tokenAvailable && (
+          <>
+            {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
-        {tab === 1 && <RewardGroups />}
+            {tab === 1 && <RewardGroups />}
+          </>
+        )}
+
+        {fetching && (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 6 }}>
+            <SkeletonList n={4} height={72} />
+          </Box>
+        )}
+
+        {!tokenAvailable && !fetching && <NoDataTwitch />}
       </Box>
     </>
   )

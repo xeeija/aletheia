@@ -1,10 +1,10 @@
 import { ConfirmDialog, ConfirmDialogProps } from "@/components"
 import { ThemeColor } from "@/types"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import { TiWarning } from "react-icons/ti"
 
 type Props = Omit<ConfirmDialogProps, "confirmText" | "type"> & {
-  confirmText?: string
+  confirmText?: ReactNode
   type?: ThemeColor
 }
 
