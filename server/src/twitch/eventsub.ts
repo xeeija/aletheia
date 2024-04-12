@@ -6,11 +6,14 @@ import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import "dotenv/config"
 
+const strictHostCheck = process.env.EVENTSUB_STRICT_HOST_CHECK !== "0"
+
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
   hostName: process.env.EVENTSUB_HOSTNAME ?? "",
-  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch",
+  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch/eventsub",
   secret: process.env.EVENTSUB_SECRET ?? "haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi",
+  strictHostCheck: strictHostCheck,
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.EVENTSUB_LOGLEVEL) || undefined,

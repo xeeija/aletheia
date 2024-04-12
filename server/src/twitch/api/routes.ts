@@ -2,6 +2,7 @@ import { authProvider, getTwitchUserId } from "@/twitch"
 import type { AccessTokenResponse } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { ApiClient, HelixCustomReward, HelixUpdateCustomRewardData } from "@twurple/api"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
@@ -53,6 +54,13 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
 
       const tokenInfo = await getTokenInfo(body.access_token, process.env.TWITCH_CLIENT_ID)
 
+      if (!req.session.userId) {
+        // res.status(400).json({ respone: body, message: "userId of token not found" })
+        res.status(401).send({ error: "Not logged in" })
+
+        return
+      }
+
       if (!tokenInfo.userId) {
         // res.status(400).json({ respone: body, message: "userId of token not found" })
         res.status(400).send({ error: "userId of token not found" })
@@ -101,14 +109,24 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
 
     const result = await prisma.twitchState.create({ data: { state } })
 
-    // remove state after 1 minute
+    // remove state after 2 minutes
     setTimeout(async () => {
-      await prisma.twitchState.delete({
-        where: {
-          state: result.state ?? "",
-        },
-      })
-    }, 60 * 1000)
+      try {
+        await prisma.twitchState.deleteMany({
+          where: {
+            state: result.state ?? "",
+          },
+        })
+      } catch (err) {
+        //
+        if (err instanceof PrismaClientKnownRequestError && err.code === "P2025") {
+          // state is already deleted in db, so do nothing
+        }
+
+        // other unexpected error occured
+        throw err
+      }
+    }, 120 * 1000)
 
     res.send(result.state)
   })

@@ -13,14 +13,20 @@ const handler: ApiHandler = async (_, res) => {
   })
 
   if (!stateResponse.ok) {
+    console.error(
+      "Failed to generate state",
+      stateResponse.status,
+      stateResponse.statusText,
+      stateResponse.url,
+      await stateResponse.text()
+    )
     // res.status(500).send({ message: "Failed to generate state" })
-    res.redirect(`/settings#error1`)
-    return
+    res.redirect(`/settings#error=state`)
+    // return
   }
 
   const state = await stateResponse.text()
 
-  // Todo: Type für twitch auth params
   const params: AuthCodeParams = {
     response_type: "code",
     client_id: process.env.TWITCH_CLIENT_ID ?? "",
@@ -29,13 +35,9 @@ const handler: ApiHandler = async (_, res) => {
     // force_verify: "true",
   }
 
-  // console.log("state1", state, twitchAuthState)
-
-  // const stateUrl = `${process.env.SERVER_URL ?? "http://localhost:4000"}/api/twitch/state`
-
   const paramsString = new URLSearchParams(params).toString()
 
-  const redirectUrl = `redirect_uri=${process.env.TWITCH_REDIRECT_URI ?? "http://localhost:3000"}/api/twitch/oauth2/token`
+  const redirectUrl = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/oauth2/token`
 
   res.redirect(`https://id.twitch.tv/oauth2/authorize?${paramsString}&${redirectUrl}`)
 }

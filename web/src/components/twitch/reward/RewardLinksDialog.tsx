@@ -15,8 +15,10 @@ interface Props {
 }
 
 export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
-  const enableBaseUrl = "/api/twitch/reward/enable"
-  const pauseBaseUrl = "/api/twitch/reward/pause"
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ""
+
+  const enableBaseUrl = `${serverUrl}/api/twitch/reward/enable`
+  const pauseBaseUrl = `${serverUrl}/api/twitch/reward/pause`
 
   const {
     rewardLinks,

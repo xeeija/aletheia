@@ -199,7 +199,7 @@ export class UserResolver {
     return userExists > 0
   }
 
-  @Query(() => UserAccessToken)
+  @Query(() => UserAccessToken, { nullable: true })
   async userAccesToken(@Ctx() { prisma, req }: GraphqlContext) {
     const token = await prisma.userAccessToken.findFirst({
       where: {

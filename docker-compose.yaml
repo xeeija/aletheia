@@ -25,12 +25,14 @@ services:
     environment:
       DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
       NODE_ENV: development
-    # needed for twitch mock API server
-    # mock-api doesn't work in container currently, because it is not available as 'localhost:8080'
+      EVENTSUB_STRICT_HOST_CHECK: 1
     volumes:
       - ./server/src/twitch/mock/data/token.json:/server/src/twitch/mock/data/token.json
     depends_on:
       - postgres
+    # needed for twitch mock API server, so localhost (127.0.0.1) in container finds mock-api in host network
+    extra_hosts:
+      - localhost:host-gateway
 
   web:
     image: xeeija/aletheia-web:1.7.0
@@ -55,5 +57,6 @@ services:
       WEB_URL: web:3000
     volumes:
       - ./web/proxy/nginx.conf:/etc/nginx/templates/default.conf.template:ro
-      # - ./docker/data/proxy/logs:/logs
+      # logging see: https://docs.nginx.com/nginx/admin-guide/monitoring/logging/
+      # - ./docker/data/proxy/log/nginx:/var/log/nginx
     command: ["nginx", "-g", "daemon off;"]
