@@ -121,13 +121,15 @@ export class RewardGroupResolver {
       },
     })
 
-    await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
-      twitchUserId: token.twitchUserId,
-      userId: req.session.userId,
-      // rewardGroup: newRewardGroup,
-      // rewardId: "",
-      // id: existingSub?.id,
-    })
+    if (newRewardGroup.items.length > 0) {
+      await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
+        twitchUserId: token.twitchUserId,
+        userId: req.session.userId,
+        // rewardGroup: newRewardGroup,
+        // rewardId: "",
+        // id: existingSub?.id,
+      })
+    }
 
     return newRewardGroup
   }

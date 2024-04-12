@@ -14,6 +14,11 @@ export interface RewardGroupValues {
   items: RewardGroupItemInput[]
 }
 
+const defaultItem: RewardGroupItemInput = {
+  rewardId: "",
+  triggerCooldown: true,
+}
+
 type Props = FormDialogProps<RewardGroupValues>
 
 export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
@@ -26,18 +31,20 @@ export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose 
   const initialValues: RewardGroupValues = {
     name: "",
     active: true,
-    items: [],
+    items: [defaultItem],
   }
 
   const validationSchema = object().shape({
     name: string(), //.required("Required"),
     active: boolean(),
-    items: array().of(
-      object().shape({
-        rewardId: string().required("Required"),
-        triggerCooldown: boolean(),
-      })
-    ),
+    items: array()
+      .of(
+        object().shape({
+          rewardId: string().required("Required"),
+          triggerCooldown: boolean(),
+        })
+      )
+      .min(1, "At least one reward is required"),
   })
 
   return (

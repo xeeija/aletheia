@@ -108,4 +108,13 @@ export type HttpError = Error & {
   body: string
 }
 
+export type RewardIconData = {
+  title: string
+  backgroundColor: string
+  image: string
+  isPaused: boolean
+  isEnabled: boolean
+  isInStock: boolean
+}
+
 // export type RewardGroupIE = RewardGroup & { items: RewardGroupItem[] } & { eventSubscriptions: EventSubscription[] }

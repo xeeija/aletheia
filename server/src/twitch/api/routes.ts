@@ -1,5 +1,5 @@
 import { authProvider, getTwitchUserId } from "@/twitch"
-import type { AccessTokenResponse } from "@/types"
+import type { AccessTokenResponse, RewardIconData } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
@@ -140,7 +140,7 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
         isEnabled: enable ?? !reward.isEnabled,
       }))
 
-      res.send(updatedReward)
+      res.send(getRewardIconData(updatedReward))
     } catch (err) {
       if (err instanceof Error) {
         res.status(400).send(err.message)
@@ -160,7 +160,7 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
         isPaused: pause ?? !reward.isPaused,
       }))
 
-      res.send(updatedReward)
+      res.send(getRewardIconData(updatedReward))
     } catch (err) {
       if (err instanceof Error) {
         res.status(400).send(err.message)
@@ -222,3 +222,12 @@ const updateRewardByLink = async (
 
   return updatedReward
 }
+
+const getRewardIconData = (reward: HelixCustomReward): RewardIconData => ({
+  title: reward.title,
+  backgroundColor: reward.backgroundColor,
+  image: reward.getImageUrl(4),
+  isPaused: reward.isPaused,
+  isEnabled: reward.isEnabled,
+  isInStock: reward.isInStock,
+})

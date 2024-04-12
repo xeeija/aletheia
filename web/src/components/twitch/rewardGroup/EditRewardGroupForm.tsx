@@ -30,12 +30,14 @@ export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRe
   const validationSchema = object().shape({
     name: string(), //.required("Required"),
     active: boolean(),
-    items: array().of(
-      object().shape({
-        rewardId: string().required("Required"),
-        triggerCooldown: boolean(),
-      })
-    ),
+    items: array()
+      .of(
+        object().shape({
+          rewardId: string().required("Required"),
+          triggerCooldown: boolean(),
+        })
+      )
+      .min(1, "At least one reward is required"),
   })
 
   return (

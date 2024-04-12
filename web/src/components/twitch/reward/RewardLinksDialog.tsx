@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
-  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ""
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? window.location.host
 
   const enableBaseUrl = `${serverUrl}/api/twitch/reward/enable`
   const pauseBaseUrl = `${serverUrl}/api/twitch/reward/pause`
@@ -81,7 +81,7 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
             <Box sx={{ display: "flex", gap: 0.5 }}>
               <LinkInputField
                 position="start"
-                value={`${window.location.host}${enableBaseUrl}/${enableLink?.token}`}
+                value={`${enableBaseUrl}/${enableLink?.token}`}
                 type={hideEnable ? "password" : "text"}
                 InputProps={{
                   endAdornment: hideIcon(hideEnable, setHideEnable),
@@ -135,7 +135,7 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
             <Box sx={{ display: "flex", gap: 0.5 }}>
               <LinkInputField
                 position="start"
-                value={`${window.location.host}${pauseBaseUrl}/${pauseLink?.token}`}
+                value={`${pauseBaseUrl}/${pauseLink?.token}`}
                 type={hidePause ? "password" : "text"}
                 InputProps={{
                   endAdornment: hideIcon(hidePause, setHidePause),

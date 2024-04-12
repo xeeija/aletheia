@@ -1,7 +1,7 @@
 import { BooleanField, SelectField } from "@/components"
 import { ChannelRewardMenuItem } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { Box, IconButton, ListItem, SvgIcon } from "@mui/material"
+import { Box, IconButton, ListItem, SvgIcon, Tooltip } from "@mui/material"
 import { FC } from "react"
 import { HiTrash } from "react-icons/hi"
 
@@ -12,9 +12,10 @@ interface Props {
   rewardId?: string
   onDelete?: (index: number) => void
   onValidate?: (rewardId: string, index: number) => string | void
+  hideDelete?: boolean
 }
 
-export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete, onValidate }) => {
+export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete, onValidate, hideDelete }) => {
   return (
     <ListItem role="listitem" dense sx={{ display: "flex", gap: 2, px: 0 }}>
       <SelectField
@@ -41,11 +42,15 @@ export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete,
         // labelPlacement="start"
       />
 
-      <Box>
-        <IconButton role="button" aria-label="Delete item" onClick={() => onDelete?.(index)}>
-          <SvgIcon component={HiTrash} viewBox="0 0 20 20" color="error" />
-        </IconButton>
-      </Box>
+      {!hideDelete && (
+        <Box>
+          <Tooltip title="Delete" arrow enterDelay={1000}>
+            <IconButton role="button" aria-label="Delete item" onClick={() => onDelete?.(index)} disabled={hideDelete}>
+              <SvgIcon component={HiTrash} viewBox="0 0 20 20" color={hideDelete ? "disabled" : "error"} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
     </ListItem>
   )
 }
