@@ -125,10 +125,10 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
         )}
 
         {!entries.length && (
-          <Box sx={{ textAlign: "center", p: 3, mt: 0.5 }}>
-            <NoData iconSize="md">
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                <Typography variant="h6" color="text.secondary">
+          <Box sx={{ textAlign: "center", p: 3, mt: 2 }}>
+            <NoData iconSize="lg" image="/img/add_notes.svg">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography variant="h6" color="text.secondary" fontSize="1em">
                   Add an entry below.
                 </Typography>
               </Box>

@@ -19,7 +19,7 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "baseline", gap: 1.5 }}>
-          <Typography variant="h2">{wheel.name ?? `Wheel #${wheel.slug}`}</Typography>
+          <Typography variant="h2">{wheel.name || `Wheel #${wheel.slug}`}</Typography>
 
           <AccessTypeBadge type={wheel.accessType} />
         </Box>

@@ -91,7 +91,7 @@ export const WinnerList: FC<Props> = ({ winners: winnersInput, spinning, editabl
 
       {!winners.length && (
         <Box sx={{ textAlign: "center", p: 3 }}>
-          <NoData iconSize="md">
+          <NoData iconSize={140} image="/img/winners.svg" sx={{ mt: 0 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography variant="h6">Spin to win!</Typography>
               <Typography color="text.secondary">No one has won yet.</Typography>
