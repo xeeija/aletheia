@@ -91,6 +91,7 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
               <LoadingIconButton
                 color="error"
                 loading={deletingEnable}
+                tooltip="Delete"
                 onClick={async () => {
                   const response = await deleteEnable(enableLink.id)
 
@@ -145,6 +146,7 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
               <LoadingIconButton
                 color="error"
                 loading={deletingPause}
+                tooltip="Delete"
                 onClick={async () => {
                   const response = await deletePause(pauseLink.id)
 
