@@ -1,5 +1,7 @@
+**/node_modules
+README.md
+**/dist
 .eslintrc.cjs
 tsconfig.json
-README.md
 src/twitch/mock
 eslint_report.json
