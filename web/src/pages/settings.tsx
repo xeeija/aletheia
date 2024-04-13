@@ -1,14 +1,25 @@
-import { DisconnectTwitchDialog, InputField, LayoutNextPage, LoadingButton, defaultLayout } from "@/components"
+import {
+  AlertPopup,
+  DisconnectTwitchDialog,
+  InputField,
+  LayoutNextPage,
+  LinkText,
+  LoadingButton,
+  defaultLayout,
+} from "@/components"
 import { useUpdateUserMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
-import { Box, Button, Grid, Link, Typography } from "@mui/material"
+import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 
 const SettingsPage: LayoutNextPage = () => {
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
+
+  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   // TODO: show error for twitch auth
 
@@ -23,6 +34,8 @@ const SettingsPage: LayoutNextPage = () => {
             username: user.username ?? "",
             displayname: user.displayname ?? "",
           }}
+          enableReinitialize
+          validateOnChange={false}
           onSubmit={async (values) => {
             const response = await updateUser({
               user: {
@@ -33,17 +46,39 @@ const SettingsPage: LayoutNextPage = () => {
 
             // TODO: proper error handling/feedback
 
-            if (response.error?.networkError) console.warn(response.error.networkError)
-            else if (response.error?.graphQLErrors) console.warn(response.error.graphQLErrors)
-            else if (response.data?.updateUser.errors) console.warn(response.data.updateUser.errors)
-            else console.log("Updated user")
+            if (response.error?.networkError) {
+              console.warn(response.error.networkError)
+              setShowError("A network error occured")
+            }
+            if (response.error?.graphQLErrors) {
+              console.warn(response.error.graphQLErrors)
+              setShowError("Error: " + response.error.graphQLErrors.map((e) => e.message).join("\n"))
+            }
+            if (response.data?.updateUser.errors) {
+              console.warn(response.data.updateUser.errors)
+              setShowError("An error occured")
+              // setShowError(response.data.updateUser.errors)
+            }
+
+            if (response.data?.updateUser.user) {
+              setShowSuccess("Successfully updated")
+            }
           }}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, isValid, dirty }) => (
             <Form>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={12}>
-                  <InputField name="username" label="Username" />
+                  <InputField
+                    name="username"
+                    label="Username"
+                    required
+                    validate={(value) => {
+                      if (!value) {
+                        return "Required"
+                      }
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={12}>
@@ -51,14 +86,13 @@ const SettingsPage: LayoutNextPage = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  <LoadingButton type="submit" variant="contained" loading={isSubmitting} disabled={!isValid || !dirty}>
                     Update
                   </LoadingButton>
                 </Grid>
 
-                <Grid item>
-                  {/* <Button variant="contained" href={twitchAuthorizeLink}>Login with Twitch</Button> */}
-                </Grid>
+                <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
+                <AlertPopup severity="warning" messageState={[showError, setShowError]} />
               </Grid>
             </Form>
           )}
@@ -70,33 +104,29 @@ const SettingsPage: LayoutNextPage = () => {
       </Typography>
 
       {user && !userAccessToken?.id && (
-        <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ textTransform: "none", mb: 1 }}>
+        <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ mb: 1 }}>
           Connect with Twitch
         </Button>
       )}
 
       <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 2 }}>
-        For more information, go to your Twitch{" "}
-        <Link
-          // variant="text"
-          target="_blank"
-          href="https://www.twitch.tv/settings/connections"
-          sx={{ textTransform: "none", mx: 0, px: 0, py: 0.5 }}
-        >
+        {"For more information, go to your Twitch "}
+        <LinkText href="https://www.twitch.tv/settings/connections" target="_blank">
           connections
-        </Link>
+        </LinkText>
         .
       </Typography>
 
-      {!user && <Typography sx={{ mb: 2 }}>You must be logged in to connect a Twitch account.</Typography>}
+      {!user && (
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          You must be logged in to connect a Twitch account.
+        </Typography>
+      )}
 
       {userAccessToken?.id && (
         <>
           <Typography color="text.secondary" sx={{ pb: 1 }}>
-            Connected as{" "}
-            <Box component="span" sx={{ fontWeight: 500 }}>
-              {userAccessToken.twitchUsername}
-            </Box>
+            Connected as <span style={{ fontWeight: 500 }}>{userAccessToken.twitchUsername}</span>
           </Typography>
 
           {/* TODO: make it look nice, maybe with display name or profile picture https://dev.twitch.tv/docs/api/reference/#get-users */}
@@ -108,7 +138,6 @@ const SettingsPage: LayoutNextPage = () => {
             onClick={() => {
               setDisconnectDialogOpen(true)
             }}
-            sx={{ textTransform: "none" }}
           >
             Disconnect
           </LoadingButton>
@@ -118,8 +147,8 @@ const SettingsPage: LayoutNextPage = () => {
       <DisconnectTwitchDialog
         open={disconnectDialogOpen}
         onClose={() => setDisconnectDialogOpen(false)}
-        onDelete={() => {
-          void disconnectAccessToken()
+        onDelete={async () => {
+          await disconnectAccessToken()
         }}
       />
     </>

@@ -6,15 +6,11 @@ const handler: ApiHandler = async (req, res) => {
     return
   }
 
-  const state = typeof req.query.state === "string" ? req.query.state : req.query.state?.[0]
-
-  console.log("state2", state)
-
   // handle errors
   const errorCode = typeof req.query.error === "string" ? req.query.error : req.query.error?.[0]
   if (errorCode) {
     console.error("error:", errorCode)
-    res.redirect(`/settings#error`)
+    res.redirect(`/settings#error=${errorCode}`)
     return
   }
 
@@ -38,16 +34,19 @@ const handler: ApiHandler = async (req, res) => {
     if (serverRes.ok) {
       res.redirect("/settings")
     } else {
-      const body = (await serverRes.json()) as unknown
-      console.error("[twitch] error", serverRes.status, body)
-      res.redirect(`/settings#error`)
+      if (serverRes.status < 500) {
+        const body = (await serverRes.json()) as unknown
+        console.error("[twitch] error", serverRes.status, body)
+      } else {
+        const body = await serverRes.text()
+        console.error("[twitch] error", serverRes.status, body)
+      }
+
+      res.redirect(`/settings#error=${serverRes.status}`)
     }
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.error(err.message)
-      res.redirect(`/settings#error`)
-    }
     console.error("unkown error:", err)
+    res.redirect(`/settings#error=unknown`)
   }
 }
 

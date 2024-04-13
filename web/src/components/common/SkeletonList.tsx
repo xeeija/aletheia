@@ -16,11 +16,12 @@ export const SkeletonList: FC<Props> = ({ n, variant = "rectangular", animationD
 
   return (
     <>
-      {items.map(
-        (_, i) =>
-          <Fragment key={i}>{children}</Fragment> ?? (
-            <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * (animationDelay ?? 50)}ms` }} {...props} />
-          )
+      {items.map((_, i) =>
+        children ? (
+          <Fragment key={i}>{children}</Fragment>
+        ) : (
+          <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * (animationDelay ?? 50)}ms` }} {...props} />
+        )
       )}
     </>
   )

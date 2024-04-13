@@ -1,4 +1,4 @@
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material"
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from "@mui/material"
 import { useField } from "formik"
 import { FC, ReactNode } from "react"
 
@@ -8,19 +8,23 @@ export interface RadioOption {
   color?: "primary" | "secondary" | "error" | "info" | "success" | "warning" | "default"
   disabled?: boolean
   hidden?: boolean
+  helperText?: ReactNode
 }
 
 interface Props {
   name: string
   label?: ReactNode
+  helperText?: ReactNode
   row?: boolean
   options?: RadioOption[]
   children?: ReactNode
 }
 
-export const RadioGroupField: FC<Props> = ({ name, label, row, options, children }) => {
+export const RadioGroupField: FC<Props> = ({ name, label, helperText, row, options, children }) => {
   const [field] = useField(name)
   const hasLabel = label !== undefined && label !== null
+
+  const optionHelperText = options?.find((o) => o.value === field.value)?.helperText
 
   return (
     <FormControl>
@@ -46,6 +50,12 @@ export const RadioGroupField: FC<Props> = ({ name, label, row, options, children
 
         {children}
       </RadioGroup>
+      {(helperText || optionHelperText) && (
+        <FormHelperText component={"div"} sx={{ mt: -0.25, ml: 0, mb: 0.5 }}>
+          <div>{helperText}</div>
+          <div>{optionHelperText}</div>
+        </FormHelperText>
+      )}
     </FormControl>
   )
 }

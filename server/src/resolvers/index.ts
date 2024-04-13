@@ -1,22 +1,36 @@
 import { NonEmptyArray } from "type-graphql"
 import { ColorThemeResolver } from "./ColorTheme"
+import { CustomRewardResolver } from "./CustomReward"
+import { EventSubResolver, RandomWheelSyncResolver } from "./EventSub"
 import { RandomWheelResolver } from "./RandomWheel"
-import { CustomRewardResolver, EventSubscriptionResolver, TwitchResolver } from "./Twitch"
+import { RandomWheelEntryResolver } from "./RandomWheelEntry"
+import { RandomWheelMemberResolver } from "./RandomWheelMember"
+import { RewardGroupResolver } from "./RewardGroup"
+import { TwitchResolver } from "./Twitch"
 import { UserResolver } from "./User"
-
-// export * from "./ColorTheme"
-// export * from "./RandomWheel"
-// export * from "./Twitch"
-// export * from "./User"
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const Resolvers: NonEmptyArray<Function> = [
-  UserResolver,
-  RandomWheelResolver,
   ColorThemeResolver,
-  TwitchResolver,
+  EventSubResolver,
+  RandomWheelSyncResolver,
+  RandomWheelResolver,
+  RandomWheelMemberResolver,
+  RandomWheelEntryResolver,
+  RewardGroupResolver,
   CustomRewardResolver,
-  EventSubscriptionResolver,
+  TwitchResolver,
+  UserResolver,
 ]
 
 export * from "./types"
+
+export * from "./ColorTheme"
+export * from "./CustomReward"
+export * from "./EventSub"
+export * from "./RandomWheel"
+export * from "./RandomWheelEntry"
+export * from "./RandomWheelMember"
+export * from "./RewardGroup"
+export * from "./Twitch"
+export * from "./User"

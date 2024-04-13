@@ -13,7 +13,7 @@ generator client {
 // graphql-fields is a runtime dependency for typegraphql-prisma
 generator typegraphql {
   provider           = "typegraphql-prisma"
-  output             = "../src/generated/typegraphql"
+  output             = "../src/generated/graphql"
   emitTranspiledCode = false
 }
 
@@ -34,6 +34,8 @@ model User {
   colorThemes        ColorTheme[]        @relation(name: "fk_creator")
   userAccessTokens   UserAccessToken[]
   eventSubscriptions EventSubscription[]
+  rewardLinks        RewardLink[]
+  rewardGroups       RewardGroup[]
 }
 
 // Session store table
@@ -60,26 +62,26 @@ model AccessType {
 // rename RandomWheel to Wheel in Graphql (?)
 
 model RandomWheel {
-  id                 String              @id @default(uuid()) @db.Uuid
-  slug               String              @unique
-  name               String? // maybe optional
-  createdAt          DateTime            @default(now())
-  uniqueEntries      Boolean             @default(false)
-  editAnonymous      Boolean             @default(false)
-  access             AccessType          @relation(fields: [accessType], references: [type])
-  accessType         String              @default("PRIVATE")
-  rotation           Float               @default(0)
-  spinDuration       Int                 @default(8000)
-  fadeDuration       Int                 @default(8000)
-  owner              User?               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId            String?             @db.Uuid
-  theme              ColorTheme?         @relation(fields: [themeId], references: [id])
-  themeId            String?             @db.Uuid
-  entries            RandomWheelEntry[]
-  winners            RandomWheelWinner[]
-  members            RandomWheelMember[]
-  likes              RandomWheelLike[]
-  eventSubscriptions EventSubscription[]
+  id            String              @id @default(uuid()) @db.Uuid
+  slug          String              @unique
+  name          String? // maybe optional
+  createdAt     DateTime            @default(now())
+  uniqueEntries Boolean             @default(false)
+  editAnonymous Boolean             @default(false)
+  access        AccessType          @relation(fields: [accessType], references: [type])
+  accessType    String              @default("PRIVATE")
+  rotation      Float               @default(0)
+  spinDuration  Int                 @default(8000)
+  fadeDuration  Int                 @default(8000)
+  owner         User?               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId       String?             @db.Uuid
+  theme         ColorTheme?         @relation(fields: [themeId], references: [id])
+  themeId       String?             @db.Uuid
+  entries       RandomWheelEntry[]
+  winners       RandomWheelWinner[]
+  members       RandomWheelMember[]
+  likes         RandomWheelLike[]
+  wheelSync     RandomWheelSync[]
   // visibility
   // settings:
   // unique entries option
@@ -140,6 +142,20 @@ model RandomWheelLike {
   @@unique([userId, randomWheelId])
 }
 
+model RandomWheelSync {
+  id                  String             @id @default(uuid()) @db.Uuid
+  randomWheel         RandomWheel        @relation(fields: [randomWheelId], references: [id], onDelete: Cascade)
+  randomWheelId       String             @db.Uuid
+  eventSubscription   EventSubscription? @relation(fields: [eventSubscriptionId], references: [id], onDelete: Cascade)
+  eventSubscriptionId String?            @db.Uuid
+  rewardId            String
+  paused              Boolean            @default(false)
+  useInput            Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+
+  @@unique([randomWheelId, eventSubscriptionId])
+}
+
 model ColorTheme {
   id            String        @id @default(uuid()) @db.Uuid
   name          String?
@@ -154,7 +170,7 @@ model ColorTheme {
 // Twitch user access token
 model UserAccessToken {
   id                  String   @id @default(uuid()) @db.Uuid
-  user                User     @relation(fields: [userId], references: [id])
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String   @db.Uuid
   /// @TypeGraphQL.omit(output: true)
   accessToken         String
@@ -172,34 +188,48 @@ model TwitchState {
 }
 
 model EventSubscription {
-  id               String       @id @default(uuid()) @db.Uuid
-  user             User?        @relation(fields: [userId], references: [id])
-  userId           String?      @db.Uuid
+  id               String            @id @default(uuid()) @db.Uuid
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String?           @db.Uuid
   twitchUserId     String
-  subscriptionType String
   type             String
-  rewardId         String?
-  randomWheel      RandomWheel? @relation(references: [id], fields: [randomWheelId])
-  randomWheelId    String?      @db.Uuid
-  rewardGroup      RewardGroup? @relation(fields: [rewardGroupId], references: [id])
-  rewardGroupId    String?      @db.Uuid
+  subscriptionType String
+  itemId           String?
   subscriptionId   String?
   condition        Json?
-  useInput         Boolean      @default(false)
-  paused           Boolean      @default(false)
+  paused           Boolean           @default(false)
+  wheelSync        RandomWheelSync[]
 }
 
 model RewardGroup {
-  id                String              @id @default(uuid()) @db.Uuid
-  name              String?
-  triggerSelected   Boolean             @default(false)
-  RewardGroupItem   RewardGroupItem[]
-  EventSubscription EventSubscription[]
+  id              String            @id @default(uuid()) @db.Uuid
+  name            String?
+  triggerSelected Boolean           @default(false)
+  active          Boolean           @default(true)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String            @db.Uuid
+  cooldownExpiry  DateTime?
+  items           RewardGroupItem[]
 }
 
 model RewardGroupItem {
-  id            String      @id @default(uuid()) @db.Uuid
-  rewardGroup   RewardGroup @relation(references: [id], fields: [rewardGroupId], onDelete: Cascade)
-  rewardGroupId String      @db.Uuid
-  trigger       Boolean     @default(false)
+  id              String      @id @default(uuid()) @db.Uuid
+  rewardGroup     RewardGroup @relation(references: [id], fields: [rewardGroupId], onDelete: Cascade)
+  rewardGroupId   String      @db.Uuid
+  rewardId        String
+  rewardEnabled   Boolean     @default(true)
+  triggerCooldown Boolean     @default(true)
+
+  @@unique([rewardGroupId, rewardId])
+}
+
+model RewardLink {
+  id       String @id @default(uuid()) @db.Uuid
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @db.Uuid
+  rewardId String
+  token    String @unique
+  type     String
+
+  @@index([token])
 }

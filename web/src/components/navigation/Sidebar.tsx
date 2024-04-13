@@ -76,13 +76,15 @@ export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen
             divider ? (
               <LinkListItem divider={divider} />
             ) : (
-              <Tooltip title={name} arrow placement="right" enterDelay={1000}>
-                <LinkListItem
-                  name={name}
-                  {...props}
-                  sx={{ width: itemWidth }}
-                  textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
-                />
+              <Tooltip title={!props.disabled ? name : ""} arrow placement="right" enterDelay={1000}>
+                <span>
+                  <LinkListItem
+                    name={name}
+                    {...props}
+                    sx={{ width: itemWidth }}
+                    textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
+                  />
+                </span>
               </Tooltip>
             )
           }

@@ -5,16 +5,19 @@ import {
   RandomWheelEntry,
   RandomWheelLike,
   RandomWheelMember,
-  RandomWheelRole,
   RandomWheelWinner,
   User,
-} from "@/generated/typegraphql"
+} from "@/generated/graphql"
+import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers"
 import { AppError, createAppErrorUnion } from "@/resolvers/types"
+import { accessTokenForUser } from "@/twitch"
+import { handleSubscriptionSync } from "@/twitch/events"
 import type { GraphqlContext } from "@/types"
 import { random, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
+import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
-import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
+import { parseResolveInfo } from "graphql-parse-resolve-info"
 import {
   Arg,
   Ctx,
@@ -29,7 +32,6 @@ import {
   Resolver,
   Root,
 } from "type-graphql"
-import { ColorThemeInput } from "./ColorTheme"
 
 /*
   @ObjectType()
@@ -82,32 +84,11 @@ class RandomWheelInput implements Partial<RandomWheel> {
   @Field(() => Boolean, { nullable: true })
   editAnonymous?: boolean
 
+  @Field(() => Boolean, { nullable: true })
+  uniqueEntries?: boolean
+
   @Field(() => ColorThemeInput, { nullable: true })
   theme?: ColorTheme | null // ColorThemeInput
-}
-
-@InputType()
-class RandomWheelMemberInput {
-  @Field(() => String, { nullable: true })
-  id?: string
-
-  @Field(() => String)
-  username: string
-
-  @Field(() => String)
-  role: string
-
-  @Field(() => Boolean, { nullable: true })
-  delete?: boolean
-}
-
-@InputType()
-class RandomWheelEntryInput {
-  @Field(() => String, { nullable: true })
-  name?: string
-
-  @Field(() => Int, { nullable: true })
-  weight?: number
 }
 
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
@@ -116,7 +97,7 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
 
   const include: Prisma.RandomWheelInclude = {
     entries: "entries" in fields && {
-      orderBy: { createdAt: "asc" },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     },
     winners: "winners" in fields && {
       orderBy: { createdAt: "desc" },
@@ -133,36 +114,8 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
   return include
 }
 
-const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
-  const resolveInfo = parseResolveInfo(info)
-
-  try {
-    // TODO: Fix without eslint-disable
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-    const fallbackMembers: ResolveTree | FieldsByTypeName | null | undefined = (<Record<string, any>>(
-      resolveInfo?.fieldsByTypeName.RandomWheel
-    ))?.members
-
-    const membersFields: ResolveTree | FieldsByTypeName | null | undefined =
-      "RandomWheelMember" in (resolveInfo?.fieldsByTypeName ?? {}) ? resolveInfo : fallbackMembers
-
-    const fields = membersFields?.fieldsByTypeName.RandomWheelMember
-
-    const include: Prisma.RandomWheelMemberInclude = {
-      randomWheel: "randomWheel" in (fields ?? {}),
-      role: "role" in (fields ?? {}),
-      user: "user" in (fields ?? {}),
-    }
-
-    return include
-  } catch (ex: unknown) {
-    console.error("includeRandomWheelMember error", ex)
-    return {}
-  }
-}
-
 @ObjectType("RandomWheel")
-class RandomWheelFull extends RandomWheel {
+export class RandomWheelFull extends RandomWheel {
   @Field(() => [RandomWheelEntry])
   declare entries: RandomWheelEntry[]
 
@@ -180,15 +133,6 @@ class RandomWheelFull extends RandomWheel {
 
   @Field(() => ColorTheme, { nullable: true })
   declare theme?: ColorTheme
-}
-
-@ObjectType("RandomWheelMember")
-class RandomWheelMemberFull extends RandomWheelMember {
-  @Field(() => User)
-  declare user: User
-
-  @Field(() => RandomWheelRole)
-  declare role: RandomWheelRole
 }
 
 // @ObjectType()
@@ -367,31 +311,37 @@ export class RandomWheelResolver {
     @Arg("accessType", { nullable: true }) accessType?: string,
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
-    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean
+    @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
+    @Arg("uniqueEntries", { nullable: true }) uniqueEntries?: boolean
   ): Promise<typeof RandomWheelResponse> {
-    const tempSlug = `slug-${Date.now()}`
+    // const tempSlug = `slug-${Date.now()}`
 
     try {
+      const id = randomUUID()
+      const slug = slugify(id, 6)
+
       const randomWheel = await prisma.randomWheel.create({
         data: {
-          slug: tempSlug,
+          id,
+          slug,
           ownerId: req.session.userId || null,
           name: name,
           accessType,
           spinDuration,
           fadeDuration,
           editAnonymous,
+          uniqueEntries,
         },
       })
 
-      const slug = slugify(randomWheel.id, 6)
+      // const slug = slugify(randomWheel.id, 6)
       // TODO: Use default value for slug in schema to avoid a second update?
-      const newWheel = await prisma.randomWheel.update({
-        where: { id: randomWheel.id },
-        data: { slug: slug },
-      })
+      // const newWheel = await prisma.randomWheel.update({
+      //   where: { id: randomWheel.id },
+      //   data: { slug: slug },
+      // })
 
-      return newWheel
+      return randomWheel
     } catch (ex: unknown) {
       if (ex instanceof Prisma.PrismaClientKnownRequestError) {
         if (ex.code === "P2002") {
@@ -418,7 +368,7 @@ export class RandomWheelResolver {
 
   @Mutation(() => RandomWheelFull, { nullable: true })
   async updateRandomWheel(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
+    @Ctx() { prisma, req, socketIo, eventSub }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("id") id: string,
     @Arg("options") { theme, ...wheelOptions }: RandomWheelInput
@@ -493,6 +443,27 @@ export class RandomWheelResolver {
       })
 
       socketIo.to(`wheel/${newWheel.id}`).emit("wheel:update", "wheel")
+
+      // update wheel sync eventsub when uniqueEntries changes
+      if (randomWheel.uniqueEntries !== newWheel.uniqueEntries) {
+        const token = await accessTokenForUser({ req, prisma })
+
+        const wheelSync = await prisma.randomWheelSync.findMany({
+          where: {
+            randomWheelId: newWheel.id,
+          },
+        })
+
+        await Promise.all(
+          wheelSync.map(async (sync) => {
+            await handleSubscriptionSync(eventSub, prisma, socketIo, {
+              twitchUserId: token.realTwitchUserId,
+              userId: req.session.userId,
+              rewardId: sync.rewardId,
+            })
+          })
+        )
+      }
 
       return newWheel
     } catch (ex: unknown) {
@@ -630,173 +601,6 @@ export class RandomWheelResolver {
     // Add currentRotation to RandomWheel (and other wheelOptions, like spinDuration)
 
     return winner
-  }
-
-  // Entry
-
-  // TODO: Error Handling with Middleware
-
-  @Mutation(() => RandomWheelEntry)
-  async addRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: GraphqlContext,
-    @Arg("randomWheelId") randomWheelId: string,
-    @Arg("name") name: string
-  ) {
-    const entry = await prisma.randomWheelEntry.create({
-      data: {
-        randomWheelId,
-        name,
-      },
-    })
-
-    socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
-    // console.log(`emit to wheel:entries`)
-
-    return entry
-  }
-
-  @Mutation(() => RandomWheelEntry)
-  async updateRandomWheelEntry(
-    @Ctx() { prisma, socketIo }: GraphqlContext,
-    @Arg("id") id: string,
-    @Arg("entry") entry: RandomWheelEntryInput
-  ) {
-    const updatedEntry = await prisma.randomWheelEntry.update({
-      where: { id },
-      data: entry,
-    })
-
-    socketIo.to(`wheel/${updatedEntry.randomWheelId}`).emit("wheel:entries", "update")
-
-    return updatedEntry
-  }
-
-  @Mutation(() => Boolean, { nullable: true })
-  async deleteRandomWheelEntry(@Ctx() { prisma, socketIo }: GraphqlContext, @Arg("id") id: string) {
-    const entry = await prisma.randomWheelEntry.delete({
-      where: { id },
-    })
-
-    socketIo.to(`wheel/${entry.randomWheelId}`).emit("wheel:entries", "delete")
-    // console.log(`emit wheel:entries`)
-
-    return true
-  }
-
-  @Mutation(() => Int)
-  async clearRandomWheel(@Ctx() { prisma, socketIo }: GraphqlContext, @Arg("id") id: string) {
-    const res = await prisma.randomWheelEntry.deleteMany({
-      where: { randomWheelId: id },
-    })
-
-    await prisma.randomWheel.update({
-      where: { id: id },
-      data: { rotation: 0 },
-    })
-
-    socketIo.to(`wheel/${id}`).emit("wheel:entries", "clear")
-    // console.log(`emit to wheel:entries c`)
-
-    return res.count
-  }
-
-  @Mutation(() => [RandomWheelMemberFull], { nullable: true })
-  async updateRandomWheelMembers(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
-    @Info() info: GraphQLResolveInfo,
-    @Arg("randomWheelId") randomWwheelId: string,
-    @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[]
-  ) {
-    // TODO: Validate username input
-
-    const wheel = await prisma.randomWheel.findUnique({
-      where: { id: randomWwheelId },
-      select: {
-        id: true,
-        ownerId: true,
-      },
-    })
-
-    if (wheel?.ownerId !== req.session.userId || !req.session.userId) {
-      return null
-    }
-
-    // TODO: Optimize to do this in one sql query
-    const newMembers = members.map(async (memberInput) => {
-      // TODO: Move wheel auth to middleware or @Auth or so
-      const member = await prisma.randomWheelMember.findFirst({
-        where: {
-          randomWheelId: randomWwheelId,
-          user: { username: memberInput.username },
-        },
-        include: {
-          ...includeRandomWheelMember(info),
-        },
-      })
-
-      if (memberInput.delete) {
-        if (member) {
-          await prisma.randomWheelMember.delete({
-            where: { id: member.id },
-          })
-        }
-
-        return null
-      }
-
-      if (member?.roleName === memberInput.role) {
-        return member
-      }
-
-      if (member) {
-        return await prisma.randomWheelMember.update({
-          where: { id: member.id },
-          data: { roleName: memberInput.role },
-        })
-      } else {
-        const userToUpdate = await prisma.user.findUnique({
-          where: { username: memberInput.username },
-        })
-
-        return await prisma.randomWheelMember.create({
-          data: {
-            randomWheelId: randomWwheelId,
-            userId: userToUpdate?.id ?? "",
-            roleName: memberInput.role,
-          },
-        })
-      }
-    })
-
-    const finishedMembers = (await Promise.all(newMembers)).filter((member) => member)
-
-    socketIo.to(`wheel/${wheel.id}`).emit("wheel:update", "members")
-
-    return finishedMembers
-  }
-
-  @Mutation(() => Boolean, { nullable: true })
-  async deleteRandomWheelMember(@Ctx() { prisma, req, socketIo }: GraphqlContext, @Arg("id") id: string) {
-    const member = await prisma.randomWheelMember.findUnique({
-      where: { id: id },
-      include: {
-        randomWheel: {
-          select: { ownerId: true },
-        },
-      },
-    })
-
-    if (member?.randomWheel.ownerId !== req.session.userId || !req.session.userId) {
-      return false
-    }
-
-    await prisma.randomWheelMember.delete({
-      where: { id },
-    })
-
-    socketIo.to(`wheel/${member.randomWheelId}`).emit("wheel:update", "members")
-
-    return true
   }
 
   @Mutation(() => RandomWheelLike, { nullable: true })

@@ -32,6 +32,8 @@ out/
 .env.test.local
 .env.production.local
 
+src/twitch/mock/data/token*.json
+
 # Optional eslint cache
 .eslintcache
 

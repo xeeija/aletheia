@@ -1,5 +1,0 @@
-query EventSubscriptionsForWheel($randomWheelId: String!) {
-  eventSubscriptionsForWheel(randomWheelId: $randomWheelId) {
-    ...EventSubscription
-  }
-}

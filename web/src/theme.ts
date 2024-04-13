@@ -173,6 +173,17 @@ const componentOverrides: ThemeOptions = {
         },
       ],
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontSize: "1em",
+        },
+        // colorInherit: {
+        //   backgroundColor: "hsl(210, 18%, 30%)",
+        // },
+      },
+    },
   },
 }
 

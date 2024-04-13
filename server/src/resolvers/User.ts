@@ -1,4 +1,4 @@
-import { User, UserAccessToken } from "@/generated/typegraphql"
+import { User, UserAccessToken } from "@/generated/graphql"
 import { FieldError } from "@/resolvers"
 import type { GraphqlContext } from "@/types"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
@@ -199,7 +199,7 @@ export class UserResolver {
     return userExists > 0
   }
 
-  @Query(() => UserAccessToken)
+  @Query(() => UserAccessToken, { nullable: true })
   async userAccesToken(@Ctx() { prisma, req }: GraphqlContext) {
     const token = await prisma.userAccessToken.findFirst({
       where: {

@@ -1,17 +1,21 @@
-import { InputField } from "@/components"
+import { AlertPopup, InputField } from "@/components"
+import { SendMessage } from "@/components/icons"
 import { useAddRandomWheelEntryMutation } from "@/generated/graphql"
-import { IconButton, InputAdornment, SvgIcon, Tooltip } from "@mui/material"
+import { IconButton, InputAdornment, Tooltip } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC } from "react"
-import { HiPaperAirplane } from "react-icons/hi"
+import { FC, ReactNode, useState } from "react"
 
 interface Props {
   wheelId: string
   spinning?: boolean
+  entries?: string[]
 }
 
-export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
+export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
   const [, addEntry] = useAddRandomWheelEntryMutation()
+  const [showError, setShowError] = useState<ReactNode>(null)
+
+  const entriesLower = entries?.map((entry) => entry.toLowerCase())
 
   return (
     <Formik
@@ -21,13 +25,28 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
       onSubmit={async ({ entry }, { resetForm }) => {
         resetForm()
 
-        const { data } = await addEntry({
+        const { data, error } = await addEntry({
           randomWheelId: wheelId,
           name: entry.trim(),
         })
 
+        // console.warn("addEntry", error)
+
+        if (error?.message.includes("Entry already exists")) {
+          setShowError(`'${entry}' already exists`)
+        }
+
         if (data?.addRandomWheelEntry) {
           // setEntries([...entries, data?.addRandomWheelEntry])
+        }
+      }}
+      validateOnChange={false}
+      // TODO: Use immidiate validate for duplicate entries?
+      validate={({ entry }) => {
+        if (entriesLower?.includes(entry.trim().toLowerCase())) {
+          return {
+            entry: "Entry already exists",
+          }
         }
       }}
     >
@@ -35,20 +54,20 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
         <Form autoComplete="off">
           <InputField
             name="entry"
-            label="Add name"
+            label="Add entry"
             fullWidth
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip arrow placement="top" title="Add">
+                  <Tooltip arrow placement="top" title="Add entry">
                     <IconButton
                       type="submit"
                       disabled={!values.entry.trim() || spinning}
                       aria-label="Add name"
                       edge="end"
-                      sx={{ mr: -0.75 }}
+                      sx={{ mr: -0.75, opacity: 0.7 }}
                     >
-                      <SvgIcon component={HiPaperAirplane} viewBox="0 0 20 20" sx={{ transform: "rotate(90deg)" }} />
+                      <SendMessage />
                     </IconButton>
                   </Tooltip>
                 </InputAdornment>
@@ -56,6 +75,8 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning }) => {
             }}
             // sx={{ mt: 1 }}
           />
+
+          <AlertPopup severity="warning" messageState={[showError, setShowError]} />
         </Form>
       )}
     </Formik>

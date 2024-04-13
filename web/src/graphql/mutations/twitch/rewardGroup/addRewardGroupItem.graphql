@@ -1,0 +1,5 @@
+mutation AddRewardGroupItem($rewardGroupId: String!, $rewardId: String!, $triggerCooldown: Boolean) {
+  addRewardGroupItem(rewardId: $rewardId, rewardGroupId: $rewardGroupId, triggerCooldown: $triggerCooldown) {
+    ...RewardGroupItem
+  }
+}

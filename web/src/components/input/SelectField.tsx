@@ -2,7 +2,7 @@ import { InputField, InputFieldProps } from "@/components"
 import { MenuItem } from "@mui/material"
 import { FC, ReactNode } from "react"
 
-interface SelectOption {
+export interface SelectOption {
   value: string | number
   label: ReactNode
 }

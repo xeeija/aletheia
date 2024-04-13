@@ -1,0 +1,3 @@
+mutation DeleteRewardGroup($id: String!) {
+  deleteRewardGroup(id: $id)
+}

@@ -1,5 +1,6 @@
+import { UserStatusDot } from "@/components"
 import { UserNameFragment } from "@/generated/graphql"
-import { Avatar, Badge, IconButton, SvgIcon, useTheme } from "@mui/material"
+import { Avatar, IconButton, SvgIcon } from "@mui/material"
 import { FC, SetStateAction } from "react"
 import { TiUser } from "react-icons/ti"
 
@@ -9,31 +10,14 @@ interface Props {
 }
 
 export const UserAvatar: FC<Props> = ({ user, setDropdownAnchor }) => {
-  const theme = useTheme()
-
   return (
-    <Badge
-      overlap="circular"
-      variant="dot"
-      color="success"
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      sx={{
-        // ml: 1,
-        "& .MuiBadge-badge": {
-          p: 0.5,
-          mb: 0.6,
-          mr: 0.6,
-          borderRadius: "50%",
-          border: `2px solid ${theme.palette.background.default}`,
-        },
-      }}
-    >
+    <UserStatusDot>
       <IconButton color="primary" sx={{ p: 0.5 }} onClick={(e) => setDropdownAnchor(e.currentTarget)}>
         <Avatar
           alt={user.username}
           // TODO: License CC BY 4.0 attribution: https://creativecommons.org/licenses/by/4.0/
           // identicon
-          src={`https://api.dicebear.com/7.x/big-smile/svg?seed=${user.displayname ?? user.username}&flip=true`}
+          src={`https://api.dicebear.com/8.x/big-smile/svg?seed=${user.displayname ?? user.username}&flip=true`}
           sx={{
             width: 36,
             height: 36,
@@ -55,6 +39,6 @@ export const UserAvatar: FC<Props> = ({ user, setDropdownAnchor }) => {
           />
         </Avatar>
       </IconButton>
-    </Badge>
+    </UserStatusDot>
   )
 }

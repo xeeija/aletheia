@@ -1,16 +1,20 @@
-import { LayoutNextPage, NoData, TabPanel, defaultLayout } from "@/components"
-import { CreateEditWheelDialog, WheelList } from "@/components/randomWheel"
+import { LayoutNextPage, TabPanel, defaultLayout } from "@/components"
+import { CreateEditWheelDialog, NoDataWheelList, WheelList } from "@/components/randomWheel"
 import { useMyRandomWheelsQuery } from "@/generated/graphql"
-import { Box, Button, IconButton, SvgIcon, Tab, Tabs, Tooltip } from "@mui/material"
+import { useAuth } from "@/hooks"
+import { Box, Button, IconButton, SvgIcon, Tab, Tabs } from "@mui/material"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
-const wheelsTypes = ["my", "shared", "favorite"]
+type WheelListType = "my" | "shared" | "favorite"
+const wheelsTypes: WheelListType[] = ["my", "shared", "favorite"]
 
 const RandomWheelPage: LayoutNextPage = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
+
+  const { user } = useAuth()
 
   const [{ data, fetching }] = useMyRandomWheelsQuery({
     variables: {
@@ -31,28 +35,31 @@ const RandomWheelPage: LayoutNextPage = () => {
       >
         {/* <Typography variant="h2">My Wheels</Typography> */}
 
-        <Tabs value={wheelsTab} onChange={(_, value: number) => setWheelsTab(value)}>
-          {/* itemType prop for new variant, because there is no variant prop */}
-          <Tab label="My Wheels" itemType="capitalize" />
-          <Tab label="Shared Wheels" itemType="capitalize" />
-          <Tab label="Favorites" itemType="capitalize" />
-        </Tabs>
+        {user && (
+          <Tabs value={wheelsTab} onChange={(_, value: number) => setWheelsTab(value)}>
+            {/* itemType prop for new variant, because there is no variant prop */}
+            <Tab label="My Wheels" itemType="capitalize" />
+            <Tab label="Shared Wheels" itemType="capitalize" />
+            <Tab label="Favorites" itemType="capitalize" />
+          </Tabs>
+        )}
+        {!user && <div></div>}
 
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="outlined"
             color="success"
             endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
             onClick={() => setCreateDialogOpen(true)}
           >
-            New
+            New Wheel
           </Button>
 
-          <Tooltip placement="bottom-end" title="More options">
-            <IconButton color="secondary" sx={{ ml: 1 }} disabled>
-              <HiDotsVertical />
-            </IconButton>
-          </Tooltip>
+          {/* <Tooltip placement="bottom-end" title="More options"> */}
+          <IconButton color="secondary" disabled>
+            <HiDotsVertical />
+          </IconButton>
+          {/* </Tooltip> */}
         </Box>
       </Box>
 
@@ -62,7 +69,7 @@ const RandomWheelPage: LayoutNextPage = () => {
         </TabPanel>
       ))}
 
-      {wheelsEmpty && !fetching && <NoData>{"You don't have any Random Wheels yet."}</NoData>}
+      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} />}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
     </>

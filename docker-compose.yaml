@@ -2,7 +2,7 @@ version: "3.1"
 name: aletheia
 services:
   postgres:
-    image: postgres:14.8
+    image: postgres:14.8-alpine
     restart: unless-stopped
     ports:
       - 5432:5432
@@ -12,8 +12,9 @@ services:
       POSTGRES_PASSWORD: aletheia
     volumes:
       - ./docker/data/postgres:/var/lib/postgresql/data
+
   server:
-    image: xeeija/aletheia-server:1.6.0
+    image: xeeija/aletheia-server:1.7.1
     # build:
     #   context: server
     restart: unless-stopped
@@ -24,16 +25,38 @@ services:
     environment:
       DATABASE_URL: postgresql://aletheia:aletheia@postgres:5432/aletheia
       NODE_ENV: development
+      EVENTSUB_STRICT_HOST_CHECK: 1
+    volumes:
+      - ./server/src/twitch/mock/data/token.json:/server/src/twitch/mock/data/token.json
+    depends_on:
+      - postgres
+    # needed for twitch mock API server, so localhost (127.0.0.1) in container finds mock-api in host network
+    extra_hosts:
+      - localhost:host-gateway
 
   web:
-    image: xeeija/aletheia-web:1.6.0
+    image: xeeija/aletheia-web:1.7.1
     # build:
     #   context: web
     restart: unless-stopped
     ports:
-      - 3000:3000
+      - 3001:3000
     env_file:
       - web/.env
     environment:
       SERVER_URL: http://server:4000
       SOCKET_SERVER_URL: http://server:4000
+
+  proxy:
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    ports:
+      - 3000:80
+    environment:
+      SERVER_URL: server:4000
+      WEB_URL: web:3000
+    volumes:
+      - ./web/proxy/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+      # logging see: https://docs.nginx.com/nginx/admin-guide/monitoring/logging/
+      # - ./docker/data/proxy/log/nginx:/var/log/nginx
+    command: ["nginx", "-g", "daemon off;"]

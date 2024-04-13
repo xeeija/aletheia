@@ -1,4 +1,5 @@
-import { deleteManySubscriptionRedemptionAdd } from "@/twitch/events"
+import { useMockServer } from "@/twitch"
+import { addMockAccessTokens } from "@/twitch/mock"
 import type { HttpError } from "@/types"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
@@ -8,12 +9,30 @@ import "dotenv/config"
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
 
+const mockClientId = process.env.TWITCH_MOCK_CLIENT_ID ?? ""
+const mockClientSecret = process.env.TWITCH_MOCK_CLIENT_SECRET ?? ""
+// const mockAccessToken = process.env.TWITCH_MOCK_ACCESS_TOKEN ?? ""
+
+const showDebug = process.env.TWITCH_DEBUG === "1" || process.env.TWITCH_DEBUG?.toLocaleLowerCase() === "true"
+
 export const authProvider = new RefreshingAuthProvider({ clientId, clientSecret })
 
+// export const mockAuthProvider = new StaticAuthProvider(mockClientId, mockAccessToken, [
+//   "channel:read:redemptions",
+//   "channel:manage:redemptions",
+// ])
+export const mockAuthProvider = new RefreshingAuthProvider({ clientId: mockClientId, clientSecret: mockClientSecret })
+
 export const setupAuthProvider = async (prisma: PrismaClient) => {
+  if (useMockServer) {
+    console.log("[twitch] Using twitch mock API server")
+
+    await addMockAccessTokens(mockAuthProvider)
+  }
+
   const accessTokens = await prisma.userAccessToken.findMany()
 
-  console.log("Setup Twitch AuthProvider with", accessTokens.length, "tokens")
+  console.log("[twitch] Setup Twitch AuthProvider with", accessTokens.length, "tokens")
 
   for (const token of accessTokens) {
     const tokenNew: AccessToken = {
@@ -56,7 +75,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   }
 
   authProvider.onRefresh(async (userId, newTokenData) => {
-    if (process.env.NODE_ENV !== "production") {
+    if (showDebug) {
       console.log(`[twitch] refresh token (${userId.slice(0, 4)})`)
     }
 
@@ -91,11 +110,11 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
 
     const userTokensToDelete: string[] = []
 
-    if (process.env.NODE_ENV !== "production") {
-      console.log("[twitch] validating tokens...")
-    }
+    // if (showDebug) {
+    //   console.log("[twitch] validating tokens...")
+    // }
 
-    for (const token of tokens) {
+    for await (const token of tokens) {
       const response = await fetch("https://id.twitch.tv/oauth2/validate", {
         headers: {
           Authorization: `Bearer ${token.accessToken}`,
@@ -103,7 +122,7 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
       })
 
       if (response.status === 401 && process.env.TWITCH_REFRESH_ON_VALIDATE !== "0") {
-        if (process.env.NODE_ENV !== "production") {
+        if (showDebug) {
           console.log(`[twitch] validate: access response ${response.status} (${token.twitchUserId?.slice(0, 4)})`)
         }
 
@@ -120,7 +139,7 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
             },
           })
 
-          if (process.env.NODE_ENV !== "production") {
+          if (showDebug) {
             console.log(
               `[twitch] validate: refresh response ${refreshResponse.status} (${token.twitchUserId?.slice(0, 4)})`
             )
@@ -133,9 +152,14 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
               if (!refreshedToken.refreshToken) {
                 throw new Error("Token invalid")
               }
-            } catch {
+            } catch (err) {
+              const tokenUserInfo = `${token.twitchUsername} (${token.twitchUserId}, ${token.userId.slice(0, 7)})`
+              console.error(`[twitch] validate: failed to refresh token for ${tokenUserInfo}:`, err)
+
               // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
-              userTokensToDelete.push(token.twitchUserId)
+              if (process.env.TWITCH_DELETE_ON_VALIDATE !== "0") {
+                userTokensToDelete.push(token.twitchUserId)
+              }
             }
           }
 
@@ -161,16 +185,17 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
       })
 
       if (subscriptionsToDelete.length > 0) {
-        console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions...`)
-        await deleteManySubscriptionRedemptionAdd(
-          apiClient,
-          prisma,
-          subscriptionsToDelete.map((s) => s.id)
-        )
+        console.log(`[twitch] validate: deleting ${subscriptionsToDelete.length} subscriptions`)
+        // TODO: delete subscriptions?
+        // await deleteManySubscriptionsSync(
+        //   apiClient,
+        //   prisma,
+        //   subscriptionsToDelete.map((s) => s.id)
+        // )
       }
 
-      // if (process.env.NODE_ENV !== "production") {
-      console.log(`[twitch] validate: deleting ${userTokensToDelete.length} invalid tokens...`)
+      // if (showDebug) {
+      console.log(`[twitch] validate: deleting ${userTokensToDelete.length} invalid tokens`)
       // }
 
       const deleted = await prisma.userAccessToken.deleteMany({
@@ -180,11 +205,11 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
       })
 
       if (deleted.count > 0) {
-        console.log(`[twitch] validate: deleted ${deleted.count} invalid tokens...`)
+        console.log(`[twitch] validate: deleted ${deleted.count} invalid tokens`)
       }
     }
 
-    // if (process.env.NODE_ENV !== "production") {
+    // if (showDebug) {
     //   console.log("[twitch] finished validating tokens")
     // }
   }, intervalTime)

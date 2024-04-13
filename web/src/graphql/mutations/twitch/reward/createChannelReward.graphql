@@ -1,0 +1,5 @@
+mutation CreateChannelReward($reward: CustomRewardCreateInput!) {
+  createChannelReward(reward: $reward) {
+    ...CustomReward
+  }
+}

@@ -1,13 +1,22 @@
+import { RewardGroupFull } from "@/resolvers"
 import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { Request, Response } from "express"
+import { Session } from "express-session"
 import { Socket as SocketDefault, Server as SocketServerDefault } from "socket.io"
 
 // Define custom properties on the session
 declare module "express-session" {
   interface Session {
     userId: string
+  }
+}
+
+// augment the Socket.request type from socket.io (request is of type IncomingMessage) and add session
+declare module "http" {
+  interface IncomingMessage {
+    session: Session
   }
 }
 
@@ -45,11 +54,13 @@ export interface ServerToClientEvents {
   // "wheel:winners": (winner: RandomWheelWinner) => void
   "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
   "wheel:update": (type: string) => void
+  "rewardgroup:pause": (rewardGroup: RewardGroupFull[], paused: boolean) => void
 }
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
   "wheel:entries": (type: "add" | "update", wheelId: string) => void
+  "rewardgroup:join": () => void
 }
 
 export interface InterServerEvents {}
@@ -65,12 +76,23 @@ export enum EventSubType {
   rewardGroup = "rewardGroup",
 }
 
-export type SubscriptionConfig = {
+export type EventSubConfigSync = {
+  userId: string
+  twitchUserId: string
+  rewardId: string
+}
+
+export type EventSubConfigSyncAdd = {
   twitchUserId: string
   rewardId: string
   randomWheelId: string
   useInput: boolean
-  id?: string
+  uniqueEntries: boolean
+}
+
+export type EventSubConfigGroup = {
+  userId: string
+  twitchUserId: string
 }
 
 export type AccessTokenResponse = {
@@ -85,3 +107,14 @@ export type HttpError = Error & {
   statusCode: number
   body: string
 }
+
+export type RewardIconData = {
+  title: string
+  backgroundColor: string
+  image: string
+  isPaused: boolean
+  isEnabled: boolean
+  isInStock: boolean
+}
+
+// export type RewardGroupIE = RewardGroup & { items: RewardGroupItem[] } & { eventSubscriptions: EventSubscription[] }

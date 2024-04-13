@@ -1,18 +1,10 @@
-import {
-  Box,
-  Checkbox,
-  CheckboxProps,
-  FormControlLabel,
-  FormControlLabelProps,
-  FormHelperText,
-  Switch,
-  Tooltip,
-  TooltipProps,
-} from "@mui/material"
+import { BooleanFieldHelper, BooleanFieldLabel } from "@/components"
+import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
 import { useField } from "formik"
 import { FC, ReactNode } from "react"
 
 type Props = CheckboxProps & {
+  name: string
   label?: ReactNode
   labelProps?: Partial<FormControlLabelProps>
   labelPlacement?: "end" | "start" | "top" | "bottom"
@@ -22,16 +14,7 @@ type Props = CheckboxProps & {
   helperText?: ReactNode
   toggle?: boolean
   fullWidth?: boolean
-} & (
-    | {
-        name: string
-        noForm?: false
-      }
-    | {
-        name?: string
-        noForm: true
-      }
-  )
+}
 
 export const BooleanField: FC<Props> = ({
   name,
@@ -42,10 +25,9 @@ export const BooleanField: FC<Props> = ({
   noClickLabel,
   tooltip,
   tooltipProps,
-  noForm,
-  checked,
   toggle,
   fullWidth,
+  size,
   ...props
 }) => {
   const [field, { error, touched }] = useField<boolean>(name ?? "")
@@ -55,6 +37,8 @@ export const BooleanField: FC<Props> = ({
 
   const hasError = error !== undefined && touched
 
+  const marginLeft = labelPlacement === "start" ? 1 : undefined
+
   const BooleanComponent = toggle ? Switch : Checkbox
 
   const checkbox = (
@@ -63,64 +47,48 @@ export const BooleanField: FC<Props> = ({
       aria-describedby={!hasLabel ? tooltip || name : undefined}
       name={name}
       {...props}
-      checked={!noForm ? Boolean(field.value) ?? false : checked}
+      checked={Boolean(field.value) ?? false}
       color={error ? "error" : props.color}
       // fix this inputProps
+      size={(toggle && size === "large" ? "medium" : size) as "small" | "medium"}
       inputProps={{
         ...props.inputProps,
-        ...(!noForm && {
-          ...field,
-          value: `${field.value}`,
-        }),
+        ...field,
+        value: `${field.value}`,
       }}
     />
   )
-
-  const marginLeft = labelPlacement === "start" ? 1 : undefined
-  const helperMarginLeftToggle =
-    (labelPlacement === "end" || labelPlacement === undefined) && toggle ? (props.size === "small" ? 2.5 : 4.5) : 0
-  const helperMarginLeftCheckbox =
-    (labelPlacement === "end" || labelPlacement === undefined) && !toggle ? (props.size === "small" ? 1.75 : 2) : 0
 
   return (
     <Box>
       <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
         <Box>
           {hasLabel ? (
-            <FormControlLabel
-              {...labelProps}
-              label={label}
-              componentsProps={{
-                typography: {
-                  ...labelProps?.componentsProps?.typography,
-                  color: hasError ? "error" : labelProps?.componentsProps?.typography?.color,
-                  id: labelId,
-                },
-              }}
+            <BooleanFieldLabel
               control={checkbox}
+              label={label}
+              hasError={hasError}
               labelPlacement={labelPlacement}
-              sx={{
-                gap: toggle ? 0.75 : undefined,
-                marginLeft: marginLeft,
-                ...(fullWidth && {
-                  display: "flex",
-                  justifyContent: "space-between",
-                }),
-                ...labelProps?.sx,
-              }}
+              id={labelId}
+              toggle={toggle}
+              fullWidth={fullWidth}
+              {...labelProps}
             />
           ) : (
             checkbox
           )}
           {helperText || hasError ? (
-            <FormHelperText
+            <BooleanFieldHelper
+              hasError={hasError}
+              toggle={toggle}
+              labelPlacement={labelPlacement}
+              size={size === "large" ? "medium" : size}
+              margin={marginLeft ?? 1.75}
               disabled={props.disabled}
               required={props.required}
-              error={hasError}
-              sx={{ mt: -0.75, ml: (marginLeft ?? 1.75) + helperMarginLeftToggle + helperMarginLeftCheckbox }}
             >
               {hasError ? error : helperText}
-            </FormHelperText>
+            </BooleanFieldHelper>
           ) : null}
         </Box>
       </Tooltip>

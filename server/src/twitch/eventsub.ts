@@ -1,39 +1,37 @@
-import { authProvider } from "@/twitch"
-import { addSubscriptionRedemptionAdd } from "@/twitch/events"
-import { EventSubType, SubscriptionType, type SocketServer } from "@/types"
-import { PrismaClient } from "@prisma/client"
-import { ApiClient } from "@twurple/api"
+import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch"
+import { handleSubscriptionRewardGroup, handleSubscriptionSync, unpauseRewardGroup } from "@/twitch/events"
+import { EventSubType, type SocketServer } from "@/types"
+import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import "dotenv/config"
 
-export const apiClient = new ApiClient({
-  authProvider,
-  batchDelay: Number(process.env.TWITCH_BATCH_DELAY) ?? 5,
-  logger: {
-    // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
-    minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
-  },
-})
+const strictHostCheck = process.env.EVENTSUB_STRICT_HOST_CHECK !== "0"
 
 export const eventSubMiddleware = new EventSubMiddleware({
-  apiClient,
+  apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
   hostName: process.env.EVENTSUB_HOSTNAME ?? "",
-  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch",
+  pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch/eventsub",
   secret: process.env.EVENTSUB_SECRET ?? "haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi",
+  strictHostCheck: strictHostCheck,
   logger: {
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.EVENTSUB_LOGLEVEL) || undefined,
+    emoji: false,
+    timestamps: false,
+    // name: "twurple:eventsub",
+    // colors: false,
   },
 })
 
 export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
 export const showEventSubDebug =
-  process.env.EVENTSUB_DEBUG === "1" || process.env.EVENTSUB_DEBUG?.toLocaleLowerCase() === "true"
+  process.env.TWITCH_DEBUG === "1" || process.env.TWITCH_DEBUG?.toLocaleLowerCase() === "true"
 
 // const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
 const eventTypePattern = /^([a-z_.]+[a-z_])/
+
 const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 // const eventType = (eventId: string) => {
 //   const r = eventId.match(eventTypePattern)
@@ -42,40 +40,41 @@ const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 
 export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: PrismaClient, socketIo: SocketServer) => {
   if (showEventSubDebug) {
-    eventSub.onSubscriptionCreateFailure((ev) => {
-      console.log("[eventsub] create failure", eventType(ev.id))
+    eventSub.onSubscriptionCreateFailure((ev, err) => {
+      console.log("[eventsub] create failure", eventType(ev.id), err.name, err.message)
     })
     eventSub.onSubscriptionCreateSuccess((ev) => {
       console.log("[eventsub] create success", eventType(ev.id))
     })
-    eventSub.onSubscriptionDeleteFailure((ev) => {
-      console.log("[eventsub] delete failure", eventType(ev.id))
+    eventSub.onSubscriptionDeleteFailure((ev, err) => {
+      console.log("[eventsub] delete failure", eventType(ev.id), err.name, err.message)
     })
     eventSub.onSubscriptionDeleteSuccess((ev) => {
       console.log("[eventsub] delete success", eventType(ev.id))
     })
-    // TODO: Fix: has type "any" somehow since typescript 5.3 upgrade
-    // eventSub.onVerify((success, ev) => {
-    //   console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(ev.id))
-    // })
+    eventSub.onVerify((success, sub) => {
+      console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(sub.id))
+    })
   }
 
-  eventSub.onRevoke(async (ev) => {
-    console.log("[eventsub] revoked ", ev.authUserId?.slice(0, 4))
+  eventSub.onRevoke(async (sub, status) => {
+    console.log(`[eventsub] revoked ${eventType(sub.id)} ${sub.authUserId?.slice(0, 4)}, Status ${status}`)
 
-    await prisma.eventSubscription.deleteMany({
-      where: {
-        twitchUserId: ev.authUserId ?? "",
-      },
-    })
+    if (status === "authorization_revoked") {
+      await prisma.eventSubscription.deleteMany({
+        where: {
+          twitchUserId: sub.authUserId ?? "",
+        },
+      })
 
-    await prisma.userAccessToken.deleteMany({
-      where: {
-        twitchUserId: ev.authUserId,
-      },
-    })
+      await prisma.userAccessToken.deleteMany({
+        where: {
+          twitchUserId: sub.authUserId,
+        },
+      })
 
-    console.log("[eventsub] revoke: removed token successfully")
+      console.log("[eventsub] revoke: removed token successfully")
+    }
   })
 
   // await apiClient.eventSub.deleteAllSubscriptions()
@@ -84,43 +83,77 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     where: {
       paused: false,
     },
+    include: {
+      wheelSync: true,
+    },
   })
 
-  const helixSubs = await apiClient.eventSub.getSubscriptionsForStatus("enabled")
+  // initialize wheel sync subscriptions
+  const storedSync = storedSubscriptions.filter((s) => s.type === EventSubType.wheelSync.toString())
 
-  // TODO: check type and resume with the correct listener
+  console.log(`[eventsub] initialize`, storedSync.length, `wheel sync subscriptions`)
 
-  if (storedSubscriptions.length > 0 || helixSubs.data.length > 0) {
-    const storedCountText = helixSubs.data.length !== storedSubscriptions.length ? `, stored:` : ""
-    console.log(
-      `[eventsub] subscriptions active:`,
-      helixSubs.data.length,
-      storedCountText,
-      storedCountText ? storedSubscriptions.length : ""
+  // find unique rewardIds
+  const rewardIds = storedSync.flatMap((sub) => sub.wheelSync.map((s) => s.rewardId))
+  const uniqueIds = Object.keys(rewardIds.reduce((acc, r) => ({ ...acc, [r]: "" }), {}))
+
+  await Promise.all(
+    storedSync.flatMap((sub) =>
+      uniqueIds.map(async (rewardId) => {
+        await handleSubscriptionSync(eventSub, prisma, socketIo, {
+          twitchUserId: sub.twitchUserId,
+          userId: sub.userId ?? "",
+          rewardId,
+        })
+      })
     )
+  )
+
+  // initialize reward group subscriptions
+  const storedGroup = storedSubscriptions.filter((s) => s.type === EventSubType.rewardGroup.toString())
+
+  console.log(`[eventsub] initialize`, storedGroup.length, `reward group subscriptions`)
+
+  await Promise.all(
+    storedGroup.map(async (sub) => {
+      await handleSubscriptionRewardGroup(eventSub, prisma, apiClient, socketIo, {
+        twitchUserId: sub?.twitchUserId ?? "",
+        userId: sub.userId ?? "",
+      })
+    })
+  )
+
+  // resuming timeouts to unpause reward group
+
+  const pausedRewardGroups: (RewardGroup & { items: RewardGroupItem[] })[] = await prisma.rewardGroup.findMany({
+    where: {
+      active: true,
+      cooldownExpiry: { not: null },
+    },
+    include: {
+      items: true,
+    },
+  })
+
+  if (pausedRewardGroups.length) {
+    console.log(`[eventsub] reward group: resuming`, pausedRewardGroups.length, `reward groups to unpause`)
   }
 
-  helixSubs.data.forEach((helixSub) => {
-    if (helixSub.type === SubscriptionType.redemptionAdd.toString()) {
-      const condition = helixSub.condition as Record<string, string>
+  for (const group of pausedRewardGroups) {
+    const twitchUserId = getTwitchUserId(storedGroup.find((s) => s.userId === group.userId)?.twitchUserId) ?? ""
 
-      const stored = storedSubscriptions.find(
-        (s) => s.rewardId === condition.reward_id && s.twitchUserId === condition.broadcaster_user_id
-      )
+    unpauseRewardGroup({
+      apiClient,
+      prisma,
+      socketIo,
+      group,
+      rewardItems: group.items,
+      twitchUserId,
+      cooldown: (group.cooldownExpiry?.getTime() || 0) - Date.now() + Math.floor(Math.random() * 3000),
+    })
 
-      if (stored?.type === EventSubType.wheelSync) {
-        addSubscriptionRedemptionAdd(eventSub, prisma, socketIo, {
-          ...stored,
-          randomWheelId: stored.randomWheelId ?? "",
-          rewardId: stored.rewardId ?? "",
-        })
-      }
-
-      if (stored?.type === EventSubType.rewardGroup) {
-        // add subscription for reward group handling
-      }
-    }
-  })
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 

@@ -1,5 +1,0 @@
-query ChannelRewards($userId: String) {
-  channelRewards(userId: $userId) {
-    ...CustomReward
-  }
-}

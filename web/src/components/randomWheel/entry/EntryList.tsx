@@ -1,13 +1,9 @@
-import { AlertPopup, InputField } from "@/components"
-import {
-  RandomWheelEntryFragment,
-  useDeleteRandomWheelEntryMutation,
-  useUpdateRandomWheelEntryMutation,
-} from "@/generated/graphql"
-import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
-import { Form, Formik } from "formik"
-import { FC, useEffect, useRef, useState } from "react"
-import { HiTrash } from "react-icons/hi"
+import { NoData } from "@/components"
+import { EntryListItem } from "@/components/randomWheel"
+import { RandomWheelEntryFragment } from "@/generated/graphql"
+import { Box, List, Skeleton, Typography } from "@mui/material"
+import { FC, useEffect, useMemo, useRef, useState } from "react"
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
 interface Props {
   entries: RandomWheelEntryFragment[]
@@ -17,9 +13,8 @@ interface Props {
   autoScrollThreshold?: number
 }
 
-export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 50 }) => {
-  const theme = useTheme()
-  const maxHeight = 474 + (!editable ? 84 + 64 : 0)
+export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 3 }) => {
+  const maxHeight = 480 + (!editable ? 88 + 64 : 0)
 
   // const [deleteEnabled, setDeleteEnabled] = useState(false)
 
@@ -56,166 +51,118 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
   //   delay: 1000,
   // })
 
-  // map delays
+  const [scrolling, setScrolling] = useState(false)
+  const [scrolledBottom, setScrolledBottom] = useState(false)
 
-  const itemTransition = [0, 0].map((delay) =>
-    theme.transitions.create(["opacity", "visibility", "transform"], {
-      duration: theme.transitions.duration.shortest,
-      delay: delay,
-    })
-  )
-
-  const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
-  const [, updateEntry] = useUpdateRandomWheelEntryMutation()
-  const [showError, setShowError] = useState<JSX.Element | string | null>(null)
-
-  const onDelete = async (entry: RandomWheelEntryFragment) => {
-    const { data } = await deleteEntry(
-      { id: entry.id },
-      {
-        additionalTypenames: ["RandomWheelEntry"],
-      }
-    )
-
-    if (data?.deleteRandomWheelEntry) {
-      // setEntries(entries.filter(e => e.id !== entry.id))
-    }
-
-    setShowError(`Deleted entry '${entry.name}'`)
-  }
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   // auto scroll
-  const listRef = useRef<HTMLUListElement>(null)
   useEffect(() => {
-    const list = listRef?.current
-
-    // scrollHeight - clientHeight = scrollTopMax
-    if (autoScroll && list && list.scrollHeight - list.clientHeight - list.scrollTop < autoScrollThreshold) {
-      list?.scrollTo({ top: list.scrollHeight - list.clientHeight })
+    if (!autoScroll) {
+      return
     }
-  }, [entries, listRef, autoScroll, autoScrollThreshold])
 
-  const totalWeight = entries.reduce((acc, entry) => acc + entry.weight, 0)
+    let timeout: NodeJS.Timeout
+
+    if (scrolledBottom) {
+      // delay scroll to bottom, so the list doesn't jump around, when scrolling up again
+      timeout = setTimeout(() => {
+        virtuosoRef.current?.scrollToIndex({ index: entries.length, behavior: "smooth" })
+      }, 200)
+    }
+
+    // cancel scroll to bottom, if scrolled up again
+    // also fires when entries change, but is started again above if still scrolled to bottom
+    return () => clearTimeout(timeout)
+  }, [entries, autoScroll, scrolledBottom])
+
+  const totalWeight = useMemo(() => entries.reduce((acc, entry) => acc + entry.weight, 0), [entries])
+
+  const widths = useMemo(
+    () =>
+      Array(10)
+        .fill(0)
+        .map(() => (2 + Math.round(Math.random() * 3)) * 10),
+    []
+  )
 
   return (
-    <List role="list" ref={listRef} sx={{ py: 0, overflowY: "auto", maxHeight: maxHeight }}>
-      {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
-      <AlertPopup severity="success" messageState={[showError, setShowError]} />
+    <>
+      <List role="list" sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
+        {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
 
-      {entries.map((entry) => (
-        <ListItem
-          key={entry.id}
-          role="listitem"
-          dense
-          button
-          sx={{
-            "&:hover + .hoverItem, &:hover .hoverItem, &:focus-within + .hoverItem, &:focus-within .hoverItem": {
-              transition: itemTransition[1],
-              visibility: "visible",
-              opacity: 1,
-              // visibility: deleteEnabled ? "visible" : "hidden",
-              // transform: "scale(1) translateY(-50%)",
-            },
-          }}
-        >
-          {/* TODO: For transitions, maybe makes it easier? -> https://mui.com/material-ui/transitions/ */}
-          <ListItemText
-            primary={entry.name}
-            primaryTypographyProps={{
-              fontSize: "0.925rem",
-              fontWeight: 500,
+        {entries.length > 0 && (
+          <Virtuoso
+            ref={virtuosoRef}
+            data={entries}
+            computeItemKey={(_, entry) => entry.id}
+            isScrolling={setScrolling}
+            style={{ height: maxHeight }}
+            rangeChanged={({ endIndex }) => {
+              setScrolledBottom(endIndex >= entries.length - autoScrollThreshold)
             }}
+            components={{
+              ScrollSeekPlaceholder: ({ height, index }) => (
+                <Skeleton width={`${widths[index % widths.length]}%`} height={height} />
+              ),
+            }}
+            scrollSeekConfiguration={
+              entries.length > 100 && {
+                enter: (velocity) => Math.abs(velocity) > 300,
+                exit: (velocity) => Math.abs(velocity) < 120,
+              }
+            }
+            itemContent={(_, entry) => (
+              <EntryListItem
+                entry={entry}
+                editable={editable}
+                disabled={spinning}
+                totalWeight={totalWeight}
+                scrolling={scrolling}
+              />
+            )}
           />
-          {editable && (
-            <>
-              <ListItemSecondaryAction
-                className="hoverItem"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "right",
-                  gap: 1,
-                  transition: itemTransition[0],
-                  opacity: 0,
-                  visibility: "hidden",
-                  // transform: "scale(0) translateY(-100%)",
-                  "&:hover, &:focus-within": {
-                    transition: itemTransition[1],
-                    opacity: 1,
-                    visibility: "visible",
-                    // visibility: deleteEnabled ? "visible" : "hidden",
-                    // transform: "scale(1) translateY(-50%)",
-                  },
-                }}
-              >
-                <Formik
-                  initialValues={{
-                    weight: entry.weight ?? null,
-                  }}
-                  enableReinitialize
-                  onSubmit={async ({ weight }, { resetForm }) => {
-                    // TODO: Replace with proper number validation (pattern or so)
-                    if (!Number.isInteger(weight)) {
-                      resetForm()
-                    }
+        )}
 
-                    await updateEntry({
-                      id: entry.id,
-                      entry: { weight },
-                    })
-                  }}
-                >
-                  {({ submitForm, dirty }) => (
-                    <Form>
-                      <InputField
-                        name="weight"
-                        type="number"
-                        hiddenArrows
-                        disabled={spinning}
-                        tooltip={`${entry.weight}:${totalWeight} (${Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format((entry.weight / totalWeight) * 100)}%)`}
-                        tooltipProps={{ placement: "left" }}
-                        sx={{ width: 48 }}
-                        inputProps={{
-                          style: {
-                            textAlign: "right",
-                            padding: "0.25em 0.5em",
-                          },
-                          min: 1,
-                          onKeyPress: (ev) => {
-                            if (!"012345679".includes(ev.key)) {
-                              ev.preventDefault()
-                            }
-                          },
-                        }}
-                        onBlur={() => {
-                          if (dirty) {
-                            void submitForm()
-                          }
-                        }}
-                      />
-                    </Form>
-                  )}
-                </Formik>
+        {!entries.length && (
+          <Box sx={{ textAlign: "center", p: 3, mt: 2 }}>
+            <NoData iconSize="lg" image="/img/add_notes.svg">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography variant="h6" color="text.secondary" fontSize="1em">
+                  Add an entry below.
+                </Typography>
+              </Box>
+            </NoData>
+          </Box>
+        )}
 
-                <IconButton
-                  onClick={() => void onDelete(entry)}
-                  role="button"
-                  disabled={spinning}
-                  aria-label={`Delete entry '${entry.name}'`}
-                >
-                  <SvgIcon
-                    component={HiTrash}
-                    fontSize="small"
-                    viewBox="0 0 20 20"
-                    color={spinning ? "disabled" : "error"}
-                  />
-                  {/* <TiDelete fontSize="small" color="error" /> */}
-                </IconButton>
-              </ListItemSecondaryAction>
-            </>
-          )}
-        </ListItem>
-      ))}
-    </List>
+        {/* {entries.map((entry) => (
+        <EntryListItem
+          key={entry.id}
+          entry={entry}
+          readonly={!editable}
+          disabled={spinning}
+          totalWeight={totalWeight}
+        />
+      ))} */}
+      </List>
+    </>
+  )
+}
+
+// type ScrollProps = ScrollSeekPlaceholderProps & { widths?: number[]; width?: number }
+type ScrollProps = { height: number; width?: number }
+
+// export const ScrolLSkeleton: FC<ScrollProps> = ({ index, height, widths, width }) => {
+export const ScrolLSkeleton: FC<ScrollProps> = ({ height, width }) => {
+  // const width = widths?.length ? `${widths[index % widths?.length]}%` : "42%"
+  return (
+    // <ListItem>
+    <Skeleton width={`${width}%`} height={height} />
+    // sx={{
+    //   mt: 0.125,
+    //   ml: -1,
+    // }}
+    // </ListItem>
   )
 }

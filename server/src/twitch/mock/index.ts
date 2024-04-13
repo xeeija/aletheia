@@ -1,85 +1,39 @@
 import { HelixCustomReward } from "@twurple/api"
+import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
+import { readFile } from "fs/promises"
+import { rewards } from "./data/rewards"
 
 let mockRewards: HelixCustomReward[] = []
 
-const rewards = [
-  {
-    "id": "7d50fb8c-0125-c849-120b-658e0635f83f",
-    "broadcaster_id": "57084058",
-    "broadcaster_login": "marcusshepard362",
-    "broadcaster_name": "MarcusShepard362",
-    "image": null,
-    "background_color": "#9146FF",
-    "is_enabled": true,
-    "cost": 1,
-    "title": "Test reward for 57084058",
-    "prompt": "",
-    "is_user_input_required": false,
-    "max_per_stream_setting": {
-      "is_enabled": false,
-      "max_per_stream": 0
-    },
-    "max_per_user_per_stream_setting": {
-      "is_enabled": false,
-      "max_per_user_per_stream": 0
-    },
-    "global_cooldown_setting": {
-      "is_enabled": false,
-      "global_cooldown_seconds": 0
-    },
-    "is_paused": false,
-    "is_in_stock": true,
-    "default_image": {
-      "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
-      "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
-      "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
-    },
-    "should_redemptions_skip_request_queue": false,
-    "redemptions_redeemed_current_stream": null,
-    "cooldown_expires_at": null
-  },
-  {
-    "id": "8d50fb8c-0125-c849-120b-658e0635f830",
-    "broadcaster_id": "57084058",
-    "broadcaster_login": "marcusshepard362",
-    "broadcaster_name": "MarcusShepard362",
-    "image": null,
-    "background_color": "#7cb995",
-    "is_enabled": true,
-    "cost": 1,
-    "title": "Test reward 2",
-    "prompt": "",
-    "is_user_input_required": false,
-    "max_per_stream_setting": {
-      "is_enabled": false,
-      "max_per_stream": 0
-    },
-    "max_per_user_per_stream_setting": {
-      "is_enabled": false,
-      "max_per_user_per_stream": 0
-    },
-    "global_cooldown_setting": {
-      "is_enabled": false,
-      "global_cooldown_seconds": 0
-    },
-    "is_paused": false,
-    "is_in_stock": true,
-    "default_image": {
-      "url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
-      "url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
-      "url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
-    },
-    "should_redemptions_skip_request_queue": false,
-    "redemptions_redeemed_current_stream": null,
-    "cooldown_expires_at": null
-  }
-]
-
-export const getRewards = async () => {
+export const getRewards = () => {
   if (mockRewards.length === 0) {
     // const rewardData: any[] = (JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")))
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rewardData: any[] = rewards
-    mockRewards = rewardData.map(r => new HelixCustomReward(r))
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    mockRewards = rewardData.map((r) => new HelixCustomReward(r))
   }
   return mockRewards
+}
+
+export const addMockAccessTokens = async (mockAuthProvider: RefreshingAuthProvider) => {
+  // const tokenJson = (await import("./mock/token.json", { assert: { type: "json" } })).default
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tokenJson: AccessToken = JSON.parse(await readFile("./src/twitch/mock/data/token.json", "utf-8"))
+
+    // const token: AccessToken = {
+    //   accessToken: tokenJson.access_token,
+    //   refreshToken: tokenJson.access_token,
+    //   expiresIn: tokenJson.expires_in as unknown as number,
+    //   obtainmentTimestamp: Date.now(),
+    //   scope: tokenJson.scope as unknown as string[],
+    // }
+    mockAuthProvider.addUser(process.env.TWITCH_MOCK_USER_ID ?? "", tokenJson)
+  } catch (err) {
+    console.error("[twitch] mock: Error loading mock API token:", err)
+  }
 }

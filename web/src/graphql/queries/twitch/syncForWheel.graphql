@@ -1,0 +1,8 @@
+query SyncForWheel($randomWheelId: String!) {
+  syncForWheel(randomWheelId: $randomWheelId) {
+    ...RandomWheelSync
+    reward {
+      ...CustomRewardMenuItem
+    }
+  }
+}

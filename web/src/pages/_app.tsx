@@ -10,11 +10,13 @@ type LayoutAppProps = AppProps & {
   Component: LayoutNextPage
 }
 
-function App({ Component, pageProps }: LayoutAppProps) {
+const App = ({ Component, pageProps }: LayoutAppProps) => {
   const getLayout = Component.getLayout ?? defaultLayout()
 
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ""
+
   const urqlClient = createClient({
-    url: `/api/graphql`,
+    url: `${serverUrl}/api/graphql`,
     fetchOptions: {
       credentials: "include",
     },

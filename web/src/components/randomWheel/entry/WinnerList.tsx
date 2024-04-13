@@ -1,56 +1,104 @@
-import { Box, List, ListItem, ListItemText, Skeleton, SvgIcon, Typography } from "@mui/material"
+import { NoData } from "@/components"
+import { RandomWheelWinnerFragment } from "@/generated/graphql"
+import { Box, ListItem, ListItemText, Skeleton, Typography } from "@mui/material"
 import { FC } from "react"
-import { HiSpeakerphone } from "react-icons/hi"
-
-interface Winner {
-  name: string
-  createdAt: Date
-}
+import { Virtuoso } from "react-virtuoso"
 
 interface Props {
-  winners: Winner[]
+  winners: RandomWheelWinnerFragment[]
+  // wheel: RandomWheelDetails
   spinning?: boolean
   editable?: boolean
 }
 
-export const WinnerList: FC<Props> = ({ winners, spinning, editable }) => {
-  const maxHeight = 468 + (!editable ? 84 : 0)
+// TODO: Infinite scroll (bis alle Winner geladen sind), oder load more Button?
+// Winner in der WinnerList component laden, und nicht in Wheel, sondern wheel übergeben, oder wheel id
 
-  return winners.length > 0 ? (
-    // Winners present
-    <>
-      <Box sx={{ px: 1.5, pb: 1.5 }}>
-        <Typography variant="overline" color="textSecondary">
-          Latest winner &nbsp;&bull;&nbsp; {winners[0]?.createdAt.toLocaleString()}
-        </Typography>
-        <Typography variant="h3" noWrap>
-          {!spinning ? winners[0]?.name : <Skeleton width="40%" />}
-        </Typography>
-      </Box>
+export const WinnerList: FC<Props> = ({ winners: winnersInput, spinning, editable }) => {
+  const maxHeight = 464 + (!editable ? 84 : 0)
 
-      {/* Maybe toggle previous winners */}
-      <List sx={{ pb: 0, overflowY: "auto", maxHeight: maxHeight }}>
-        {winners.slice(1).map(({ name, createdAt }, i) => (
-          <ListItem key={i} role="listitem" dense sx={{ mt: 0 }}>
-            <ListItemText
-              primary={name}
-              secondary={createdAt.toLocaleString()}
-              primaryTypographyProps={{
-                fontSize: "1rem",
+  // const [{ winners: winnersInput, fetching }] = useRandomWheel(wheel.slug ?? "", {
+  //   details: true,
+  //   winners: true,
+  // })
+
+  const winners = (winnersInput ?? []).map((w) => ({
+    ...w,
+    createdAt: new Date(w.createdAt),
+  }))
+
+  return (
+    <Box>
+      {winners.length > 0 && (
+        <>
+          <Box sx={{ px: 1.5, pb: 2 }}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 0.5,
+                mb: 0.75,
                 fontWeight: 500,
               }}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </>
-  ) : (
-    // No winners yet
-    <Box sx={{ textAlign: "center", p: 3 }}>
-      <Typography variant="h6" color="textSecondary">
-        <SvgIcon component={HiSpeakerphone} fontSize="large" />
-        <div>No one has won yet ...</div>
-      </Typography>
+            >
+              {!spinning && `Latest winner • ${winners[0]?.createdAt.toLocaleString()}`}
+              {spinning && <Skeleton width="30%" />}
+            </Typography>
+            <Typography variant="h3" noWrap>
+              {!spinning ? winners[0]?.name : <Skeleton width="45%" />}
+            </Typography>
+          </Box>
+
+          <Virtuoso
+            data={winners.slice(1)}
+            computeItemKey={(_, winner) => winner.id}
+            style={{ height: maxHeight }}
+            itemContent={(_, { name, createdAt }) => (
+              <ListItem role="listitem" dense sx={{ mt: 0 }}>
+                <ListItemText
+                  primary={name}
+                  secondary={createdAt.toLocaleString()}
+                  primaryTypographyProps={{
+                    fontSize: "1rem",
+                    fontWeight: 500,
+                  }}
+                  sx={{ my: 0, pb: 1 }}
+                />
+              </ListItem>
+            )}
+          />
+
+          {/* <List sx={{ pb: 0.5, overflowY: "auto", maxHeight: maxHeight }}>
+            {winners.slice(1).map(({ name, createdAt }, i) => (
+              <ListItem key={i} role="listitem" dense sx={{ mt: 0 }}>
+                <ListItemText
+                  primary={name}
+                  secondary={createdAt.toLocaleString()}
+                  primaryTypographyProps={{
+                    fontSize: "1rem",
+                    fontWeight: 500,
+                  }}
+                  sx={{ my: 0, pb: 1 }}
+                />
+              </ListItem>
+            ))}
+          </List> */}
+        </>
+      )}
+
+      {!winners.length && (
+        <Box sx={{ textAlign: "center", p: 3 }}>
+          <NoData iconSize={140} image="/img/winners.svg" sx={{ mt: 0 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Typography variant="h6">Spin to win!</Typography>
+              <Typography color="text.secondary">No one has won yet.</Typography>
+            </Box>
+          </NoData>
+        </Box>
+      )}
     </Box>
   )
 }
