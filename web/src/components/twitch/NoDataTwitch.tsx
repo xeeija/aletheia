@@ -1,6 +1,6 @@
-import { NoData } from "@/components"
+import { LinkText, NoData } from "@/components"
 import { useAuth } from "@/hooks"
-import { Button, Link as LinkMat, Typography } from "@mui/material"
+import { Button, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC } from "react"
 
@@ -11,7 +11,7 @@ export const NoDataTwitch: FC<Props> = () => {
 
   return (
     <NoData image="/img/online_connection.svg" iconSize={200}>
-      <Typography variant="h6" color="text.secondary">
+      <Typography variant="h5" color="text.secondary">
         You don&apos;t have a Twitch account connected.
       </Typography>
 
@@ -25,11 +25,8 @@ export const NoDataTwitch: FC<Props> = () => {
 
       {user && !userAccessToken && (
         <Typography color="textSecondary" sx={{ mt: -2 }}>
-          You can connect your account in your{" "}
-          <Link href="/settings" passHref legacyBehavior>
-            <LinkMat sx={{ mx: 0, px: 0, py: 0.5 }}>profile settings</LinkMat>
-          </Link>
-          .
+          {"You can connect your account in your "}
+          <LinkText href="/settings">profile settings</LinkText>.
         </Typography>
       )}
     </NoData>

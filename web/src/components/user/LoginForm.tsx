@@ -1,6 +1,6 @@
-import { InputField, LoadingButton, PasswordField } from "@/components"
+import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useLoginMutation } from "@/generated/graphql"
-import { Alert, Collapse, SvgIcon } from "@mui/material"
+import { Alert, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
@@ -102,6 +102,11 @@ export const LoginForm: FC<Props> = () => {
           >
             Login
           </LoadingButton>
+
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            {"Don't have an account yet? "}
+            <LinkText href="/register">Register</LinkText>
+          </Typography>
         </Form>
       )}
     </Formik>

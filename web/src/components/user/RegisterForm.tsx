@@ -1,8 +1,8 @@
-import { InputField, LoadingButton, PasswordField } from "@/components"
+import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useRegisterMutation } from "@/generated/graphql"
 import { useUsernameValidator } from "@/hooks"
 import { passwordStrength } from "@/utils/password"
-import { Alert, Collapse, SvgIcon } from "@mui/material"
+import { Alert, Collapse, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { FC, useState } from "react"
@@ -165,6 +165,11 @@ export const RegisterForm: FC<Props> = () => {
           >
             Register
           </LoadingButton>
+
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            {"Already have an account? "}
+            <LinkText href="/login">Login</LinkText>
+          </Typography>
         </Form>
       )}
     </Formik>

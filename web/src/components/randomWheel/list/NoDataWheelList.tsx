@@ -24,7 +24,7 @@ export const NoDataWheelList: FC<Props> = ({ type = "my" }) => {
 
   return (
     <NoData image={!loggedIn ? "/img/buffer.svg" : image[type]} iconSize={loggedIn && type === "my" ? "lg" : 200}>
-      <Typography variant="h6" color="text.secondary">
+      <Typography variant="h5" color="text.secondary">
         {type === "my" && "You don't have any Random Wheels yet."}
         {type === "shared" && "You don't have any shared Random Wheels yet."}
         {type === "favorite" && "You don't have any favorites yet."}

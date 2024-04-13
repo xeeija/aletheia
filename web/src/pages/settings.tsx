@@ -1,7 +1,14 @@
-import { DisconnectTwitchDialog, InputField, LayoutNextPage, LoadingButton, defaultLayout } from "@/components"
+import {
+  DisconnectTwitchDialog,
+  InputField,
+  LayoutNextPage,
+  LinkText,
+  LoadingButton,
+  defaultLayout,
+} from "@/components"
 import { useUpdateUserMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
-import { Button, Grid, Link, Typography } from "@mui/material"
+import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useState } from "react"
 
@@ -76,19 +83,18 @@ const SettingsPage: LayoutNextPage = () => {
       )}
 
       <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 2 }}>
-        For more information, go to your Twitch{" "}
-        <Link
-          // variant="text"
-          target="_blank"
-          href="https://www.twitch.tv/settings/connections"
-          sx={{ mx: 0, px: 0, py: 0.5 }}
-        >
+        {"For more information, go to your Twitch "}
+        <LinkText href="https://www.twitch.tv/settings/connections" target="_blank">
           connections
-        </Link>
+        </LinkText>
         .
       </Typography>
 
-      {!user && <Typography sx={{ mb: 2 }}>You must be logged in to connect a Twitch account.</Typography>}
+      {!user && (
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          You must be logged in to connect a Twitch account.
+        </Typography>
+      )}
 
       {userAccessToken?.id && (
         <>
