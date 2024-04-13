@@ -10,7 +10,7 @@ type LayoutAppProps = AppProps & {
   Component: LayoutNextPage
 }
 
-function App({ Component, pageProps }: LayoutAppProps) {
+const App = ({ Component, pageProps }: LayoutAppProps) => {
   const getLayout = Component.getLayout ?? defaultLayout()
 
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ""
