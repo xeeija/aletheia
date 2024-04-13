@@ -1,5 +1,5 @@
 import { RewardGroupDialog } from "@/components/twitch"
-import { Box, Button, IconButton, SvgIcon, Tooltip } from "@mui/material"
+import { Box, Button, IconButton, SvgIcon } from "@mui/material"
 import { FC, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
@@ -24,11 +24,11 @@ export const RewardGroupsToolbar: FC<Props> = () => {
       <RewardGroupDialog onClose={() => setCreateGroupOpen(false)} open={createGroupOpen} type="create" />
 
       {/* )} */}
-      <Tooltip placement="bottom-end" title="More options">
-        <IconButton color="secondary" disabled>
-          <HiDotsVertical />
-        </IconButton>
-      </Tooltip>
+      {/* <Tooltip placement="bottom-end" title="More options"> */}
+      <IconButton color="secondary" disabled>
+        <HiDotsVertical />
+      </IconButton>
+      {/* </Tooltip> */}
     </Box>
   )
 }

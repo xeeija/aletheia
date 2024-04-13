@@ -1,6 +1,6 @@
 import { FilterSelect } from "@/components"
 import { ChannelRewardDialog } from "@/components/twitch"
-import { Box, Button, IconButton, SvgIcon, Tooltip } from "@mui/material"
+import { Box, Button, IconButton, SvgIcon } from "@mui/material"
 import { ChangeEvent, FC, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
@@ -35,11 +35,11 @@ export const ChannelRewardsToolbar: FC<Props> = ({ onFilter }) => {
 
       <ChannelRewardDialog onClose={() => setCreateRewardOpen(false)} open={createRewardOpen} type="create" />
 
-      <Tooltip placement="bottom-end" title="More options">
-        <IconButton color="secondary" disabled>
-          <HiDotsVertical />
-        </IconButton>
-      </Tooltip>
+      {/* <Tooltip placement="bottom-end" title="More options"> */}
+      <IconButton color="secondary" disabled>
+        <HiDotsVertical />
+      </IconButton>
+      {/* </Tooltip> */}
     </Box>
   )
 }

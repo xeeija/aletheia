@@ -1,5 +1,6 @@
 export * from "./RandomWheelDetail"
 
+export * from "./list/NoDataWheelList"
 export * from "./list/WheelList"
 export * from "./list/WheelListItem"
 

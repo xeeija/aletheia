@@ -29,16 +29,16 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
     await router.push("/randomwheel")
   }
 
+  const wheelEditable = wheel.editable || wheel.editAnonymous
+
   return (
     <>
-      <Tooltip arrow placement="bottom-end" title="More options">
-        <IconButton
-          color="secondary"
-          disabled={!wheel.editable && !wheel.editAnonymous}
-          onClick={(ev) => setOptionsAnchor(ev.currentTarget)}
-        >
-          <HiDotsVertical />
-        </IconButton>
+      <Tooltip arrow placement="bottom-end" title={wheelEditable ? "More options" : ""}>
+        <span>
+          <IconButton color="secondary" disabled={!wheelEditable} onClick={(ev) => setOptionsAnchor(ev.currentTarget)}>
+            <HiDotsVertical />
+          </IconButton>
+        </span>
       </Tooltip>
 
       <Dropdown anchor={optionsAnchor} setAnchor={setOptionsAnchor}>
@@ -54,7 +54,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
                 setEditDialogOpen(true)
               }}
             />
-            {(wheel.editable || wheel.editAnonymous) && wheel.owner && (
+            {wheelEditable && wheel.owner && (
               <LinkListItem
                 name="Members"
                 icon={<SvgIcon component={TiUserAdd} />}
@@ -64,7 +64,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
                 }}
               />
             )}
-            {(wheel.editable || wheel.editAnonymous) && (
+            {wheelEditable && (
               <LinkListItem
                 name="Sync"
                 icon={<SvgIcon component={TiArrowRepeat} viewBox="2 1 22 22" />}
@@ -94,7 +94,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
         </Paper>
       </Dropdown>
 
-      {(wheel.editable || wheel.editAnonymous) && (
+      {wheelEditable && (
         <CreateEditWheelDialog
           type="edit"
           open={editDialogOpen}
@@ -103,7 +103,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
         />
       )}
 
-      {(wheel.editable || wheel.editAnonymous) && wheel.owner && (
+      {wheelEditable && wheel.owner && (
         <EditMembersDialog
           open={membersDialogOpen}
           slug={wheel.slug}
@@ -112,7 +112,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
         />
       )}
 
-      {(wheel.editable || wheel.editAnonymous) && (
+      {wheelEditable && (
         <WheelSyncDialog
           open={redemptionDialogOpen}
           slug={wheel.slug}

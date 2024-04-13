@@ -45,7 +45,7 @@ export const WheelFormFields: FC<Props> = () => {
               label: "Private",
               color: "secondary",
               disabled: !authenticated,
-              helperText: "Only members can view the wheel.",
+              helperText: "Only members can view the wheel. Add members from the dropdown under 'Members'.",
             },
           ]}
         />
@@ -63,7 +63,6 @@ export const WheelFormFields: FC<Props> = () => {
         <BooleanField
           name="uniqueEntries"
           label="Only allow unique entries"
-          disabled={!authenticated}
           helperText="Exisiting duplicate entries in the wheel are not removed."
         />
       </Grid>

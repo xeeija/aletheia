@@ -201,8 +201,8 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                 </List>
 
                 {members.length === 0 && !values.draft && (
-                  <NoData iconSize="sm" sx={{ mt: 0 }} textProps={{ variant: "body1" }}>
-                    There are no members yet
+                  <NoData iconSize={160} image="/img/teamwork.svg" sx={{ mt: 0 }} textProps={{ variant: "body1" }}>
+                    There are no members yet.
                   </NoData>
                 )}
 
