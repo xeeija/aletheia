@@ -1,4 +1,5 @@
 import {
+  AlertPopup,
   DisconnectTwitchDialog,
   InputField,
   LayoutNextPage,
@@ -10,12 +11,15 @@ import { useUpdateUserMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
 import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 
 const SettingsPage: LayoutNextPage = () => {
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
+
+  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   // TODO: show error for twitch auth
 
@@ -30,6 +34,8 @@ const SettingsPage: LayoutNextPage = () => {
             username: user.username ?? "",
             displayname: user.displayname ?? "",
           }}
+          enableReinitialize
+          validateOnChange={false}
           onSubmit={async (values) => {
             const response = await updateUser({
               user: {
@@ -40,17 +46,39 @@ const SettingsPage: LayoutNextPage = () => {
 
             // TODO: proper error handling/feedback
 
-            if (response.error?.networkError) console.warn(response.error.networkError)
-            else if (response.error?.graphQLErrors) console.warn(response.error.graphQLErrors)
-            else if (response.data?.updateUser.errors) console.warn(response.data.updateUser.errors)
-            else console.log("Updated user")
+            if (response.error?.networkError) {
+              console.warn(response.error.networkError)
+              setShowError("A network error occured")
+            }
+            if (response.error?.graphQLErrors) {
+              console.warn(response.error.graphQLErrors)
+              setShowError("Error: " + response.error.graphQLErrors.map((e) => e.message).join("\n"))
+            }
+            if (response.data?.updateUser.errors) {
+              console.warn(response.data.updateUser.errors)
+              setShowError("An error occured")
+              // setShowError(response.data.updateUser.errors)
+            }
+
+            if (response.data?.updateUser.user) {
+              setShowSuccess("Successfully updated")
+            }
           }}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, isValid, dirty }) => (
             <Form>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={12}>
-                  <InputField name="username" label="Username" />
+                  <InputField
+                    name="username"
+                    label="Username"
+                    required
+                    validate={(value) => {
+                      if (!value) {
+                        return "Required"
+                      }
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={12}>
@@ -58,14 +86,13 @@ const SettingsPage: LayoutNextPage = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  <LoadingButton type="submit" variant="contained" loading={isSubmitting} disabled={!isValid || !dirty}>
                     Update
                   </LoadingButton>
                 </Grid>
 
-                <Grid item>
-                  {/* <Button variant="contained" href={twitchAuthorizeLink}>Login with Twitch</Button> */}
-                </Grid>
+                <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
+                <AlertPopup severity="warning" messageState={[showError, setShowError]} />
               </Grid>
             </Form>
           )}

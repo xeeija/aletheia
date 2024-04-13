@@ -14,7 +14,7 @@ services:
       - ./docker/data/postgres:/var/lib/postgresql/data
 
   server:
-    image: xeeija/aletheia-server:1.7.0
+    image: xeeija/aletheia-server:1.7.1
     # build:
     #   context: server
     restart: unless-stopped
@@ -35,7 +35,7 @@ services:
       - localhost:host-gateway
 
   web:
-    image: xeeija/aletheia-web:1.7.0
+    image: xeeija/aletheia-web:1.7.1
     # build:
     #   context: web
     restart: unless-stopped

@@ -1,4 +1,4 @@
-import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar } from "@/components"
+import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar, UserStatusDot } from "@/components"
 import { useLogoutMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
 import {
@@ -25,6 +25,8 @@ export const UserMenu: FC<Props> = () => {
 
   const { user, fetchingUser } = useAuth()
 
+  const showUsername = user?.displayname && user.username !== user.displayname
+
   const [, logout] = useLogoutMutation()
   const [logoutError, setLogoutError] = useState(false)
   // fetching from logout mutation doesnt work (button is forever in "loading" state and disabled)
@@ -37,6 +39,7 @@ export const UserMenu: FC<Props> = () => {
       name: "Profile",
       icon: <SvgIcon component={TiUser} />,
       onClick: () => setTimeout(() => setDropdownAnchor(null), 100),
+      disabled: true,
     },
     {
       name: "Settings",
@@ -102,13 +105,28 @@ export const UserMenu: FC<Props> = () => {
           <Dropdown anchor={dropdownAnchor} setAnchor={setDropdownAnchor}>
             <Paper sx={{ p: 1.5, minWidth: 180 }}>
               <Box sx={{ py: 0.5, px: 1.5 }}>
-                <Typography sx={{ fontWeight: "bold", fontSize: "1em" }}>
+                <Typography variant="body1" sx={{ fontWeight: "bold", textWrap: "balance", maxWidth: "160px" }}>
+                  {!showUsername && (
+                    <Typography component="span" color="text.secondary" sx={{ fontSize: "0.925em" }}>
+                      @
+                    </Typography>
+                  )}
                   {user.displayname ?? user.username}
+
+                  {showUsername && (
+                    <Typography component="span" variant="body2" color="text.secondary">
+                      &nbsp;{` @${user.username}`}
+                    </Typography>
+                  )}
                 </Typography>
 
-                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: "normal" }}>
-                  Online
-                </Typography>
+                <Box sx={{ display: "flex", mt: showUsername ? 1 : 0, gap: 0.75 }}>
+                  <UserStatusDot standalone />
+
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: "bold" }}>
+                    Online
+                  </Typography>
+                </Box>
               </Box>
 
               <Divider sx={{ borderBottomWidth: 4, borderRadius: 2, m: 1, mx: 1.5 }} />
