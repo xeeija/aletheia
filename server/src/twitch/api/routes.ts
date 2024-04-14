@@ -224,6 +224,7 @@ const updateRewardByLink = async (
 }
 
 const getRewardIconData = (reward: HelixCustomReward): RewardIconData => ({
+  id: reward.id,
   title: reward.title,
   backgroundColor: reward.backgroundColor,
   image: reward.getImageUrl(4),

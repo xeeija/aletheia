@@ -109,6 +109,7 @@ export type HttpError = Error & {
 }
 
 export type RewardIconData = {
+  id: string
   title: string
   backgroundColor: string
   image: string

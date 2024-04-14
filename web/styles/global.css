@@ -22,3 +22,26 @@ input[type="number"].hidden-arrows,
   appearance: textfield;
   -moz-appearance: textfield;
 }
+
+/* line clamp must be set extra */
+.line-clamp {
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  word-break: break-word;
+}
+
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
