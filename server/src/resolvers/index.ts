@@ -6,6 +6,7 @@ import { RandomWheelResolver } from "./RandomWheel"
 import { RandomWheelEntryResolver } from "./RandomWheelEntry"
 import { RandomWheelMemberResolver } from "./RandomWheelMember"
 import { RewardGroupResolver } from "./RewardGroup"
+import { RewardLinkResolver } from "./RewardLink"
 import { TwitchResolver } from "./Twitch"
 import { UserResolver } from "./User"
 
@@ -18,6 +19,7 @@ export const Resolvers: NonEmptyArray<Function> = [
   RandomWheelMemberResolver,
   RandomWheelEntryResolver,
   RewardGroupResolver,
+  RewardLinkResolver,
   CustomRewardResolver,
   TwitchResolver,
   UserResolver,
@@ -32,5 +34,6 @@ export * from "./RandomWheel"
 export * from "./RandomWheelEntry"
 export * from "./RandomWheelMember"
 export * from "./RewardGroup"
+export * from "./RewardLink"
 export * from "./Twitch"
 export * from "./User"

@@ -1,9 +1,9 @@
-import { authProvider, getTwitchUserId } from "@/twitch"
-import type { AccessTokenResponse, RewardIconData } from "@/types"
+import { authProvider, getRewardIconData, updateRewardByLink } from "@/twitch"
+import type { AccessTokenResponse } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { PrismaClient } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-import { ApiClient, HelixCustomReward, HelixUpdateCustomRewardData } from "@twurple/api"
+import { ApiClient } from "@twurple/api"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
 
@@ -143,11 +143,11 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
       res.send(getRewardIconData(updatedReward))
     } catch (err) {
       if (err instanceof Error) {
-        res.status(400).send(err.message)
+        res.status(400).send({ error: err.message })
         return
       }
 
-      res.status(500).send("Unknown error")
+      res.status(500).send({ error: "Unknown error" })
     }
   })
 
@@ -163,11 +163,11 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
       res.send(getRewardIconData(updatedReward))
     } catch (err) {
       if (err instanceof Error) {
-        res.status(400).send(err.message)
+        res.status(400).send({ error: err.message })
         return
       }
 
-      res.status(500).send("Unknown error")
+      res.status(500).send({ error: "Unknown error" })
     }
   })
 
@@ -178,57 +178,3 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
 
   return router
 }
-
-const updateRewardByLink = async (
-  apiClient: ApiClient,
-  prisma: PrismaClient,
-  token: string,
-  type: "enable" | "pause",
-  update: (reward: HelixCustomReward) => HelixUpdateCustomRewardData
-) => {
-  const rewardLink = await prisma.rewardLink.findUnique({
-    where: { token },
-  })
-
-  if (!rewardLink || rewardLink.type !== type) {
-    throw Error("Invalid token")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: rewardLink.userId,
-    },
-    include: {
-      userAccessTokens: true,
-    },
-  })
-
-  const twitchUserId = getTwitchUserId(user?.userAccessTokens[0].twitchUserId)
-
-  if (!twitchUserId) {
-    throw Error("No twitch account connected")
-  }
-
-  const reward = await apiClient.channelPoints.getCustomRewardById(twitchUserId, rewardLink.rewardId)
-
-  if (!reward) {
-    throw Error("Reward not found")
-  }
-
-  const updatedReward = await apiClient.channelPoints.updateCustomReward(twitchUserId, rewardLink.rewardId, {
-    ...reward,
-    ...update(reward),
-  })
-
-  return updatedReward
-}
-
-const getRewardIconData = (reward: HelixCustomReward): RewardIconData => ({
-  id: reward.id,
-  title: reward.title,
-  backgroundColor: reward.backgroundColor,
-  image: reward.getImageUrl(4),
-  isPaused: reward.isPaused,
-  isEnabled: reward.isEnabled,
-  isInStock: reward.isInStock,
-})

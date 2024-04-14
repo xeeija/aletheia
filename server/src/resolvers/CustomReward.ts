@@ -1,21 +1,5 @@
-import { RewardLink } from "@/generated/graphql"
-import { accessTokenForUser } from "@/twitch"
-import type { GraphqlContext } from "@/types"
-import { randomBase64Url } from "@/utils"
 import { HelixCustomReward } from "@twurple/api"
-import {
-  Arg,
-  Ctx,
-  Field,
-  FieldResolver,
-  InputType,
-  Int,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql"
+import { Field, FieldResolver, InputType, Int, ObjectType, Resolver, Root } from "type-graphql"
 
 // same properties as HelixCustomReward
 @ObjectType("CustomReward")
@@ -117,79 +101,5 @@ export class CustomRewardResolver {
   @FieldResolver(() => String)
   image(@Root() reward: HelixCustomReward) {
     return reward.getImageUrl(2)
-  }
-
-  @Query(() => [RewardLink])
-  async rewardLinks(
-    @Ctx() { req, prisma }: GraphqlContext,
-    @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[]
-    // @Arg("userId", { nullable: true }) userId: string
-  ) {
-    await accessTokenForUser({ req, prisma })
-
-    const rewardLinks = await prisma.rewardLink.findMany({
-      where: {
-        userId: req.session.userId ?? "",
-        rewardId: rewardIds ? { in: rewardIds } : undefined,
-      },
-    })
-
-    return rewardLinks
-  }
-
-  @Mutation(() => RewardLink, { nullable: true })
-  async createRewardLink(
-    @Ctx() { req, prisma }: GraphqlContext,
-    // @Arg("rewardLink") rewardLink: RewardLinkInput
-    @Arg("rewardId") rewardId: string,
-    @Arg("type") type: string
-  ) {
-    await accessTokenForUser({ req, prisma })
-
-    const existingRewardLink = await prisma.rewardLink.findFirst({
-      where: {
-        rewardId,
-        type,
-        userId: req.session.userId,
-      },
-    })
-
-    if (existingRewardLink) {
-      return existingRewardLink
-    }
-
-    const token = randomBase64Url(48)
-
-    const newRewardLink = await prisma.rewardLink.create({
-      data: {
-        rewardId,
-        type,
-        token,
-        userId: req.session.userId,
-      },
-    })
-
-    return newRewardLink
-  }
-
-  @Mutation(() => Boolean)
-  async deleteRewardLink(@Ctx() { req, prisma }: GraphqlContext, @Arg("id") id: string) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
-
-    const rewardLink = await prisma.rewardLink.findUnique({
-      where: { id },
-    })
-
-    if (rewardLink?.userId !== req.session.userId) {
-      throw new Error("Unauthorized")
-    }
-
-    const deleted = await prisma.rewardLink.delete({
-      where: { id: id ?? "" },
-    })
-
-    return deleted !== null
   }
 }

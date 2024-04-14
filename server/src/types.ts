@@ -108,6 +108,8 @@ export type HttpError = Error & {
   body: string
 }
 
+export type RewardLinkType = "enable" | "pause"
+
 export type RewardIconData = {
   id: string
   title: string
