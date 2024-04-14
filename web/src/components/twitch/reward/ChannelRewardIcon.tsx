@@ -1,16 +1,21 @@
 import { CustomRewardMenuItemFragment } from "@/generated/graphql"
+import { ItemSize } from "@/types"
 import { Avatar, Box, CircularProgress, SvgIcon, Typography } from "@mui/material"
 import Image from "next/image"
 import { FC } from "react"
-import { TiMediaPause } from "react-icons/ti"
+import { TiMediaPause, TiPower, TiWarning } from "react-icons/ti"
+
+const defaultImagePattern = /default-[124]\.\w+$/
 
 interface Props {
   reward: CustomRewardMenuItemFragment
-  size?: "sm" | "md" | "lg" | "xl"
+  size?: ItemSize
   showTitle?: boolean
   showStatus?: boolean
-  xlIcon?: boolean
   loading?: boolean
+  error?: boolean
+  titleOverride?: string
+  fontSize?: number
 }
 
 export const ChannelRewardIcon: FC<Props> = ({
@@ -18,8 +23,10 @@ export const ChannelRewardIcon: FC<Props> = ({
   size: sizeInput = "sm",
   showTitle,
   showStatus,
-  xlIcon,
   loading,
+  error,
+  titleOverride: overrideTitle,
+  fontSize,
 }) => {
   const sizes = {
     sm: 28,
@@ -28,13 +35,39 @@ export const ChannelRewardIcon: FC<Props> = ({
     xl: 84,
   }
 
-  const size = sizes[sizeInput]
+  const notActive = reward.isPaused || !reward.isEnabled || loading || error
+  const disabledPaused = reward.isPaused && !reward.isEnabled
+  const imageAdjust = !reward.image || reward.image.match(defaultImagePattern) ? 1.2 : 1
 
-  const notActive = reward.isPaused || reward.isEnabled || loading
-  const statusSize = Math.max(24, size / 2) + 2
+  const size = sizes[sizeInput]
+  const iconSize = (sizeInput === "xl" ? size * 0.5 : size * 0.65) * imageAdjust
+  const statusSize = (Math.max(24, size / 2) + 2) * (disabledPaused ? 0.8 : 1)
+
+  const rewardTitle = (
+    <Typography
+      variant="body2"
+      className="line-clamp line-clamp-2"
+      sx={{
+        fontWeight: 500,
+        fontSize: fontSize ?? 12,
+        textAlign: "center",
+        lineHeight: 1,
+        height: 24,
+        mx: 0.25,
+        // mb: -0.5,
+        color: (theme) =>
+          theme.palette.getContrastText(
+            (sizeInput === "xl" ? reward.backgroundColor : theme.palette.background.default) ||
+              theme.palette.primary.main
+          ),
+      }}
+    >
+      {overrideTitle ?? reward.title}
+    </Typography>
+  )
 
   return (
-    <Box>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
       {showStatus && (
         <Box
           sx={{
@@ -49,10 +82,26 @@ export const ChannelRewardIcon: FC<Props> = ({
             fontSize: statusSize,
             opacity: notActive ? "1" : "0",
             transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)",
+            borderRadius: 1,
           }}
         >
           {loading && <CircularProgress color="inherit" size={Math.max(statusSize - 8, 20)} />}
-          {!loading && <SvgIcon component={TiMediaPause} fontSize="inherit" viewBox="1.5 3 20 20" />}
+          {!loading && !error && !reward.isEnabled && (
+            <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />
+          )}
+          {!loading && !error && reward.isPaused && (
+            <SvgIcon
+              component={TiMediaPause}
+              fontSize="inherit"
+              viewBox="1 3 20 20"
+              sx={{
+                ml: disabledPaused ? -0.75 : 0,
+              }}
+            />
+          )}
+          {!loading && error && (
+            <SvgIcon component={TiWarning} color="warning" fontSize="inherit" viewBox="0 2 24 24" />
+          )}
         </Box>
       )}
       <Avatar
@@ -67,29 +116,19 @@ export const ChannelRewardIcon: FC<Props> = ({
         <Image
           alt={`${reward.title} Reward`}
           src={reward.image || "/img/channelpoints-2.png"}
-          width={Math.min(size, xlIcon ? size : 48)}
-          height={Math.min(size, xlIcon ? size : 48)}
-          style={{ marginBottom: showTitle ? "-4px" : undefined }}
+          width={iconSize}
+          height={iconSize}
+          style={{
+            marginBottom: showTitle && sizeInput === "xl" ? "4px" : undefined,
+            marginTop: showTitle && sizeInput === "xl" ? 2 : 0,
+          }}
           unselectable="on"
           draggable="false"
         />
-        {showTitle && (
-          <Typography
-            variant="body2"
-            className="line-clamp line-clamp-2"
-            sx={{
-              fontWeight: 500,
-              fontSize: 12,
-              textAlign: "center",
-              lineHeight: 1,
-              mx: 0.25,
-              color: (theme) => theme.palette.getContrastText(reward.backgroundColor || theme.palette.primary.main),
-            }}
-          >
-            {reward.title}
-          </Typography>
-        )}
+        {showTitle && sizeInput === "xl" && rewardTitle}
       </Avatar>
+
+      {showTitle && sizeInput !== "xl" && <Box sx={{ width: size * 1.75 }}>{rewardTitle}</Box>}
     </Box>
   )
 }

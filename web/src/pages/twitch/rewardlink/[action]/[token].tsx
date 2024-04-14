@@ -1,21 +1,38 @@
 import { LayoutNextPage, getTitle } from "@/components"
 import { ChannelRewardIcon } from "@/components/twitch"
-import { useChannelRewards } from "@/hooks"
+import { useRewardLinkToken } from "@/hooks"
 import NotFoundPage from "@/pages/404"
-import { ButtonBase } from "@mui/material"
+import { ItemSize, RewardLinkType } from "@/types"
+import { ButtonBase, Skeleton } from "@mui/material"
 import Head from "next/head"
 import { useRouter } from "next/router"
+import { ReactNode, useState } from "react"
 
 const RewardLinkPage: LayoutNextPage = () => {
   const router = useRouter()
-  const { action: actionQuery, token: tokenQuery } = router.query
+  const {
+    action: typeQuery,
+    token: tokenQuery,
+    size: sizeQuery,
+    title: titleQuery,
+    fontSize: fontSizeQuery,
+  } = router.query
 
-  const action = typeof actionQuery === "string" ? actionQuery : actionQuery?.[0]
+  const type = typeof typeQuery === "string" ? typeQuery : typeQuery?.[0]
   const token = typeof tokenQuery === "string" ? tokenQuery : tokenQuery?.[0]
+  const titleOverride = typeof titleQuery === "string" ? titleQuery : titleQuery?.[0]
+  const fontSize = typeof fontSizeQuery === "string" ? fontSizeQuery : fontSizeQuery?.[0]
+  const sizeString = typeof sizeQuery === "string" ? sizeQuery : sizeQuery?.[0]
 
-  const { channelRewards, fetching } = useChannelRewards()
+  const size = ["sm", "md", "lg", "xl"].includes(sizeString ?? "") ? (sizeString as ItemSize) : undefined
+  const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size ?? "xl"]
 
-  const reward = channelRewards?.[0]
+  const { reward, fetching, updateReward } = useRewardLinkToken({
+    token: token ?? "",
+    type: type as RewardLinkType,
+  })
+
+  const [showError, setShowError] = useState<ReactNode>(null)
 
   if (!reward && !fetching) {
     return <NotFoundPage />
@@ -24,14 +41,39 @@ const RewardLinkPage: LayoutNextPage = () => {
   return (
     <div>
       <Head>
-        <title>{getTitle(`Reward ${reward?.title}`)}</title>
+        <title>{getTitle(`Reward ${reward?.title} (${type})`)}</title>
       </Head>
 
-      {reward && (
-        <ButtonBase sx={{ borderRadius: 1 }}>
-          <ChannelRewardIcon reward={reward} showTitle showStatus size="xl" />
+      {reward && !fetching && (
+        <ButtonBase
+          sx={{ borderRadius: 1 }}
+          onClick={async () => {
+            //
+            const { error } = await updateReward()
+
+            if (error) {
+              setShowError(error.message)
+              console.error(error.message)
+
+              setTimeout(() => {
+                setShowError(null)
+              }, 5000)
+            }
+          }}
+        >
+          <ChannelRewardIcon
+            reward={reward}
+            size={size ?? "xl"}
+            showTitle
+            showStatus
+            error={!!showError}
+            titleOverride={titleOverride}
+            fontSize={Number(fontSize) || undefined}
+          />
         </ButtonBase>
       )}
+
+      {fetching && <Skeleton variant="rounded" sx={{ width: skeletonSize, height: skeletonSize }} />}
     </div>
   )
 }

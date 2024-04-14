@@ -310,6 +310,7 @@ export type Mutation = {
   updateRandomWheelMembers?: Maybe<Array<RandomWheelMember>>
   updateRewardGroup?: Maybe<RewardGroup>
   updateRewardGroupItem?: Maybe<RewardGroupItem>
+  updateRewardToken: CustomReward
   updateUser: UserResponse
   usernameExists: Scalars["Boolean"]
 }
@@ -450,6 +451,11 @@ export type MutationUpdateRewardGroupItemArgs = {
   triggerCooldown?: Maybe<Scalars["Boolean"]>
 }
 
+export type MutationUpdateRewardTokenArgs = {
+  token: Scalars["String"]
+  type: Scalars["String"]
+}
+
 export type MutationUpdateUserArgs = {
   user: UserInput
 }
@@ -586,11 +592,12 @@ export type Query = {
   me?: Maybe<User>
   myRandomWheels: Array<RandomWheel>
   randomWheelBySlug?: Maybe<RandomWheel>
+  rewardByToken: CustomReward
   rewardGroup: RewardGroup
   rewardGroups: Array<RewardGroup>
   rewardLinks: Array<RewardLink>
   syncForWheel: Array<RandomWheelSync>
-  userAccesToken: UserAccessToken
+  userAccesToken?: Maybe<UserAccessToken>
 }
 
 export type QueryChannelRewardsArgs = {
@@ -608,6 +615,11 @@ export type QueryMyRandomWheelsArgs = {
 
 export type QueryRandomWheelBySlugArgs = {
   slug: Scalars["String"]
+}
+
+export type QueryRewardByTokenArgs = {
+  token: Scalars["String"]
+  type: Scalars["String"]
 }
 
 export type QueryRewardGroupArgs = {
@@ -1706,6 +1718,24 @@ export type UpdateChannelRewardMutation = {
   }>
 }
 
+export type UpdateRewardTokenMutationVariables = Exact<{
+  type: Scalars["String"]
+  token: Scalars["String"]
+}>
+
+export type UpdateRewardTokenMutation = {
+  __typename?: "Mutation"
+  updateRewardToken: {
+    __typename?: "CustomReward"
+    id: string
+    title: string
+    backgroundColor: string
+    isEnabled: boolean
+    isPaused: boolean
+    image: string
+  }
+}
+
 export type AddRewardGroupItemMutationVariables = Exact<{
   rewardGroupId: Scalars["String"]
   rewardId: Scalars["String"]
@@ -1985,6 +2015,24 @@ export type ChannelRewardsQuery = {
   }>
 }
 
+export type RewardByTokenQueryVariables = Exact<{
+  type: Scalars["String"]
+  token: Scalars["String"]
+}>
+
+export type RewardByTokenQuery = {
+  __typename?: "Query"
+  rewardByToken: {
+    __typename?: "CustomReward"
+    id: string
+    title: string
+    backgroundColor: string
+    isEnabled: boolean
+    isPaused: boolean
+    image: string
+  }
+}
+
 export type RewardGroupQueryVariables = Exact<{
   id: Scalars["String"]
 }>
@@ -2087,7 +2135,7 @@ export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never }>
 
 export type UserAccessTokenQuery = {
   __typename?: "Query"
-  userAccesToken: {
+  userAccesToken?: Maybe<{
     __typename?: "UserAccessToken"
     id: string
     scope: Array<string>
@@ -2095,7 +2143,7 @@ export type UserAccessTokenQuery = {
     obtainmentTimestamp: bigint
     twitchUserId?: Maybe<string>
     twitchUsername?: Maybe<string>
-  }
+  }>
 }
 
 export type UsernameExistsMutationVariables = Exact<{
@@ -2557,6 +2605,18 @@ export function useUpdateChannelRewardMutation() {
     UpdateChannelRewardDocument
   )
 }
+export const UpdateRewardTokenDocument = gql`
+  mutation UpdateRewardToken($type: String!, $token: String!) {
+    updateRewardToken(type: $type, token: $token) {
+      ...CustomRewardMenuItem
+    }
+  }
+  ${CustomRewardMenuItemFragmentDoc}
+`
+
+export function useUpdateRewardTokenMutation() {
+  return Urql.useMutation<UpdateRewardTokenMutation, UpdateRewardTokenMutationVariables>(UpdateRewardTokenDocument)
+}
 export const AddRewardGroupItemDocument = gql`
   mutation AddRewardGroupItem($rewardGroupId: String!, $rewardId: String!, $triggerCooldown: Boolean) {
     addRewardGroupItem(rewardId: $rewardId, rewardGroupId: $rewardGroupId, triggerCooldown: $triggerCooldown) {
@@ -2775,6 +2835,18 @@ export const ChannelRewardsDocument = gql`
 
 export function useChannelRewardsQuery(options?: Omit<Urql.UseQueryArgs<ChannelRewardsQueryVariables>, "query">) {
   return Urql.useQuery<ChannelRewardsQuery, ChannelRewardsQueryVariables>({ query: ChannelRewardsDocument, ...options })
+}
+export const RewardByTokenDocument = gql`
+  query RewardByToken($type: String!, $token: String!) {
+    rewardByToken(type: $type, token: $token) {
+      ...CustomRewardMenuItem
+    }
+  }
+  ${CustomRewardMenuItemFragmentDoc}
+`
+
+export function useRewardByTokenQuery(options: Omit<Urql.UseQueryArgs<RewardByTokenQueryVariables>, "query">) {
+  return Urql.useQuery<RewardByTokenQuery, RewardByTokenQueryVariables>({ query: RewardByTokenDocument, ...options })
 }
 export const RewardGroupDocument = gql`
   query RewardGroup($id: String!) {

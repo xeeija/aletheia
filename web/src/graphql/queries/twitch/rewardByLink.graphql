@@ -1,0 +1,5 @@
+query RewardByToken($type: String!, $token: String!) {
+  rewardByToken(type: $type, token: $token) {
+    ...CustomRewardMenuItem
+  }
+}

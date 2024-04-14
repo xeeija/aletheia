@@ -1,0 +1,5 @@
+mutation UpdateRewardToken($type: String!, $token: String!) {
+  updateRewardToken(type: $type, token: $token) {
+    ...CustomRewardMenuItem
+  }
+}

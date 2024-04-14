@@ -6,6 +6,7 @@ export * from "./randomwheel"
 
 export * from "./twitch/useChannelRewards"
 export * from "./twitch/useRewardGroups"
+export * from "./twitch/useRewardLinkToken"
 export * from "./twitch/useRewardLinks"
 export * from "./twitch/useWheelSync"
 

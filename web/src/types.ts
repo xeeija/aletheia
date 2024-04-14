@@ -6,6 +6,8 @@ import { Socket as SocketDefault } from "socket.io-client"
 
 export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
 
+export type ItemSize = "sm" | "md" | "lg" | "xl"
+
 export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse<T>) => void | Promise<void>
 
 export type SpinResult = {
