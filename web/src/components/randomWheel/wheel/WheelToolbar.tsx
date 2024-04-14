@@ -13,7 +13,7 @@ interface Props {
 
 export const WheelToolbar: FC<Props> = ({ wheel }) => {
   const { user } = useAuth()
-  const [, { like }] = useRandomWheel(wheel.slug)
+  const [, { like }] = useRandomWheel(wheel.slug, { details: true })
 
   return (
     <>

@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks"
 import { Button, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC, useState } from "react"
-import { TiPlus, TiStarFullOutline } from "react-icons/ti"
+import { TiPlus, TiStarOutline } from "react-icons/ti"
 import { CreateEditWheelDialog } from "../edit/CreateEditWheelDialog"
 
 interface Props {
@@ -56,7 +56,12 @@ export const NoDataWheelList: FC<Props> = ({ type = "my" }) => {
       {loggedIn && type === "favorite" && (
         <Typography color="textSecondary" sx={{ mt: -2, textAlign: "center" }}>
           Add a wheel to your favorites with the
-          <SvgIcon component={TiStarFullOutline} viewBox="-2 -6 28 28" />
+          <SvgIcon
+            component={TiStarOutline}
+            color="secondary"
+            viewBox="-2 -6 28 28"
+            sx={{ transform: "translateY(3px)" }}
+          />
           star icon <br />
           on the wheel page, and it will show up here.
         </Typography>

@@ -13,10 +13,16 @@ export const useRandomWheelLike = (
       return
     }
     setLiked(!liked)
-    const likeResponse = await likeRandomWheel({
-      randomWheelId: wheelId,
-      like: !liked,
-    })
+    const likeResponse = await likeRandomWheel(
+      {
+        randomWheelId: wheelId,
+        like: !liked,
+      },
+      {
+        // requestPolicy: "cache-and-network",
+        additionalTypenames: ["RandomWheel"],
+      }
+    )
     // TODO: Error when undefined?
     setLiked(Boolean(likeResponse.data?.likeRandomWheel))
   }
