@@ -12,7 +12,7 @@ import { ChannelRewardIcon } from "@/components/twitch"
 import { CustomRewardMenuItemFragment, RewardLinkFragment } from "@/generated/graphql"
 import { useRewardLinks } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
-import { Box, IconButton, Skeleton, SvgIcon, Tooltip } from "@mui/material"
+import { Box, FormHelperText, IconButton, Skeleton, SvgIcon, Tooltip } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useEffect, useState } from "react"
 import { HiCog, HiEye, HiEyeOff, HiTrash } from "react-icons/hi"
@@ -37,6 +37,13 @@ interface Props {
 export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, pause }) => {
   const [hide, setHide] = useState(true)
   const [showOptions, setShowOptions] = useState(false)
+  const [showStatusPreview, setShowStatusPreview] = useState(false)
+
+  const rewardPreview: CustomRewardMenuItemFragment = {
+    ...reward,
+    isEnabled: type === "enable" ? !showStatusPreview : reward.isEnabled,
+    isPaused: type === "pause" ? showStatusPreview : reward.isPaused,
+  }
 
   const { createRewardLink, deleteRewardLink, fetchingCreate, fetchingDelete } = useRewardLinks({
     pause: pause,
@@ -131,6 +138,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
               // sx={{ ml: -0.25 }}
               onClick={async () => {
                 const response = await deleteRewardLink(link.id)
+                setShowOptions(false)
 
                 if (response.deleted) {
                   // TODO: Show success snackbar
@@ -207,7 +215,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
                 </Box>
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
-                  <Box>
+                  <Box sx={{ alignSelf: "flex-start" }}>
                     <BooleanField
                       name="titleBottom"
                       label="Always show title below reward"
@@ -225,17 +233,30 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
                     <BooleanField name="useApi" label="Use direct API link instead of widget link" submitOnChange />
                   </Box>
 
-                  <Box sx={{ mt: 0.75, flexGrow: 1 }}>
-                    {/* mit button, eigener component */}
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      gap: 0.5,
+                    }}
+                  >
+                    <FormHelperText disabled={values.useApi} sx={{ textAlign: "center" }}>
+                      {values.useApi ? " " : "Preview"}
+                    </FormHelperText>
+
                     {!values.useApi && (
                       <ChannelRewardIcon
-                        reward={reward}
+                        reward={rewardPreview}
                         size={values.size ?? "xl"}
                         showTitle={!values.hideTitle}
                         showStatus
                         customTitle={values.customTitle || undefined}
                         fontSize={values.fontSize || undefined}
                         titleBottom={values.titleBottom || undefined}
+                        button
+                        onClick={() => setShowStatusPreview((v) => !v)}
                       />
                     )}
 

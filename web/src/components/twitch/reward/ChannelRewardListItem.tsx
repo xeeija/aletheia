@@ -138,7 +138,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
             {!readonly && (
               <>
-                <Tooltip arrow placement="bottom" title="Generate links">
+                <Tooltip arrow placement="bottom" title="Manage Reward links">
                   <IconButton
                     color="secondary"
                     onClick={() => {
