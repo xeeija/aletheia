@@ -22,6 +22,8 @@ export type InputFieldProps = TextFieldProps & {
   tooltipProps?: Partial<TooltipProps>
   maxLength?: number
   adornment?: boolean
+  submitOnChange?: boolean
+  submitOnBlur?: boolean
 }
 
 export const InputField: FC<InputFieldProps> = ({
@@ -34,12 +36,14 @@ export const InputField: FC<InputFieldProps> = ({
   tooltipProps,
   maxLength,
   adornment,
+  submitOnChange,
+  submitOnBlur,
   ...props
 }) => {
   // Custom validation idea: https://github.com/jaredpalmer/formik/issues/512#issuecomment-643788203
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { isValidating, status, setStatus, validateField } = useFormikContext()
+  const { isValidating, status, setStatus, validateField, submitForm } = useFormikContext()
 
   // returns field props (value, handlers etc.) to spread on the field
   const [field, { error, touched }] = useField({
@@ -62,6 +66,7 @@ export const InputField: FC<InputFieldProps> = ({
     <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
       <TextField
         error={error !== undefined && touched}
+        {...props}
         {...field}
         onBlur={(ev) => {
           // WORKAROUND for isValidating at field level
@@ -77,8 +82,14 @@ export const InputField: FC<InputFieldProps> = ({
             })
           }
 
-          field.onBlur(ev)
           validateField(name)
+
+          field.onBlur(ev)
+          props.onBlur?.(ev)
+
+          if (submitOnBlur) {
+            submitForm()
+          }
 
           if (icon) {
             setTimeout(() => setStatus({}), 1000)
@@ -89,11 +100,12 @@ export const InputField: FC<InputFieldProps> = ({
             return
           }
 
-          if (props.onChange) {
-            props.onChange(ev)
-          }
-
           field.onChange(ev)
+          props.onChange?.(ev)
+
+          if (submitOnChange) {
+            submitForm()
+          }
         }}
         variant="filled"
         size="small"
@@ -143,7 +155,6 @@ export const InputField: FC<InputFieldProps> = ({
         }}
         className={`${props.className}${hiddenArrows ? " hidden-arrows" : ""}`}
         name={name}
-        {...props}
         InputLabelProps={{
           ...props.InputLabelProps,
           required: required,

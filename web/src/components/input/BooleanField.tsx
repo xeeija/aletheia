@@ -1,6 +1,6 @@
 import { BooleanFieldHelper, BooleanFieldLabel } from "@/components"
 import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
-import { useField } from "formik"
+import { useField, useFormikContext } from "formik"
 import { FC, ReactNode } from "react"
 
 type Props = CheckboxProps & {
@@ -14,6 +14,7 @@ type Props = CheckboxProps & {
   helperText?: ReactNode
   toggle?: boolean
   fullWidth?: boolean
+  submitOnChange?: boolean
 }
 
 export const BooleanField: FC<Props> = ({
@@ -27,10 +28,13 @@ export const BooleanField: FC<Props> = ({
   tooltipProps,
   toggle,
   fullWidth,
+  submitOnChange,
   size,
   ...props
 }) => {
   const [field, { error, touched }] = useField<boolean>(name ?? "")
+
+  const { submitForm } = useFormikContext()
 
   const hasLabel = label !== undefined && label !== null
   const labelId = name ? `${name}Label` : label?.toString().slice(0, 16).toLowerCase().replaceAll(" ", "_")
@@ -55,6 +59,14 @@ export const BooleanField: FC<Props> = ({
         ...props.inputProps,
         ...field,
         value: `${field.value}`,
+        onChange: (ev) => {
+          field.onChange(ev)
+          props.onChange?.(ev, ev.target.checked)
+
+          if (submitOnChange) {
+            submitForm()
+          }
+        },
       }}
     />
   )
