@@ -1,8 +1,8 @@
 import { ThemeColor } from "@/types"
 import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip } from "@mui/material"
-import { FC, MouseEventHandler } from "react"
+import { FC, MouseEventHandler, useState } from "react"
 import { IconType } from "react-icons"
-import { HiClipboardCopy, HiLink } from "react-icons/hi"
+import { HiClipboardCheck, HiClipboardCopy } from "react-icons/hi"
 
 type Props = TextFieldProps & {
   // onCopy?: MouseEventHandler<HTMLButtonElement>
@@ -12,8 +12,17 @@ type Props = TextFieldProps & {
 }
 
 export const LinkInputField: FC<Props> = ({ copyIcon, position = "end", copyColor, InputProps, ...props }) => {
+  const [copied, setCopied] = useState(false)
+
   const copyHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    void navigator.clipboard.writeText(`${window.location.protocol}//${props.value as string}`)
+    const value = props.value as string
+    const protocol = value.startsWith("http") ? "" : `${window.location.protocol}/`
+    void navigator.clipboard.writeText(`${protocol}${props.value as string}`)
+
+    setCopied(true)
+    setTimeout(() => {
+      setCopied(false)
+    }, 3000)
   }
 
   const copyAdornment = (
@@ -21,11 +30,12 @@ export const LinkInputField: FC<Props> = ({ copyIcon, position = "end", copyColo
       {position === "end" && InputProps?.endAdornment}
       <Tooltip arrow placement="bottom" title="Copy to clipboard">
         <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
-          <SvgIcon
-            color={copyColor ?? "secondary"}
-            component={copyIcon ?? HiClipboardCopy ?? HiLink}
-            viewBox="-1 -1 22 22"
-          />
+          {copied && (
+            <SvgIcon color={copyColor ?? "success"} component={copyIcon ?? HiClipboardCheck} viewBox="0 -1 22 22" />
+          )}
+          {!copied && (
+            <SvgIcon color={copyColor ?? "secondary"} component={copyIcon ?? HiClipboardCopy} viewBox="-1 -1 22 22" />
+          )}
         </IconButton>
       </Tooltip>
       {position === "start" && InputProps?.startAdornment}

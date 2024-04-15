@@ -14,7 +14,7 @@ interface Props {
   showStatus?: boolean
   loading?: boolean
   error?: boolean
-  titleOverride?: string
+  customTitle?: string
   fontSize?: number
 }
 
@@ -25,7 +25,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   showStatus,
   loading,
   error,
-  titleOverride: overrideTitle,
+  customTitle,
   fontSize,
 }) => {
   const sizes = {
@@ -62,7 +62,7 @@ export const ChannelRewardIcon: FC<Props> = ({
           ),
       }}
     >
-      {overrideTitle ?? reward.title}
+      {customTitle ?? reward.title}
     </Typography>
   )
 

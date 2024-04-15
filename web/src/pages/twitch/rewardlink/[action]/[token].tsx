@@ -20,7 +20,7 @@ const RewardLinkPage: LayoutNextPage = () => {
 
   const type = typeof typeQuery === "string" ? typeQuery : typeQuery?.[0]
   const token = typeof tokenQuery === "string" ? tokenQuery : tokenQuery?.[0]
-  const titleOverride = typeof titleQuery === "string" ? titleQuery : titleQuery?.[0]
+  const customTitle = typeof titleQuery === "string" ? titleQuery : titleQuery?.[0]
   const fontSize = typeof fontSizeQuery === "string" ? fontSizeQuery : fontSizeQuery?.[0]
   const sizeString = typeof sizeQuery === "string" ? sizeQuery : sizeQuery?.[0]
 
@@ -67,7 +67,7 @@ const RewardLinkPage: LayoutNextPage = () => {
             showTitle
             showStatus
             error={!!showError}
-            titleOverride={titleOverride}
+            customTitle={customTitle}
             fontSize={Number(fontSize) || undefined}
           />
         </ButtonBase>
