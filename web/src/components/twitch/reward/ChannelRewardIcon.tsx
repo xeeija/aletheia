@@ -16,6 +16,7 @@ interface Props {
   error?: boolean
   customTitle?: string
   fontSize?: number
+  titleBottom?: boolean
 }
 
 export const ChannelRewardIcon: FC<Props> = ({
@@ -27,6 +28,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   error,
   customTitle,
   fontSize,
+  titleBottom,
 }) => {
   const sizes = {
     sm: 28,
@@ -37,7 +39,9 @@ export const ChannelRewardIcon: FC<Props> = ({
 
   const notActive = reward.isPaused || !reward.isEnabled || loading || error
   const disabledPaused = reward.isPaused && !reward.isEnabled
-  const imageAdjust = !reward.image || reward.image.match(defaultImagePattern) ? 1.2 : 1
+  const showTitleBottom = sizeInput !== "xl" || titleBottom
+
+  const imageAdjust = !reward.image || reward.image.match(defaultImagePattern) ? 1 : 1
 
   const size = sizes[sizeInput]
   const iconSize = (sizeInput === "xl" ? size * 0.5 : size * 0.65) * imageAdjust
@@ -52,13 +56,12 @@ export const ChannelRewardIcon: FC<Props> = ({
         fontSize: fontSize ?? 12,
         textAlign: "center",
         lineHeight: 1,
-        height: 24,
+        height: (fontSize ?? 12) * 2,
         mx: 0.25,
         // mb: -0.5,
         color: (theme) =>
           theme.palette.getContrastText(
-            (sizeInput === "xl" ? reward.backgroundColor : theme.palette.background.default) ||
-              theme.palette.primary.main
+            (!showTitleBottom ? reward.backgroundColor : theme.palette.background.default) || theme.palette.primary.main
           ),
       }}
     >
@@ -125,10 +128,10 @@ export const ChannelRewardIcon: FC<Props> = ({
           unselectable="on"
           draggable="false"
         />
-        {showTitle && sizeInput === "xl" && rewardTitle}
+        {showTitle && !showTitleBottom && rewardTitle}
       </Avatar>
 
-      {showTitle && sizeInput !== "xl" && <Box sx={{ width: size * 1.75 }}>{rewardTitle}</Box>}
+      {showTitle && showTitleBottom && <Box sx={{ width: size * 1.75, mt: 0.25 }}>{rewardTitle}</Box>}
     </Box>
   )
 }

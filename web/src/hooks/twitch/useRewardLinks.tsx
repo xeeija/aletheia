@@ -7,7 +7,7 @@ import {
 import { RewardLinkType } from "@/types"
 
 type RewardLinkConfig = {
-  type: RewardLinkType
+  type?: RewardLinkType
   rewardIds?: string | string[]
   pause?: boolean
 }
@@ -32,7 +32,7 @@ export const useRewardLinks = ({ type, rewardIds, pause }: RewardLinkConfig) => 
       const response = await createRewardLink(
         {
           rewardId,
-          type,
+          type: type ?? "",
         },
         {
           requestPolicy: "cache-and-network",

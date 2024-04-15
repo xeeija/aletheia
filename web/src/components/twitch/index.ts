@@ -11,6 +11,7 @@ export * from "./reward/ChannelRewardMenuItem"
 export * from "./reward/CreateChannelRewardForm"
 export * from "./reward/EditChannelRewardForm"
 export * from "./reward/RewardFormFields"
+export * from "./reward/RewardLinkOptions"
 export * from "./reward/RewardLinksDialog"
 
 export * from "./rewardGroup/CreateRewardGroupForm"

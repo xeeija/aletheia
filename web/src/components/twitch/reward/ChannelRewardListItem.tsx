@@ -41,7 +41,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
 
             <Box>
               <Typography variant="h6">{reward.title}</Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" className="line-clamp line-clamp-1">
                 {reward.prompt}
               </Typography>
             </Box>
