@@ -1,5 +1,10 @@
 import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch"
-import { handleSubscriptionRewardGroup, handleSubscriptionSync, unpauseRewardGroup } from "@/twitch/events"
+import {
+  handleSubscriptionRewardGroup,
+  handleSubscriptionRewardUpdate,
+  handleSubscriptionSync,
+  unpauseRewardGroup,
+} from "@/twitch/events"
 import { EventSubType, type SocketServer } from "@/types"
 import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
@@ -94,12 +99,12 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   console.log(`[eventsub] initialize`, storedSync.length, `wheel sync subscriptions`)
 
   // find unique rewardIds
-  const rewardIds = storedSync.flatMap((sub) => sub.wheelSync.map((s) => s.rewardId))
-  const uniqueIds = Object.keys(rewardIds.reduce((acc, r) => ({ ...acc, [r]: "" }), {}))
+  const rewardIdsSync = storedSync.flatMap((sub) => sub.wheelSync.map((s) => s.rewardId))
+  const uniqueRewardIdsSync = [...new Set(rewardIdsSync)]
 
   await Promise.all(
     storedSync.flatMap((sub) =>
-      uniqueIds.map(async (rewardId) => {
+      uniqueRewardIdsSync.map(async (rewardId) => {
         await handleSubscriptionSync(eventSub, prisma, socketIo, {
           twitchUserId: sub.twitchUserId,
           userId: sub.userId ?? "",
@@ -154,6 +159,20 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
 
     await new Promise((resolve) => setTimeout(resolve, 500))
   }
+
+  // initialize reward link subscriptions
+  const storedLink = storedSubscriptions.filter((s) => s.type === EventSubType.rewardLink.toString())
+
+  console.log(`[eventsub] initialize`, storedLink.length, `reward link subscriptions`)
+
+  await Promise.all(
+    storedLink.map(async (sub) => {
+      await handleSubscriptionRewardUpdate(eventSub, prisma, socketIo, {
+        twitchUserId: sub.twitchUserId,
+        userId: sub.userId ?? "",
+      })
+    })
+  )
 
   // await apiClient.eventSub.deleteAllSubscriptions()
 

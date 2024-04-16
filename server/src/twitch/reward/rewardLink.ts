@@ -7,13 +7,13 @@ export const findRewardByLink = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   token: string,
-  type: RewardLinkType
+  type?: RewardLinkType
 ) => {
   const rewardLink = await prisma.rewardLink.findUnique({
     where: { token },
   })
 
-  if (!rewardLink || rewardLink.type !== type) {
+  if (!rewardLink || (type && type !== rewardLink.type)) {
     throw Error("Invalid token")
   }
 

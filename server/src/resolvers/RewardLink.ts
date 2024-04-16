@@ -1,6 +1,7 @@
 import { RewardLink } from "@/generated/graphql"
 import { CustomReward } from "@/resolvers"
 import { accessTokenForUser, findRewardByLink, updateRewardByLink } from "@/twitch"
+import { handleSubscriptionRewardUpdate } from "@/twitch/events"
 import type { GraphqlContext, RewardLinkType } from "@/types"
 import { randomBase64Url } from "@/utils"
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
@@ -27,12 +28,12 @@ export class RewardLinkResolver {
 
   @Mutation(() => RewardLink, { nullable: true })
   async createRewardLink(
-    @Ctx() { req, prisma }: GraphqlContext,
+    @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     // @Arg("rewardLink") rewardLink: RewardLinkInput
     @Arg("rewardId") rewardId: string,
     @Arg("type") type: string
   ) {
-    await accessTokenForUser({ req, prisma })
+    const { realTwitchUserId } = await accessTokenForUser({ req, prisma })
 
     const existingRewardLink = await prisma.rewardLink.findFirst({
       where: {
@@ -57,14 +58,17 @@ export class RewardLinkResolver {
       },
     })
 
+    await handleSubscriptionRewardUpdate(eventSub, prisma, socketIo, {
+      userId: req.session.userId,
+      twitchUserId: realTwitchUserId,
+    })
+
     return newRewardLink
   }
 
   @Mutation(() => Boolean)
-  async deleteRewardLink(@Ctx() { req, prisma }: GraphqlContext, @Arg("id") id: string) {
-    if (!req.session.userId) {
-      throw new Error("Not logged in")
-    }
+  async deleteRewardLink(@Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext, @Arg("id") id: string) {
+    const { realTwitchUserId } = await accessTokenForUser({ req, prisma })
 
     const rewardLink = await prisma.rewardLink.findUnique({
       where: { id },
@@ -77,6 +81,13 @@ export class RewardLinkResolver {
     const deleted = await prisma.rewardLink.delete({
       where: { id: id ?? "" },
     })
+
+    await handleSubscriptionRewardUpdate(eventSub, prisma, socketIo, {
+      userId: req.session.userId,
+      twitchUserId: realTwitchUserId,
+    })
+
+    socketIo.to(`rewardlink/${rewardLink.id}`).emit("reward:update")
 
     return deleted !== null
   }

@@ -37,6 +37,14 @@ export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => 
         }
       )
 
+      if (response.error?.graphQLErrors.some((e) => e.message === "Invalid token")) {
+        // token got deleted (or became invalid somehow), so refetch to update
+        fetchReward({
+          requestPolicy: "cache-and-network",
+          additionalTypenames: ["RewardLink"],
+        })
+      }
+
       return {
         reward: data?.rewardByToken as CustomRewardMenuItemFragment | undefined,
         error: response.error,

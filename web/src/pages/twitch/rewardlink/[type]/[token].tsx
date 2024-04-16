@@ -1,5 +1,6 @@
 import { LayoutNextPage, getTitle } from "@/components"
 import { ChannelRewardIcon, ChannelRewardStatusOverlay } from "@/components/twitch"
+import { useInterval, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
 import { Box, Skeleton } from "@mui/material"
 import Head from "next/head"
@@ -24,13 +25,22 @@ const RewardLinkPage: LayoutNextPage = () => {
   const size = ["sm", "md", "lg", "xl"].includes(sizeString ?? "") ? (sizeString as ItemSize) : undefined
   const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size ?? "xl"]
 
-  const { reward, fetching, updateReward } = useRewardLinkToken({
+  const { reward, fetching, updateReward, refetch } = useRewardLinkToken({
     token: token ?? "",
     type: type as RewardLinkType,
   })
 
+  useRewardLinkSocket(token ?? "", !token, () => {
+    refetch()
+  })
+
   const [error, setError] = useState<ReactNode>(null)
 
+  // refetch the reward every 10 minutes, to check if status changed
+  useInterval(() => refetch(), {
+    ms: 10 * 60 * 1000,
+    disable: true || !reward,
+  })
 
   if (!reward && !fetching) {
     return (

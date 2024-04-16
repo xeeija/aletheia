@@ -55,12 +55,14 @@ export interface ServerToClientEvents {
   "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
   "wheel:update": (type: string) => void
   "rewardgroup:pause": (rewardGroup: RewardGroupFull[], paused: boolean) => void
+  "reward:update": (reward?: RewardIconData) => void
 }
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
   "wheel:entries": (type: "add" | "update", wheelId: string) => void
   "rewardgroup:join": () => void
+  "rewardlink:join": (token: string) => void
 }
 
 export interface InterServerEvents {}
@@ -69,11 +71,13 @@ export interface SocketData {}
 
 export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add",
+  rewardUpdate = "channel.channel_points_custom_reward.update",
 }
 
 export enum EventSubType {
   wheelSync = "wheelSync",
   rewardGroup = "rewardGroup",
+  rewardLink = "rewardLink",
 }
 
 export type EventSubConfigSync = {
@@ -91,6 +95,11 @@ export type EventSubConfigSyncAdd = {
 }
 
 export type EventSubConfigGroup = {
+  userId: string
+  twitchUserId: string
+}
+
+export type EventSubConfigRewardUpdate = {
   userId: string
   twitchUserId: string
 }

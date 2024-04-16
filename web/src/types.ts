@@ -1,4 +1,4 @@
-import { RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
+import { CustomRewardMenuItemFragment, RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
 import { FormikProps } from "formik"
 import { NextApiRequest, NextApiResponse } from "next"
 import { RefObject } from "react"
@@ -25,12 +25,14 @@ export interface ServerToClientEvents {
   "wheel:spin": (spinResult: SpinResult) => void
   "wheel:update": (type: string) => void
   "rewardgroup:pause": (rewardGroup: RewardGroup[], paused: boolean) => void
+  "reward:update": (reward?: CustomRewardMenuItemFragment) => void
 }
 
 export interface ClientToServerEvents {
   "wheel:join": (wheelId: string) => void
   "wheel:entries": (type: "add" | "update", wheelId: string) => void
   "rewardgroup:join": () => void
+  "rewardlink:join": (token: string) => void
 }
 
 export type FormDialogProps<T> = {

@@ -12,4 +12,5 @@ export * from "./twitch/useWheelSync"
 
 export * from "./socket/useRandomWheelSocket"
 export * from "./socket/useRewardGroupSocket"
+export * from "./socket/useRewardLinkSocket"
 export * from "./socket/useSocket"
