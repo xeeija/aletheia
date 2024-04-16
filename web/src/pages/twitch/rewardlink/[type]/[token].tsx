@@ -1,7 +1,5 @@
 import { LayoutNextPage, getTitle } from "@/components"
-import { ChannelRewardIcon } from "@/components/twitch"
-import { useRewardLinkToken } from "@/hooks"
-import NotFoundPage from "@/pages/404"
+import { ChannelRewardIcon, ChannelRewardStatusOverlay } from "@/components/twitch"
 import { ItemSize, RewardLinkType } from "@/types"
 import { Box, Skeleton } from "@mui/material"
 import Head from "next/head"
@@ -31,20 +29,33 @@ const RewardLinkPage: LayoutNextPage = () => {
     type: type as RewardLinkType,
   })
 
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const [error, setError] = useState<ReactNode>(null)
+
 
   if (!reward && !fetching) {
-    return <NotFoundPage />
+    return (
+      <>
+        <Head>
+          <title>{getTitle(`Not Found`)}</title>
+        </Head>
+
+        <ChannelRewardStatusOverlay size={skeletonSize} statusSize={skeletonSize / 2} enabled error="Not Found">
+          <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
+        </ChannelRewardStatusOverlay>
+
+        <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
+      </>
+    )
   }
 
   const handleUpdate = async () => {
     const { error } = await updateReward()
 
     if (error) {
-      setShowError(error.message)
+      setError(error.message)
       console.error(error.message)
 
-      setTimeout(() => setShowError(null), 5000)
+      setTimeout(() => setError(null), 5000)
     }
   }
 
@@ -61,7 +72,7 @@ const RewardLinkPage: LayoutNextPage = () => {
             size={size ?? "xl"}
             showTitle={!hideTitle}
             showStatus
-            error={!!showError}
+            error={error}
             customTitle={customTitle}
             fontSize={Number(fontSize) || undefined}
             titleBottom={titleBottom}

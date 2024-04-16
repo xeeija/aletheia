@@ -23,7 +23,14 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
   const pauseLink = rewardLinks?.find((l) => l.type === "pause")
 
   return (
-    <FormDialog maxWidth="sm" title="Reward links" open={open} cancelText="Close" onClose={onClose} closeOnBackdrop>
+    <FormDialog
+      maxWidth="sm"
+      title={`Reward links for ${reward.title}`}
+      open={open}
+      cancelText="Close"
+      onClose={onClose}
+      closeOnBackdrop
+    >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1 }}>
           <SvgIcon color="warning">

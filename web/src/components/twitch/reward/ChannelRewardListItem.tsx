@@ -40,8 +40,15 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
             <ChannelRewardIcon reward={reward} size="md" />
 
             <Box>
-              <Typography variant="h6">{reward.title}</Typography>
-              <Typography variant="body2" color="text.secondary" className="line-clamp line-clamp-1">
+              <Typography variant="h6" sx={{ lineHeight: 1.4, mt: reward.prompt ? "-2.8px" : undefined }}>
+                {reward.title}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                className="line-clamp line-clamp-1"
+                sx={{ lineHeight: 1.4, mb: reward.prompt ? "-2px" : undefined }}
+              >
                 {reward.prompt}
               </Typography>
             </Box>
@@ -50,7 +57,9 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
           {/* Middle */}
           <Box sx={{ width: "80px", display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
             <ChannelPoints viewBox="0 -2 22 22" color="primary" />
-            <Typography color="text.secondary">{reward.cost}</Typography>
+            <Typography color="text.secondary" sx={{ fontWeight: 500, fontSize: "0.925em" }}>
+              {reward.cost}
+            </Typography>
           </Box>
 
           {/* Icons für isPaused, isInStock, skipQueue, cooldown expiry etc. */}
