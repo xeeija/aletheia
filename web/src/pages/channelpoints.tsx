@@ -3,10 +3,11 @@ import {
   ChannelRewards,
   ChannelRewardsToolbar,
   NoDataTwitch,
+  NoDataTwitchError,
   RewardGroups,
   RewardGroupsToolbar,
 } from "@/components/twitch"
-import { useAuth } from "@/hooks"
+import { useAuth, useChannelRewards } from "@/hooks"
 import { Box, Tab, Tabs } from "@mui/material"
 import { useState } from "react"
 
@@ -15,6 +16,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
 
   const [filterRewards, setFilterRewards] = useState(false)
   const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({ includeToken: true })
+  const { fetching: fetchingRewards, error } = useChannelRewards(true, filterRewards)
 
   const tokenAvailable = user?.username && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
@@ -35,7 +37,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
           <Tab label="Reward Groups" itemType="capitalize" />
         </Tabs>
 
-        {tokenAvailable && (
+        {tokenAvailable && !error && (
           <>
             {tab === 0 && (
               <ChannelRewardsToolbar onFilter={(ev) => setFilterRewards(ev.target.value === "manageable")} />
@@ -47,7 +49,7 @@ export const ChannelPointsPage: LayoutNextPage = () => {
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        {tokenAvailable && (
+        {tokenAvailable && !error && (
           <>
             {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
@@ -62,6 +64,8 @@ export const ChannelPointsPage: LayoutNextPage = () => {
         )}
 
         {!tokenAvailable && !fetching && <NoDataTwitch />}
+
+        {tokenAvailable && !fetchingRewards && error && <NoDataTwitchError error={error} />}
       </Box>
     </>
   )

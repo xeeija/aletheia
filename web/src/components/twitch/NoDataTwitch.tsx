@@ -10,7 +10,7 @@ export const NoDataTwitch: FC<Props> = () => {
   const { user, userAccessToken, fetchingUser } = useAuth({ includeToken: true })
 
   return (
-    <NoData image="/img/online_connection.svg" iconSize={200}>
+    <NoData image="/img/online_connection.svg" iconSize={200} sx={{ mt: 4 }}>
       <Typography variant="h5" color="text.secondary">
         You don&apos;t have a Twitch account connected.
       </Typography>

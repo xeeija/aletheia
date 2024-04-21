@@ -15,6 +15,16 @@ export type AuthCodeParams = {
 
 export const scopes = ["channel:read:redemptions", "channel:manage:redemptions"]
 
+export const parseTwitchApiError = (error: CombinedError | undefined) => {
+  if (error?.message.includes("Encountered HTTP status code")) {
+    const errorStr = error?.message.split("Body:")[1].trim()
+    const twitchError = JSON.parse(errorStr) as TwitchError
+    return twitchError
+  }
+
+  return null
+}
+
 export const handleTwitchApiError = (
   error: CombinedError | undefined,
   setState: Dispatch<SetStateAction<ReactNode>>
@@ -23,15 +33,11 @@ export const handleTwitchApiError = (
     return true
   }
 
-  if (error?.message.includes("Encountered HTTP status code")) {
-    const errorStr = error?.message.split("Body:")[1].trim()
-    console.warn("errorStr", errorStr)
-    const twitchError = JSON.parse(errorStr) as TwitchError
+  const twitchError = parseTwitchApiError(error)
 
-    if (twitchError.message) {
-      setState(`[Twitch] ${twitchError.status} ${twitchError.error}: ${twitchError.message}`)
-      return true
-    }
+  if (twitchError?.message) {
+    setState(`[Twitch] ${twitchError.status} ${twitchError.error}: ${twitchError.message}`)
+    return true
   }
 
   return false

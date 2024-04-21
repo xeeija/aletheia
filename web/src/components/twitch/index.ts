@@ -1,6 +1,7 @@
 export * from "./ChannelRewards"
 export * from "./ChannelRewardsToolbar"
 export * from "./NoDataTwitch"
+export * from "./NoDataTwitchError"
 export * from "./RewardGroups"
 export * from "./RewardGroupsToolbar"
 
