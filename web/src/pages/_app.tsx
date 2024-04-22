@@ -1,4 +1,4 @@
-import { LayoutNextPage, defaultLayout } from "@/components"
+import { AlertProvider, LayoutNextPage, defaultLayout } from "@/components"
 import "@/styles/fonts.css"
 import "@/styles/global.css"
 import { theme } from "@/theme"
@@ -25,8 +25,10 @@ const App = ({ Component, pageProps }: LayoutAppProps) => {
   return (
     <UrqlProvider value={urqlClient}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {getLayout(<Component {...pageProps} />)}
+        <AlertProvider>
+          <CssBaseline />
+          {getLayout(<Component {...pageProps} />)}
+        </AlertProvider>
       </ThemeProvider>
     </UrqlProvider>
   )

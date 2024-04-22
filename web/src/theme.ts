@@ -1,5 +1,8 @@
 import { createTheme, ThemeOptions } from "@mui/material"
 
+export const dialogBackground = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"
+export const tooltipBackground = "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))"
+
 const baseTheme = createTheme({
   palette: {
     mode: "dark",
@@ -89,12 +92,12 @@ const componentOverrides: ThemeOptions = {
         tooltip: {
           fontSize: baseTheme.typography.htmlFontSize * 0.8125,
           backgroundColor: baseTheme.palette.background.paper,
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))",
+          backgroundImage: tooltipBackground,
         },
         arrow: {
           "::before": {
             backgroundColor: baseTheme.palette.background.paper,
-            backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))",
+            backgroundImage: tooltipBackground,
           },
         },
       },
@@ -102,7 +105,7 @@ const componentOverrides: ThemeOptions = {
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))",
+          backgroundImage: tooltipBackground,
         },
       },
     },

@@ -1,4 +1,3 @@
-export * from "./AlertPopup"
 export * from "./CollapsedAlert"
 export * from "./Dropdown"
 export * from "./LinkList"
@@ -10,5 +9,9 @@ export * from "./LogoIcon"
 export * from "./NoData"
 export * from "./SkeletonList"
 export * from "./TabPanel"
+
+export * from "./alert/AlertContent"
+export * from "./alert/AlertPopup"
+
 export * from "./dialog/ConfirmDialog"
 export * from "./dialog/DeleteDialog"

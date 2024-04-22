@@ -1,4 +1,5 @@
 import { CustomRewardMenuItemFragment, RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
+import { AlertColor } from "@mui/material"
 import { FormikProps } from "formik"
 import { NextApiRequest, NextApiResponse } from "next"
 import { RefObject } from "react"
@@ -48,3 +49,21 @@ export type TwitchError = {
 }
 
 export type RewardLinkType = "enable" | "pause"
+
+export type AlertVariant = AlertColor | "default"
+
+export type AlertBaseProps = {
+  closeable?: boolean
+}
+
+declare module "notistack" {
+  interface VariantOverrides {
+    // adds `reportComplete` variant and specifies the
+    // "extra" props it takes in options of `enqueueSnackbar
+    default: AlertBaseProps
+    success: AlertBaseProps
+    info: AlertBaseProps
+    warning: AlertBaseProps
+    error: AlertBaseProps
+  }
+}
