@@ -27,7 +27,8 @@ export const parseTwitchApiError = (error: CombinedError | undefined) => {
 
 export const handleTwitchApiError = (
   error: CombinedError | undefined,
-  setState: Dispatch<SetStateAction<ReactNode>>
+  setState?: Dispatch<SetStateAction<ReactNode>>,
+  handleError?: (message: ReactNode) => void
 ) => {
   if (!error) {
     return true
@@ -36,7 +37,10 @@ export const handleTwitchApiError = (
   const twitchError = parseTwitchApiError(error)
 
   if (twitchError?.message) {
-    setState(`[Twitch] ${twitchError.status} ${twitchError.error}: ${twitchError.message}`)
+    const errorMessage = `[Twitch] ${twitchError.status} ${twitchError.error}: ${twitchError.message}`
+
+    setState?.(errorMessage)
+    handleError?.(errorMessage)
     return true
   }
 

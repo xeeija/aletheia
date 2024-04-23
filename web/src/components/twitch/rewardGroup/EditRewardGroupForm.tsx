@@ -1,11 +1,11 @@
-import { AlertPopup, LoadingButton } from "@/components"
+import { LoadingButton } from "@/components"
 import { RewardGroupFormFields, RewardGroupValues, RewardItemList } from "@/components/twitch"
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useChannelRewards, useRewardGroups } from "@/hooks"
+import { useAlert, useChannelRewards, useRewardGroups } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { Box, Portal, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, ReactNode, useState } from "react"
+import { FC } from "react"
 import { array, boolean, object, string } from "yup"
 
 type Props = FormDialogProps<RewardGroupValues> & {
@@ -13,13 +13,11 @@ type Props = FormDialogProps<RewardGroupValues> & {
   readonly?: boolean
 }
 
-export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRef, readonly }) => {
+export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRef, onClose, readonly }) => {
   const { updateGroup, fetchingUpdate, rewardGroup: group } = useRewardGroups({ id: rewardGroup.id })
-
   const { channelRewards } = useChannelRewards()
 
-  const [showError, setShowError] = useState<ReactNode>(null)
-  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   const initialValues: RewardGroupValues = {
     name: rewardGroup.name ?? "",
@@ -61,11 +59,11 @@ export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRe
         )
 
         if (response.rewardGroup) {
-          setShowSuccess(`'${response.rewardGroup.name}' updated successfully`)
-          // onClose?.()
+          showSuccess(`'${response.rewardGroup.name}' updated successfully`)
+          onClose?.()
         } else {
           // if (!handleTwitchApiError(response.error, setShowError)) {
-          setShowError(response.error?.message || "An error occurred")
+          showError(response.error?.message || "An error occurred")
           // }
         }
       }}
@@ -84,9 +82,6 @@ export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRe
             <Typography sx={{ mt: 1, fontWeight: 500, fontSize: "1.1em" }}>Rewards in this group</Typography>
 
             <RewardItemList channelRewards={channelRewards} />
-
-            <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
-            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
 
             <Portal container={actionsRef?.current}>
               {!readonly && (

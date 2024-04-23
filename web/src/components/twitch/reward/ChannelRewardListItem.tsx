@@ -1,11 +1,11 @@
-import { AlertPopup, BooleanFieldPlain } from "@/components"
+import { BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewards } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
-import { FC, ReactNode, useState } from "react"
+import { FC, useState } from "react"
 import { HiCollection, HiLink, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
 import { TiChartBar, TiMediaFastForward } from "react-icons/ti"
 
@@ -19,7 +19,7 @@ interface Props {
 export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onEdit, onDelete }) => {
   const [linkOpen, setLinkOpen] = useState(false)
 
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const { showError } = useAlert()
 
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
 
@@ -81,7 +81,6 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
             <Tooltip arrow placement="bottom" title={inStock ? "In stock" : "Out of stock"}>
               <SvgIcon color={inStock ? "info" : "disabled"}>
                 {inStock ? <HiCollection /> : <HiOutlineCollection />}
-                {/* <HiOutlineCollection /> */}
               </SvgIcon>
             </Tooltip>
 
@@ -108,10 +107,10 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
                 })
 
                 if (response.reward) {
-                  // setShowSuccess(`'${response.reward.title}' created successfully`)
+                  // showAlert(`'${response.reward.title}' ${response.reward.isEnabled ? "enabled" : "disabled"}`)
                 } else {
-                  if (!handleTwitchApiError(response.error, setShowError)) {
-                    setShowError(response.error?.message || "An error occurred")
+                  if (!handleTwitchApiError(response.error, undefined, showError)) {
+                    showError(response.error?.message || "An error occurred")
                   }
                 }
               }}
@@ -131,16 +130,14 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
                 })
 
                 if (response.reward) {
-                  // setShowSuccess(`'${response.reward.title}' created successfully`)
+                  // showAlert(`'${response.reward.title}' ${response.reward.isPaused ? "paused" : "unpaused"}`)
                 } else {
-                  if (!handleTwitchApiError(response.error, setShowError)) {
-                    setShowError(response.error?.message || "An error occurred")
+                  if (!handleTwitchApiError(response.error, undefined, showError)) {
+                    showError(response.error?.message || "An error occurred")
                   }
                 }
               }}
             />
-
-            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
           </Box>
 
           {/* right */}
