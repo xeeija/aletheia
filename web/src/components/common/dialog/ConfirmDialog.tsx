@@ -1,6 +1,7 @@
-import { ThemeColor } from "@/types"
+import { LoadingButton } from "@/components"
+import { Awaitable, ThemeColor } from "@/types"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SvgIcon } from "@mui/material"
-import { ElementType, FC, ReactNode } from "react"
+import { ElementType, FC, ReactNode, useState } from "react"
 
 export interface ConfirmDialogProps {
   title: ReactNode
@@ -8,12 +9,13 @@ export interface ConfirmDialogProps {
   type: ThemeColor
   confirmText: ReactNode
   onClose: () => void
-  onConfirm: () => void | Promise<void>
+  onConfirm: () => Awaitable<void> | Awaitable<boolean>
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
   icon?: ElementType
   children?: ReactNode
   cancelText?: ReactNode
   id?: string
+  closeOnConfirm?: boolean
 }
 
 export const ConfirmDialog: FC<ConfirmDialogProps> = ({
@@ -28,7 +30,10 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   confirmText,
   cancelText,
   id = "confirm",
+  closeOnConfirm = true,
 }) => {
+  const [deleting, setDeleting] = useState(false)
+
   return (
     <Dialog
       fullWidth
@@ -63,16 +68,23 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
           {cancelText ?? "Cancel"}
         </Button>
 
-        <Button
+        <LoadingButton
           color={type}
           variant="contained"
+          loading={deleting}
           onClick={async () => {
-            await onConfirm()
-            onClose()
+            setDeleting(true)
+            const confirmed = await onConfirm()
+
+            setDeleting(false)
+
+            if (closeOnConfirm && confirmed !== false) {
+              onClose()
+            }
           }}
         >
           {confirmText}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   )

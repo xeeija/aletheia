@@ -11,6 +11,8 @@ export type ItemSize = "sm" | "md" | "lg" | "xl"
 
 export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse<T>) => void | Promise<void>
 
+export type Awaitable<T> = T | Promise<T>
+
 export type SpinResult = {
   winner: RandomWheelWinner
   entry: RandomWheelEntry
