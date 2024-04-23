@@ -7,8 +7,6 @@ interface Props {
   onDelete: () => void | Promise<void>
 }
 
-// TODO: Make a general confirm dialog
-// for delete members, and disconnect twitch
 export const DisconnectTwitchDialog: FC<Props> = ({ open, onClose, onDelete }) => {
   return (
     <DeleteDialog
@@ -17,8 +15,8 @@ export const DisconnectTwitchDialog: FC<Props> = ({ open, onClose, onDelete }) =
       confirmText="Disconnect"
       open={open}
       onClose={onClose}
-      onConfirm={() => {
-        onDelete()
+      onConfirm={async () => {
+        await onDelete()
         onClose()
       }}
     >

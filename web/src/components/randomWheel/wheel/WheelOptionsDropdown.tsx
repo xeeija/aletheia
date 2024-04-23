@@ -125,7 +125,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
         <DeleteWheelDialog
           open={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          onDelete={() => void onDeleteDialog()}
+          onDelete={async () => await onDeleteDialog()}
         />
       )}
     </>
