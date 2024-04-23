@@ -9,8 +9,8 @@ import {
   TooltipProps,
 } from "@mui/material"
 import { FieldValidator, useField, useFormikContext } from "formik"
-import { FC } from "react"
-import { TiTick } from "react-icons/ti"
+import { FC, useDeferredValue } from "react"
+import { TiTick, TiWarning } from "react-icons/ti"
 
 export type InputFieldProps = TextFieldProps & {
   name: string // make name required
@@ -21,6 +21,7 @@ export type InputFieldProps = TextFieldProps & {
   tooltip?: string
   tooltipProps?: Partial<TooltipProps>
   maxLength?: number
+  showMaxLength?: number
   adornment?: boolean
   submitOnChange?: boolean
   submitOnBlur?: boolean
@@ -35,6 +36,7 @@ export const InputField: FC<InputFieldProps> = ({
   tooltip,
   tooltipProps,
   maxLength,
+  showMaxLength,
   adornment,
   submitOnChange,
   submitOnBlur,
@@ -52,12 +54,24 @@ export const InputField: FC<InputFieldProps> = ({
   })
 
   const hasError = error !== undefined
-  const isFieldValidating = isValidating && (status as { [name: string]: string })?.[name]
+  const isFieldValidating = isValidating && (status as Record<string, boolean>)?.[name]
+
+  const valueLength = `${field.value}`.length
+  const showMaxLengthAdornment = (maxLength ?? 0) > 0 && valueLength >= (showMaxLength ?? 0)
+
+  const deferredShowMaxLength = useDeferredValue(showMaxLengthAdornment)
 
   const maxLengthAdornment = (
-    <InputAdornment position="end" sx={{ alignItems: props.multiline ? "end" : undefined }}>
+    <InputAdornment
+      position="end"
+      sx={{
+        alignItems: props.multiline ? "end" : undefined,
+        opacity: deferredShowMaxLength ? 1 : 0,
+        transition: "opacity 175ms ease-out",
+      }}
+    >
       <FormHelperText>
-        {`${field.value}`.length}/{maxLength}
+        {valueLength}/{maxLength}
       </FormHelperText>
     </InputAdornment>
   )
@@ -76,10 +90,10 @@ export const InputField: FC<InputFieldProps> = ({
           // TRY: -> useReducer instead of state for isFieldValidating
 
           if (icon) {
-            setStatus({
+            setStatus((status: Record<string, boolean>) => ({
               ...status,
-              [name]: true,
-            })
+              [field.name]: true,
+            }))
           }
 
           validateField(name)
@@ -92,7 +106,13 @@ export const InputField: FC<InputFieldProps> = ({
           }
 
           if (icon) {
-            setTimeout(() => setStatus({}), 1000)
+            setTimeout(
+              () =>
+                setStatus((status: Record<string, boolean>) =>
+                  Object.fromEntries(Object.entries(status).filter(([key]) => field.name !== key))
+                ),
+              1000
+            )
           }
         }}
         onChange={(ev) => {
@@ -111,23 +131,23 @@ export const InputField: FC<InputFieldProps> = ({
         size="small"
         InputProps={{
           ...props.InputProps,
-          endAdornment:
-            (maxLength ?? 0) > 0 ? (
-              <>
-                {maxLengthAdornment}
-                {props.InputProps?.endAdornment}
-              </>
-            ) : (
-              props.InputProps?.endAdornment
-            ),
+          endAdornment: showMaxLengthAdornment ? (
+            <>
+              {maxLengthAdornment}
+              {props.InputProps?.endAdornment}
+            </>
+          ) : (
+            props.InputProps?.endAdornment
+          ),
           ...(icon &&
             touched && {
               endAdornment: (
                 <>
                   <InputAdornment position="end">
                     {!hasError && !isFieldValidating && <SvgIcon component={TiTick} color="success" />}
+                    {hasError && !isFieldValidating && <SvgIcon component={TiWarning} color="error" />}
                     {isFieldValidating && <CircularProgress color="info" sx={{ p: 1.25 }} />}
-                    {(maxLength ?? 0) > 0 ? maxLengthAdornment : null}
+                    {showMaxLengthAdornment ? maxLengthAdornment : null}
                     {props.InputProps?.endAdornment}
                   </InputAdornment>
                 </>
