@@ -14,7 +14,7 @@ services:
       - ./docker/data/postgres:/var/lib/postgresql/data
 
   server:
-    image: xeeija/aletheia-server:1.7.1
+    image: xeeija/aletheia-server:1.7.2
     # build:
     #   context: server
     restart: unless-stopped
@@ -35,7 +35,7 @@ services:
       - localhost:host-gateway
 
   web:
-    image: xeeija/aletheia-web:1.7.1
+    image: xeeija/aletheia-web:1.7.2
     # build:
     #   context: web
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
       SOCKET_SERVER_URL: http://server:4000
 
   proxy:
-    image: nginx:1.25-alpine
+    image: nginx:1.25.4-alpine
     restart: unless-stopped
     ports:
       - 3000:80

@@ -1,7 +1,10 @@
 import { useSpinRandomWheelMutation } from "@/generated/graphql"
+import { useAlert } from "@/hooks"
 
 export const useRandomWheelSpin = (wheelId: string | undefined, spinning: boolean) => {
   const [, spinRandomWheel] = useSpinRandomWheelMutation()
+  const { showError } = useAlert()
+
   const spin = async () => {
     if (!wheelId) {
       console.warn("no wheel to spin")
@@ -17,9 +20,11 @@ export const useRandomWheelSpin = (wheelId: string | undefined, spinning: boolea
       wheelId: wheelId,
     })
 
-    if (!data) {
+    if (error || !data?.spinRandomWheel) {
       // error handling
       console.warn(error)
+      showError(error?.message || "Failed to spin the wheel")
+
       return
     }
 

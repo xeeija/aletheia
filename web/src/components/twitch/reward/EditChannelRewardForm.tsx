@@ -1,13 +1,13 @@
-import { AlertPopup, LoadingButton } from "@/components"
+import { LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewards } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { getDurationUnit } from "@/utils/math"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, ReactNode, useState } from "react"
+import { FC } from "react"
 import { boolean, number, object, string } from "yup"
 
 type Props = FormDialogProps<ChannelRewardValues> & {
@@ -17,9 +17,7 @@ type Props = FormDialogProps<ChannelRewardValues> & {
 
 export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose, readonly }) => {
   const { updateReward, fetchingUpdate } = useChannelRewards(false)
-
-  const [showError, setShowError] = useState<ReactNode>(null)
-  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   const cooldownUnit = reward.globalCooldown ? getDurationUnit(reward.globalCooldown) : 60
   const cooldown = reward.globalCooldown ? reward.globalCooldown / cooldownUnit : ""
@@ -82,11 +80,11 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
         })
 
         if (response.reward) {
-          setShowSuccess(`'${response.reward.title}' updated successfully`)
+          showSuccess(`'${response.reward.title}' updated successfully`)
           onClose?.()
         } else {
-          if (!handleTwitchApiError(response.error, setShowError)) {
-            setShowError(response.error?.message || "An error occurred")
+          if (!handleTwitchApiError(response.error, undefined, showError)) {
+            showError(response.error?.message || "An error occurred")
           }
         }
       }}
@@ -101,9 +99,6 @@ export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, 
             }}
           >
             <RewardFormFields readonly={readonly} />
-
-            <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
-            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
 
             <Portal container={actionsRef?.current}>
               {!readonly && (

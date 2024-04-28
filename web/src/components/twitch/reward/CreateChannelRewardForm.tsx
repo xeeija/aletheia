@@ -1,11 +1,11 @@
-import { AlertPopup, LoadingButton } from "@/components"
+import { LoadingButton } from "@/components"
 import { RewardFormFields } from "@/components/twitch"
-import { useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewards } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Portal } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, ReactNode, useState } from "react"
+import { FC } from "react"
 import { boolean, number, object, string } from "yup"
 
 export interface ChannelRewardValues {
@@ -30,8 +30,7 @@ type Props = FormDialogProps<ChannelRewardValues>
 
 export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
   const { createReward, fetchingCreate } = useChannelRewards(false)
-  const [showError, setShowError] = useState<ReactNode>(null)
-  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   const initialValues: ChannelRewardValues = {
     title: "",
@@ -92,11 +91,11 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
         })
 
         if (response.reward) {
-          setShowSuccess(`'${response.reward.title}' created successfully`)
+          showSuccess(`'${response.reward.title}' created successfully`)
           onClose?.()
         } else {
-          if (!handleTwitchApiError(response.error, setShowError)) {
-            setShowError(response.error?.message || "An error occurred")
+          if (!handleTwitchApiError(response.error, undefined, showError)) {
+            showError(response.error?.message || "An error occurred")
           }
         }
       }}
@@ -111,9 +110,6 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
             }}
           >
             <RewardFormFields />
-
-            <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
-            <AlertPopup severity="warning" messageState={[showError, setShowError]} />
 
             <Portal container={actionsRef?.current}>
               <LoadingButton

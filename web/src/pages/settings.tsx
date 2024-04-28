@@ -1,5 +1,4 @@
 import {
-  AlertPopup,
   DisconnectTwitchDialog,
   InputField,
   LayoutNextPage,
@@ -8,18 +7,17 @@ import {
   defaultLayout,
 } from "@/components"
 import { useUpdateUserMutation } from "@/generated/graphql"
-import { useAuth } from "@/hooks"
+import { useAlert, useAuth } from "@/hooks"
 import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { ReactNode, useState } from "react"
+import { useState } from "react"
 
 const SettingsPage: LayoutNextPage = () => {
   const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
   const [, updateUser] = useUpdateUserMutation()
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
-  const [showSuccess, setShowSuccess] = useState<ReactNode>(null)
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   // TODO: show error for twitch auth
 
@@ -48,20 +46,20 @@ const SettingsPage: LayoutNextPage = () => {
 
             if (response.error?.networkError) {
               console.warn(response.error.networkError)
-              setShowError("A network error occured")
+              showError("A network error occured")
             }
-            if (response.error?.graphQLErrors) {
+            if (response.error && (response.error?.graphQLErrors.length ?? 0) > 0) {
               console.warn(response.error.graphQLErrors)
-              setShowError("Error: " + response.error.graphQLErrors.map((e) => e.message).join("\n"))
+              showError(response.error.graphQLErrors.map((e) => e.message).join("\n"))
             }
             if (response.data?.updateUser.errors) {
               console.warn(response.data.updateUser.errors)
-              setShowError("An error occured")
+              showError("An error occured")
               // setShowError(response.data.updateUser.errors)
             }
 
             if (response.data?.updateUser.user) {
-              setShowSuccess("Successfully updated")
+              showSuccess("Updated successfully")
             }
           }}
         >
@@ -90,9 +88,6 @@ const SettingsPage: LayoutNextPage = () => {
                     Update
                   </LoadingButton>
                 </Grid>
-
-                <AlertPopup severity="success" messageState={[showSuccess, setShowSuccess]} />
-                <AlertPopup severity="warning" messageState={[showError, setShowError]} />
               </Grid>
             </Form>
           )}

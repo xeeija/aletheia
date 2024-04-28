@@ -1,5 +1,6 @@
 import { UpdateEntryForm } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "@/generated/graphql"
+import { useAlert } from "@/hooks"
 import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, Tooltip, useTheme } from "@mui/material"
 import { FC, useMemo, useState } from "react"
 import { HiTrash } from "react-icons/hi"
@@ -14,6 +15,7 @@ interface Props {
 
 export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling, totalWeight }) => {
   const theme = useTheme()
+  const { showAlert } = useAlert()
 
   const itemTransition = useMemo(
     () =>
@@ -42,7 +44,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
       // setEntries(entries.filter(e => e.id !== entry.id))
     }
 
-    // setShowError(`Deleted entry '${entry.name}'`)
+    showAlert(`Deleted entry '${entry.name}'`)
   }
 
   return (

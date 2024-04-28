@@ -82,7 +82,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
         // FIX: Doesn't reload wheel (and members) when the members are empty and one is added
         // Any fix for this? Maybe normalized cache?
         if (response?.length ?? 0 <= 1) {
-          fetchMembers({ requestPolicy: "network-only" })
+          fetchMembers({ requestPolicy: "cache-and-network" })
         }
 
         // // TODO: proper error handling/feedback

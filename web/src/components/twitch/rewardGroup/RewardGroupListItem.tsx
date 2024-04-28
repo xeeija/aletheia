@@ -1,8 +1,8 @@
-import { AlertPopup, BooleanFieldPlain } from "@/components"
+import { BooleanFieldPlain } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useInterval, useRewardGroups } from "@/hooks"
+import { useAlert, useInterval, useRewardGroups } from "@/hooks"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
-import { FC, ReactNode, useState } from "react"
+import { FC, useState } from "react"
 import { HiPencil, HiTrash } from "react-icons/hi"
 import { TiStopwatch, TiThList } from "react-icons/ti"
 
@@ -14,9 +14,9 @@ interface Props {
 }
 
 export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, onEdit, onDelete }) => {
-  const [showError, setShowError] = useState<ReactNode>(null)
-
   const { updateGroup, fetchingUpdate } = useRewardGroups()
+
+  const { showError } = useAlert()
 
   const groupActive = rewardGroup.active
   const cooldownActive = !!rewardGroup.cooldownExpiry && rewardGroup.cooldownExpiry > new Date()
@@ -96,12 +96,10 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
                 if (response.rewardGroup) {
                   // setShowSuccess(`'${response.reward}' created successfully`)
                 } else {
-                  setShowError(response.error?.message || "An error occurred")
+                  showError(response.error?.message || "An error occurred")
                 }
               }}
             />
-
-            <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
           </Box>
 
           {/* right */}

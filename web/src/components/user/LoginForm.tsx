@@ -1,10 +1,12 @@
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useLoginMutation } from "@/generated/graphql"
-import { Alert, Collapse, SvgIcon, Typography } from "@mui/material"
+import { useAlert } from "@/hooks"
+import { SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { FC, useState } from "react"
-import { TiArrowRight, TiWarning } from "react-icons/ti"
+import { FC } from "react"
+import { TiArrowRight } from "react-icons/ti"
+import { object, string } from "yup"
 
 interface Props {}
 
@@ -12,40 +14,39 @@ export const LoginForm: FC<Props> = () => {
   const [, login] = useLoginMutation()
   const router = useRouter()
 
-  const [generalError, setGeneralError] = useState<string | null>(null)
-  const [showError, setShowError] = useState(false)
+  const { showError } = useAlert()
+
+  const validationSchema = object().shape({
+    username: string().required("Required"),
+    password: string().required("Required"),
+  })
 
   return (
     <Formik
       // Idea: Add shake animation to each field when it displays an error
-      // validate function also available
       initialValues={{
         username: "",
         password: "",
       }}
+      validationSchema={validationSchema}
       validateOnChange={false}
       onSubmit={async (values, { setFieldError }) => {
-        // Reset error message (so same error shows again)
-        setShowError(false)
-
         const response = await login(values)
 
         // Unexpected error
         if (response.error) {
           // console.log({ error: response.error })
 
-          // TODO: Extract error checking to util function?
-          let errorMsg: string
-          if (response.error.networkError) errorMsg = "Could not connect to login server."
-          else if (response.error.graphQLErrors) errorMsg = "The login server is currently unavailable."
-          else errorMsg = "Unknown error, please try again later."
+          if (response.error.networkError) {
+            showError("Could not connect to login server.")
+          } else if (response.error.graphQLErrors) {
+            showError(response.error.graphQLErrors.join("\\n"))
+          } else {
+            showError("Unknown error, please try again later.")
+          }
 
           // Reset password
           values.password = ""
-
-          // Show error alert
-          setGeneralError(errorMsg)
-          setShowError(true)
           return
         }
 
@@ -66,19 +67,6 @@ export const LoginForm: FC<Props> = () => {
     >
       {({ isSubmitting }) => (
         <Form>
-          {/* Error Alert - TODO: Move to its own component */}
-          <Collapse in={showError} onExited={() => setGeneralError("")}>
-            <Alert
-              severity="error"
-              variant="filled"
-              icon={<TiWarning />}
-              onClose={() => setShowError(false)}
-              sx={{ my: 1 }}
-            >
-              {generalError}
-            </Alert>
-          </Collapse>
-
           <InputField
             name="username"
             label="Username"
@@ -87,9 +75,18 @@ export const LoginForm: FC<Props> = () => {
             margin="normal"
             fullWidth
             autoFocus
+            required
           />
 
-          <PasswordField name="password" label="Password" variant="filled" size="small" margin="normal" fullWidth />
+          <PasswordField
+            name="password"
+            label="Password"
+            variant="filled"
+            size="small"
+            margin="normal"
+            fullWidth
+            required
+          />
 
           <LoadingButton
             type="submit"
@@ -97,7 +94,7 @@ export const LoginForm: FC<Props> = () => {
             fullWidth
             loading={isSubmitting}
             position="end"
-            endIcon={<SvgIcon component={TiArrowRight} />}
+            endIcon={<SvgIcon component={TiArrowRight} viewBox="2 2 20 20" />}
             sx={{ mt: 2 }}
           >
             Login

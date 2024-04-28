@@ -1,9 +1,10 @@
-import { AlertPopup, InputField } from "@/components"
+import { InputField } from "@/components"
 import { SendMessage } from "@/components/icons"
 import { useAddRandomWheelEntryMutation } from "@/generated/graphql"
+import { useAlert } from "@/hooks"
 import { IconButton, InputAdornment, Tooltip } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, ReactNode, useState } from "react"
+import { FC } from "react"
 
 interface Props {
   wheelId: string
@@ -13,7 +14,7 @@ interface Props {
 
 export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
   const [, addEntry] = useAddRandomWheelEntryMutation()
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const { showError } = useAlert()
 
   const entriesLower = entries?.map((entry) => entry.toLowerCase())
 
@@ -33,7 +34,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
         // console.warn("addEntry", error)
 
         if (error?.message.includes("Entry already exists")) {
-          setShowError(`'${entry}' already exists`)
+          showError(`'${entry}' already exists`)
         }
 
         if (data?.addRandomWheelEntry) {
@@ -41,7 +42,6 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
         }
       }}
       validateOnChange={false}
-      // TODO: Use immidiate validate for duplicate entries?
       validate={({ entry }) => {
         if (entriesLower?.includes(entry.trim().toLowerCase())) {
           return {
@@ -75,8 +75,6 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
             }}
             // sx={{ mt: 1 }}
           />
-
-          <AlertPopup severity="warning" messageState={[showError, setShowError]} />
         </Form>
       )}
     </Formik>

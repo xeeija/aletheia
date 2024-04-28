@@ -1,8 +1,8 @@
-import { AlertPopup, DeleteDialog, NoData, SkeletonList } from "@/components"
+import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { RewardGroupDialog, RewardGroupListItem } from "@/components/twitch"
-import { useRewardGroups } from "@/hooks"
+import { useAlert, useRewardGroups } from "@/hooks"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
-import { FC, ReactNode, useState } from "react"
+import { FC, useState } from "react"
 import { TiPlus } from "react-icons/ti"
 
 interface Props {}
@@ -14,16 +14,13 @@ export const RewardGroups: FC<Props> = () => {
   const [editGroup, setEditGroup] = useState<string | null>(null)
   const [deleteGroupOpen, setDeleteGroupOpen] = useState<string | null>(null)
 
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ groups: true, socket: true })
-
   const rewardGroupsEmpty = (rewardGroups?.length ?? 0) === 0
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
-
       {(!rewardGroupsEmpty || fetching) && (
         <Box
           sx={{
@@ -95,17 +92,16 @@ export const RewardGroups: FC<Props> = () => {
         onClose={() => setDeleteGroupOpen(null)}
         onConfirm={async () => {
           if (deleteGroupOpen) {
+            const group = rewardGroups?.find((r) => r.id === deleteGroupOpen)
             const response = await deleteGroup(deleteGroupOpen)
 
             if (response.deleted) {
-              // TODO: show sucess toast
+              showSuccess(`'${group?.name}' deleted successfully`)
             } else {
               // if (!handleTwitchApiError(response.error, setShowError)) {
-              setShowError(response.error?.message || "An error occurred")
+              showError(response.error?.message || "An error occurred")
               // }
             }
-
-            setDeleteGroupOpen(null)
           }
         }}
       >

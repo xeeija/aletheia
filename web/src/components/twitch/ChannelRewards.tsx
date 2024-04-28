@@ -1,9 +1,9 @@
-import { AlertPopup, DeleteDialog, NoData, SkeletonList } from "@/components"
+import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
-import { useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewards } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
-import { FC, ReactNode, useState } from "react"
+import { FC, useState } from "react"
 import { TiPlus } from "react-icons/ti"
 
 interface Props {
@@ -16,15 +16,13 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
   const [editReward, setEditReward] = useState<string | null>(null)
   const [deleteRewardOpen, setDeleteRewardOpen] = useState<string | null>(null)
 
-  const [showError, setShowError] = useState<ReactNode>(null)
+  const { showSuccess, showError } = useAlert()
 
   const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards(true, filterRewards)
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} />
-
       {(!channelRewardsEmpty || fetchingRewards) && (
         <Box
           sx={{
@@ -98,17 +96,16 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
         onClose={() => setDeleteRewardOpen(null)}
         onConfirm={async () => {
           if (deleteRewardOpen) {
+            const reward = channelRewards?.find((r) => r.id === deleteRewardOpen)
             const response = await deleteReward(deleteRewardOpen)
 
             if (response.deleted) {
-              // TODO: show sucess toast
+              showSuccess(`'${reward?.title}' deleted successfully`)
             } else {
-              if (!handleTwitchApiError(response.error, setShowError)) {
-                setShowError(response.error?.message || "An error occurred")
+              if (!handleTwitchApiError(response.error, undefined, showError)) {
+                showError(response.error?.message || "An error occurred")
               }
             }
-
-            setDeleteRewardOpen(null)
           }
         }}
       >
