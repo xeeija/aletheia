@@ -35,7 +35,7 @@ services:
       - localhost:host-gateway
 
   web:
-    image: xeeija/aletheia-web:1.7.2
+    image: xeeija/aletheia-web:1.7.3
     # build:
     #   context: web
     restart: unless-stopped
