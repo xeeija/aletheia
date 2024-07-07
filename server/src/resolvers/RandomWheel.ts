@@ -13,7 +13,7 @@ import { AppError, createAppErrorUnion } from "@/resolvers/types"
 import { accessTokenForUser } from "@/twitch"
 import { handleSubscriptionSync } from "@/twitch/events"
 import type { GraphqlContext } from "@/types"
-import { random, randomNumber, slugify } from "@/utils"
+import { random, randomBase64Url, randomNumber, slugify } from "@/utils"
 import { Prisma } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
@@ -248,6 +248,7 @@ export class RandomWheelResolver {
   async randomWheelBySlug(
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("slug") slug: string,
+    @Arg("token", () => String, { nullable: true }) token: string | undefined,
     @Info() info: GraphQLResolveInfo
   ) {
     //: Promise<typeof RandomWheelResponse> {
@@ -263,10 +264,11 @@ export class RandomWheelResolver {
       const wheel = await prisma.randomWheel.findFirst({
         where: {
           slug: slug,
-          accessType: !req.session.userId ? "PUBLIC" : undefined,
+          accessType: !req.session.userId && !token ? "PUBLIC" : undefined,
           OR: [
             { accessType: "PUBLIC" },
             { ownerId: req.session.userId },
+            { shareToken: token ?? "" },
             {
               members: {
                 some: { userId: req.session.userId },
@@ -320,6 +322,8 @@ export class RandomWheelResolver {
       const id = randomUUID()
       const slug = slugify(id, 6)
 
+      const shareToken = randomBase64Url(16)
+
       const randomWheel = await prisma.randomWheel.create({
         data: {
           id,
@@ -331,6 +335,7 @@ export class RandomWheelResolver {
           fadeDuration,
           editAnonymous,
           uniqueEntries,
+          shareToken,
         },
       })
 
@@ -646,5 +651,35 @@ export class RandomWheelResolver {
       })
       return null
     }
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async resetShareToken(@Ctx() { prisma, req }: GraphqlContext, @Arg("randommWheelId") randomWheelId: string) {
+    const randomWheel = await prisma.randomWheel.findUnique({
+      where: { id: randomWheelId },
+      include: { members: true },
+    })
+
+    if (!randomWheel) {
+      return null
+    }
+
+    const isOwner = randomWheel?.ownerId === req.session.userId
+    const isEditable =
+      randomWheel.editAnonymous || randomWheel.members.some((member) => member.userId === req.session.userId)
+
+    if ((!req.session.userId && !randomWheel.editAnonymous) || !(isOwner || isEditable)) {
+      // TODO: Proper Error
+      return null
+    }
+
+    const newToken = randomBase64Url(16)
+
+    await prisma.randomWheel.update({
+      where: { id: randomWheel.id },
+      data: { shareToken: newToken },
+    })
+
+    return true
   }
 }

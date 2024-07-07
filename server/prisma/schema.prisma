@@ -77,6 +77,7 @@ model RandomWheel {
   ownerId       String?             @db.Uuid
   theme         ColorTheme?         @relation(fields: [themeId], references: [id])
   themeId       String?             @db.Uuid
+  shareToken    String?
   entries       RandomWheelEntry[]
   winners       RandomWheelWinner[]
   members       RandomWheelMember[]
