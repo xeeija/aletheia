@@ -8,13 +8,15 @@ import { FC, useState } from "react"
 
 interface Props {
   slug: string | undefined
+  token?: string
 }
 
-export const RandomWheelDetail: FC<Props> = ({ slug }) => {
+export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
   const [{ wheel, entries, winners, fetching, lastWinnerEntry }, { deleteEntry }] = useRandomWheel(slug ?? "", {
     details: true,
     entries: true,
     winners: true,
+    token: token,
     socket: {
       onSpinStarted: () => setWinnerDialogOpen(false),
       onSpinFinished: () => {

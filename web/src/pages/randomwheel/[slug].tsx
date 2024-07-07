@@ -7,7 +7,10 @@ const RandomWheelDetailPage: LayoutNextPage = () => {
   const { slug: slugQuery } = router.query
   const slug = typeof slugQuery === "string" ? slugQuery : slugQuery?.[0]
 
-  return <RandomWheelDetail slug={slug} />
+  const params = new URLSearchParams(router.asPath.split("?")?.[1])
+  const token = params.get("token") ?? undefined
+
+  return <RandomWheelDetail slug={slug} token={token} />
 }
 
 RandomWheelDetailPage.getLayout = defaultLayout({ navTitle: "Random Wheel", fullWidth: false })

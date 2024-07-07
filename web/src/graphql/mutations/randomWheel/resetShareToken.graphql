@@ -1,0 +1,3 @@
+mutation ResetShareToken($randomWheelId: String!) {
+  resetShareToken(randommWheelId: $randomWheelId)
+}

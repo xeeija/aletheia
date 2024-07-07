@@ -8,28 +8,26 @@ interface Props {
 }
 
 export const ShareWheelDropdown: FC<Props> = ({ slug }) => {
-  const [shareAnchor, setShareAnchor] = useState<Element | null>(null)
+  const [anchor, setAnchor] = useState<Element | null>(null)
+
+  const shareUrl = `${window.location.host}/r/${slug}`
 
   return (
     <>
       <Tooltip arrow placement="bottom" title="Share">
-        <IconButton color="secondary" onClick={(ev) => setShareAnchor(ev.currentTarget)}>
+        <IconButton color="secondary" onClick={(ev) => setAnchor(ev.currentTarget)}>
           <HiShare />
           {/* <HiLink /> */}
         </IconButton>
       </Tooltip>
 
-      <Dropdown anchor={shareAnchor} setAnchor={setShareAnchor}>
+      <Dropdown anchor={anchor} setAnchor={setAnchor}>
         <Paper sx={{ p: 1.5, width: "18rem" }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
             Share this wheel
           </Typography>
 
-          <LinkInputField
-            position="start"
-            value={`${window.location.host}/r/${slug}`}
-            // type="text"
-          />
+          <LinkInputField position="start" value={shareUrl} />
         </Paper>
       </Dropdown>
     </>

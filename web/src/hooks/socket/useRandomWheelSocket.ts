@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useEffect } from "react"
 
 export interface RandomWheelSocketOptions {
   disableSocket?: boolean
+  token?: string
   onSpinFinished?: (entry: RandomWheelEntry, self: boolean) => void
   onSpinStarted?: (self: boolean) => void
 }
@@ -16,7 +17,12 @@ export const useRandomWheelSocket = (
   setLastWinnerEntry: Dispatch<SetStateAction<RandomWheelEntry | undefined>>,
   options?: RandomWheelSocketOptions | false
 ) => {
-  const [{ wheel }, { fetchWheel, fetchEntries, fetchWinners }] = useRandomWheelData(wheelSlug, { details: true })
+  const token = typeof options === "object" ? options.token : undefined
+
+  const [{ wheel }, { fetchWheel, fetchEntries, fetchWinners }] = useRandomWheelData(wheelSlug, {
+    details: true,
+    token,
+  })
 
   const disableSocket = options === false || options?.disableSocket
 

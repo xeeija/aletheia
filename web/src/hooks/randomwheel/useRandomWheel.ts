@@ -22,6 +22,8 @@ interface RandomWheelOptions {
   winners?: boolean
   members?: boolean
   socket?: RandomWheelSocketOptions | false
+  fetchOnly?: boolean
+  token?: string
 }
 
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
@@ -32,6 +34,8 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     entries: options?.entries,
     winners: options?.winners,
     members: options?.members,
+    token: options?.token,
+    fetchOnly: options?.fetchOnly,
   })
 
   // TODO FIX: without options.details the actions dont work, because wheel.id is undefined
@@ -51,18 +55,32 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   const like = useRandomWheelLike(id, liked, setLiked)
 
-  useRandomWheelSocket(wheelSlug, setSpinning, setRotation, setLastWinnerEntry, options?.socket)
+  useRandomWheelSocket(
+    wheelSlug,
+    setSpinning,
+    setRotation,
+    setLastWinnerEntry,
+    options?.token
+      ? {
+          ...options?.socket,
+          disableSocket: options?.socket === false,
+          token: options?.token,
+        }
+      : options?.socket
+  )
 
   return [
     {
       ...randomWheelData,
       id,
-      wheel: {
-        ...wheel,
-        rotation: rotation ?? wheel?.rotation,
-        spinning,
-        liked: liked ?? wheel?.liked ?? false,
-      },
+      wheel: wheel
+        ? {
+            ...wheel,
+            rotation: rotation ?? wheel?.rotation,
+            spinning,
+            liked: liked ?? wheel?.liked ?? false,
+          }
+        : undefined,
       lastWinnerEntry,
     } as RandomWheelData,
     {

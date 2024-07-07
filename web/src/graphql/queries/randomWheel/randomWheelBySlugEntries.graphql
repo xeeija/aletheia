@@ -1,5 +1,5 @@
-query RandomWheelBySlugEntries($slug: String!) {
-  randomWheelBySlug(slug: $slug) {
+query RandomWheelBySlugEntries($slug: String!, $token: String) {
+  randomWheelBySlug(slug: $slug, token: $token) {
     id
     entries {
       ...RandomWheelEntry

@@ -32,7 +32,7 @@ export const WinnerDialog: FC<Props> = ({
       aria-describedby="winner-dialog-description"
     >
       <DialogTitle color="textSecondary" id="winner-dialog-title">
-        Congratulations
+        Congratulations!
       </DialogTitle>
       <DialogContent>
         <Typography variant="h2" id="winner-dialog-description">

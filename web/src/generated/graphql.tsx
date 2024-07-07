@@ -303,6 +303,7 @@ export type Mutation = {
   logout: Scalars["Boolean"]
   pauseWheelSync?: Maybe<RandomWheelSync>
   register: UserResponse
+  resetShareToken?: Maybe<Scalars["Boolean"]>
   spinRandomWheel: RandomWheelWinner
   updateChannelReward?: Maybe<CustomReward>
   updateRandomWheel?: Maybe<RandomWheel>
@@ -413,6 +414,10 @@ export type MutationRegisterArgs = {
   displayname?: Maybe<Scalars["String"]>
   password: Scalars["String"]
   username: Scalars["String"]
+}
+
+export type MutationResetShareTokenArgs = {
+  randommWheelId: Scalars["String"]
 }
 
 export type MutationSpinRandomWheelArgs = {
@@ -615,6 +620,7 @@ export type QueryMyRandomWheelsArgs = {
 
 export type QueryRandomWheelBySlugArgs = {
   slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
 }
 
 export type QueryRewardByTokenArgs = {
@@ -660,6 +666,7 @@ export type RandomWheel = {
   owner?: Maybe<User>
   ownerId?: Maybe<Scalars["String"]>
   rotation: Scalars["Float"]
+  shareToken?: Maybe<Scalars["String"]>
   slug: Scalars["String"]
   spinDuration: Scalars["Int"]
   theme?: Maybe<ColorTheme>
@@ -898,6 +905,7 @@ export type RandomWheelWhereInput = {
   owner?: Maybe<UserNullableRelationFilter>
   ownerId?: Maybe<UuidNullableFilter>
   rotation?: Maybe<FloatFilter>
+  shareToken?: Maybe<StringNullableFilter>
   slug?: Maybe<StringFilter>
   spinDuration?: Maybe<IntFilter>
   theme?: Maybe<ColorThemeNullableRelationFilter>
@@ -1308,6 +1316,7 @@ export type RandomWheelDetailsFragment = {
   editable: boolean
   editAnonymous: boolean
   uniqueEntries: boolean
+  shareToken?: Maybe<string>
   liked: boolean
   theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
   _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
@@ -1461,6 +1470,7 @@ export type CreateRandomWheelMutation = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
+    shareToken?: Maybe<string>
     liked: boolean
     theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
     _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
@@ -1497,6 +1507,12 @@ export type LikeRandomWheelMutation = {
     createdAt: Date
   }>
 }
+
+export type ResetShareTokenMutationVariables = Exact<{
+  randomWheelId: Scalars["String"]
+}>
+
+export type ResetShareTokenMutation = { __typename?: "Mutation"; resetShareToken?: Maybe<boolean> }
 
 export type SpinRandomWheelMutationVariables = Exact<{
   wheelId: Scalars["String"]
@@ -1535,6 +1551,7 @@ export type UpdateRandomWheelMutation = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
+    shareToken?: Maybe<string>
     liked: boolean
     theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
     _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
@@ -1896,6 +1913,7 @@ export type MyRandomWheelsQuery = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
+    shareToken?: Maybe<string>
     liked: boolean
     theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
     _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
@@ -1904,6 +1922,7 @@ export type MyRandomWheelsQuery = {
 
 export type RandomWheelBySlugQueryVariables = Exact<{
   slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
 }>
 
 export type RandomWheelBySlugQuery = {
@@ -1921,6 +1940,7 @@ export type RandomWheelBySlugQuery = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
+    shareToken?: Maybe<string>
     liked: boolean
     owner?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
     members: Array<{
@@ -1934,8 +1954,19 @@ export type RandomWheelBySlugQuery = {
   }>
 }
 
+export type RandomWheelBySlugShareTokenQueryVariables = Exact<{
+  slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
+}>
+
+export type RandomWheelBySlugShareTokenQuery = {
+  __typename?: "Query"
+  randomWheelBySlug?: Maybe<{ __typename?: "RandomWheel"; shareToken?: Maybe<string> }>
+}
+
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
   slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
 }>
 
 export type RandomWheelBySlugEntriesQuery = {
@@ -1949,6 +1980,7 @@ export type RandomWheelBySlugEntriesQuery = {
 
 export type RandomWheelBySlugMembersQueryVariables = Exact<{
   slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
 }>
 
 export type RandomWheelBySlugMembersQuery = {
@@ -1967,6 +1999,7 @@ export type RandomWheelBySlugMembersQuery = {
 
 export type RandomWheelBySlugWinnersQueryVariables = Exact<{
   slug: Scalars["String"]
+  token?: Maybe<Scalars["String"]>
 }>
 
 export type RandomWheelBySlugWinnersQuery = {
@@ -2207,6 +2240,7 @@ export const RandomWheelDetailsFragmentDoc = gql`
     editable
     editAnonymous
     uniqueEntries
+    shareToken
     liked
     theme {
       id
@@ -2427,6 +2461,15 @@ export const LikeRandomWheelDocument = gql`
 
 export function useLikeRandomWheelMutation() {
   return Urql.useMutation<LikeRandomWheelMutation, LikeRandomWheelMutationVariables>(LikeRandomWheelDocument)
+}
+export const ResetShareTokenDocument = gql`
+  mutation ResetShareToken($randomWheelId: String!) {
+    resetShareToken(randommWheelId: $randomWheelId)
+  }
+`
+
+export function useResetShareTokenMutation() {
+  return Urql.useMutation<ResetShareTokenMutation, ResetShareTokenMutationVariables>(ResetShareTokenDocument)
 }
 export const SpinRandomWheelDocument = gql`
   mutation SpinRandomWheel($wheelId: String!) {
@@ -2742,8 +2785,8 @@ export function useMyRandomWheelsQuery(options?: Omit<Urql.UseQueryArgs<MyRandom
   return Urql.useQuery<MyRandomWheelsQuery, MyRandomWheelsQueryVariables>({ query: MyRandomWheelsDocument, ...options })
 }
 export const RandomWheelBySlugDocument = gql`
-  query RandomWheelBySlug($slug: String!) {
-    randomWheelBySlug(slug: $slug) {
+  query RandomWheelBySlug($slug: String!, $token: String) {
+    randomWheelBySlug(slug: $slug, token: $token) {
       ...RandomWheelDetails
       owner {
         ...UserName
@@ -2764,9 +2807,25 @@ export function useRandomWheelBySlugQuery(options: Omit<Urql.UseQueryArgs<Random
     ...options,
   })
 }
+export const RandomWheelBySlugShareTokenDocument = gql`
+  query RandomWheelBySlugShareToken($slug: String!, $token: String) {
+    randomWheelBySlug(slug: $slug, token: $token) {
+      shareToken
+    }
+  }
+`
+
+export function useRandomWheelBySlugShareTokenQuery(
+  options: Omit<Urql.UseQueryArgs<RandomWheelBySlugShareTokenQueryVariables>, "query">
+) {
+  return Urql.useQuery<RandomWheelBySlugShareTokenQuery, RandomWheelBySlugShareTokenQueryVariables>({
+    query: RandomWheelBySlugShareTokenDocument,
+    ...options,
+  })
+}
 export const RandomWheelBySlugEntriesDocument = gql`
-  query RandomWheelBySlugEntries($slug: String!) {
-    randomWheelBySlug(slug: $slug) {
+  query RandomWheelBySlugEntries($slug: String!, $token: String) {
+    randomWheelBySlug(slug: $slug, token: $token) {
       id
       entries {
         ...RandomWheelEntry
@@ -2785,8 +2844,8 @@ export function useRandomWheelBySlugEntriesQuery(
   })
 }
 export const RandomWheelBySlugMembersDocument = gql`
-  query RandomWheelBySlugMembers($slug: String!) {
-    randomWheelBySlug(slug: $slug) {
+  query RandomWheelBySlugMembers($slug: String!, $token: String) {
+    randomWheelBySlug(slug: $slug, token: $token) {
       id
       members {
         ...RandomWheelMember
@@ -2805,8 +2864,8 @@ export function useRandomWheelBySlugMembersQuery(
   })
 }
 export const RandomWheelBySlugWinnersDocument = gql`
-  query RandomWheelBySlugWinners($slug: String!) {
-    randomWheelBySlug(slug: $slug) {
+  query RandomWheelBySlugWinners($slug: String!, $token: String) {
+    randomWheelBySlug(slug: $slug, token: $token) {
       id
       winners {
         ...RandomWheelWinner

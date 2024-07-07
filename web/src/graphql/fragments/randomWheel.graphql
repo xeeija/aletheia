@@ -10,6 +10,7 @@ fragment RandomWheelDetails on RandomWheel {
   editable
   editAnonymous
   uniqueEntries
+  shareToken
   liked
   theme {
     id

@@ -5,6 +5,7 @@ export * from "./list/WheelList"
 export * from "./list/WheelListItem"
 
 export * from "./wheel/AccessTypeBadge"
+export * from "./wheel/PopoutWheelDropdown"
 export * from "./wheel/ShareWheelDropdown"
 export * from "./wheel/Wheel"
 export * from "./wheel/WheelControls"

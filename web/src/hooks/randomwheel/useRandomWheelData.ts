@@ -56,31 +56,38 @@ interface DataOptions {
   winners?: boolean
   members?: boolean
   fetchOnly?: boolean
+  token?: string
 }
 
 export const useRandomWheelData = (wheelSlug: string | string[] | undefined, options?: DataOptions) => {
   const slug = typeof wheelSlug === "string" ? wheelSlug : wheelSlug?.[0] ?? ""
 
   const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelBySlugQuery({
-    variables: { slug },
+    variables: { slug, token: options?.token },
     pause: !options?.details || options.fetchOnly,
   })
   const wheel = wheelData?.randomWheelBySlug as RandomWheelDetailsQuery | undefined
 
+  // const [{ data: shareTokenData, fetching: fetchingShareToken }, fetchShareToken] = useRandomWheelBySlugShareTokenQuery({
+  //   variables: { slug, token: options?.token },
+  //   pause: !options?.details || options.fetchOnly,
+  // })
+  // const shareToken = shareTokenData?.randomWheelBySlug?.shareToken
+
   const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
-    variables: { slug },
+    variables: { slug, token: options?.token },
     pause: !options?.entries || options.fetchOnly,
   })
   const entries = entriesData?.randomWheelBySlug?.entries as RandomWheelEntryFragment[] | undefined
 
   const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
-    variables: { slug },
+    variables: { slug, token: options?.token },
     pause: !options?.winners || options.fetchOnly,
   })
   const winners = winnersData?.randomWheelBySlug?.winners as RandomWheelWinnerFragment[] | undefined
 
   const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelBySlugMembersQuery({
-    variables: { slug },
+    variables: { slug, token: options?.token },
     pause: !options?.members || options.fetchOnly,
   })
   const members = membersData?.randomWheelBySlug?.members as RandomWheelMemberFragment[] | undefined
@@ -92,7 +99,8 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
     wheel?.accessType === "PUBLIC" ||
     wheel?.owner === null ||
     wheel?.owner?.id === user?.id ||
-    wheel?.members.some((member) => member.userId === user?.id)
+    wheel?.members.some((member) => member.userId === user?.id) ||
+    wheel?.shareToken === options?.token
 
   return [
     {

@@ -1,11 +1,13 @@
+import {
+  AccessTypeBadge,
+  PopoutWheelDropdown,
+  ShareWheelDropdown,
+  WheelOptionsDropdown,
+} from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
 import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { FC } from "react"
-import { HiExternalLink } from "react-icons/hi"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
-import { AccessTypeBadge } from "./AccessTypeBadge"
-import { ShareWheelDropdown } from "./ShareWheelDropdown"
-import { WheelOptionsDropdown } from "./WheelOptionsDropdown"
 
 interface Props {
   wheel: RandomWheelDetails
@@ -37,12 +39,9 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
           </Tooltip>
 
           {/* {wheel.editable && ( */}
-          <Tooltip arrow placement="bottom" title="Popout">
-            <IconButton color="secondary" href={`${window.location.href}/popout`} target="_blank" sx={{ ml: 1 }}>
-              <SvgIcon component={HiExternalLink} viewBox="1 1 18 18" />
-            </IconButton>
-          </Tooltip>
           {/* )} */}
+
+          <PopoutWheelDropdown wheel={wheel} />
 
           <ShareWheelDropdown slug={wheel.slug} />
 

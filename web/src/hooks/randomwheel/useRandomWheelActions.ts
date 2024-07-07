@@ -4,6 +4,7 @@ import {
   useClearRandomWheelMutation,
   useDeleteRandomWheelEntryMutation,
   useDeleteRandomWheelMutation,
+  useResetShareTokenMutation,
   useUpdateRandomWheelMembersMutation,
   useUpdateRandomWheelMutation,
 } from "@/generated/graphql"
@@ -17,6 +18,8 @@ export interface RandomWheelActions {
   ) => Promise<{ id: string }[] | null | undefined>
   deleteEntry: (entryId: string) => Promise<void>
   deleteWheel: () => Promise<void>
+  resetShareToken: () => Promise<void>
+  fetchingReset: boolean
 }
 
 export const useRandomWheelActions = (wheelId: string | undefined) => {
@@ -98,6 +101,29 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     }
   }
 
+  const [{ fetching: fetchingReset }, resetToken] = useResetShareTokenMutation()
+  const resetShareToken = async () => {
+    if (!wheelId) {
+      return
+    }
+
+    const { data, error } = await resetToken(
+      { randomWheelId: wheelId },
+      {
+        requestPolicy: "cache-and-network",
+        additionalTypenames: ["RandomWheel"],
+      }
+    )
+
+    if (error || !data?.resetShareToken) {
+      showError(error?.message || "Failed to reset token")
+    }
+
+    if (data?.resetShareToken) {
+      showSuccess(`Token reset successfully`)
+    }
+  }
+
   const [, updateWheelMembers] = useUpdateRandomWheelMembersMutation()
   const updateMembers = async (members: RandomWheelMemberInput[]) => {
     if (!wheelId) {
@@ -132,5 +158,7 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     updateMembers,
     deleteEntry,
     deleteWheel,
+    resetShareToken,
+    fetchingReset,
   } as RandomWheelActions
 }
