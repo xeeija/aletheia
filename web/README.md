@@ -22,20 +22,20 @@ The frontend is deplyoed as Docker container.
 
 **Build the container**
 ```
-docker build . -t xeeija/aletheia-web:latest -t xeeija/aletheia-web:<major.minor>.<patch>
+docker build . -t xeeija/aletheia-web:<major.minor.patch>
 ```
 
-**Run the container**
+<!-- **Run the container**
 ```
 docker run -d -p 3000:3000 --name=aletheia-web --network=aletheia --env-file .env.production --ip 172.18.0.4 xeeija/aletheia-web:latest
-```
+``` -->
 
 ## Next.js
 
 The frontend is created with [Next.js](https://nextjs.org/).
 
-Pages can be edited in the `src/pages/` directory. 
-Reusable components are located in `src/components/`. 
+Pages can be edited in the `src/pages/` directory.
+Reusable components are located in `src/components/`.
 
 
 **Links**
