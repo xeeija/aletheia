@@ -45,7 +45,7 @@ jobs:
         if: success() || steps.lint.outcome == 'failure'
 
       - name: Annotate Lint results
-        uses: ataylorme/eslint-annotate-action@v2
+        uses: ataylorme/eslint-annotate-action@v3
         with:
           report-json: ./web/eslint_report.json
           check-name: ESLint Report Web
@@ -114,7 +114,7 @@ jobs:
         if: success() || steps.lint.outcome == 'failure'
 
       - name: Annotate Lint results
-        uses: ataylorme/eslint-annotate-action@v2
+        uses: ataylorme/eslint-annotate-action@v3
         with:
           report-json: ./server/eslint_report.json
           check-name: ESLint Report Server
