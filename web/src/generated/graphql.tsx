@@ -1,282 +1,285 @@
 import gql from "graphql-tag"
 import * as Urql from "urql"
 export type Maybe<T> = T | null
+export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] }
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> }
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> }
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never }
+export type Incremental<T> = T | { [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never }
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string
-  String: string
-  Boolean: boolean
-  Int: number
-  Float: number
-  BigInt: bigint
-  DateTime: Date
-  JSON: Record<string, any>
+  ID: { input: string; output: string }
+  String: { input: string; output: string }
+  Boolean: { input: boolean; output: boolean }
+  Int: { input: number; output: number }
+  Float: { input: number; output: number }
+  BigInt: { input: bigint; output: bigint }
+  DateTime: { input: Date; output: Date }
+  JSON: { input: Record<string, any>; output: Record<string, any> }
 }
 
 export type AccessType = {
   __typename?: "AccessType"
   _count?: Maybe<AccessTypeCount>
-  type: Scalars["String"]
+  type: Scalars["String"]["output"]
 }
 
 export type AccessTypeCount = {
   __typename?: "AccessTypeCount"
-  randomWheel: Scalars["Int"]
+  randomWheel: Scalars["Int"]["output"]
 }
 
 export type AccessTypeCountRandomWheelArgs = {
-  where?: Maybe<RandomWheelWhereInput>
+  where?: InputMaybe<RandomWheelWhereInput>
 }
 
 export type AccessTypeRelationFilter = {
-  is?: Maybe<AccessTypeWhereInput>
-  isNot?: Maybe<AccessTypeWhereInput>
+  is?: InputMaybe<AccessTypeWhereInput>
+  isNot?: InputMaybe<AccessTypeWhereInput>
 }
 
 export type AccessTypeWhereInput = {
-  AND?: Maybe<Array<AccessTypeWhereInput>>
-  NOT?: Maybe<Array<AccessTypeWhereInput>>
-  OR?: Maybe<Array<AccessTypeWhereInput>>
-  randomWheel?: Maybe<RandomWheelListRelationFilter>
-  type?: Maybe<StringFilter>
+  AND?: InputMaybe<Array<AccessTypeWhereInput>>
+  NOT?: InputMaybe<Array<AccessTypeWhereInput>>
+  OR?: InputMaybe<Array<AccessTypeWhereInput>>
+  randomWheel?: InputMaybe<RandomWheelListRelationFilter>
+  type?: InputMaybe<StringFilter>
 }
 
 export type AppError = {
   __typename?: "AppError"
-  errorCode: Scalars["Int"]
-  errorMessage?: Maybe<Scalars["String"]>
+  errorCode: Scalars["Int"]["output"]
+  errorMessage?: Maybe<Scalars["String"]["output"]>
   fieldErrors?: Maybe<Array<FieldError>>
 }
 
 export type BigIntFilter = {
-  equals?: Maybe<Scalars["BigInt"]>
-  gt?: Maybe<Scalars["BigInt"]>
-  gte?: Maybe<Scalars["BigInt"]>
-  in?: Maybe<Array<Scalars["BigInt"]>>
-  lt?: Maybe<Scalars["BigInt"]>
-  lte?: Maybe<Scalars["BigInt"]>
-  not?: Maybe<NestedBigIntFilter>
-  notIn?: Maybe<Array<Scalars["BigInt"]>>
+  equals?: InputMaybe<Scalars["BigInt"]["input"]>
+  gt?: InputMaybe<Scalars["BigInt"]["input"]>
+  gte?: InputMaybe<Scalars["BigInt"]["input"]>
+  in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>
+  lt?: InputMaybe<Scalars["BigInt"]["input"]>
+  lte?: InputMaybe<Scalars["BigInt"]["input"]>
+  not?: InputMaybe<NestedBigIntFilter>
+  notIn?: InputMaybe<Array<Scalars["BigInt"]["input"]>>
 }
 
 export type BoolFilter = {
-  equals?: Maybe<Scalars["Boolean"]>
-  not?: Maybe<NestedBoolFilter>
+  equals?: InputMaybe<Scalars["Boolean"]["input"]>
+  not?: InputMaybe<NestedBoolFilter>
 }
 
 export type ColorTheme = {
   __typename?: "ColorTheme"
   _count?: Maybe<ColorThemeCount>
-  colors: Array<Scalars["String"]>
-  creatorId?: Maybe<Scalars["String"]>
-  global: Scalars["Boolean"]
-  id: Scalars["String"]
-  name?: Maybe<Scalars["String"]>
+  colors: Array<Scalars["String"]["output"]>
+  creatorId?: Maybe<Scalars["String"]["output"]>
+  global: Scalars["Boolean"]["output"]
+  id: Scalars["String"]["output"]
+  name?: Maybe<Scalars["String"]["output"]>
 }
 
 export type ColorThemeCount = {
   __typename?: "ColorThemeCount"
-  randomWheels: Scalars["Int"]
-  usersStandard: Scalars["Int"]
+  randomWheels: Scalars["Int"]["output"]
+  usersStandard: Scalars["Int"]["output"]
 }
 
 export type ColorThemeCountRandomWheelsArgs = {
-  where?: Maybe<RandomWheelWhereInput>
+  where?: InputMaybe<RandomWheelWhereInput>
 }
 
 export type ColorThemeCountUsersStandardArgs = {
-  where?: Maybe<UserWhereInput>
+  where?: InputMaybe<UserWhereInput>
 }
 
 export type ColorThemeInput = {
-  colors?: Maybe<Array<Scalars["String"]>>
-  id?: Maybe<Scalars["String"]>
-  name?: Maybe<Scalars["String"]>
+  colors?: InputMaybe<Array<Scalars["String"]["input"]>>
+  id?: InputMaybe<Scalars["String"]["input"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type ColorThemeListRelationFilter = {
-  every?: Maybe<ColorThemeWhereInput>
-  none?: Maybe<ColorThemeWhereInput>
-  some?: Maybe<ColorThemeWhereInput>
+  every?: InputMaybe<ColorThemeWhereInput>
+  none?: InputMaybe<ColorThemeWhereInput>
+  some?: InputMaybe<ColorThemeWhereInput>
 }
 
 export type ColorThemeNullableRelationFilter = {
-  is?: Maybe<ColorThemeWhereInput>
-  isNot?: Maybe<ColorThemeWhereInput>
+  is?: InputMaybe<ColorThemeWhereInput>
+  isNot?: InputMaybe<ColorThemeWhereInput>
 }
 
 export type ColorThemeWhereInput = {
-  AND?: Maybe<Array<ColorThemeWhereInput>>
-  NOT?: Maybe<Array<ColorThemeWhereInput>>
-  OR?: Maybe<Array<ColorThemeWhereInput>>
-  colors?: Maybe<StringNullableListFilter>
-  creator?: Maybe<UserNullableRelationFilter>
-  creatorId?: Maybe<UuidNullableFilter>
-  global?: Maybe<BoolFilter>
-  id?: Maybe<UuidFilter>
-  name?: Maybe<StringNullableFilter>
-  randomWheels?: Maybe<RandomWheelListRelationFilter>
-  usersStandard?: Maybe<UserListRelationFilter>
+  AND?: InputMaybe<Array<ColorThemeWhereInput>>
+  NOT?: InputMaybe<Array<ColorThemeWhereInput>>
+  OR?: InputMaybe<Array<ColorThemeWhereInput>>
+  colors?: InputMaybe<StringNullableListFilter>
+  creator?: InputMaybe<UserNullableRelationFilter>
+  creatorId?: InputMaybe<UuidNullableFilter>
+  global?: InputMaybe<BoolFilter>
+  id?: InputMaybe<UuidFilter>
+  name?: InputMaybe<StringNullableFilter>
+  randomWheels?: InputMaybe<RandomWheelListRelationFilter>
+  usersStandard?: InputMaybe<UserListRelationFilter>
 }
 
 export type CustomReward = {
   __typename?: "CustomReward"
-  autoFulfill: Scalars["Boolean"]
-  backgroundColor: Scalars["String"]
-  broadcasterDisplayName: Scalars["String"]
-  broadcasterId: Scalars["String"]
-  broadcasterName: Scalars["String"]
-  cooldownExpiryDate?: Maybe<Scalars["DateTime"]>
-  cost: Scalars["Float"]
-  globalCooldown?: Maybe<Scalars["Int"]>
-  id: Scalars["String"]
-  image: Scalars["String"]
-  isEnabled: Scalars["Boolean"]
-  isInStock: Scalars["Boolean"]
-  isPaused: Scalars["Boolean"]
-  maxRedemptionsPerStream?: Maybe<Scalars["Int"]>
-  maxRedemptionsPerUserPerStream?: Maybe<Scalars["Int"]>
-  prompt: Scalars["String"]
-  redemptionsThisStream?: Maybe<Scalars["Int"]>
-  title: Scalars["String"]
-  userInputRequired: Scalars["Boolean"]
+  autoFulfill: Scalars["Boolean"]["output"]
+  backgroundColor: Scalars["String"]["output"]
+  broadcasterDisplayName: Scalars["String"]["output"]
+  broadcasterId: Scalars["String"]["output"]
+  broadcasterName: Scalars["String"]["output"]
+  cooldownExpiryDate?: Maybe<Scalars["DateTime"]["output"]>
+  cost: Scalars["Float"]["output"]
+  globalCooldown?: Maybe<Scalars["Int"]["output"]>
+  id: Scalars["String"]["output"]
+  image: Scalars["String"]["output"]
+  isEnabled: Scalars["Boolean"]["output"]
+  isInStock: Scalars["Boolean"]["output"]
+  isPaused: Scalars["Boolean"]["output"]
+  maxRedemptionsPerStream?: Maybe<Scalars["Int"]["output"]>
+  maxRedemptionsPerUserPerStream?: Maybe<Scalars["Int"]["output"]>
+  prompt: Scalars["String"]["output"]
+  redemptionsThisStream?: Maybe<Scalars["Int"]["output"]>
+  title: Scalars["String"]["output"]
+  userInputRequired: Scalars["Boolean"]["output"]
 }
 
 export type CustomRewardCreateInput = {
-  autoFulfill?: Maybe<Scalars["Boolean"]>
-  backgroundColor?: Maybe<Scalars["String"]>
-  cost: Scalars["Int"]
-  globalCooldown?: Maybe<Scalars["Int"]>
-  isEnabled?: Maybe<Scalars["Boolean"]>
-  isPaused?: Maybe<Scalars["Boolean"]>
-  maxRedemptionsPerStream?: Maybe<Scalars["Int"]>
-  maxRedemptionsPerUserPerStream?: Maybe<Scalars["Int"]>
-  prompt?: Maybe<Scalars["String"]>
-  title: Scalars["String"]
-  userInputRequired?: Maybe<Scalars["Boolean"]>
+  autoFulfill?: InputMaybe<Scalars["Boolean"]["input"]>
+  backgroundColor?: InputMaybe<Scalars["String"]["input"]>
+  cost: Scalars["Int"]["input"]
+  globalCooldown?: InputMaybe<Scalars["Int"]["input"]>
+  isEnabled?: InputMaybe<Scalars["Boolean"]["input"]>
+  isPaused?: InputMaybe<Scalars["Boolean"]["input"]>
+  maxRedemptionsPerStream?: InputMaybe<Scalars["Int"]["input"]>
+  maxRedemptionsPerUserPerStream?: InputMaybe<Scalars["Int"]["input"]>
+  prompt?: InputMaybe<Scalars["String"]["input"]>
+  title: Scalars["String"]["input"]
+  userInputRequired?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type CustomRewardUpdateInput = {
-  autoFulfill?: Maybe<Scalars["Boolean"]>
-  backgroundColor?: Maybe<Scalars["String"]>
-  cost?: Maybe<Scalars["Int"]>
-  globalCooldown?: Maybe<Scalars["Int"]>
-  isEnabled?: Maybe<Scalars["Boolean"]>
-  isPaused?: Maybe<Scalars["Boolean"]>
-  maxRedemptionsPerStream?: Maybe<Scalars["Int"]>
-  maxRedemptionsPerUserPerStream?: Maybe<Scalars["Int"]>
-  prompt?: Maybe<Scalars["String"]>
-  title?: Maybe<Scalars["String"]>
-  userInputRequired?: Maybe<Scalars["Boolean"]>
+  autoFulfill?: InputMaybe<Scalars["Boolean"]["input"]>
+  backgroundColor?: InputMaybe<Scalars["String"]["input"]>
+  cost?: InputMaybe<Scalars["Int"]["input"]>
+  globalCooldown?: InputMaybe<Scalars["Int"]["input"]>
+  isEnabled?: InputMaybe<Scalars["Boolean"]["input"]>
+  isPaused?: InputMaybe<Scalars["Boolean"]["input"]>
+  maxRedemptionsPerStream?: InputMaybe<Scalars["Int"]["input"]>
+  maxRedemptionsPerUserPerStream?: InputMaybe<Scalars["Int"]["input"]>
+  prompt?: InputMaybe<Scalars["String"]["input"]>
+  title?: InputMaybe<Scalars["String"]["input"]>
+  userInputRequired?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type DateTimeFilter = {
-  equals?: Maybe<Scalars["DateTime"]>
-  gt?: Maybe<Scalars["DateTime"]>
-  gte?: Maybe<Scalars["DateTime"]>
-  in?: Maybe<Array<Scalars["DateTime"]>>
-  lt?: Maybe<Scalars["DateTime"]>
-  lte?: Maybe<Scalars["DateTime"]>
-  not?: Maybe<NestedDateTimeFilter>
-  notIn?: Maybe<Array<Scalars["DateTime"]>>
+  equals?: InputMaybe<Scalars["DateTime"]["input"]>
+  gt?: InputMaybe<Scalars["DateTime"]["input"]>
+  gte?: InputMaybe<Scalars["DateTime"]["input"]>
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
+  lt?: InputMaybe<Scalars["DateTime"]["input"]>
+  lte?: InputMaybe<Scalars["DateTime"]["input"]>
+  not?: InputMaybe<NestedDateTimeFilter>
+  notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
 }
 
 export type DateTimeNullableFilter = {
-  equals?: Maybe<Scalars["DateTime"]>
-  gt?: Maybe<Scalars["DateTime"]>
-  gte?: Maybe<Scalars["DateTime"]>
-  in?: Maybe<Array<Scalars["DateTime"]>>
-  lt?: Maybe<Scalars["DateTime"]>
-  lte?: Maybe<Scalars["DateTime"]>
-  not?: Maybe<NestedDateTimeNullableFilter>
-  notIn?: Maybe<Array<Scalars["DateTime"]>>
+  equals?: InputMaybe<Scalars["DateTime"]["input"]>
+  gt?: InputMaybe<Scalars["DateTime"]["input"]>
+  gte?: InputMaybe<Scalars["DateTime"]["input"]>
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
+  lt?: InputMaybe<Scalars["DateTime"]["input"]>
+  lte?: InputMaybe<Scalars["DateTime"]["input"]>
+  not?: InputMaybe<NestedDateTimeNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
 }
 
 export type EventSubscriptionListRelationFilter = {
-  every?: Maybe<EventSubscriptionWhereInput>
-  none?: Maybe<EventSubscriptionWhereInput>
-  some?: Maybe<EventSubscriptionWhereInput>
+  every?: InputMaybe<EventSubscriptionWhereInput>
+  none?: InputMaybe<EventSubscriptionWhereInput>
+  some?: InputMaybe<EventSubscriptionWhereInput>
 }
 
 export type EventSubscriptionNullableRelationFilter = {
-  is?: Maybe<EventSubscriptionWhereInput>
-  isNot?: Maybe<EventSubscriptionWhereInput>
+  is?: InputMaybe<EventSubscriptionWhereInput>
+  isNot?: InputMaybe<EventSubscriptionWhereInput>
 }
 
 export type EventSubscriptionWhereInput = {
-  AND?: Maybe<Array<EventSubscriptionWhereInput>>
-  NOT?: Maybe<Array<EventSubscriptionWhereInput>>
-  OR?: Maybe<Array<EventSubscriptionWhereInput>>
-  condition?: Maybe<JsonNullableFilter>
-  id?: Maybe<UuidFilter>
-  itemId?: Maybe<StringNullableFilter>
-  paused?: Maybe<BoolFilter>
-  subscriptionId?: Maybe<StringNullableFilter>
-  subscriptionType?: Maybe<StringFilter>
-  twitchUserId?: Maybe<StringFilter>
-  type?: Maybe<StringFilter>
-  user?: Maybe<UserNullableRelationFilter>
-  userId?: Maybe<UuidNullableFilter>
-  wheelSync?: Maybe<RandomWheelSyncListRelationFilter>
+  AND?: InputMaybe<Array<EventSubscriptionWhereInput>>
+  NOT?: InputMaybe<Array<EventSubscriptionWhereInput>>
+  OR?: InputMaybe<Array<EventSubscriptionWhereInput>>
+  condition?: InputMaybe<JsonNullableFilter>
+  id?: InputMaybe<UuidFilter>
+  itemId?: InputMaybe<StringNullableFilter>
+  paused?: InputMaybe<BoolFilter>
+  subscriptionId?: InputMaybe<StringNullableFilter>
+  subscriptionType?: InputMaybe<StringFilter>
+  twitchUserId?: InputMaybe<StringFilter>
+  type?: InputMaybe<StringFilter>
+  user?: InputMaybe<UserNullableRelationFilter>
+  userId?: InputMaybe<UuidNullableFilter>
+  wheelSync?: InputMaybe<RandomWheelSyncListRelationFilter>
 }
 
 export type FieldError = {
   __typename?: "FieldError"
-  field: Scalars["String"]
-  message: Scalars["String"]
+  field: Scalars["String"]["output"]
+  message: Scalars["String"]["output"]
 }
 
 export type FloatFilter = {
-  equals?: Maybe<Scalars["Float"]>
-  gt?: Maybe<Scalars["Float"]>
-  gte?: Maybe<Scalars["Float"]>
-  in?: Maybe<Array<Scalars["Float"]>>
-  lt?: Maybe<Scalars["Float"]>
-  lte?: Maybe<Scalars["Float"]>
-  not?: Maybe<NestedFloatFilter>
-  notIn?: Maybe<Array<Scalars["Float"]>>
+  equals?: InputMaybe<Scalars["Float"]["input"]>
+  gt?: InputMaybe<Scalars["Float"]["input"]>
+  gte?: InputMaybe<Scalars["Float"]["input"]>
+  in?: InputMaybe<Array<Scalars["Float"]["input"]>>
+  lt?: InputMaybe<Scalars["Float"]["input"]>
+  lte?: InputMaybe<Scalars["Float"]["input"]>
+  not?: InputMaybe<NestedFloatFilter>
+  notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>
 }
 
 export type IntFilter = {
-  equals?: Maybe<Scalars["Int"]>
-  gt?: Maybe<Scalars["Int"]>
-  gte?: Maybe<Scalars["Int"]>
-  in?: Maybe<Array<Scalars["Int"]>>
-  lt?: Maybe<Scalars["Int"]>
-  lte?: Maybe<Scalars["Int"]>
-  not?: Maybe<NestedIntFilter>
-  notIn?: Maybe<Array<Scalars["Int"]>>
+  equals?: InputMaybe<Scalars["Int"]["input"]>
+  gt?: InputMaybe<Scalars["Int"]["input"]>
+  gte?: InputMaybe<Scalars["Int"]["input"]>
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>
+  lt?: InputMaybe<Scalars["Int"]["input"]>
+  lte?: InputMaybe<Scalars["Int"]["input"]>
+  not?: InputMaybe<NestedIntFilter>
+  notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>
 }
 
 export type IntNullableFilter = {
-  equals?: Maybe<Scalars["Int"]>
-  gt?: Maybe<Scalars["Int"]>
-  gte?: Maybe<Scalars["Int"]>
-  in?: Maybe<Array<Scalars["Int"]>>
-  lt?: Maybe<Scalars["Int"]>
-  lte?: Maybe<Scalars["Int"]>
-  not?: Maybe<NestedIntNullableFilter>
-  notIn?: Maybe<Array<Scalars["Int"]>>
+  equals?: InputMaybe<Scalars["Int"]["input"]>
+  gt?: InputMaybe<Scalars["Int"]["input"]>
+  gte?: InputMaybe<Scalars["Int"]["input"]>
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>
+  lt?: InputMaybe<Scalars["Int"]["input"]>
+  lte?: InputMaybe<Scalars["Int"]["input"]>
+  not?: InputMaybe<NestedIntNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>
 }
 
 export type JsonNullableFilter = {
-  array_contains?: Maybe<Scalars["JSON"]>
-  array_ends_with?: Maybe<Scalars["JSON"]>
-  array_starts_with?: Maybe<Scalars["JSON"]>
-  equals?: Maybe<Scalars["JSON"]>
-  gt?: Maybe<Scalars["JSON"]>
-  gte?: Maybe<Scalars["JSON"]>
-  lt?: Maybe<Scalars["JSON"]>
-  lte?: Maybe<Scalars["JSON"]>
-  not?: Maybe<Scalars["JSON"]>
-  path?: Maybe<Array<Scalars["String"]>>
-  string_contains?: Maybe<Scalars["String"]>
-  string_ends_with?: Maybe<Scalars["String"]>
-  string_starts_with?: Maybe<Scalars["String"]>
+  array_contains?: InputMaybe<Scalars["JSON"]["input"]>
+  array_ends_with?: InputMaybe<Scalars["JSON"]["input"]>
+  array_starts_with?: InputMaybe<Scalars["JSON"]["input"]>
+  equals?: InputMaybe<Scalars["JSON"]["input"]>
+  gt?: InputMaybe<Scalars["JSON"]["input"]>
+  gte?: InputMaybe<Scalars["JSON"]["input"]>
+  lt?: InputMaybe<Scalars["JSON"]["input"]>
+  lte?: InputMaybe<Scalars["JSON"]["input"]>
+  not?: InputMaybe<Scalars["JSON"]["input"]>
+  path?: InputMaybe<Array<Scalars["String"]["input"]>>
+  string_contains?: InputMaybe<Scalars["String"]["input"]>
+  string_ends_with?: InputMaybe<Scalars["String"]["input"]>
+  string_starts_with?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type Mutation = {
@@ -284,26 +287,26 @@ export type Mutation = {
   addRandomWheelEntry: RandomWheelEntry
   addRewardGroupItem?: Maybe<RewardGroupItem>
   addWheelSync?: Maybe<RandomWheelSync>
-  clearRandomWheel: Scalars["Int"]
+  clearRandomWheel: Scalars["Int"]["output"]
   createChannelReward?: Maybe<CustomReward>
   createRandomWheel: RandomWheel
   createRewardGroup?: Maybe<RewardGroup>
   createRewardLink?: Maybe<RewardLink>
-  deleteChannelReward: Scalars["Boolean"]
+  deleteChannelReward: Scalars["Boolean"]["output"]
   deleteRandomWheel?: Maybe<AppError>
-  deleteRandomWheelEntry?: Maybe<Scalars["Boolean"]>
-  deleteRandomWheelMember?: Maybe<Scalars["Boolean"]>
-  deleteRewardGroup?: Maybe<Scalars["Boolean"]>
-  deleteRewardGroupItem?: Maybe<Scalars["Boolean"]>
-  deleteRewardLink: Scalars["Boolean"]
-  deleteWheelSync?: Maybe<Scalars["Boolean"]>
-  disconnectAccessToken: Scalars["Boolean"]
+  deleteRandomWheelEntry?: Maybe<Scalars["Boolean"]["output"]>
+  deleteRandomWheelMember?: Maybe<Scalars["Boolean"]["output"]>
+  deleteRewardGroup?: Maybe<Scalars["Boolean"]["output"]>
+  deleteRewardGroupItem?: Maybe<Scalars["Boolean"]["output"]>
+  deleteRewardLink: Scalars["Boolean"]["output"]
+  deleteWheelSync?: Maybe<Scalars["Boolean"]["output"]>
+  disconnectAccessToken: Scalars["Boolean"]["output"]
   likeRandomWheel?: Maybe<RandomWheelLike>
   login: UserResponse
-  logout: Scalars["Boolean"]
+  logout: Scalars["Boolean"]["output"]
   pauseWheelSync?: Maybe<RandomWheelSync>
   register: UserResponse
-  resetShareToken?: Maybe<Scalars["Boolean"]>
+  resetShareToken?: Maybe<Scalars["Boolean"]["output"]>
   spinRandomWheel: RandomWheelWinner
   updateChannelReward?: Maybe<CustomReward>
   updateRandomWheel?: Maybe<RandomWheel>
@@ -313,31 +316,31 @@ export type Mutation = {
   updateRewardGroupItem?: Maybe<RewardGroupItem>
   updateRewardToken: CustomReward
   updateUser: UserResponse
-  usernameExists: Scalars["Boolean"]
+  usernameExists: Scalars["Boolean"]["output"]
 }
 
 export type MutationAddRandomWheelEntryArgs = {
-  color?: Maybe<Scalars["String"]>
-  name: Scalars["String"]
-  randomWheelId: Scalars["String"]
-  weight?: Maybe<Scalars["Float"]>
+  color?: InputMaybe<Scalars["String"]["input"]>
+  name: Scalars["String"]["input"]
+  randomWheelId: Scalars["String"]["input"]
+  weight?: InputMaybe<Scalars["Float"]["input"]>
 }
 
 export type MutationAddRewardGroupItemArgs = {
-  rewardGroupId: Scalars["String"]
-  rewardId: Scalars["String"]
-  triggerCooldown?: Maybe<Scalars["Boolean"]>
+  rewardGroupId: Scalars["String"]["input"]
+  rewardId: Scalars["String"]["input"]
+  triggerCooldown?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type MutationAddWheelSyncArgs = {
-  addExisting?: Maybe<Scalars["Boolean"]>
-  randomWheelId: Scalars["String"]
-  rewardId: Scalars["String"]
-  useInput?: Maybe<Scalars["Boolean"]>
+  addExisting?: InputMaybe<Scalars["Boolean"]["input"]>
+  randomWheelId: Scalars["String"]["input"]
+  rewardId: Scalars["String"]["input"]
+  useInput?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type MutationClearRandomWheelArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationCreateChannelRewardArgs = {
@@ -345,12 +348,12 @@ export type MutationCreateChannelRewardArgs = {
 }
 
 export type MutationCreateRandomWheelArgs = {
-  accessType?: Maybe<Scalars["String"]>
-  editAnonymous?: Maybe<Scalars["Boolean"]>
-  fadeDuration?: Maybe<Scalars["Int"]>
-  name?: Maybe<Scalars["String"]>
-  spinDuration?: Maybe<Scalars["Int"]>
-  uniqueEntries?: Maybe<Scalars["Boolean"]>
+  accessType?: InputMaybe<Scalars["String"]["input"]>
+  editAnonymous?: InputMaybe<Scalars["Boolean"]["input"]>
+  fadeDuration?: InputMaybe<Scalars["Int"]["input"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
+  spinDuration?: InputMaybe<Scalars["Int"]["input"]>
+  uniqueEntries?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type MutationCreateRewardGroupArgs = {
@@ -359,106 +362,106 @@ export type MutationCreateRewardGroupArgs = {
 }
 
 export type MutationCreateRewardLinkArgs = {
-  rewardId: Scalars["String"]
-  type: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
+  type: Scalars["String"]["input"]
 }
 
 export type MutationDeleteChannelRewardArgs = {
-  rewardId: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRandomWheelArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRandomWheelEntryArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRandomWheelMemberArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRewardGroupArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRewardGroupItemArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteRewardLinkArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationDeleteWheelSyncArgs = {
-  ids: Array<Scalars["String"]>
+  ids: Array<Scalars["String"]["input"]>
 }
 
 export type MutationLikeRandomWheelArgs = {
-  like: Scalars["Boolean"]
-  randomWheelId: Scalars["String"]
+  like: Scalars["Boolean"]["input"]
+  randomWheelId: Scalars["String"]["input"]
 }
 
 export type MutationLoginArgs = {
-  password: Scalars["String"]
-  username: Scalars["String"]
+  password: Scalars["String"]["input"]
+  username: Scalars["String"]["input"]
 }
 
 export type MutationPauseWheelSyncArgs = {
-  id: Scalars["String"]
-  paused: Scalars["Boolean"]
+  id: Scalars["String"]["input"]
+  paused: Scalars["Boolean"]["input"]
 }
 
 export type MutationRegisterArgs = {
-  displayname?: Maybe<Scalars["String"]>
-  password: Scalars["String"]
-  username: Scalars["String"]
+  displayname?: InputMaybe<Scalars["String"]["input"]>
+  password: Scalars["String"]["input"]
+  username: Scalars["String"]["input"]
 }
 
 export type MutationResetShareTokenArgs = {
-  randommWheelId: Scalars["String"]
+  randommWheelId: Scalars["String"]["input"]
 }
 
 export type MutationSpinRandomWheelArgs = {
-  randommWheelId: Scalars["String"]
+  randommWheelId: Scalars["String"]["input"]
 }
 
 export type MutationUpdateChannelRewardArgs = {
   reward: CustomRewardUpdateInput
-  rewardId: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
 }
 
 export type MutationUpdateRandomWheelArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
   options: RandomWheelInput
 }
 
 export type MutationUpdateRandomWheelEntryArgs = {
   entry: RandomWheelEntryInput
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type MutationUpdateRandomWheelMembersArgs = {
   members: Array<RandomWheelMemberInput>
-  randomWheelId: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
 }
 
 export type MutationUpdateRewardGroupArgs = {
-  id: Scalars["String"]
-  items?: Maybe<Array<RewardGroupItemInput>>
-  rewardGroup?: Maybe<RewardGroupInput>
+  id: Scalars["String"]["input"]
+  items?: InputMaybe<Array<RewardGroupItemInput>>
+  rewardGroup?: InputMaybe<RewardGroupInput>
 }
 
 export type MutationUpdateRewardGroupItemArgs = {
-  id: Scalars["String"]
-  rewardEnabled?: Maybe<Scalars["Boolean"]>
-  triggerCooldown?: Maybe<Scalars["Boolean"]>
+  id: Scalars["String"]["input"]
+  rewardEnabled?: InputMaybe<Scalars["Boolean"]["input"]>
+  triggerCooldown?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type MutationUpdateRewardTokenArgs = {
-  token: Scalars["String"]
-  type: Scalars["String"]
+  token: Scalars["String"]["input"]
+  type: Scalars["String"]["input"]
 }
 
 export type MutationUpdateUserArgs = {
@@ -466,128 +469,128 @@ export type MutationUpdateUserArgs = {
 }
 
 export type MutationUsernameExistsArgs = {
-  username: Scalars["String"]
+  username: Scalars["String"]["input"]
 }
 
 export type NestedBigIntFilter = {
-  equals?: Maybe<Scalars["BigInt"]>
-  gt?: Maybe<Scalars["BigInt"]>
-  gte?: Maybe<Scalars["BigInt"]>
-  in?: Maybe<Array<Scalars["BigInt"]>>
-  lt?: Maybe<Scalars["BigInt"]>
-  lte?: Maybe<Scalars["BigInt"]>
-  not?: Maybe<NestedBigIntFilter>
-  notIn?: Maybe<Array<Scalars["BigInt"]>>
+  equals?: InputMaybe<Scalars["BigInt"]["input"]>
+  gt?: InputMaybe<Scalars["BigInt"]["input"]>
+  gte?: InputMaybe<Scalars["BigInt"]["input"]>
+  in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>
+  lt?: InputMaybe<Scalars["BigInt"]["input"]>
+  lte?: InputMaybe<Scalars["BigInt"]["input"]>
+  not?: InputMaybe<NestedBigIntFilter>
+  notIn?: InputMaybe<Array<Scalars["BigInt"]["input"]>>
 }
 
 export type NestedBoolFilter = {
-  equals?: Maybe<Scalars["Boolean"]>
-  not?: Maybe<NestedBoolFilter>
+  equals?: InputMaybe<Scalars["Boolean"]["input"]>
+  not?: InputMaybe<NestedBoolFilter>
 }
 
 export type NestedDateTimeFilter = {
-  equals?: Maybe<Scalars["DateTime"]>
-  gt?: Maybe<Scalars["DateTime"]>
-  gte?: Maybe<Scalars["DateTime"]>
-  in?: Maybe<Array<Scalars["DateTime"]>>
-  lt?: Maybe<Scalars["DateTime"]>
-  lte?: Maybe<Scalars["DateTime"]>
-  not?: Maybe<NestedDateTimeFilter>
-  notIn?: Maybe<Array<Scalars["DateTime"]>>
+  equals?: InputMaybe<Scalars["DateTime"]["input"]>
+  gt?: InputMaybe<Scalars["DateTime"]["input"]>
+  gte?: InputMaybe<Scalars["DateTime"]["input"]>
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
+  lt?: InputMaybe<Scalars["DateTime"]["input"]>
+  lte?: InputMaybe<Scalars["DateTime"]["input"]>
+  not?: InputMaybe<NestedDateTimeFilter>
+  notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
 }
 
 export type NestedDateTimeNullableFilter = {
-  equals?: Maybe<Scalars["DateTime"]>
-  gt?: Maybe<Scalars["DateTime"]>
-  gte?: Maybe<Scalars["DateTime"]>
-  in?: Maybe<Array<Scalars["DateTime"]>>
-  lt?: Maybe<Scalars["DateTime"]>
-  lte?: Maybe<Scalars["DateTime"]>
-  not?: Maybe<NestedDateTimeNullableFilter>
-  notIn?: Maybe<Array<Scalars["DateTime"]>>
+  equals?: InputMaybe<Scalars["DateTime"]["input"]>
+  gt?: InputMaybe<Scalars["DateTime"]["input"]>
+  gte?: InputMaybe<Scalars["DateTime"]["input"]>
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
+  lt?: InputMaybe<Scalars["DateTime"]["input"]>
+  lte?: InputMaybe<Scalars["DateTime"]["input"]>
+  not?: InputMaybe<NestedDateTimeNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>
 }
 
 export type NestedFloatFilter = {
-  equals?: Maybe<Scalars["Float"]>
-  gt?: Maybe<Scalars["Float"]>
-  gte?: Maybe<Scalars["Float"]>
-  in?: Maybe<Array<Scalars["Float"]>>
-  lt?: Maybe<Scalars["Float"]>
-  lte?: Maybe<Scalars["Float"]>
-  not?: Maybe<NestedFloatFilter>
-  notIn?: Maybe<Array<Scalars["Float"]>>
+  equals?: InputMaybe<Scalars["Float"]["input"]>
+  gt?: InputMaybe<Scalars["Float"]["input"]>
+  gte?: InputMaybe<Scalars["Float"]["input"]>
+  in?: InputMaybe<Array<Scalars["Float"]["input"]>>
+  lt?: InputMaybe<Scalars["Float"]["input"]>
+  lte?: InputMaybe<Scalars["Float"]["input"]>
+  not?: InputMaybe<NestedFloatFilter>
+  notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>
 }
 
 export type NestedIntFilter = {
-  equals?: Maybe<Scalars["Int"]>
-  gt?: Maybe<Scalars["Int"]>
-  gte?: Maybe<Scalars["Int"]>
-  in?: Maybe<Array<Scalars["Int"]>>
-  lt?: Maybe<Scalars["Int"]>
-  lte?: Maybe<Scalars["Int"]>
-  not?: Maybe<NestedIntFilter>
-  notIn?: Maybe<Array<Scalars["Int"]>>
+  equals?: InputMaybe<Scalars["Int"]["input"]>
+  gt?: InputMaybe<Scalars["Int"]["input"]>
+  gte?: InputMaybe<Scalars["Int"]["input"]>
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>
+  lt?: InputMaybe<Scalars["Int"]["input"]>
+  lte?: InputMaybe<Scalars["Int"]["input"]>
+  not?: InputMaybe<NestedIntFilter>
+  notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>
 }
 
 export type NestedIntNullableFilter = {
-  equals?: Maybe<Scalars["Int"]>
-  gt?: Maybe<Scalars["Int"]>
-  gte?: Maybe<Scalars["Int"]>
-  in?: Maybe<Array<Scalars["Int"]>>
-  lt?: Maybe<Scalars["Int"]>
-  lte?: Maybe<Scalars["Int"]>
-  not?: Maybe<NestedIntNullableFilter>
-  notIn?: Maybe<Array<Scalars["Int"]>>
+  equals?: InputMaybe<Scalars["Int"]["input"]>
+  gt?: InputMaybe<Scalars["Int"]["input"]>
+  gte?: InputMaybe<Scalars["Int"]["input"]>
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>
+  lt?: InputMaybe<Scalars["Int"]["input"]>
+  lte?: InputMaybe<Scalars["Int"]["input"]>
+  not?: InputMaybe<NestedIntNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>
 }
 
 export type NestedStringFilter = {
-  contains?: Maybe<Scalars["String"]>
-  endsWith?: Maybe<Scalars["String"]>
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  not?: Maybe<NestedStringFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
-  startsWith?: Maybe<Scalars["String"]>
+  contains?: InputMaybe<Scalars["String"]["input"]>
+  endsWith?: InputMaybe<Scalars["String"]["input"]>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  not?: InputMaybe<NestedStringFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
+  startsWith?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type NestedStringNullableFilter = {
-  contains?: Maybe<Scalars["String"]>
-  endsWith?: Maybe<Scalars["String"]>
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  not?: Maybe<NestedStringNullableFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
-  startsWith?: Maybe<Scalars["String"]>
+  contains?: InputMaybe<Scalars["String"]["input"]>
+  endsWith?: InputMaybe<Scalars["String"]["input"]>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  not?: InputMaybe<NestedStringNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
+  startsWith?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type NestedUuidFilter = {
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  not?: Maybe<NestedUuidFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  not?: InputMaybe<NestedUuidFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type NestedUuidNullableFilter = {
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  not?: Maybe<NestedUuidNullableFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  not?: InputMaybe<NestedUuidNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type Query = {
@@ -606,42 +609,42 @@ export type Query = {
 }
 
 export type QueryChannelRewardsArgs = {
-  onlyManageable?: Maybe<Scalars["Boolean"]>
-  userId?: Maybe<Scalars["String"]>
+  onlyManageable?: InputMaybe<Scalars["Boolean"]["input"]>
+  userId?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type QueryColorThemesArgs = {
-  type?: Maybe<Scalars["String"]>
+  type?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type QueryMyRandomWheelsArgs = {
-  type?: Maybe<Scalars["String"]>
+  type?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type QueryRandomWheelBySlugArgs = {
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type QueryRewardByTokenArgs = {
-  token: Scalars["String"]
-  type: Scalars["String"]
+  token: Scalars["String"]["input"]
+  type: Scalars["String"]["input"]
 }
 
 export type QueryRewardGroupArgs = {
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }
 
 export type QueryRewardGroupsArgs = {
-  items?: Maybe<Scalars["Boolean"]>
+  items?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type QueryRewardLinksArgs = {
-  rewardIds?: Maybe<Array<Scalars["String"]>>
+  rewardIds?: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type QuerySyncForWheelArgs = {
-  randomWheelId: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
 }
 
 export enum QueryMode {
@@ -653,559 +656,559 @@ export type RandomWheel = {
   __typename?: "RandomWheel"
   _count?: Maybe<RandomWheelCount>
   access: AccessType
-  accessType: Scalars["String"]
-  createdAt: Scalars["DateTime"]
-  editAnonymous: Scalars["Boolean"]
-  editable: Scalars["Boolean"]
+  accessType: Scalars["String"]["output"]
+  createdAt: Scalars["DateTime"]["output"]
+  editAnonymous: Scalars["Boolean"]["output"]
+  editable: Scalars["Boolean"]["output"]
   entries: Array<RandomWheelEntry>
-  fadeDuration: Scalars["Int"]
-  id: Scalars["String"]
-  liked: Scalars["Boolean"]
+  fadeDuration: Scalars["Int"]["output"]
+  id: Scalars["String"]["output"]
+  liked: Scalars["Boolean"]["output"]
   members: Array<RandomWheelMember>
-  name?: Maybe<Scalars["String"]>
+  name?: Maybe<Scalars["String"]["output"]>
   owner?: Maybe<User>
-  ownerId?: Maybe<Scalars["String"]>
-  rotation: Scalars["Float"]
-  shareToken?: Maybe<Scalars["String"]>
-  slug: Scalars["String"]
-  spinDuration: Scalars["Int"]
+  ownerId?: Maybe<Scalars["String"]["output"]>
+  rotation: Scalars["Float"]["output"]
+  shareToken?: Maybe<Scalars["String"]["output"]>
+  slug: Scalars["String"]["output"]
+  spinDuration: Scalars["Int"]["output"]
   theme?: Maybe<ColorTheme>
-  themeId?: Maybe<Scalars["String"]>
-  uniqueEntries: Scalars["Boolean"]
+  themeId?: Maybe<Scalars["String"]["output"]>
+  uniqueEntries: Scalars["Boolean"]["output"]
   winners: Array<RandomWheelWinner>
 }
 
 export type RandomWheelCount = {
   __typename?: "RandomWheelCount"
-  entries: Scalars["Int"]
-  likes: Scalars["Int"]
-  members: Scalars["Int"]
-  wheelSync: Scalars["Int"]
-  winners: Scalars["Int"]
+  entries: Scalars["Int"]["output"]
+  likes: Scalars["Int"]["output"]
+  members: Scalars["Int"]["output"]
+  wheelSync: Scalars["Int"]["output"]
+  winners: Scalars["Int"]["output"]
 }
 
 export type RandomWheelCountEntriesArgs = {
-  where?: Maybe<RandomWheelEntryWhereInput>
+  where?: InputMaybe<RandomWheelEntryWhereInput>
 }
 
 export type RandomWheelCountLikesArgs = {
-  where?: Maybe<RandomWheelLikeWhereInput>
+  where?: InputMaybe<RandomWheelLikeWhereInput>
 }
 
 export type RandomWheelCountMembersArgs = {
-  where?: Maybe<RandomWheelMemberWhereInput>
+  where?: InputMaybe<RandomWheelMemberWhereInput>
 }
 
 export type RandomWheelCountWheelSyncArgs = {
-  where?: Maybe<RandomWheelSyncWhereInput>
+  where?: InputMaybe<RandomWheelSyncWhereInput>
 }
 
 export type RandomWheelCountWinnersArgs = {
-  where?: Maybe<RandomWheelWinnerWhereInput>
+  where?: InputMaybe<RandomWheelWinnerWhereInput>
 }
 
 export type RandomWheelEntry = {
   __typename?: "RandomWheelEntry"
-  color?: Maybe<Scalars["String"]>
-  createdAt: Scalars["DateTime"]
-  id: Scalars["String"]
-  name: Scalars["String"]
-  randomWheelId: Scalars["String"]
-  redemptionId?: Maybe<Scalars["String"]>
-  weight: Scalars["Int"]
+  color?: Maybe<Scalars["String"]["output"]>
+  createdAt: Scalars["DateTime"]["output"]
+  id: Scalars["String"]["output"]
+  name: Scalars["String"]["output"]
+  randomWheelId: Scalars["String"]["output"]
+  redemptionId?: Maybe<Scalars["String"]["output"]>
+  weight: Scalars["Int"]["output"]
 }
 
 export type RandomWheelEntryInput = {
-  color?: Maybe<Scalars["String"]>
-  name?: Maybe<Scalars["String"]>
-  weight?: Maybe<Scalars["Int"]>
+  color?: InputMaybe<Scalars["String"]["input"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
+  weight?: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type RandomWheelEntryListRelationFilter = {
-  every?: Maybe<RandomWheelEntryWhereInput>
-  none?: Maybe<RandomWheelEntryWhereInput>
-  some?: Maybe<RandomWheelEntryWhereInput>
+  every?: InputMaybe<RandomWheelEntryWhereInput>
+  none?: InputMaybe<RandomWheelEntryWhereInput>
+  some?: InputMaybe<RandomWheelEntryWhereInput>
 }
 
 export type RandomWheelEntryWhereInput = {
-  AND?: Maybe<Array<RandomWheelEntryWhereInput>>
-  NOT?: Maybe<Array<RandomWheelEntryWhereInput>>
-  OR?: Maybe<Array<RandomWheelEntryWhereInput>>
-  color?: Maybe<StringNullableFilter>
-  createdAt?: Maybe<DateTimeFilter>
-  id?: Maybe<UuidFilter>
-  name?: Maybe<StringFilter>
-  randomWheel?: Maybe<RandomWheelRelationFilter>
-  randomWheelId?: Maybe<UuidFilter>
-  redemptionId?: Maybe<StringNullableFilter>
-  weight?: Maybe<IntFilter>
+  AND?: InputMaybe<Array<RandomWheelEntryWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelEntryWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelEntryWhereInput>>
+  color?: InputMaybe<StringNullableFilter>
+  createdAt?: InputMaybe<DateTimeFilter>
+  id?: InputMaybe<UuidFilter>
+  name?: InputMaybe<StringFilter>
+  randomWheel?: InputMaybe<RandomWheelRelationFilter>
+  randomWheelId?: InputMaybe<UuidFilter>
+  redemptionId?: InputMaybe<StringNullableFilter>
+  weight?: InputMaybe<IntFilter>
 }
 
 export type RandomWheelInput = {
-  accessType?: Maybe<Scalars["String"]>
-  editAnonymous?: Maybe<Scalars["Boolean"]>
-  fadeDuration?: Maybe<Scalars["Int"]>
-  name?: Maybe<Scalars["String"]>
-  spinDuration?: Maybe<Scalars["Int"]>
-  theme?: Maybe<ColorThemeInput>
-  uniqueEntries?: Maybe<Scalars["Boolean"]>
+  accessType?: InputMaybe<Scalars["String"]["input"]>
+  editAnonymous?: InputMaybe<Scalars["Boolean"]["input"]>
+  fadeDuration?: InputMaybe<Scalars["Int"]["input"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
+  spinDuration?: InputMaybe<Scalars["Int"]["input"]>
+  theme?: InputMaybe<ColorThemeInput>
+  uniqueEntries?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type RandomWheelLike = {
   __typename?: "RandomWheelLike"
-  createdAt: Scalars["DateTime"]
-  id: Scalars["String"]
-  randomWheelId: Scalars["String"]
-  userId: Scalars["String"]
+  createdAt: Scalars["DateTime"]["output"]
+  id: Scalars["String"]["output"]
+  randomWheelId: Scalars["String"]["output"]
+  userId: Scalars["String"]["output"]
 }
 
 export type RandomWheelLikeListRelationFilter = {
-  every?: Maybe<RandomWheelLikeWhereInput>
-  none?: Maybe<RandomWheelLikeWhereInput>
-  some?: Maybe<RandomWheelLikeWhereInput>
+  every?: InputMaybe<RandomWheelLikeWhereInput>
+  none?: InputMaybe<RandomWheelLikeWhereInput>
+  some?: InputMaybe<RandomWheelLikeWhereInput>
 }
 
 export type RandomWheelLikeWhereInput = {
-  AND?: Maybe<Array<RandomWheelLikeWhereInput>>
-  NOT?: Maybe<Array<RandomWheelLikeWhereInput>>
-  OR?: Maybe<Array<RandomWheelLikeWhereInput>>
-  createdAt?: Maybe<DateTimeFilter>
-  id?: Maybe<UuidFilter>
-  randomWheel?: Maybe<RandomWheelRelationFilter>
-  randomWheelId?: Maybe<UuidFilter>
-  user?: Maybe<UserRelationFilter>
-  userId?: Maybe<UuidFilter>
+  AND?: InputMaybe<Array<RandomWheelLikeWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelLikeWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelLikeWhereInput>>
+  createdAt?: InputMaybe<DateTimeFilter>
+  id?: InputMaybe<UuidFilter>
+  randomWheel?: InputMaybe<RandomWheelRelationFilter>
+  randomWheelId?: InputMaybe<UuidFilter>
+  user?: InputMaybe<UserRelationFilter>
+  userId?: InputMaybe<UuidFilter>
 }
 
 export type RandomWheelListRelationFilter = {
-  every?: Maybe<RandomWheelWhereInput>
-  none?: Maybe<RandomWheelWhereInput>
-  some?: Maybe<RandomWheelWhereInput>
+  every?: InputMaybe<RandomWheelWhereInput>
+  none?: InputMaybe<RandomWheelWhereInput>
+  some?: InputMaybe<RandomWheelWhereInput>
 }
 
 export type RandomWheelMember = {
   __typename?: "RandomWheelMember"
-  id: Scalars["String"]
-  randomWheelId: Scalars["String"]
+  id: Scalars["String"]["output"]
+  randomWheelId: Scalars["String"]["output"]
   role: RandomWheelRole
-  roleName: Scalars["String"]
+  roleName: Scalars["String"]["output"]
   user: User
-  userId: Scalars["String"]
+  userId: Scalars["String"]["output"]
 }
 
 export type RandomWheelMemberInput = {
-  delete?: Maybe<Scalars["Boolean"]>
-  id?: Maybe<Scalars["String"]>
-  role: Scalars["String"]
-  username: Scalars["String"]
+  delete?: InputMaybe<Scalars["Boolean"]["input"]>
+  id?: InputMaybe<Scalars["String"]["input"]>
+  role: Scalars["String"]["input"]
+  username: Scalars["String"]["input"]
 }
 
 export type RandomWheelMemberListRelationFilter = {
-  every?: Maybe<RandomWheelMemberWhereInput>
-  none?: Maybe<RandomWheelMemberWhereInput>
-  some?: Maybe<RandomWheelMemberWhereInput>
+  every?: InputMaybe<RandomWheelMemberWhereInput>
+  none?: InputMaybe<RandomWheelMemberWhereInput>
+  some?: InputMaybe<RandomWheelMemberWhereInput>
 }
 
 export type RandomWheelMemberWhereInput = {
-  AND?: Maybe<Array<RandomWheelMemberWhereInput>>
-  NOT?: Maybe<Array<RandomWheelMemberWhereInput>>
-  OR?: Maybe<Array<RandomWheelMemberWhereInput>>
-  id?: Maybe<UuidFilter>
-  randomWheel?: Maybe<RandomWheelRelationFilter>
-  randomWheelId?: Maybe<UuidFilter>
-  role?: Maybe<RandomWheelRoleRelationFilter>
-  roleName?: Maybe<StringFilter>
-  user?: Maybe<UserRelationFilter>
-  userId?: Maybe<UuidFilter>
+  AND?: InputMaybe<Array<RandomWheelMemberWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelMemberWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelMemberWhereInput>>
+  id?: InputMaybe<UuidFilter>
+  randomWheel?: InputMaybe<RandomWheelRelationFilter>
+  randomWheelId?: InputMaybe<UuidFilter>
+  role?: InputMaybe<RandomWheelRoleRelationFilter>
+  roleName?: InputMaybe<StringFilter>
+  user?: InputMaybe<UserRelationFilter>
+  userId?: InputMaybe<UuidFilter>
 }
 
 export type RandomWheelRelationFilter = {
-  is?: Maybe<RandomWheelWhereInput>
-  isNot?: Maybe<RandomWheelWhereInput>
+  is?: InputMaybe<RandomWheelWhereInput>
+  isNot?: InputMaybe<RandomWheelWhereInput>
 }
 
 export type RandomWheelRole = {
   __typename?: "RandomWheelRole"
   _count?: Maybe<RandomWheelRoleCount>
-  description?: Maybe<Scalars["String"]>
-  name: Scalars["String"]
+  description?: Maybe<Scalars["String"]["output"]>
+  name: Scalars["String"]["output"]
 }
 
 export type RandomWheelRoleCount = {
   __typename?: "RandomWheelRoleCount"
-  members: Scalars["Int"]
+  members: Scalars["Int"]["output"]
 }
 
 export type RandomWheelRoleCountMembersArgs = {
-  where?: Maybe<RandomWheelMemberWhereInput>
+  where?: InputMaybe<RandomWheelMemberWhereInput>
 }
 
 export type RandomWheelRoleRelationFilter = {
-  is?: Maybe<RandomWheelRoleWhereInput>
-  isNot?: Maybe<RandomWheelRoleWhereInput>
+  is?: InputMaybe<RandomWheelRoleWhereInput>
+  isNot?: InputMaybe<RandomWheelRoleWhereInput>
 }
 
 export type RandomWheelRoleWhereInput = {
-  AND?: Maybe<Array<RandomWheelRoleWhereInput>>
-  NOT?: Maybe<Array<RandomWheelRoleWhereInput>>
-  OR?: Maybe<Array<RandomWheelRoleWhereInput>>
-  description?: Maybe<StringNullableFilter>
-  members?: Maybe<RandomWheelMemberListRelationFilter>
-  name?: Maybe<StringFilter>
+  AND?: InputMaybe<Array<RandomWheelRoleWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelRoleWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelRoleWhereInput>>
+  description?: InputMaybe<StringNullableFilter>
+  members?: InputMaybe<RandomWheelMemberListRelationFilter>
+  name?: InputMaybe<StringFilter>
 }
 
 export type RandomWheelSync = {
   __typename?: "RandomWheelSync"
-  createdAt: Scalars["DateTime"]
-  eventSubscriptionId?: Maybe<Scalars["String"]>
-  id: Scalars["String"]
-  paused: Scalars["Boolean"]
-  pending: Scalars["Boolean"]
-  randomWheelId: Scalars["String"]
+  createdAt: Scalars["DateTime"]["output"]
+  eventSubscriptionId?: Maybe<Scalars["String"]["output"]>
+  id: Scalars["String"]["output"]
+  paused: Scalars["Boolean"]["output"]
+  pending: Scalars["Boolean"]["output"]
+  randomWheelId: Scalars["String"]["output"]
   reward?: Maybe<CustomReward>
-  rewardId: Scalars["String"]
-  useInput: Scalars["Boolean"]
+  rewardId: Scalars["String"]["output"]
+  useInput: Scalars["Boolean"]["output"]
 }
 
 export type RandomWheelSyncListRelationFilter = {
-  every?: Maybe<RandomWheelSyncWhereInput>
-  none?: Maybe<RandomWheelSyncWhereInput>
-  some?: Maybe<RandomWheelSyncWhereInput>
+  every?: InputMaybe<RandomWheelSyncWhereInput>
+  none?: InputMaybe<RandomWheelSyncWhereInput>
+  some?: InputMaybe<RandomWheelSyncWhereInput>
 }
 
 export type RandomWheelSyncWhereInput = {
-  AND?: Maybe<Array<RandomWheelSyncWhereInput>>
-  NOT?: Maybe<Array<RandomWheelSyncWhereInput>>
-  OR?: Maybe<Array<RandomWheelSyncWhereInput>>
-  createdAt?: Maybe<DateTimeFilter>
-  eventSubscription?: Maybe<EventSubscriptionNullableRelationFilter>
-  eventSubscriptionId?: Maybe<UuidNullableFilter>
-  id?: Maybe<UuidFilter>
-  paused?: Maybe<BoolFilter>
-  randomWheel?: Maybe<RandomWheelRelationFilter>
-  randomWheelId?: Maybe<UuidFilter>
-  rewardId?: Maybe<StringFilter>
-  useInput?: Maybe<BoolFilter>
+  AND?: InputMaybe<Array<RandomWheelSyncWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelSyncWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelSyncWhereInput>>
+  createdAt?: InputMaybe<DateTimeFilter>
+  eventSubscription?: InputMaybe<EventSubscriptionNullableRelationFilter>
+  eventSubscriptionId?: InputMaybe<UuidNullableFilter>
+  id?: InputMaybe<UuidFilter>
+  paused?: InputMaybe<BoolFilter>
+  randomWheel?: InputMaybe<RandomWheelRelationFilter>
+  randomWheelId?: InputMaybe<UuidFilter>
+  rewardId?: InputMaybe<StringFilter>
+  useInput?: InputMaybe<BoolFilter>
 }
 
 export type RandomWheelWhereInput = {
-  AND?: Maybe<Array<RandomWheelWhereInput>>
-  NOT?: Maybe<Array<RandomWheelWhereInput>>
-  OR?: Maybe<Array<RandomWheelWhereInput>>
-  access?: Maybe<AccessTypeRelationFilter>
-  accessType?: Maybe<StringFilter>
-  createdAt?: Maybe<DateTimeFilter>
-  editAnonymous?: Maybe<BoolFilter>
-  entries?: Maybe<RandomWheelEntryListRelationFilter>
-  fadeDuration?: Maybe<IntFilter>
-  id?: Maybe<UuidFilter>
-  likes?: Maybe<RandomWheelLikeListRelationFilter>
-  members?: Maybe<RandomWheelMemberListRelationFilter>
-  name?: Maybe<StringNullableFilter>
-  owner?: Maybe<UserNullableRelationFilter>
-  ownerId?: Maybe<UuidNullableFilter>
-  rotation?: Maybe<FloatFilter>
-  shareToken?: Maybe<StringNullableFilter>
-  slug?: Maybe<StringFilter>
-  spinDuration?: Maybe<IntFilter>
-  theme?: Maybe<ColorThemeNullableRelationFilter>
-  themeId?: Maybe<UuidNullableFilter>
-  uniqueEntries?: Maybe<BoolFilter>
-  wheelSync?: Maybe<RandomWheelSyncListRelationFilter>
-  winners?: Maybe<RandomWheelWinnerListRelationFilter>
+  AND?: InputMaybe<Array<RandomWheelWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelWhereInput>>
+  access?: InputMaybe<AccessTypeRelationFilter>
+  accessType?: InputMaybe<StringFilter>
+  createdAt?: InputMaybe<DateTimeFilter>
+  editAnonymous?: InputMaybe<BoolFilter>
+  entries?: InputMaybe<RandomWheelEntryListRelationFilter>
+  fadeDuration?: InputMaybe<IntFilter>
+  id?: InputMaybe<UuidFilter>
+  likes?: InputMaybe<RandomWheelLikeListRelationFilter>
+  members?: InputMaybe<RandomWheelMemberListRelationFilter>
+  name?: InputMaybe<StringNullableFilter>
+  owner?: InputMaybe<UserNullableRelationFilter>
+  ownerId?: InputMaybe<UuidNullableFilter>
+  rotation?: InputMaybe<FloatFilter>
+  shareToken?: InputMaybe<StringNullableFilter>
+  slug?: InputMaybe<StringFilter>
+  spinDuration?: InputMaybe<IntFilter>
+  theme?: InputMaybe<ColorThemeNullableRelationFilter>
+  themeId?: InputMaybe<UuidNullableFilter>
+  uniqueEntries?: InputMaybe<BoolFilter>
+  wheelSync?: InputMaybe<RandomWheelSyncListRelationFilter>
+  winners?: InputMaybe<RandomWheelWinnerListRelationFilter>
 }
 
 export type RandomWheelWinner = {
   __typename?: "RandomWheelWinner"
-  createdAt: Scalars["DateTime"]
-  drawnById?: Maybe<Scalars["String"]>
-  id: Scalars["String"]
-  name: Scalars["String"]
-  randomWheelId: Scalars["String"]
-  winnerIndex?: Maybe<Scalars["Int"]>
+  createdAt: Scalars["DateTime"]["output"]
+  drawnById?: Maybe<Scalars["String"]["output"]>
+  id: Scalars["String"]["output"]
+  name: Scalars["String"]["output"]
+  randomWheelId: Scalars["String"]["output"]
+  winnerIndex?: Maybe<Scalars["Int"]["output"]>
 }
 
 export type RandomWheelWinnerListRelationFilter = {
-  every?: Maybe<RandomWheelWinnerWhereInput>
-  none?: Maybe<RandomWheelWinnerWhereInput>
-  some?: Maybe<RandomWheelWinnerWhereInput>
+  every?: InputMaybe<RandomWheelWinnerWhereInput>
+  none?: InputMaybe<RandomWheelWinnerWhereInput>
+  some?: InputMaybe<RandomWheelWinnerWhereInput>
 }
 
 export type RandomWheelWinnerWhereInput = {
-  AND?: Maybe<Array<RandomWheelWinnerWhereInput>>
-  NOT?: Maybe<Array<RandomWheelWinnerWhereInput>>
-  OR?: Maybe<Array<RandomWheelWinnerWhereInput>>
-  createdAt?: Maybe<DateTimeFilter>
-  drawnBy?: Maybe<UserNullableRelationFilter>
-  drawnById?: Maybe<UuidNullableFilter>
-  id?: Maybe<UuidFilter>
-  name?: Maybe<StringFilter>
-  randomWheel?: Maybe<RandomWheelRelationFilter>
-  randomWheelId?: Maybe<UuidFilter>
-  winnerIndex?: Maybe<IntNullableFilter>
+  AND?: InputMaybe<Array<RandomWheelWinnerWhereInput>>
+  NOT?: InputMaybe<Array<RandomWheelWinnerWhereInput>>
+  OR?: InputMaybe<Array<RandomWheelWinnerWhereInput>>
+  createdAt?: InputMaybe<DateTimeFilter>
+  drawnBy?: InputMaybe<UserNullableRelationFilter>
+  drawnById?: InputMaybe<UuidNullableFilter>
+  id?: InputMaybe<UuidFilter>
+  name?: InputMaybe<StringFilter>
+  randomWheel?: InputMaybe<RandomWheelRelationFilter>
+  randomWheelId?: InputMaybe<UuidFilter>
+  winnerIndex?: InputMaybe<IntNullableFilter>
 }
 
 export type RewardGroup = {
   __typename?: "RewardGroup"
   _count?: Maybe<RewardGroupCount>
-  active: Scalars["Boolean"]
-  cooldownExpiry?: Maybe<Scalars["DateTime"]>
-  id: Scalars["String"]
+  active: Scalars["Boolean"]["output"]
+  cooldownExpiry?: Maybe<Scalars["DateTime"]["output"]>
+  id: Scalars["String"]["output"]
   items?: Maybe<Array<RewardGroupItem>>
-  name?: Maybe<Scalars["String"]>
-  triggerSelected: Scalars["Boolean"]
-  userId: Scalars["String"]
+  name?: Maybe<Scalars["String"]["output"]>
+  triggerSelected: Scalars["Boolean"]["output"]
+  userId: Scalars["String"]["output"]
 }
 
 export type RewardGroupCount = {
   __typename?: "RewardGroupCount"
-  items: Scalars["Int"]
+  items: Scalars["Int"]["output"]
 }
 
 export type RewardGroupCountItemsArgs = {
-  where?: Maybe<RewardGroupItemWhereInput>
+  where?: InputMaybe<RewardGroupItemWhereInput>
 }
 
 export type RewardGroupInput = {
-  active?: Maybe<Scalars["Boolean"]>
-  name?: Maybe<Scalars["String"]>
-  triggerSelected?: Maybe<Scalars["Boolean"]>
+  active?: InputMaybe<Scalars["Boolean"]["input"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
+  triggerSelected?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type RewardGroupItem = {
   __typename?: "RewardGroupItem"
-  id: Scalars["String"]
-  rewardEnabled: Scalars["Boolean"]
-  rewardGroupId: Scalars["String"]
-  rewardId: Scalars["String"]
-  triggerCooldown: Scalars["Boolean"]
+  id: Scalars["String"]["output"]
+  rewardEnabled: Scalars["Boolean"]["output"]
+  rewardGroupId: Scalars["String"]["output"]
+  rewardId: Scalars["String"]["output"]
+  triggerCooldown: Scalars["Boolean"]["output"]
 }
 
 export type RewardGroupItemInput = {
-  rewardId: Scalars["String"]
-  triggerCooldown?: Maybe<Scalars["Boolean"]>
+  rewardId: Scalars["String"]["input"]
+  triggerCooldown?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type RewardGroupItemListRelationFilter = {
-  every?: Maybe<RewardGroupItemWhereInput>
-  none?: Maybe<RewardGroupItemWhereInput>
-  some?: Maybe<RewardGroupItemWhereInput>
+  every?: InputMaybe<RewardGroupItemWhereInput>
+  none?: InputMaybe<RewardGroupItemWhereInput>
+  some?: InputMaybe<RewardGroupItemWhereInput>
 }
 
 export type RewardGroupItemWhereInput = {
-  AND?: Maybe<Array<RewardGroupItemWhereInput>>
-  NOT?: Maybe<Array<RewardGroupItemWhereInput>>
-  OR?: Maybe<Array<RewardGroupItemWhereInput>>
-  id?: Maybe<UuidFilter>
-  rewardEnabled?: Maybe<BoolFilter>
-  rewardGroup?: Maybe<RewardGroupRelationFilter>
-  rewardGroupId?: Maybe<UuidFilter>
-  rewardId?: Maybe<StringFilter>
-  triggerCooldown?: Maybe<BoolFilter>
+  AND?: InputMaybe<Array<RewardGroupItemWhereInput>>
+  NOT?: InputMaybe<Array<RewardGroupItemWhereInput>>
+  OR?: InputMaybe<Array<RewardGroupItemWhereInput>>
+  id?: InputMaybe<UuidFilter>
+  rewardEnabled?: InputMaybe<BoolFilter>
+  rewardGroup?: InputMaybe<RewardGroupRelationFilter>
+  rewardGroupId?: InputMaybe<UuidFilter>
+  rewardId?: InputMaybe<StringFilter>
+  triggerCooldown?: InputMaybe<BoolFilter>
 }
 
 export type RewardGroupListRelationFilter = {
-  every?: Maybe<RewardGroupWhereInput>
-  none?: Maybe<RewardGroupWhereInput>
-  some?: Maybe<RewardGroupWhereInput>
+  every?: InputMaybe<RewardGroupWhereInput>
+  none?: InputMaybe<RewardGroupWhereInput>
+  some?: InputMaybe<RewardGroupWhereInput>
 }
 
 export type RewardGroupRelationFilter = {
-  is?: Maybe<RewardGroupWhereInput>
-  isNot?: Maybe<RewardGroupWhereInput>
+  is?: InputMaybe<RewardGroupWhereInput>
+  isNot?: InputMaybe<RewardGroupWhereInput>
 }
 
 export type RewardGroupWhereInput = {
-  AND?: Maybe<Array<RewardGroupWhereInput>>
-  NOT?: Maybe<Array<RewardGroupWhereInput>>
-  OR?: Maybe<Array<RewardGroupWhereInput>>
-  active?: Maybe<BoolFilter>
-  cooldownExpiry?: Maybe<DateTimeNullableFilter>
-  id?: Maybe<UuidFilter>
-  items?: Maybe<RewardGroupItemListRelationFilter>
-  name?: Maybe<StringNullableFilter>
-  triggerSelected?: Maybe<BoolFilter>
-  user?: Maybe<UserRelationFilter>
-  userId?: Maybe<UuidFilter>
+  AND?: InputMaybe<Array<RewardGroupWhereInput>>
+  NOT?: InputMaybe<Array<RewardGroupWhereInput>>
+  OR?: InputMaybe<Array<RewardGroupWhereInput>>
+  active?: InputMaybe<BoolFilter>
+  cooldownExpiry?: InputMaybe<DateTimeNullableFilter>
+  id?: InputMaybe<UuidFilter>
+  items?: InputMaybe<RewardGroupItemListRelationFilter>
+  name?: InputMaybe<StringNullableFilter>
+  triggerSelected?: InputMaybe<BoolFilter>
+  user?: InputMaybe<UserRelationFilter>
+  userId?: InputMaybe<UuidFilter>
 }
 
 export type RewardLink = {
   __typename?: "RewardLink"
-  id: Scalars["String"]
-  rewardId: Scalars["String"]
-  token: Scalars["String"]
-  type: Scalars["String"]
-  userId: Scalars["String"]
+  id: Scalars["String"]["output"]
+  rewardId: Scalars["String"]["output"]
+  token: Scalars["String"]["output"]
+  type: Scalars["String"]["output"]
+  userId: Scalars["String"]["output"]
 }
 
 export type RewardLinkListRelationFilter = {
-  every?: Maybe<RewardLinkWhereInput>
-  none?: Maybe<RewardLinkWhereInput>
-  some?: Maybe<RewardLinkWhereInput>
+  every?: InputMaybe<RewardLinkWhereInput>
+  none?: InputMaybe<RewardLinkWhereInput>
+  some?: InputMaybe<RewardLinkWhereInput>
 }
 
 export type RewardLinkWhereInput = {
-  AND?: Maybe<Array<RewardLinkWhereInput>>
-  NOT?: Maybe<Array<RewardLinkWhereInput>>
-  OR?: Maybe<Array<RewardLinkWhereInput>>
-  id?: Maybe<UuidFilter>
-  rewardId?: Maybe<StringFilter>
-  token?: Maybe<StringFilter>
-  type?: Maybe<StringFilter>
-  user?: Maybe<UserRelationFilter>
-  userId?: Maybe<UuidFilter>
+  AND?: InputMaybe<Array<RewardLinkWhereInput>>
+  NOT?: InputMaybe<Array<RewardLinkWhereInput>>
+  OR?: InputMaybe<Array<RewardLinkWhereInput>>
+  id?: InputMaybe<UuidFilter>
+  rewardId?: InputMaybe<StringFilter>
+  token?: InputMaybe<StringFilter>
+  type?: InputMaybe<StringFilter>
+  user?: InputMaybe<UserRelationFilter>
+  userId?: InputMaybe<UuidFilter>
 }
 
 export type StringFilter = {
-  contains?: Maybe<Scalars["String"]>
-  endsWith?: Maybe<Scalars["String"]>
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  mode?: Maybe<QueryMode>
-  not?: Maybe<NestedStringFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
-  startsWith?: Maybe<Scalars["String"]>
+  contains?: InputMaybe<Scalars["String"]["input"]>
+  endsWith?: InputMaybe<Scalars["String"]["input"]>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<NestedStringFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
+  startsWith?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type StringNullableFilter = {
-  contains?: Maybe<Scalars["String"]>
-  endsWith?: Maybe<Scalars["String"]>
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  mode?: Maybe<QueryMode>
-  not?: Maybe<NestedStringNullableFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
-  startsWith?: Maybe<Scalars["String"]>
+  contains?: InputMaybe<Scalars["String"]["input"]>
+  endsWith?: InputMaybe<Scalars["String"]["input"]>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<NestedStringNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
+  startsWith?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type StringNullableListFilter = {
-  equals?: Maybe<Array<Scalars["String"]>>
-  has?: Maybe<Scalars["String"]>
-  hasEvery?: Maybe<Array<Scalars["String"]>>
-  hasSome?: Maybe<Array<Scalars["String"]>>
-  isEmpty?: Maybe<Scalars["Boolean"]>
+  equals?: InputMaybe<Array<Scalars["String"]["input"]>>
+  has?: InputMaybe<Scalars["String"]["input"]>
+  hasEvery?: InputMaybe<Array<Scalars["String"]["input"]>>
+  hasSome?: InputMaybe<Array<Scalars["String"]["input"]>>
+  isEmpty?: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type User = {
   __typename?: "User"
   _count?: Maybe<UserCount>
-  createdAt: Scalars["DateTime"]
-  displayname?: Maybe<Scalars["String"]>
-  id: Scalars["String"]
-  standardThemeId?: Maybe<Scalars["String"]>
-  updatedAt: Scalars["DateTime"]
-  username: Scalars["String"]
+  createdAt: Scalars["DateTime"]["output"]
+  displayname?: Maybe<Scalars["String"]["output"]>
+  id: Scalars["String"]["output"]
+  standardThemeId?: Maybe<Scalars["String"]["output"]>
+  updatedAt: Scalars["DateTime"]["output"]
+  username: Scalars["String"]["output"]
 }
 
 export type UserAccessToken = {
   __typename?: "UserAccessToken"
-  expiresIn: Scalars["Int"]
-  id: Scalars["String"]
-  obtainmentTimestamp: Scalars["BigInt"]
-  scope: Array<Scalars["String"]>
-  twitchUserId?: Maybe<Scalars["String"]>
-  twitchUsername?: Maybe<Scalars["String"]>
-  userId: Scalars["String"]
+  expiresIn: Scalars["Int"]["output"]
+  id: Scalars["String"]["output"]
+  obtainmentTimestamp: Scalars["BigInt"]["output"]
+  scope: Array<Scalars["String"]["output"]>
+  twitchUserId?: Maybe<Scalars["String"]["output"]>
+  twitchUsername?: Maybe<Scalars["String"]["output"]>
+  userId: Scalars["String"]["output"]
 }
 
 export type UserAccessTokenListRelationFilter = {
-  every?: Maybe<UserAccessTokenWhereInput>
-  none?: Maybe<UserAccessTokenWhereInput>
-  some?: Maybe<UserAccessTokenWhereInput>
+  every?: InputMaybe<UserAccessTokenWhereInput>
+  none?: InputMaybe<UserAccessTokenWhereInput>
+  some?: InputMaybe<UserAccessTokenWhereInput>
 }
 
 export type UserAccessTokenWhereInput = {
-  AND?: Maybe<Array<UserAccessTokenWhereInput>>
-  NOT?: Maybe<Array<UserAccessTokenWhereInput>>
-  OR?: Maybe<Array<UserAccessTokenWhereInput>>
-  accessToken?: Maybe<StringFilter>
-  expiresIn?: Maybe<IntFilter>
-  id?: Maybe<UuidFilter>
-  obtainmentTimestamp?: Maybe<BigIntFilter>
-  refreshToken?: Maybe<StringNullableFilter>
-  scope?: Maybe<StringNullableListFilter>
-  twitchUserId?: Maybe<StringNullableFilter>
-  twitchUsername?: Maybe<StringNullableFilter>
-  user?: Maybe<UserRelationFilter>
-  userId?: Maybe<UuidFilter>
+  AND?: InputMaybe<Array<UserAccessTokenWhereInput>>
+  NOT?: InputMaybe<Array<UserAccessTokenWhereInput>>
+  OR?: InputMaybe<Array<UserAccessTokenWhereInput>>
+  accessToken?: InputMaybe<StringFilter>
+  expiresIn?: InputMaybe<IntFilter>
+  id?: InputMaybe<UuidFilter>
+  obtainmentTimestamp?: InputMaybe<BigIntFilter>
+  refreshToken?: InputMaybe<StringNullableFilter>
+  scope?: InputMaybe<StringNullableListFilter>
+  twitchUserId?: InputMaybe<StringNullableFilter>
+  twitchUsername?: InputMaybe<StringNullableFilter>
+  user?: InputMaybe<UserRelationFilter>
+  userId?: InputMaybe<UuidFilter>
 }
 
 export type UserCount = {
   __typename?: "UserCount"
-  colorThemes: Scalars["Int"]
-  drawnWinners: Scalars["Int"]
-  eventSubscriptions: Scalars["Int"]
-  likes: Scalars["Int"]
-  randomWheelMember: Scalars["Int"]
-  randomWheels: Scalars["Int"]
-  rewardGroups: Scalars["Int"]
-  rewardLinks: Scalars["Int"]
-  userAccessTokens: Scalars["Int"]
+  colorThemes: Scalars["Int"]["output"]
+  drawnWinners: Scalars["Int"]["output"]
+  eventSubscriptions: Scalars["Int"]["output"]
+  likes: Scalars["Int"]["output"]
+  randomWheelMember: Scalars["Int"]["output"]
+  randomWheels: Scalars["Int"]["output"]
+  rewardGroups: Scalars["Int"]["output"]
+  rewardLinks: Scalars["Int"]["output"]
+  userAccessTokens: Scalars["Int"]["output"]
 }
 
 export type UserCountColorThemesArgs = {
-  where?: Maybe<ColorThemeWhereInput>
+  where?: InputMaybe<ColorThemeWhereInput>
 }
 
 export type UserCountDrawnWinnersArgs = {
-  where?: Maybe<RandomWheelWinnerWhereInput>
+  where?: InputMaybe<RandomWheelWinnerWhereInput>
 }
 
 export type UserCountEventSubscriptionsArgs = {
-  where?: Maybe<EventSubscriptionWhereInput>
+  where?: InputMaybe<EventSubscriptionWhereInput>
 }
 
 export type UserCountLikesArgs = {
-  where?: Maybe<RandomWheelLikeWhereInput>
+  where?: InputMaybe<RandomWheelLikeWhereInput>
 }
 
 export type UserCountRandomWheelMemberArgs = {
-  where?: Maybe<RandomWheelMemberWhereInput>
+  where?: InputMaybe<RandomWheelMemberWhereInput>
 }
 
 export type UserCountRandomWheelsArgs = {
-  where?: Maybe<RandomWheelWhereInput>
+  where?: InputMaybe<RandomWheelWhereInput>
 }
 
 export type UserCountRewardGroupsArgs = {
-  where?: Maybe<RewardGroupWhereInput>
+  where?: InputMaybe<RewardGroupWhereInput>
 }
 
 export type UserCountRewardLinksArgs = {
-  where?: Maybe<RewardLinkWhereInput>
+  where?: InputMaybe<RewardLinkWhereInput>
 }
 
 export type UserCountUserAccessTokensArgs = {
-  where?: Maybe<UserAccessTokenWhereInput>
+  where?: InputMaybe<UserAccessTokenWhereInput>
 }
 
 export type UserInput = {
-  displayname?: Maybe<Scalars["String"]>
-  username?: Maybe<Scalars["String"]>
+  displayname?: InputMaybe<Scalars["String"]["input"]>
+  username?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type UserListRelationFilter = {
-  every?: Maybe<UserWhereInput>
-  none?: Maybe<UserWhereInput>
-  some?: Maybe<UserWhereInput>
+  every?: InputMaybe<UserWhereInput>
+  none?: InputMaybe<UserWhereInput>
+  some?: InputMaybe<UserWhereInput>
 }
 
 export type UserNullableRelationFilter = {
-  is?: Maybe<UserWhereInput>
-  isNot?: Maybe<UserWhereInput>
+  is?: InputMaybe<UserWhereInput>
+  isNot?: InputMaybe<UserWhereInput>
 }
 
 export type UserRelationFilter = {
-  is?: Maybe<UserWhereInput>
-  isNot?: Maybe<UserWhereInput>
+  is?: InputMaybe<UserWhereInput>
+  isNot?: InputMaybe<UserWhereInput>
 }
 
 export type UserResponse = {
@@ -1215,58 +1218,58 @@ export type UserResponse = {
 }
 
 export type UserWhereInput = {
-  AND?: Maybe<Array<UserWhereInput>>
-  NOT?: Maybe<Array<UserWhereInput>>
-  OR?: Maybe<Array<UserWhereInput>>
-  colorThemes?: Maybe<ColorThemeListRelationFilter>
-  createdAt?: Maybe<DateTimeFilter>
-  displayname?: Maybe<StringNullableFilter>
-  drawnWinners?: Maybe<RandomWheelWinnerListRelationFilter>
-  eventSubscriptions?: Maybe<EventSubscriptionListRelationFilter>
-  id?: Maybe<UuidFilter>
-  likes?: Maybe<RandomWheelLikeListRelationFilter>
-  password?: Maybe<StringFilter>
-  randomWheelMember?: Maybe<RandomWheelMemberListRelationFilter>
-  randomWheels?: Maybe<RandomWheelListRelationFilter>
-  rewardGroups?: Maybe<RewardGroupListRelationFilter>
-  rewardLinks?: Maybe<RewardLinkListRelationFilter>
-  standardTheme?: Maybe<ColorThemeNullableRelationFilter>
-  standardThemeId?: Maybe<UuidNullableFilter>
-  updatedAt?: Maybe<DateTimeFilter>
-  userAccessTokens?: Maybe<UserAccessTokenListRelationFilter>
-  username?: Maybe<StringFilter>
+  AND?: InputMaybe<Array<UserWhereInput>>
+  NOT?: InputMaybe<Array<UserWhereInput>>
+  OR?: InputMaybe<Array<UserWhereInput>>
+  colorThemes?: InputMaybe<ColorThemeListRelationFilter>
+  createdAt?: InputMaybe<DateTimeFilter>
+  displayname?: InputMaybe<StringNullableFilter>
+  drawnWinners?: InputMaybe<RandomWheelWinnerListRelationFilter>
+  eventSubscriptions?: InputMaybe<EventSubscriptionListRelationFilter>
+  id?: InputMaybe<UuidFilter>
+  likes?: InputMaybe<RandomWheelLikeListRelationFilter>
+  password?: InputMaybe<StringFilter>
+  randomWheelMember?: InputMaybe<RandomWheelMemberListRelationFilter>
+  randomWheels?: InputMaybe<RandomWheelListRelationFilter>
+  rewardGroups?: InputMaybe<RewardGroupListRelationFilter>
+  rewardLinks?: InputMaybe<RewardLinkListRelationFilter>
+  standardTheme?: InputMaybe<ColorThemeNullableRelationFilter>
+  standardThemeId?: InputMaybe<UuidNullableFilter>
+  updatedAt?: InputMaybe<DateTimeFilter>
+  userAccessTokens?: InputMaybe<UserAccessTokenListRelationFilter>
+  username?: InputMaybe<StringFilter>
 }
 
 export type UuidFilter = {
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  mode?: Maybe<QueryMode>
-  not?: Maybe<NestedUuidFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<NestedUuidFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type UuidNullableFilter = {
-  equals?: Maybe<Scalars["String"]>
-  gt?: Maybe<Scalars["String"]>
-  gte?: Maybe<Scalars["String"]>
-  in?: Maybe<Array<Scalars["String"]>>
-  lt?: Maybe<Scalars["String"]>
-  lte?: Maybe<Scalars["String"]>
-  mode?: Maybe<QueryMode>
-  not?: Maybe<NestedUuidNullableFilter>
-  notIn?: Maybe<Array<Scalars["String"]>>
+  equals?: InputMaybe<Scalars["String"]["input"]>
+  gt?: InputMaybe<Scalars["String"]["input"]>
+  gte?: InputMaybe<Scalars["String"]["input"]>
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>
+  lt?: InputMaybe<Scalars["String"]["input"]>
+  lte?: InputMaybe<Scalars["String"]["input"]>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<NestedUuidNullableFilter>
+  notIn?: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type ColorThemeFragment = {
   __typename?: "ColorTheme"
   id: string
-  name?: Maybe<string>
+  name?: string | null
   colors: Array<string>
-  creatorId?: Maybe<string>
+  creatorId?: string | null
   global: boolean
 }
 
@@ -1282,14 +1285,14 @@ export type CustomRewardFragment = {
   title: string
   prompt: string
   userInputRequired: boolean
-  maxRedemptionsPerStream?: Maybe<number>
-  maxRedemptionsPerUserPerStream?: Maybe<number>
-  globalCooldown?: Maybe<number>
+  maxRedemptionsPerStream?: number | null
+  maxRedemptionsPerUserPerStream?: number | null
+  globalCooldown?: number | null
   isPaused: boolean
   isInStock: boolean
-  redemptionsThisStream?: Maybe<number>
+  redemptionsThisStream?: number | null
   autoFulfill: boolean
-  cooldownExpiryDate?: Maybe<Date>
+  cooldownExpiryDate?: Date | null
   image: string
 }
 
@@ -1307,7 +1310,7 @@ export type RandomWheelDetailsFragment = {
   __typename?: "RandomWheel"
   id: string
   slug: string
-  name?: Maybe<string>
+  name?: string | null
   createdAt: Date
   rotation: number
   spinDuration: number
@@ -1316,10 +1319,10 @@ export type RandomWheelDetailsFragment = {
   editable: boolean
   editAnonymous: boolean
   uniqueEntries: boolean
-  shareToken?: Maybe<string>
+  shareToken?: string | null
   liked: boolean
-  theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
-  _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
+  theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
+  _count?: { __typename?: "RandomWheelCount"; entries: number } | null
 }
 
 export type RandomWheelEntryFragment = { __typename?: "RandomWheelEntry"; id: string; name: string; weight: number }
@@ -1329,21 +1332,21 @@ export type RandomWheelWinnerFragment = {
   id: string
   name: string
   createdAt: Date
-  winnerIndex?: Maybe<number>
+  winnerIndex?: number | null
 }
 
 export type RandomWheelMemberFragment = {
   __typename?: "RandomWheelMember"
   id: string
   roleName: string
-  user: { __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }
+  user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
 }
 
 export type RandomWheelSyncFragment = {
   __typename?: "RandomWheelSync"
   id: string
   randomWheelId: string
-  eventSubscriptionId?: Maybe<string>
+  eventSubscriptionId?: string | null
   rewardId: string
   paused: boolean
   useInput: boolean
@@ -1354,31 +1357,29 @@ export type RandomWheelSyncFragment = {
 export type RewardGroupFragment = {
   __typename?: "RewardGroup"
   id: string
-  name?: Maybe<string>
+  name?: string | null
   active: boolean
   triggerSelected: boolean
   userId: string
-  cooldownExpiry?: Maybe<Date>
-  items?: Maybe<
-    Array<{
-      __typename?: "RewardGroupItem"
-      id: string
-      rewardGroupId: string
-      rewardId: string
-      rewardEnabled: boolean
-      triggerCooldown: boolean
-    }>
-  >
+  cooldownExpiry?: Date | null
+  items?: Array<{
+    __typename?: "RewardGroupItem"
+    id: string
+    rewardGroupId: string
+    rewardId: string
+    rewardEnabled: boolean
+    triggerCooldown: boolean
+  }> | null
 }
 
 export type RewardGroupDetailsFragment = {
   __typename?: "RewardGroup"
   id: string
-  name?: Maybe<string>
+  name?: string | null
   active: boolean
   triggerSelected: boolean
   userId: string
-  cooldownExpiry?: Maybe<Date>
+  cooldownExpiry?: Date | null
 }
 
 export type RewardGroupItemFragment = {
@@ -1399,9 +1400,9 @@ export type RewardLinkFragment = {
   type: string
 }
 
-export type NormalUserFragment = { __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }
+export type NormalUserFragment = { __typename?: "User"; id: string; username: string; displayname?: string | null }
 
-export type UserNameFragment = { __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }
+export type UserNameFragment = { __typename?: "User"; id: string; username: string; displayname?: string | null }
 
 export type UserAccessTokenFragment = {
   __typename?: "UserAccessToken"
@@ -1409,21 +1410,21 @@ export type UserAccessTokenFragment = {
   scope: Array<string>
   expiresIn: number
   obtainmentTimestamp: bigint
-  twitchUserId?: Maybe<string>
-  twitchUsername?: Maybe<string>
+  twitchUserId?: string | null
+  twitchUsername?: string | null
 }
 
 export type LoginMutationVariables = Exact<{
-  username: Scalars["String"]
-  password: Scalars["String"]
+  username: Scalars["String"]["input"]
+  password: Scalars["String"]["input"]
 }>
 
 export type LoginMutation = {
   __typename?: "Mutation"
   login: {
     __typename?: "UserResponse"
-    user?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
-    errors?: Maybe<Array<{ __typename?: "FieldError"; field: string; message: string }>>
+    user?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+    errors?: Array<{ __typename?: "FieldError"; field: string; message: string }> | null
   }
 }
 
@@ -1432,8 +1433,8 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 export type LogoutMutation = { __typename?: "Mutation"; logout: boolean }
 
 export type AddRandomWheelEntryMutationVariables = Exact<{
-  randomWheelId: Scalars["String"]
-  name: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
+  name: Scalars["String"]["input"]
 }>
 
 export type AddRandomWheelEntryMutation = {
@@ -1442,17 +1443,17 @@ export type AddRandomWheelEntryMutation = {
 }
 
 export type ClearRandomWheelMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
 export type ClearRandomWheelMutation = { __typename?: "Mutation"; clearRandomWheel: number }
 
 export type CreateRandomWheelMutationVariables = Exact<{
-  name?: Maybe<Scalars["String"]>
-  accessType?: Maybe<Scalars["String"]>
-  spinDuration?: Maybe<Scalars["Int"]>
-  fadeDuration?: Maybe<Scalars["Int"]>
-  editAnonymous?: Maybe<Scalars["Boolean"]>
+  name?: InputMaybe<Scalars["String"]["input"]>
+  accessType?: InputMaybe<Scalars["String"]["input"]>
+  spinDuration?: InputMaybe<Scalars["Int"]["input"]>
+  fadeDuration?: InputMaybe<Scalars["Int"]["input"]>
+  editAnonymous?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type CreateRandomWheelMutation = {
@@ -1461,7 +1462,7 @@ export type CreateRandomWheelMutation = {
     __typename?: "RandomWheel"
     id: string
     slug: string
-    name?: Maybe<string>
+    name?: string | null
     createdAt: Date
     rotation: number
     spinDuration: number
@@ -1470,52 +1471,52 @@ export type CreateRandomWheelMutation = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: Maybe<string>
+    shareToken?: string | null
     liked: boolean
-    theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
-    _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
+    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
+    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
   }
 }
 
 export type DeleteRandomWheelMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
 export type DeleteRandomWheelMutation = {
   __typename?: "Mutation"
-  deleteRandomWheel?: Maybe<{ __typename?: "AppError"; errorMessage?: Maybe<string>; errorCode: number }>
+  deleteRandomWheel?: { __typename?: "AppError"; errorMessage?: string | null; errorCode: number } | null
 }
 
 export type DeleteRandomWheelEntryMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
-export type DeleteRandomWheelEntryMutation = { __typename?: "Mutation"; deleteRandomWheelEntry?: Maybe<boolean> }
+export type DeleteRandomWheelEntryMutation = { __typename?: "Mutation"; deleteRandomWheelEntry?: boolean | null }
 
 export type LikeRandomWheelMutationVariables = Exact<{
-  randomWheelId: Scalars["String"]
-  like: Scalars["Boolean"]
+  randomWheelId: Scalars["String"]["input"]
+  like: Scalars["Boolean"]["input"]
 }>
 
 export type LikeRandomWheelMutation = {
   __typename?: "Mutation"
-  likeRandomWheel?: Maybe<{
+  likeRandomWheel?: {
     __typename?: "RandomWheelLike"
     id: string
     userId: string
     randomWheelId: string
     createdAt: Date
-  }>
+  } | null
 }
 
 export type ResetShareTokenMutationVariables = Exact<{
-  randomWheelId: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
 }>
 
-export type ResetShareTokenMutation = { __typename?: "Mutation"; resetShareToken?: Maybe<boolean> }
+export type ResetShareTokenMutation = { __typename?: "Mutation"; resetShareToken?: boolean | null }
 
 export type SpinRandomWheelMutationVariables = Exact<{
-  wheelId: Scalars["String"]
+  wheelId: Scalars["String"]["input"]
 }>
 
 export type SpinRandomWheelMutation = {
@@ -1525,24 +1526,24 @@ export type SpinRandomWheelMutation = {
     id: string
     name: string
     createdAt: Date
-    drawnById?: Maybe<string>
+    drawnById?: string | null
     randomWheelId: string
-    winnerIndex?: Maybe<number>
+    winnerIndex?: number | null
   }
 }
 
 export type UpdateRandomWheelMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
   options: RandomWheelInput
 }>
 
 export type UpdateRandomWheelMutation = {
   __typename?: "Mutation"
-  updateRandomWheel?: Maybe<{
+  updateRandomWheel?: {
     __typename?: "RandomWheel"
     id: string
     slug: string
-    name?: Maybe<string>
+    name?: string | null
     createdAt: Date
     rotation: number
     spinDuration: number
@@ -1551,15 +1552,15 @@ export type UpdateRandomWheelMutation = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: Maybe<string>
+    shareToken?: string | null
     liked: boolean
-    theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
-    _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
-  }>
+    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
+    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
+  } | null
 }
 
 export type UpdateRandomWheelEntryMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
   entry: RandomWheelEntryInput
 }>
 
@@ -1569,80 +1570,80 @@ export type UpdateRandomWheelEntryMutation = {
 }
 
 export type UpdateRandomWheelMembersMutationVariables = Exact<{
-  randomWheelId: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
   members: Array<RandomWheelMemberInput> | RandomWheelMemberInput
 }>
 
 export type UpdateRandomWheelMembersMutation = {
   __typename?: "Mutation"
-  updateRandomWheelMembers?: Maybe<Array<{ __typename?: "RandomWheelMember"; id: string }>>
+  updateRandomWheelMembers?: Array<{ __typename?: "RandomWheelMember"; id: string }> | null
 }
 
 export type RegisterMutationVariables = Exact<{
-  username: Scalars["String"]
-  password: Scalars["String"]
-  displayname?: Maybe<Scalars["String"]>
+  username: Scalars["String"]["input"]
+  password: Scalars["String"]["input"]
+  displayname?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RegisterMutation = {
   __typename?: "Mutation"
   register: {
     __typename?: "UserResponse"
-    user?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
-    errors?: Maybe<Array<{ __typename?: "FieldError"; field: string; message: string }>>
+    user?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+    errors?: Array<{ __typename?: "FieldError"; field: string; message: string }> | null
   }
 }
 
 export type AddWheelSyncMutationVariables = Exact<{
-  rewardId: Scalars["String"]
-  randomWheelId: Scalars["String"]
-  useInput?: Maybe<Scalars["Boolean"]>
-  addExisting?: Maybe<Scalars["Boolean"]>
+  rewardId: Scalars["String"]["input"]
+  randomWheelId: Scalars["String"]["input"]
+  useInput?: InputMaybe<Scalars["Boolean"]["input"]>
+  addExisting?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type AddWheelSyncMutation = {
   __typename?: "Mutation"
-  addWheelSync?: Maybe<{
+  addWheelSync?: {
     __typename?: "RandomWheelSync"
     id: string
     randomWheelId: string
-    eventSubscriptionId?: Maybe<string>
+    eventSubscriptionId?: string | null
     rewardId: string
     paused: boolean
     useInput: boolean
     pending: boolean
     createdAt: Date
-  }>
+  } | null
 }
 
 export type DeleteWheelSyncMutationVariables = Exact<{
-  ids: Array<Scalars["String"]> | Scalars["String"]
+  ids: Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
 }>
 
-export type DeleteWheelSyncMutation = { __typename?: "Mutation"; deleteWheelSync?: Maybe<boolean> }
+export type DeleteWheelSyncMutation = { __typename?: "Mutation"; deleteWheelSync?: boolean | null }
 
 export type DisconnectAccessTokenMutationVariables = Exact<{ [key: string]: never }>
 
 export type DisconnectAccessTokenMutation = { __typename?: "Mutation"; disconnectAccessToken: boolean }
 
 export type PauseWheelSyncMutationVariables = Exact<{
-  id: Scalars["String"]
-  paused: Scalars["Boolean"]
+  id: Scalars["String"]["input"]
+  paused: Scalars["Boolean"]["input"]
 }>
 
 export type PauseWheelSyncMutation = {
   __typename?: "Mutation"
-  pauseWheelSync?: Maybe<{
+  pauseWheelSync?: {
     __typename?: "RandomWheelSync"
     id: string
     randomWheelId: string
-    eventSubscriptionId?: Maybe<string>
+    eventSubscriptionId?: string | null
     rewardId: string
     paused: boolean
     useInput: boolean
     pending: boolean
     createdAt: Date
-  }>
+  } | null
 }
 
 export type CreateChannelRewardMutationVariables = Exact<{
@@ -1651,7 +1652,7 @@ export type CreateChannelRewardMutationVariables = Exact<{
 
 export type CreateChannelRewardMutation = {
   __typename?: "Mutation"
-  createChannelReward?: Maybe<{
+  createChannelReward?: {
     __typename?: "CustomReward"
     id: string
     broadcasterId: string
@@ -1663,55 +1664,55 @@ export type CreateChannelRewardMutation = {
     title: string
     prompt: string
     userInputRequired: boolean
-    maxRedemptionsPerStream?: Maybe<number>
-    maxRedemptionsPerUserPerStream?: Maybe<number>
-    globalCooldown?: Maybe<number>
+    maxRedemptionsPerStream?: number | null
+    maxRedemptionsPerUserPerStream?: number | null
+    globalCooldown?: number | null
     isPaused: boolean
     isInStock: boolean
-    redemptionsThisStream?: Maybe<number>
+    redemptionsThisStream?: number | null
     autoFulfill: boolean
-    cooldownExpiryDate?: Maybe<Date>
+    cooldownExpiryDate?: Date | null
     image: string
-  }>
+  } | null
 }
 
 export type CreateRewardLinkMutationVariables = Exact<{
-  rewardId: Scalars["String"]
-  type: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
+  type: Scalars["String"]["input"]
 }>
 
 export type CreateRewardLinkMutation = {
   __typename?: "Mutation"
-  createRewardLink?: Maybe<{
+  createRewardLink?: {
     __typename?: "RewardLink"
     id: string
     userId: string
     rewardId: string
     token: string
     type: string
-  }>
+  } | null
 }
 
 export type DeleteChannelRewardMutationVariables = Exact<{
-  rewardId: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
 }>
 
 export type DeleteChannelRewardMutation = { __typename?: "Mutation"; deleteChannelReward: boolean }
 
 export type DeleteRewardLinkMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
 export type DeleteRewardLinkMutation = { __typename?: "Mutation"; deleteRewardLink: boolean }
 
 export type UpdateChannelRewardMutationVariables = Exact<{
-  rewardId: Scalars["String"]
+  rewardId: Scalars["String"]["input"]
   reward: CustomRewardUpdateInput
 }>
 
 export type UpdateChannelRewardMutation = {
   __typename?: "Mutation"
-  updateChannelReward?: Maybe<{
+  updateChannelReward?: {
     __typename?: "CustomReward"
     id: string
     broadcasterId: string
@@ -1723,21 +1724,21 @@ export type UpdateChannelRewardMutation = {
     title: string
     prompt: string
     userInputRequired: boolean
-    maxRedemptionsPerStream?: Maybe<number>
-    maxRedemptionsPerUserPerStream?: Maybe<number>
-    globalCooldown?: Maybe<number>
+    maxRedemptionsPerStream?: number | null
+    maxRedemptionsPerUserPerStream?: number | null
+    globalCooldown?: number | null
     isPaused: boolean
     isInStock: boolean
-    redemptionsThisStream?: Maybe<number>
+    redemptionsThisStream?: number | null
     autoFulfill: boolean
-    cooldownExpiryDate?: Maybe<Date>
+    cooldownExpiryDate?: Date | null
     image: string
-  }>
+  } | null
 }
 
 export type UpdateRewardTokenMutationVariables = Exact<{
-  type: Scalars["String"]
-  token: Scalars["String"]
+  type: Scalars["String"]["input"]
+  token: Scalars["String"]["input"]
 }>
 
 export type UpdateRewardTokenMutation = {
@@ -1754,21 +1755,21 @@ export type UpdateRewardTokenMutation = {
 }
 
 export type AddRewardGroupItemMutationVariables = Exact<{
-  rewardGroupId: Scalars["String"]
-  rewardId: Scalars["String"]
-  triggerCooldown?: Maybe<Scalars["Boolean"]>
+  rewardGroupId: Scalars["String"]["input"]
+  rewardId: Scalars["String"]["input"]
+  triggerCooldown?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type AddRewardGroupItemMutation = {
   __typename?: "Mutation"
-  addRewardGroupItem?: Maybe<{
+  addRewardGroupItem?: {
     __typename?: "RewardGroupItem"
     id: string
     rewardGroupId: string
     rewardId: string
     rewardEnabled: boolean
     triggerCooldown: boolean
-  }>
+  } | null
 }
 
 export type CreateRewardGroupMutationVariables = Exact<{
@@ -1778,84 +1779,80 @@ export type CreateRewardGroupMutationVariables = Exact<{
 
 export type CreateRewardGroupMutation = {
   __typename?: "Mutation"
-  createRewardGroup?: Maybe<{
+  createRewardGroup?: {
     __typename?: "RewardGroup"
     id: string
-    name?: Maybe<string>
+    name?: string | null
     active: boolean
     triggerSelected: boolean
     userId: string
-    cooldownExpiry?: Maybe<Date>
-    items?: Maybe<
-      Array<{
-        __typename?: "RewardGroupItem"
-        id: string
-        rewardGroupId: string
-        rewardId: string
-        rewardEnabled: boolean
-        triggerCooldown: boolean
-      }>
-    >
-  }>
+    cooldownExpiry?: Date | null
+    items?: Array<{
+      __typename?: "RewardGroupItem"
+      id: string
+      rewardGroupId: string
+      rewardId: string
+      rewardEnabled: boolean
+      triggerCooldown: boolean
+    }> | null
+  } | null
 }
 
 export type DeleteRewardGroupMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
-export type DeleteRewardGroupMutation = { __typename?: "Mutation"; deleteRewardGroup?: Maybe<boolean> }
+export type DeleteRewardGroupMutation = { __typename?: "Mutation"; deleteRewardGroup?: boolean | null }
 
 export type DeleteRewardGroupItemMutationVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
-export type DeleteRewardGroupItemMutation = { __typename?: "Mutation"; deleteRewardGroupItem?: Maybe<boolean> }
+export type DeleteRewardGroupItemMutation = { __typename?: "Mutation"; deleteRewardGroupItem?: boolean | null }
 
 export type UpdateRewardGroupMutationVariables = Exact<{
-  id: Scalars["String"]
-  rewardGroup?: Maybe<RewardGroupInput>
-  items?: Maybe<Array<RewardGroupItemInput> | RewardGroupItemInput>
+  id: Scalars["String"]["input"]
+  rewardGroup?: InputMaybe<RewardGroupInput>
+  items?: InputMaybe<Array<RewardGroupItemInput> | RewardGroupItemInput>
 }>
 
 export type UpdateRewardGroupMutation = {
   __typename?: "Mutation"
-  updateRewardGroup?: Maybe<{
+  updateRewardGroup?: {
     __typename?: "RewardGroup"
     id: string
-    name?: Maybe<string>
+    name?: string | null
     active: boolean
     triggerSelected: boolean
     userId: string
-    cooldownExpiry?: Maybe<Date>
-    items?: Maybe<
-      Array<{
-        __typename?: "RewardGroupItem"
-        id: string
-        rewardGroupId: string
-        rewardId: string
-        rewardEnabled: boolean
-        triggerCooldown: boolean
-      }>
-    >
-  }>
+    cooldownExpiry?: Date | null
+    items?: Array<{
+      __typename?: "RewardGroupItem"
+      id: string
+      rewardGroupId: string
+      rewardId: string
+      rewardEnabled: boolean
+      triggerCooldown: boolean
+    }> | null
+  } | null
 }
 
 export type UpdateRewardGroupItemMutationVariables = Exact<{
-  id: Scalars["String"]
-  rewardEnabled?: Maybe<Scalars["Boolean"]>
-  triggerCooldown?: Maybe<Scalars["Boolean"]>
+  id: Scalars["String"]["input"]
+  rewardEnabled?: InputMaybe<Scalars["Boolean"]["input"]>
+  triggerCooldown?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type UpdateRewardGroupItemMutation = {
   __typename?: "Mutation"
-  updateRewardGroupItem?: Maybe<{
+  updateRewardGroupItem?: {
     __typename?: "RewardGroupItem"
     id: string
     rewardGroupId: string
     rewardId: string
     rewardEnabled: boolean
     triggerCooldown: boolean
-  }>
+  } | null
 }
 
 export type UpdateUserMutationVariables = Exact<{
@@ -1866,13 +1863,13 @@ export type UpdateUserMutation = {
   __typename?: "Mutation"
   updateUser: {
     __typename?: "UserResponse"
-    user?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
-    errors?: Maybe<Array<{ __typename?: "FieldError"; field: string; message: string }>>
+    user?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+    errors?: Array<{ __typename?: "FieldError"; field: string; message: string }> | null
   }
 }
 
 export type ColorThemesQueryVariables = Exact<{
-  type?: Maybe<Scalars["String"]>
+  type?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type ColorThemesQuery = {
@@ -1880,9 +1877,9 @@ export type ColorThemesQuery = {
   colorThemes: Array<{
     __typename?: "ColorTheme"
     id: string
-    name?: Maybe<string>
+    name?: string | null
     colors: Array<string>
-    creatorId?: Maybe<string>
+    creatorId?: string | null
     global: boolean
   }>
 }
@@ -1891,11 +1888,11 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = {
   __typename?: "Query"
-  me?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
+  me?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
 }
 
 export type MyRandomWheelsQueryVariables = Exact<{
-  type?: Maybe<Scalars["String"]>
+  type?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type MyRandomWheelsQuery = {
@@ -1904,7 +1901,7 @@ export type MyRandomWheelsQuery = {
     __typename?: "RandomWheel"
     id: string
     slug: string
-    name?: Maybe<string>
+    name?: string | null
     createdAt: Date
     rotation: number
     spinDuration: number
@@ -1913,25 +1910,25 @@ export type MyRandomWheelsQuery = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: Maybe<string>
+    shareToken?: string | null
     liked: boolean
-    theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
-    _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
+    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
+    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
   }>
 }
 
 export type RandomWheelBySlugQueryVariables = Exact<{
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RandomWheelBySlugQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: Maybe<{
+  randomWheelBySlug?: {
     __typename?: "RandomWheel"
     id: string
     slug: string
-    name?: Maybe<string>
+    name?: string | null
     createdAt: Date
     rotation: number
     spinDuration: number
@@ -1940,71 +1937,71 @@ export type RandomWheelBySlugQuery = {
     editable: boolean
     editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: Maybe<string>
+    shareToken?: string | null
     liked: boolean
-    owner?: Maybe<{ __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }>
+    owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
     members: Array<{
       __typename?: "RandomWheelMember"
       id: string
       roleName: string
-      user: { __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }
+      user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
     }>
-    theme?: Maybe<{ __typename?: "ColorTheme"; id: string; name?: Maybe<string>; colors: Array<string> }>
-    _count?: Maybe<{ __typename?: "RandomWheelCount"; entries: number }>
-  }>
+    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
+    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
+  } | null
 }
 
 export type RandomWheelBySlugShareTokenQueryVariables = Exact<{
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RandomWheelBySlugShareTokenQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: Maybe<{ __typename?: "RandomWheel"; shareToken?: Maybe<string> }>
+  randomWheelBySlug?: { __typename?: "RandomWheel"; shareToken?: string | null } | null
 }
 
 export type RandomWheelBySlugEntriesQueryVariables = Exact<{
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RandomWheelBySlugEntriesQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: Maybe<{
+  randomWheelBySlug?: {
     __typename?: "RandomWheel"
     id: string
     entries: Array<{ __typename?: "RandomWheelEntry"; id: string; name: string; weight: number }>
-  }>
+  } | null
 }
 
 export type RandomWheelBySlugMembersQueryVariables = Exact<{
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RandomWheelBySlugMembersQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: Maybe<{
+  randomWheelBySlug?: {
     __typename?: "RandomWheel"
     id: string
     members: Array<{
       __typename?: "RandomWheelMember"
       id: string
       roleName: string
-      user: { __typename?: "User"; id: string; username: string; displayname?: Maybe<string> }
+      user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
     }>
-  }>
+  } | null
 }
 
 export type RandomWheelBySlugWinnersQueryVariables = Exact<{
-  slug: Scalars["String"]
-  token?: Maybe<Scalars["String"]>
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type RandomWheelBySlugWinnersQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: Maybe<{
+  randomWheelBySlug?: {
     __typename?: "RandomWheel"
     id: string
     winners: Array<{
@@ -2012,14 +2009,14 @@ export type RandomWheelBySlugWinnersQuery = {
       id: string
       name: string
       createdAt: Date
-      winnerIndex?: Maybe<number>
+      winnerIndex?: number | null
     }>
-  }>
+  } | null
 }
 
 export type ChannelRewardsQueryVariables = Exact<{
-  userId?: Maybe<Scalars["String"]>
-  onlyManageable?: Maybe<Scalars["Boolean"]>
+  userId?: InputMaybe<Scalars["String"]["input"]>
+  onlyManageable?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type ChannelRewardsQuery = {
@@ -2036,21 +2033,21 @@ export type ChannelRewardsQuery = {
     title: string
     prompt: string
     userInputRequired: boolean
-    maxRedemptionsPerStream?: Maybe<number>
-    maxRedemptionsPerUserPerStream?: Maybe<number>
-    globalCooldown?: Maybe<number>
+    maxRedemptionsPerStream?: number | null
+    maxRedemptionsPerUserPerStream?: number | null
+    globalCooldown?: number | null
     isPaused: boolean
     isInStock: boolean
-    redemptionsThisStream?: Maybe<number>
+    redemptionsThisStream?: number | null
     autoFulfill: boolean
-    cooldownExpiryDate?: Maybe<Date>
+    cooldownExpiryDate?: Date | null
     image: string
   }>
 }
 
 export type RewardByTokenQueryVariables = Exact<{
-  type: Scalars["String"]
-  token: Scalars["String"]
+  type: Scalars["String"]["input"]
+  token: Scalars["String"]["input"]
 }>
 
 export type RewardByTokenQuery = {
@@ -2067,7 +2064,7 @@ export type RewardByTokenQuery = {
 }
 
 export type RewardGroupQueryVariables = Exact<{
-  id: Scalars["String"]
+  id: Scalars["String"]["input"]
 }>
 
 export type RewardGroupQuery = {
@@ -2075,26 +2072,24 @@ export type RewardGroupQuery = {
   rewardGroup: {
     __typename?: "RewardGroup"
     id: string
-    name?: Maybe<string>
+    name?: string | null
     active: boolean
     triggerSelected: boolean
     userId: string
-    cooldownExpiry?: Maybe<Date>
-    items?: Maybe<
-      Array<{
-        __typename?: "RewardGroupItem"
-        id: string
-        rewardGroupId: string
-        rewardId: string
-        rewardEnabled: boolean
-        triggerCooldown: boolean
-      }>
-    >
+    cooldownExpiry?: Date | null
+    items?: Array<{
+      __typename?: "RewardGroupItem"
+      id: string
+      rewardGroupId: string
+      rewardId: string
+      rewardEnabled: boolean
+      triggerCooldown: boolean
+    }> | null
   }
 }
 
 export type RewardGroupsQueryVariables = Exact<{
-  items?: Maybe<Scalars["Boolean"]>
+  items?: InputMaybe<Scalars["Boolean"]["input"]>
 }>
 
 export type RewardGroupsQuery = {
@@ -2102,26 +2097,24 @@ export type RewardGroupsQuery = {
   rewardGroups: Array<{
     __typename?: "RewardGroup"
     id: string
-    name?: Maybe<string>
+    name?: string | null
     active: boolean
     triggerSelected: boolean
     userId: string
-    cooldownExpiry?: Maybe<Date>
-    items?: Maybe<
-      Array<{
-        __typename?: "RewardGroupItem"
-        id: string
-        rewardGroupId: string
-        rewardId: string
-        rewardEnabled: boolean
-        triggerCooldown: boolean
-      }>
-    >
+    cooldownExpiry?: Date | null
+    items?: Array<{
+      __typename?: "RewardGroupItem"
+      id: string
+      rewardGroupId: string
+      rewardId: string
+      rewardEnabled: boolean
+      triggerCooldown: boolean
+    }> | null
   }>
 }
 
 export type RewardLinksQueryVariables = Exact<{
-  rewardIds?: Maybe<Array<Scalars["String"]> | Scalars["String"]>
+  rewardIds?: InputMaybe<Array<Scalars["String"]["input"]> | Scalars["String"]["input"]>
 }>
 
 export type RewardLinksQuery = {
@@ -2137,7 +2130,7 @@ export type RewardLinksQuery = {
 }
 
 export type SyncForWheelQueryVariables = Exact<{
-  randomWheelId: Scalars["String"]
+  randomWheelId: Scalars["String"]["input"]
 }>
 
 export type SyncForWheelQuery = {
@@ -2146,13 +2139,13 @@ export type SyncForWheelQuery = {
     __typename?: "RandomWheelSync"
     id: string
     randomWheelId: string
-    eventSubscriptionId?: Maybe<string>
+    eventSubscriptionId?: string | null
     rewardId: string
     paused: boolean
     useInput: boolean
     pending: boolean
     createdAt: Date
-    reward?: Maybe<{
+    reward?: {
       __typename?: "CustomReward"
       id: string
       title: string
@@ -2160,7 +2153,7 @@ export type SyncForWheelQuery = {
       isEnabled: boolean
       isPaused: boolean
       image: string
-    }>
+    } | null
   }>
 }
 
@@ -2168,19 +2161,19 @@ export type UserAccessTokenQueryVariables = Exact<{ [key: string]: never }>
 
 export type UserAccessTokenQuery = {
   __typename?: "Query"
-  userAccesToken?: Maybe<{
+  userAccesToken?: {
     __typename?: "UserAccessToken"
     id: string
     scope: Array<string>
     expiresIn: number
     obtainmentTimestamp: bigint
-    twitchUserId?: Maybe<string>
-    twitchUsername?: Maybe<string>
-  }>
+    twitchUserId?: string | null
+    twitchUsername?: string | null
+  } | null
 }
 
 export type UsernameExistsMutationVariables = Exact<{
-  username: Scalars["String"]
+  username: Scalars["String"]["input"]
 }>
 
 export type UsernameExistsMutation = { __typename?: "Mutation"; usernameExists: boolean }
