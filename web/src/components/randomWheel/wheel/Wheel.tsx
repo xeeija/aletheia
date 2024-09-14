@@ -11,7 +11,9 @@ interface Props {
   rotation?: number
   spinning?: boolean
   spinDuration?: number
+  popout?: boolean
   // wheelRef?: React.RefObject<SVGSVGElement>
+  behindBackdrop?: boolean
 }
 
 export const Wheel: FC<Props> = ({
@@ -21,6 +23,8 @@ export const Wheel: FC<Props> = ({
   rotation = 0,
   spinning,
   spinDuration = 8000,
+  popout,
+  behindBackdrop,
 }) => {
   // const spinClickSounds = useMemo(() => Array(10).fill(0).map((v) => new Audio(`/audio/boob6-${v}.wav`)), [])
 
@@ -83,8 +87,11 @@ export const Wheel: FC<Props> = ({
   }
 
   const arrowHeight = diameter * 0.02
+  const arrowWidth = arrowHeight * 1.5
 
   const segmentPos = entries.reduce<number[]>((acc, entry, i) => [...acc, (acc[i] ?? 0) + entry.weight], [0])
+
+  const winnerMarkerPath = `M ${diameter - arrowHeight * 2.25} ${diameter / 2} l ${arrowHeight * 3.5} ${arrowHeight} l 0 ${arrowHeight * -2} Z`
 
   /* M   200       0         A   200     200     0 1        0 400     200     L    200  200  Z
     Move startPosX startPosY Arc radiusX radiusY ? largeArc ? arcPosX arcPosY Line posX posY Close path
@@ -102,9 +109,14 @@ export const Wheel: FC<Props> = ({
       }}
     >
       <svg
-        width={diameter + arrowHeight * 1.5}
+        width={diameter + arrowWidth}
         height={diameter}
-        viewBox={`0 0 ${diameter + arrowHeight * 1.5} ${diameter}`}
+        viewBox={`0 0 ${diameter + arrowWidth} ${diameter}`}
+        style={{
+          ...(popout && {
+            marginLeft: arrowWidth,
+          }),
+        }}
         // ref={wheelRef}
         id="wheel-svg"
       >
@@ -272,13 +284,37 @@ export const Wheel: FC<Props> = ({
 
         {/* Winner marker trinagle */}
         <path
-          id="winner-marker"
+          id="winner-marker-fill"
           style={{
             fill: theme.palette.primary.dark,
-            stroke: theme.palette.background.default, //"#191d21",
-            strokeWidth: 3,
+            // stroke: theme.palette.background.default, //"#191d21",
+            strokeWidth: 0,
           }}
-          d={`M ${diameter - arrowHeight * 2.25} ${diameter / 2} l ${arrowHeight * 3.5} ${arrowHeight} l 0 ${arrowHeight * -2} Z`}
+          d={winnerMarkerPath}
+        />
+        {popout && (
+          <path
+            id="winner-marker-backdrop"
+            style={{
+              fill: "#39314e", // primary.main with darker backdrop (black 0.5 opacity)
+              stroke: theme.palette.background.default, //"#191d21",
+              strokeWidth: 0,
+              opacity: behindBackdrop ? 1 : 0,
+              transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+            d={`M ${diameter - arrowHeight * 2.25 + 26.5} ${diameter / 2 - 5.5} l 0 ${arrowHeight - 2} l ${arrowHeight * 1.7} ${arrowHeight * 0.5} l 0 ${arrowHeight * -2} Z`}
+          />
+        )}
+        <path
+          id="winner-marker-stroke"
+          style={{
+            fill: "transparent",
+            // darker stroke when behind backdrop, like fill above
+            stroke: behindBackdrop ? "#0c0f12" : theme.palette.background.default, //"#191d21",
+            strokeWidth: 3,
+            transition: "stroke 225ms cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+          d={winnerMarkerPath}
         />
       </svg>
     </Box>

@@ -104,6 +104,19 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
               Popout settings
             </Typography>
 
+            {!validUrlExists && (
+              <LoadingButton
+                color="info"
+                variant="outlined"
+                endIcon={<LinkAdd viewBox="-3 -3 28 28" />}
+                loading={fetchingReset}
+                // loadingIndicator={fetchingReset ? "Loading" : undefined}
+                onClick={async () => await resetShareToken()}
+              >
+                Generate private link
+              </LoadingButton>
+            )}
+
             {validUrlExists && (
               <Box sx={{ display: "flex", gap: 0.5 }}>
                 <LinkInputField
@@ -136,56 +149,45 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
               </Box>
             )}
 
-            {!validUrlExists && (
-              <LoadingButton
-                color="info"
-                variant="outlined"
-                endIcon={<LinkAdd viewBox="-3 -3 28 28" />}
-                loading={fetchingReset}
-                // loadingIndicator={fetchingReset ? "Loading" : undefined}
-                onClick={async () => await resetShareToken()}
+            {validUrlExists && (
+              <Formik
+                initialValues={initialValues}
+                validateOnChange={false}
+                enableReinitialize
+                onSubmit={(values) => {
+                  updateUrl(values)
+                }}
               >
-                Generate private link
-              </LoadingButton>
+                {({ values }) => (
+                  <Form id="popoutOptionsForm" style={{ width: "calc(100%)" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1.5 }}>
+                      <BooleanField
+                        name="fade"
+                        label="Only show the wheel when spinning"
+                        disabled={values.noPopout}
+                        submitOnChange
+                      />
+
+                      <BooleanField
+                        name="hideWinnerDialog"
+                        label="Hide winner dialog"
+                        disabled={values.noPopout}
+                        submitOnChange
+                      />
+
+                      <BooleanField
+                        name="noPopout"
+                        label="Show this page instead of popout page"
+                        // helperText="If this is checked, show this page. Otherwise show a seperate page only with the wheel."
+                        submitOnChange
+                      />
+
+                      {/* <BooleanField name="test" label="Enable testing mode" submitOnChange /> */}
+                    </Box>
+                  </Form>
+                )}
+              </Formik>
             )}
-
-            <Formik
-              initialValues={initialValues}
-              validateOnChange={false}
-              enableReinitialize
-              onSubmit={(values) => {
-                updateUrl(values)
-              }}
-            >
-              {({ values }) => (
-                <Form id="popoutOptionsForm" style={{ width: "calc(100%)" }}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, ml: 1.5 }}>
-                    <BooleanField
-                      name="fade"
-                      label="Only show the wheel when spinning"
-                      disabled={values.noPopout}
-                      submitOnChange
-                    />
-
-                    <BooleanField
-                      name="hideWinnerDialog"
-                      label="Hide winner dialog"
-                      disabled={values.noPopout}
-                      submitOnChange
-                    />
-
-                    <BooleanField
-                      name="noPopout"
-                      label="Show this page instead of popout page"
-                      // helperText="If this is checked, show this page. Otherwise show a seperate page only with the wheel."
-                      submitOnChange
-                    />
-
-                    {/* <BooleanField name="test" label="Enable testing mode" submitOnChange /> */}
-                  </Box>
-                </Form>
-              )}
-            </Formik>
           </Box>
         </Paper>
       </Dropdown>

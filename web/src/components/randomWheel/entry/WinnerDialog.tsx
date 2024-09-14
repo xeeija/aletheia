@@ -8,6 +8,8 @@ interface Props {
   onRemove?: () => void
   hideClose?: boolean
   hideRemove?: boolean
+  popout?: boolean
+  backdropWidth?: number
 }
 
 // TODO: Add autoHide duration property
@@ -19,6 +21,8 @@ export const WinnerDialog: FC<Props> = ({
   onRemove = () => {},
   hideClose,
   hideRemove,
+  popout,
+  backdropWidth,
 }) => {
   const [open, setOpen] = openState
 
@@ -30,6 +34,18 @@ export const WinnerDialog: FC<Props> = ({
       onClose={() => onClose()}
       aria-labelledby="winner-dialog-title"
       aria-describedby="winner-dialog-description"
+      slotProps={{
+        backdrop: {
+          sx: {
+            ...(popout && {
+              borderRadius: "50%",
+              width: backdropWidth,
+              height: backdropWidth,
+              margin: "auto",
+            }),
+          },
+        },
+      }}
     >
       <DialogTitle color="textSecondary" id="winner-dialog-title">
         Congratulations!

@@ -63,7 +63,8 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
           }}
           className="fade"
         >
-          <Skeleton variant="circular" sx={{ width: 670, height: 670, mr: 2 }} />
+          {/* mr: 2 if not popout */}
+          <Skeleton variant="circular" sx={{ width: 670, height: 670, mr: 0 }} />
         </Box>
       </>
     )
@@ -73,6 +74,8 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     // TODO: Proper error pages
     return <NotFoundPage />
   }
+
+  const diameter = 680
 
   return (
     <>
@@ -108,12 +111,14 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
       >
         <Box>
           <Wheel
-            diameter={680}
+            diameter={diameter}
             entries={entries}
             rotation={wheel.rotation}
             spinning={wheel.spinning}
             spinDuration={wheel?.spinDuration ?? 0}
             colors={wheel.theme?.colors}
+            popout
+            behindBackdrop={winnerDialogOpen}
           />
 
           <WinnerDialog
@@ -121,6 +126,8 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
             description={lastWinnerEntry?.name}
             hideRemove
             hideClose
+            popout
+            backdropWidth={diameter - 8}
           />
         </Box>
       </Box>
