@@ -1,5 +1,5 @@
 # Aletheia Server
-FROM node:20.11-alpine3.19 as base
+FROM node:20.11-alpine3.19 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -53,9 +53,9 @@ WORKDIR /server
 COPY --from=build /server/dist ./dist
 COPY --from=build /server/node_modules/ ./node_modules
 
-ENV NODE_ENV "production"
+ENV NODE_ENV="production"
 
-ENV PORT 4000
+ENV PORT=4000
 
 EXPOSE ${PORT}
 
