@@ -1,3 +1,5 @@
+export * from "./compare"
+export * from "./log"
 export * from "./random"
 export * from "./retry"
 export * from "./slug"
