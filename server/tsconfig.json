@@ -42,7 +42,7 @@
     // "exactOptionalPropertyTypes": true,
 
     /* Experimental Options */
-    // needed for type-graphql decotators
+    // needed for type-graphql decorators
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

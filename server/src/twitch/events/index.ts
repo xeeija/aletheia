@@ -1,2 +1,2 @@
-export * from "./redemptionAdd"
-export * from "./rewardUpdate"
+export * from "./redemptionAdd.js"
+export * from "./rewardUpdate.js"

@@ -1,4 +1,4 @@
-import { logger } from "@/utils"
+import { logger } from "@/utils/index.js"
 import { PrismaClient } from "@prisma/client"
 import { PrismaClientInitializationError } from "@prisma/client/runtime/library.js"
 

@@ -1,5 +1,5 @@
-import { getTwitchUserId } from "@/twitch"
-import { RewardIconData, RewardLinkType } from "@/types"
+import { getTwitchUserId } from "@/twitch/index.js"
+import { RewardIconData, RewardLinkType } from "@/types.js"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixCustomReward, HelixUpdateCustomRewardData } from "@twurple/api"
 

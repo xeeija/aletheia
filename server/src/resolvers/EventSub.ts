@@ -1,8 +1,8 @@
-import { RandomWheelSync } from "@/generated/graphql"
-import { CustomReward } from "@/resolvers"
-import { accessTokenForUser, getTwitchUserId } from "@/twitch"
-import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events"
-import type { GraphqlContext } from "@/types"
+import { RandomWheelSync } from "@/generated/graphql/index.js"
+import { CustomReward } from "@/resolvers/index.js"
+import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events/index.js"
+import { accessTokenForUser, getTwitchUserId } from "@/twitch/index.js"
+import type { GraphqlContext } from "@/types.js"
 import { Arg, Ctx, Field, FieldResolver, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 
 @ObjectType("RandomWheelSync")

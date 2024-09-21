@@ -1,7 +1,7 @@
-export * from "./auth"
-export * from "./client"
-export * from "./eventsub"
+export * from "./auth.js"
+export * from "./client.js"
+export * from "./eventsub.js"
 
-export * from "./api/routes"
+export * from "./api/routes.js"
 
-export * from "./reward/rewardLink"
+export * from "./reward/rewardLink.js"

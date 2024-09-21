@@ -1,4 +1,4 @@
-import { authProvider, mockAuthProvider } from "@/twitch"
+import { authProvider, mockAuthProvider } from "@/twitch/index.js"
 import { PrismaClient, UserAccessToken } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import "dotenv/config"

@@ -1,5 +1,5 @@
+import { isDefined } from "@/utils/index.js"
 import { WriteStream } from "tty"
-import { isDefined } from "./compare"
 
 export enum LogLevel {
   Error,

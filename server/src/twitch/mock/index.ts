@@ -1,7 +1,7 @@
 import { HelixCustomReward } from "@twurple/api"
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
 import { readFile } from "fs/promises"
-import { rewards } from "./data/rewards"
+import { rewards } from "./data/rewards.js"
 
 let mockRewards: HelixCustomReward[] = []
 

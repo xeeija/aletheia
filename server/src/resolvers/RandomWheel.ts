@@ -7,13 +7,13 @@ import {
   RandomWheelMember,
   RandomWheelWinner,
   User,
-} from "@/generated/graphql"
-import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers"
-import { AppError, createAppErrorUnion } from "@/resolvers/types"
-import { accessTokenForUser } from "@/twitch"
-import { handleSubscriptionSync } from "@/twitch/events"
-import type { GraphqlContext } from "@/types"
-import { random, randomBase64Url, randomNumber, slugify } from "@/utils"
+} from "@/generated/graphql/index.js"
+import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers/index.js"
+import { AppError, createAppErrorUnion } from "@/resolvers/types.js"
+import { handleSubscriptionSync } from "@/twitch/events/index.js"
+import { accessTokenForUser } from "@/twitch/index.js"
+import type { GraphqlContext } from "@/types.js"
+import { random, randomBase64Url, randomNumber, slugify } from "@/utils/index.js"
 import { Prisma } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"

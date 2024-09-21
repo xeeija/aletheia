@@ -1,7 +1,8 @@
-import "reflect-metadata" // must be before any resolvers or type-graphql imports
+// must be before any resolvers or type-graphql imports
+import "reflect-metadata"
 
-import { Resolvers } from "@/resolvers"
-import { socketHandlers } from "@/socket"
+import { Resolvers } from "@/resolvers/index.js"
+import { socketHandlers } from "@/socket/index.js"
 import {
   apiClient,
   eventSubMiddleware,
@@ -9,9 +10,15 @@ import {
   handleTokenValidation,
   setupAuthProvider,
   twitchRouter,
-} from "@/twitch"
-import type { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
-import { checkInitialDatabase, logger } from "@/utils"
+} from "@/twitch/index.js"
+import type {
+  ClientToServerEvents,
+  GraphqlContext,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from "@/types.js"
+import { checkInitialDatabase, logger } from "@/utils/index.js"
 import { PrismaClient } from "@prisma/client"
 import {
   ApolloServerPluginLandingPageDisabled,

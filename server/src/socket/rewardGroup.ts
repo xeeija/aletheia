@@ -1,4 +1,4 @@
-import type { SocketHandler } from "@/types"
+import type { SocketHandler } from "@/types.js"
 
 export const rewardGroupHandler: SocketHandler = (socket) => {
   socket.on("rewardgroup:join", async () => {

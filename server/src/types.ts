@@ -1,4 +1,4 @@
-import { RewardGroupFull } from "@/resolvers"
+import { RewardGroupFull } from "@/resolvers/index.js"
 import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"

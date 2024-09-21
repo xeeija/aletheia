@@ -1,5 +1,5 @@
-import { RandomWheelMember, RandomWheelRole, User } from "@/generated/graphql"
-import type { GraphqlContext } from "@/types"
+import { RandomWheelMember, RandomWheelRole, User } from "@/generated/graphql/index.js"
+import type { GraphqlContext } from "@/types.js"
 import { Prisma } from "@prisma/client"
 import type { GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"

@@ -1,6 +1,6 @@
-import { CustomReward, CustomRewardCreateInput, CustomRewardUpdateInput } from "@/resolvers"
-import { accessTokenForUser } from "@/twitch"
-import { type GraphqlContext } from "@/types"
+import { CustomReward, CustomRewardCreateInput, CustomRewardUpdateInput } from "@/resolvers/index.js"
+import { accessTokenForUser } from "@/twitch/index.js"
+import { type GraphqlContext } from "@/types.js"
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
 
 // @ObjectType("EventSubscription")

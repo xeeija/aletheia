@@ -1,5 +1,5 @@
-import { apiClient, findRewardByLink } from "@/twitch"
-import type { SocketHandler } from "@/types"
+import { apiClient, findRewardByLink } from "@/twitch/index.js"
+import type { SocketHandler } from "@/types.js"
 
 export const rewardLinkHandler: SocketHandler = (socket, { prisma }) => {
   socket.on("rewardlink:join", async (token) => {

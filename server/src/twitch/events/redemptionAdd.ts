@@ -1,4 +1,4 @@
-import { activeSubscriptions, getTwitchUserId, useMockServer } from "@/twitch"
+import { activeSubscriptions, getTwitchUserId, useMockServer } from "@/twitch/index.js"
 import {
   EventSubConfigGroup,
   EventSubConfigSyncAdd,
@@ -6,7 +6,7 @@ import {
   SubscriptionType,
   type EventSubConfigSync,
   type SocketServer,
-} from "@/types"
+} from "@/types.js"
 import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"

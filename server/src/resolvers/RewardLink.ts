@@ -1,9 +1,9 @@
-import { RewardLink } from "@/generated/graphql"
-import { CustomReward } from "@/resolvers"
-import { accessTokenForUser, findRewardByLink, updateRewardByLink } from "@/twitch"
-import { handleSubscriptionRewardUpdate } from "@/twitch/events"
-import type { GraphqlContext, RewardLinkType } from "@/types"
-import { randomBase64Url } from "@/utils"
+import { RewardLink } from "@/generated/graphql/index.js"
+import { CustomReward } from "@/resolvers/index.js"
+import { handleSubscriptionRewardUpdate } from "@/twitch/events/index.js"
+import { accessTokenForUser, findRewardByLink, updateRewardByLink } from "@/twitch/index.js"
+import type { GraphqlContext, RewardLinkType } from "@/types.js"
+import { randomBase64Url } from "@/utils/index.js"
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
 
 @Resolver()

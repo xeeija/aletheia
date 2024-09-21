@@ -1,5 +1,5 @@
-import { activeSubscriptions } from "@/twitch"
-import { EventSubConfigRewardUpdate, EventSubType, SocketServer, SubscriptionType } from "@/types"
+import { activeSubscriptions } from "@/twitch/index.js"
+import { EventSubConfigRewardUpdate, EventSubType, SocketServer, SubscriptionType } from "@/types.js"
 import { PrismaClient } from "@prisma/client"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
