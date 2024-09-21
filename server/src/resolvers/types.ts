@@ -1,14 +1,14 @@
 import { ClassType, Field, Int, ObjectType, createUnionType } from "type-graphql"
 
 // create a list type of a class (type) as workaround for union types
-export function ListType<C>(itemClass: ClassType<C>) {
-  @ObjectType({ isAbstract: true })
-  abstract class ListTypeClass {
-    @Field(() => [itemClass])
-    items: C[]
-  }
-  return ListTypeClass
-}
+// export function ListType<C extends object>(itemClass: ClassType<C>) {
+//   @ObjectType()
+//   abstract class ListTypeClass {
+//     @Field(() => [itemClass])
+//     items: C[]
+//   }
+//   return ListTypeClass
+// }
 
 export function createAppErrorUnion<C extends object>(classType: ClassType<C>, name?: string) {
   const union = createUnionType({

@@ -1,4 +1,4 @@
-import { ColorTheme } from "@/generated/graphql/index.js"
+import { ColorTheme } from "@/resolvers/models/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { Arg, Ctx, Field, InputType, Query, Resolver } from "type-graphql"
 

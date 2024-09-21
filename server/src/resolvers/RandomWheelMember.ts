@@ -1,4 +1,4 @@
-import { RandomWheelMember, RandomWheelRole, User } from "@/generated/graphql/index.js"
+import { RandomWheelMember, RandomWheelRole, User } from "@/resolvers/models/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { Prisma } from "@prisma/client"
 import type { GraphQLResolveInfo } from "graphql"

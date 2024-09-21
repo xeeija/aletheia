@@ -1,5 +1,5 @@
-import { User, UserAccessToken } from "@/generated/graphql/index.js"
 import { FieldError } from "@/resolvers/index.js"
+import { User, UserAccessToken } from "@/resolvers/models/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import argon2 from "argon2"

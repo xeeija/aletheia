@@ -25,6 +25,7 @@ export const Resolvers: NonEmptyArray<Function> = [
   UserResolver,
 ]
 
+export * from "./models/index.js"
 export * from "./types.js"
 
 export * from "./ColorTheme.js"

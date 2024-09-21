@@ -1,3 +1,4 @@
+import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers/index.js"
 import {
   AccessType,
   ColorTheme,
@@ -7,8 +8,7 @@ import {
   RandomWheelMember,
   RandomWheelWinner,
   User,
-} from "@/generated/graphql/index.js"
-import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers/index.js"
+} from "@/resolvers/models/index.js"
 import { AppError, createAppErrorUnion } from "@/resolvers/types.js"
 import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"

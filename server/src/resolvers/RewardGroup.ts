@@ -1,4 +1,4 @@
-import { RewardGroup, RewardGroupItem } from "@/generated/graphql/index.js"
+import { RewardGroup, RewardGroupItem } from "@/resolvers/models/index.js"
 import { handleSubscriptionRewardGroup } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import { getRewards } from "@/twitch/mock/index.js"

@@ -1,4 +1,4 @@
-import { RandomWheelEntry } from "@/generated/graphql/index.js"
+import { RandomWheelEntry } from "@/resolvers/models/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { GraphQLError } from "graphql"
 import { Arg, Ctx, Field, InputType, Int, Mutation, Resolver } from "type-graphql"

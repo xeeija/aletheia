@@ -11,11 +11,11 @@ generator client {
 }
 
 // graphql-fields is a runtime dependency for typegraphql-prisma
-generator typegraphql {
-  provider           = "typegraphql-prisma"
-  output             = "../src/generated/graphql"
-  emitTranspiledCode = false
-}
+// generator typegraphql {
+//   provider           = "typegraphql-prisma"
+//   output             = "../src/generated/graphql"
+//   emitTranspiledCode = false
+// }
 
 model User {
   id                 String              @id @default(uuid()) @db.Uuid

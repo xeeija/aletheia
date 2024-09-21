@@ -1,5 +1,5 @@
-import { RandomWheelSync } from "@/generated/graphql/index.js"
 import { CustomReward } from "@/resolvers/index.js"
+import { RandomWheelSync } from "@/resolvers/models/index.js"
 import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser, getTwitchUserId } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
