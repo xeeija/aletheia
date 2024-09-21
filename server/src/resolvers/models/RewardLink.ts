@@ -1,4 +1,4 @@
-import { User } from "@/resolvers/models/index.js"
+import { User } from "@/resolvers/index.js"
 import { Field, ObjectType } from "type-graphql"
 
 @ObjectType("RewardLink")

@@ -1,5 +1,4 @@
-import { CustomReward } from "@/resolvers/index.js"
-import { RewardLink } from "@/resolvers/models/index.js"
+import { CustomReward, RewardLink } from "@/resolvers/index.js"
 import { handleSubscriptionRewardUpdate } from "@/twitch/events/index.js"
 import { accessTokenForUser, findRewardByLink, updateRewardByLink } from "@/twitch/index.js"
 import type { GraphqlContext, RewardLinkType } from "@/types.js"

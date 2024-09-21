@@ -1,5 +1,5 @@
-import { RandomWheel } from "@/resolvers/models/index.js"
-import { Field, Int, ObjectType } from "type-graphql"
+import { RandomWheel } from "@/resolvers/index.js"
+import { Field, InputType, Int, ObjectType } from "type-graphql"
 
 @ObjectType("RandomWheelEntry")
 export class RandomWheelEntry {
@@ -25,4 +25,16 @@ export class RandomWheelEntry {
 
   @Field(() => String, { nullable: true })
   redemptionId?: string | null
+}
+
+@InputType()
+export class RandomWheelEntryInput {
+  @Field(() => String, { nullable: true })
+  name?: string
+
+  @Field(() => String, { nullable: true })
+  color?: string
+
+  @Field(() => Int, { nullable: true })
+  weight?: number
 }

@@ -1,41 +1,11 @@
-import { RewardGroup, RewardGroupItem } from "@/resolvers/models/index.js"
+import { RewardGroupFull, RewardGroupInput, RewardGroupItem, RewardGroupItemInput } from "@/resolvers/index.js"
 import { handleSubscriptionRewardGroup } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import { getRewards } from "@/twitch/mock/index.js"
 import { type GraphqlContext } from "@/types.js"
 import { randomBase64Url } from "@/utils/index.js"
 import { HelixCustomReward } from "@twurple/api"
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
-
-@InputType()
-class RewardGroupInput {
-  @Field(() => String, { nullable: true })
-  name?: string
-
-  @Field({ nullable: true })
-  active?: boolean
-
-  @Field({ nullable: true })
-  triggerSelected?: boolean
-}
-
-@InputType()
-class RewardGroupItemInput {
-  @Field(() => String)
-  rewardId: string
-
-  @Field({ nullable: true })
-  triggerCooldown?: boolean
-
-  // @Field({ nullable: true })
-  // rewardEnabled?: boolean
-}
-
-@ObjectType("RewardGroup")
-export class RewardGroupFull extends RewardGroup {
-  @Field(() => [RewardGroupItem], { nullable: true })
-  declare items?: RewardGroupItem[]
-}
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
 
 @Resolver()
 export class RewardGroupResolver {

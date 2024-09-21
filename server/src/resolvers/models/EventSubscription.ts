@@ -1,4 +1,4 @@
-import { RandomWheelSync, User } from "@/resolvers/models/index.js"
+import { RandomWheelSync, User } from "@/resolvers/index.js"
 import { Prisma } from "@prisma/client"
 import { JSONResolver } from "graphql-scalars"
 import { Field, Int, ObjectType } from "type-graphql"

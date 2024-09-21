@@ -8,8 +8,8 @@ import {
   RewardGroup,
   RewardLink,
   UserAccessToken,
-} from "@/resolvers/models/index.js"
-import { Field, Int, ObjectType } from "type-graphql"
+} from "@/resolvers/index.js"
+import { Field, InputType, Int, ObjectType } from "type-graphql"
 
 @ObjectType("User")
 export class User {
@@ -85,4 +85,13 @@ export class UserCount {
 
   @Field(() => Int)
   rewardGroups: number
+}
+
+@InputType()
+export class UserInput implements Partial<User> {
+  @Field({ nullable: true })
+  username?: string
+
+  @Field({ nullable: true })
+  displayname?: string
 }

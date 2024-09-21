@@ -1,17 +1,10 @@
-import { CustomReward } from "@/resolvers/index.js"
-import { RandomWheelSync } from "@/resolvers/models/index.js"
+import { RandomWheelSync, RandomWheelSyncFull } from "@/resolvers/models/index.js"
 import { addExistingRedemptionsSync, handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser, getTwitchUserId } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
-import { Arg, Ctx, Field, FieldResolver, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
+import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql"
 
-@ObjectType("RandomWheelSync")
-export class RandomWheelSyncFull extends RandomWheelSync {
-  @Field(() => CustomReward, { nullable: true })
-  reward?: CustomReward | null
-}
-
-@Resolver(() => RandomWheelSyncFull)
+@Resolver(() => RandomWheelSync)
 export class RandomWheelSyncResolver {
   @FieldResolver(() => Boolean)
   pending(@Root() sync: RandomWheelSync) {

@@ -1,33 +1,9 @@
-import { RandomWheelMember, RandomWheelRole, User } from "@/resolvers/models/index.js"
+import { RandomWheelMemberFull, RandomWheelMemberInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { Prisma } from "@prisma/client"
 import type { GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
-import { Arg, Ctx, Field, Info, InputType, Mutation, ObjectType, Resolver } from "type-graphql"
-
-@ObjectType("RandomWheelMember")
-export class RandomWheelMemberFull extends RandomWheelMember {
-  @Field(() => User)
-  declare user: User
-
-  @Field(() => RandomWheelRole)
-  declare role: RandomWheelRole
-}
-
-@InputType()
-export class RandomWheelMemberInput {
-  @Field(() => String, { nullable: true })
-  id?: string
-
-  @Field(() => String)
-  username: string
-
-  @Field(() => String)
-  role: string
-
-  @Field(() => Boolean, { nullable: true })
-  delete?: boolean
-}
+import { Arg, Ctx, Info, Mutation, Resolver } from "type-graphql"
 
 export const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)

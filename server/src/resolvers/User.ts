@@ -1,9 +1,8 @@
-import { FieldError } from "@/resolvers/index.js"
-import { User, UserAccessToken } from "@/resolvers/models/index.js"
+import { FieldError, User, UserAccessToken, UserInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import argon2 from "argon2"
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql"
+import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql"
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
 
@@ -14,15 +13,6 @@ class UserResponse {
 
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[]
-}
-
-@InputType()
-class UserInput implements Partial<User> {
-  @Field({ nullable: true })
-  username?: string
-
-  @Field({ nullable: true })
-  displayname?: string
 }
 
 @Resolver()

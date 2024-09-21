@@ -1,4 +1,4 @@
-import { RewardGroup } from "@/resolvers/models/index.js"
+import { RewardGroup } from "@/resolvers/index.js"
 import { Field, ObjectType } from "type-graphql"
 
 @ObjectType("RewardGroupItem")

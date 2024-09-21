@@ -1,14 +1,11 @@
-import { ColorThemeInput, RandomWheelMemberFull, includeRandomWheelMember } from "@/resolvers/index.js"
 import {
-  AccessType,
-  ColorTheme,
+  includeRandomWheelMember,
   RandomWheel,
-  RandomWheelEntry,
+  RandomWheelFull,
+  RandomWheelInput,
   RandomWheelLike,
-  RandomWheelMember,
   RandomWheelWinner,
-  User,
-} from "@/resolvers/models/index.js"
+} from "@/resolvers/index.js"
 import { AppError, createAppErrorUnion } from "@/resolvers/types.js"
 import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
@@ -18,20 +15,7 @@ import { Prisma } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { parseResolveInfo } from "graphql-parse-resolve-info"
-import {
-  Arg,
-  Ctx,
-  Field,
-  FieldResolver,
-  Info,
-  InputType,
-  Int,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql"
+import { Arg, Ctx, FieldResolver, Info, Int, Mutation, Query, Resolver, Root } from "type-graphql"
 
 /*
   @ObjectType()
@@ -67,30 +51,6 @@ const RandomWheelResponse = createAppErrorUnion(RandomWheel)
 // workaround: generic RandomWheelList type: with "items" property that is the list
 // const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
 
-@InputType()
-class RandomWheelInput implements Partial<RandomWheel> {
-  @Field(() => String, { nullable: true })
-  name?: string | null
-
-  @Field(() => String, { nullable: true })
-  accessType?: string
-
-  @Field(() => Int, { nullable: true })
-  spinDuration?: number
-
-  @Field(() => Int, { nullable: true })
-  fadeDuration?: number
-
-  @Field(() => Boolean, { nullable: true })
-  editAnonymous?: boolean
-
-  @Field(() => Boolean, { nullable: true })
-  uniqueEntries?: boolean
-
-  @Field(() => ColorThemeInput, { nullable: true })
-  theme?: ColorTheme | null // ColorThemeInput
-}
-
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
   const fields = resolveInfo?.fieldsByTypeName.RandomWheel ?? {}
@@ -112,27 +72,6 @@ const includeRandomWheel = (info: GraphQLResolveInfo) => {
   }
 
   return include
-}
-
-@ObjectType("RandomWheel")
-export class RandomWheelFull extends RandomWheel {
-  @Field(() => [RandomWheelEntry])
-  declare entries: RandomWheelEntry[]
-
-  @Field(() => [RandomWheelWinner])
-  declare winners: RandomWheelWinner[]
-
-  @Field(() => [RandomWheelMemberFull])
-  declare members: RandomWheelMember[]
-
-  @Field(() => AccessType)
-  declare access: AccessType
-
-  @Field(() => User, { nullable: true })
-  declare owner?: User
-
-  @Field(() => ColorTheme, { nullable: true })
-  declare theme?: ColorTheme
 }
 
 // @ObjectType()

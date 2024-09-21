@@ -1,19 +1,7 @@
-import { RandomWheelEntry } from "@/resolvers/models/index.js"
+import { RandomWheelEntry, RandomWheelEntryInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { GraphQLError } from "graphql"
-import { Arg, Ctx, Field, InputType, Int, Mutation, Resolver } from "type-graphql"
-
-@InputType()
-export class RandomWheelEntryInput {
-  @Field(() => String, { nullable: true })
-  name?: string
-
-  @Field(() => String, { nullable: true })
-  color?: string
-
-  @Field(() => Int, { nullable: true })
-  weight?: number
-}
+import { Arg, Ctx, Int, Mutation, Resolver } from "type-graphql"
 
 @Resolver()
 export class RandomWheelEntryResolver {

@@ -1,5 +1,5 @@
-import { RandomWheel, RandomWheelRole, User } from "@/resolvers/models/index.js"
-import { Field, ObjectType } from "type-graphql"
+import { RandomWheel, RandomWheelRole, User } from "@/resolvers/index.js"
+import { Field, InputType, ObjectType } from "type-graphql"
 
 @ObjectType("RandomWheelMember")
 export class RandomWheelMember {
@@ -20,4 +20,28 @@ export class RandomWheelMember {
 
   @Field()
   roleName: string
+}
+
+@ObjectType("RandomWheelMember")
+export class RandomWheelMemberFull extends RandomWheelMember {
+  @Field(() => User)
+  declare user: User
+
+  @Field(() => RandomWheelRole)
+  declare role: RandomWheelRole
+}
+
+@InputType()
+export class RandomWheelMemberInput {
+  @Field(() => String, { nullable: true })
+  id?: string
+
+  @Field(() => String)
+  username: string
+
+  @Field(() => String)
+  role: string
+
+  @Field(() => Boolean, { nullable: true })
+  delete?: boolean
 }

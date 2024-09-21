@@ -1,5 +1,5 @@
-import { RandomWheel, User } from "@/resolvers/models/index.js"
-import { Field, Int, ObjectType } from "type-graphql"
+import { RandomWheel, User } from "@/resolvers/index.js"
+import { Field, InputType, Int, ObjectType } from "type-graphql"
 
 @ObjectType("ColorTheme")
 export class ColorTheme {
@@ -35,4 +35,16 @@ export class ColorThemeCount {
 
   @Field(() => Int)
   usersStandard: number
+}
+
+@InputType()
+export class ColorThemeInput {
+  @Field(() => String, { nullable: true })
+  id?: string
+
+  @Field(() => String, { nullable: true })
+  name?: string
+
+  @Field(() => [String], { nullable: true })
+  colors: string[]
 }

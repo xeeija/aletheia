@@ -1,4 +1,4 @@
-import { User } from "@/resolvers/models/index.js"
+import { User } from "@/resolvers/index.js"
 import { BigIntResolver } from "graphql-scalars"
 import { Field, Int, ObjectType } from "type-graphql"
 

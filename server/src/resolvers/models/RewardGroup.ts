@@ -1,5 +1,5 @@
-import { RewardGroupItem, User } from "@/resolvers/models/index.js"
-import { Field, Int, ObjectType } from "type-graphql"
+import { RewardGroupItem, User } from "@/resolvers/index.js"
+import { Field, InputType, Int, ObjectType } from "type-graphql"
 
 @ObjectType("RewardGroup")
 export class RewardGroup {
@@ -33,4 +33,34 @@ export class RewardGroup {
 export class RewardGroupCount {
   @Field(() => Int)
   items: number
+}
+
+@InputType()
+export class RewardGroupInput {
+  @Field(() => String, { nullable: true })
+  name?: string
+
+  @Field({ nullable: true })
+  active?: boolean
+
+  @Field({ nullable: true })
+  triggerSelected?: boolean
+}
+
+@InputType()
+export class RewardGroupItemInput {
+  @Field(() => String)
+  rewardId: string
+
+  @Field({ nullable: true })
+  triggerCooldown?: boolean
+
+  // @Field({ nullable: true })
+  // rewardEnabled?: boolean
+}
+
+@ObjectType("RewardGroup")
+export class RewardGroupFull extends RewardGroup {
+  @Field(() => [RewardGroupItem], { nullable: true })
+  declare items?: RewardGroupItem[]
 }

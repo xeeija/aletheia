@@ -1,18 +1,6 @@
-import { ColorTheme } from "@/resolvers/models/index.js"
+import { ColorTheme } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
-import { Arg, Ctx, Field, InputType, Query, Resolver } from "type-graphql"
-
-@InputType()
-export class ColorThemeInput {
-  @Field(() => String, { nullable: true })
-  id?: string
-
-  @Field(() => String, { nullable: true })
-  name?: string
-
-  @Field(() => [String], { nullable: true })
-  colors: string[]
-}
+import { Arg, Ctx, Query, Resolver } from "type-graphql"
 
 @Resolver(() => ColorTheme)
 export class ColorThemeResolver {

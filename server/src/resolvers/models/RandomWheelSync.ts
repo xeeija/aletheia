@@ -1,4 +1,4 @@
-import { EventSubscription, RandomWheel } from "@/resolvers/models/index.js"
+import { CustomReward, EventSubscription, RandomWheel } from "@/resolvers/index.js"
 import { Field, ObjectType } from "type-graphql"
 
 @ObjectType("RandomWheelSync")
@@ -27,4 +27,10 @@ export class RandomWheelSync {
 
   @Field(() => Date)
   createdAt: Date
+}
+
+@ObjectType("RandomWheelSync")
+export class RandomWheelSyncFull extends RandomWheelSync {
+  @Field(() => CustomReward, { nullable: true })
+  reward?: CustomReward | null
 }

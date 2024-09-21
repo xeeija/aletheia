@@ -1,4 +1,4 @@
-import { RandomWheelMember } from "@/resolvers/models/index.js"
+import { RandomWheelMember } from "@/resolvers/index.js"
 import { Field, Int, ObjectType } from "type-graphql"
 
 @ObjectType("RandomWheelRole")
