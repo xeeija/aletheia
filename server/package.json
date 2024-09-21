@@ -39,15 +39,15 @@
     "dotenv": "^16.4.5",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
-    "graphql": "^15.5.3",
+    "graphql": "^16.9.0",
     "graphql-fields": "^2.0.3",
-    "graphql-parse-resolve-info": "^4.12.0",
-    "graphql-scalars": "^1.10.1",
+    "graphql-parse-resolve-info": "^4.13.0",
+    "graphql-scalars": "^1.23.0",
     "nodemon": "^3.0.2",
     "reflect-metadata": "^0.2.1",
     "socket.io": "^4.5.1",
     "tslib": "^2.6.2",
-    "type-graphql": "^1.1.1"
+    "type-graphql": "^2.0.0-rc.2"
   },
   "devDependencies": {
     "@types/connect-pg-simple": "^7.0.0",
