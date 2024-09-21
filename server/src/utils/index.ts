@@ -1,4 +1,5 @@
 export * from "./compare"
+export * from "./database"
 export * from "./log"
 export * from "./random"
 export * from "./retry"

@@ -11,6 +11,7 @@ import {
   twitchRouter,
 } from "@/twitch"
 import type { ClientToServerEvents, GraphqlContext, InterServerEvents, ServerToClientEvents, SocketData } from "@/types"
+import { checkInitialDatabase, logger } from "@/utils"
 import { PrismaClient } from "@prisma/client"
 import {
   ApolloServerPluginLandingPageDisabled,
@@ -31,10 +32,12 @@ const prisma = new PrismaClient()
 
 process.on("beforeExit", async () => {
   await prisma.$disconnect()
-  console.log("Prisma disconnected")
+  logger.info("Prisma disconnected")
 })
 
 const main = async () => {
+  await checkInitialDatabase(prisma)
+
   // # Web Server
   const app = express()
   const httpServer = createServer(app)
@@ -52,7 +55,7 @@ const main = async () => {
   )
 
   if (!process.env.SESSION_SECRET) {
-    console.warn("No session secret is set")
+    logger.warn("No session secret is set")
   }
 
   const sessionMiddleware = session({
@@ -170,14 +173,31 @@ const main = async () => {
 
   app.use("/api/twitch", twitchRouter(apiClient, prisma))
 
-  const APP_PORT = process.env.APP_PORT ?? 4000
+  const APP_PORT = parseInt(process.env.APP_PORT ?? "") || 4000
 
   httpServer.listen(APP_PORT, async () => {
-    console.log(`Server started at http://localhost:${APP_PORT}`)
+    logger.info(`Server started at http://localhost:${APP_PORT}`)
 
     await eventSubMiddleware.markAsReady()
     await handleEventSub(eventSubMiddleware, prisma, socketIo)
     handleTokenValidation(apiClient, prisma)
+  })
+
+  process.on("unhandledRejection", (error) => {
+    logger.error("Unhandled promise rejection:", error)
+  })
+
+  process.on("SIGTERM", () => {
+    logger.info("Shutting down...")
+
+    // client.destroy()
+    httpServer.close((err) => {
+      if (err) {
+        logger.error("Server closed with error:", err)
+      } else {
+        logger.info("Server closed")
+      }
+    })
   })
 }
 
