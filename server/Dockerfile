@@ -1,5 +1,5 @@
 # Aletheia Server
-FROM node:20.11-alpine3.19 AS base
+FROM node:20.17.0-alpine3.20 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -44,6 +44,9 @@ RUN npm ci --omit=dev
 COPY --from=deps /server/node_modules/.prisma/client ./node_modules/.prisma/client
 COPY --from=deps /server/node_modules/@prisma/client ./node_modules/@prisma/client
 
+# RUN echo { "type": "module" } > ./dist/package.json
+# package.json with type "module" is required for import syntax
+COPY package.json ./dist
 
 # Production image, copy all the files and run
 FROM base AS run
