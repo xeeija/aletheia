@@ -19,12 +19,12 @@ import type {
   SocketData,
 } from "@/types.js"
 import { checkInitialDatabase, logger } from "@/utils/index.js"
+import { ApolloServer } from "@apollo/server"
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground"
+import { expressMiddleware } from "@apollo/server/express4"
+import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/disabled"
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer"
 import { PrismaClient } from "@prisma/client"
-import {
-  ApolloServerPluginLandingPageDisabled,
-  ApolloServerPluginLandingPageGraphQLPlayground,
-} from "apollo-server-core"
-import { ApolloServer } from "apollo-server-express"
 import PGStore from "connect-pg-simple"
 import cors from "cors"
 import express from "express"
@@ -141,37 +141,46 @@ const main = async () => {
   })
 
   // # Graphql Server
-  const apolloServer = new ApolloServer({
+  const apolloServer = new ApolloServer<GraphqlContext>({
     schema: await buildSchema({
       resolvers: Resolvers,
       validate: false,
     }),
-    context: ({ req, res }): GraphqlContext => ({
-      req,
-      res,
-      prisma,
-      socketIo,
-      apiClient,
-      eventSub: eventSubMiddleware,
-    }),
     cache: "bounded",
+    csrfPrevention: true,
+    status400ForVariableCoercionErrors: true,
     plugins: [
       process.env.ENABLE_GRAPHQL !== "1"
         ? ApolloServerPluginLandingPageDisabled()
         : ApolloServerPluginLandingPageGraphQLPlayground(),
+      ApolloServerPluginDrainHttpServer({ httpServer }),
     ],
   })
+
+  // new Graphql web editor as replacement for Graphql Playground (which is no longer supported)
+  // ApolloServerPluginLandingPageLocalDefault from @apollo/server/plugin/landingPage/default
 
   // TODO Test
   // app.get("/slug/:slug", slugTest)
 
   // Known bug, fix for error "must start before applyMiddleware"
   await apolloServer.start()
-  apolloServer.applyMiddleware({
-    app,
-    cors: false,
-    path: "/api/graphql",
-  })
+
+  app.use(
+    "/api/graphql",
+    express.json(),
+    expressMiddleware<GraphqlContext>(apolloServer, {
+      context: ({ req, res }): Promise<GraphqlContext> =>
+        Promise.resolve({
+          req,
+          res,
+          prisma,
+          socketIo,
+          apiClient,
+          eventSub: eventSubMiddleware,
+        }),
+    })
+  )
 
   // Twitch Integration
 
