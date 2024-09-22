@@ -3,7 +3,7 @@ import { addMockAccessTokens } from "@/twitch/mock/index.js"
 import type { HttpError } from "@/types.js"
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
-import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
+import { type AccessToken, RefreshingAuthProvider } from "@twurple/auth"
 import "dotenv/config"
 
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""

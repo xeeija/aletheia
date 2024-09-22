@@ -10,7 +10,7 @@ import { RewardLinkResolver } from "./RewardLink.js"
 import { TwitchResolver } from "./Twitch.js"
 import { UserResolver } from "./User.js"
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const Resolvers: NonEmptyArray<Function> = [
   ColorThemeResolver,
   EventSubResolver,

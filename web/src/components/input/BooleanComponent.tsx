@@ -45,7 +45,7 @@ export const BooleanComponent = ({
         aria-describedby={!hasLabel ? tooltip || name : undefined}
         name={name}
         {...props}
-        checked={Boolean(field.value) ?? false}
+        checked={Boolean(field.value)}
         color={error ? "error" : color}
         // fix this inputProps
         size={size}

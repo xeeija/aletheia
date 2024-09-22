@@ -22,6 +22,7 @@
     // "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/no-misused-promises": "off",
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "no-constant-binary-expression": "error",
     "prettier/prettier": "warn"
   }
   // ignorePatterns: ["src/services/*"],

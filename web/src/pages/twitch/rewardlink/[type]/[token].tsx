@@ -39,7 +39,7 @@ const RewardLinkPage: LayoutNextPage = () => {
   // refetch the reward every 10 minutes, to check if status changed
   useInterval(() => refetch(), {
     ms: 10 * 60 * 1000,
-    disable: true || !reward,
+    disable: true, // || !reward,
   })
 
   if (!reward && !fetching) {

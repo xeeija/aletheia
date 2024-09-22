@@ -6,7 +6,7 @@ import {
   RandomWheelLike,
   RandomWheelWinner,
 } from "@/resolvers/index.js"
-import { AppError, createAppErrorUnion } from "@/resolvers/types.js"
+import { AppError } from "@/resolvers/types.js"
 import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
@@ -42,8 +42,6 @@ import { Arg, Ctx, FieldResolver, Info, Int, Mutation, Query, Resolver, Root } f
     })
   })
 */
-
-const RandomWheelResponse = createAppErrorUnion(RandomWheel)
 
 // @ObjectType("RandomWheelList")
 // class RandomWheelList extends ListType(RandomWheel) { }
@@ -254,7 +252,7 @@ export class RandomWheelResolver {
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
     @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
     @Arg("uniqueEntries", { nullable: true }) uniqueEntries?: boolean
-  ): Promise<typeof RandomWheelResponse> {
+  ): Promise<RandomWheel | AppError> {
     // const tempSlug = `slug-${Date.now()}`
 
     try {

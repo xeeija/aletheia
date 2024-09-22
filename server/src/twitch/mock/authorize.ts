@@ -23,7 +23,7 @@ const main = async () => {
   )
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const tokenJson: Record<string, string> = await response.json()
+  const tokenJson = (await response.json()) as Record<string, string>
 
   // const newToken: AccessToken = {
   //   accessToken: tokenJson.access_token,

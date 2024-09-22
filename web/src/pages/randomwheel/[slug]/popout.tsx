@@ -17,9 +17,9 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
   const params = new URLSearchParams(router.asPath.split("?")?.[1])
 
   const token = params.get("token") ?? undefined
-  const fade = params.get("fade") === "true" ?? false
-  const hideWinnerDialog = params.get("winnerDialog") === "false" ?? false
-  const testMode = params.get("test") === "true" ?? false
+  const fade = params.get("fade") === "true"
+  const hideWinnerDialog = params.get("winnerDialog") === "false"
+  const testMode = params.get("test") === "true"
 
   const [{ wheel, lastWinnerEntry, entries, fetching }] = useRandomWheel(slug ?? "", {
     details: true,

@@ -51,7 +51,7 @@ export const BooleanField: FC<Props> = ({
       aria-describedby={!hasLabel ? tooltip || name : undefined}
       name={name}
       {...props}
-      checked={Boolean(field.value) ?? false}
+      checked={Boolean(field.value)}
       color={error ? "error" : props.color}
       // fix this inputProps
       size={(toggle && size === "large" ? "medium" : size) as "small" | "medium"}
