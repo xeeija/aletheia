@@ -18,6 +18,7 @@
     "removeComments": true,
     "pretty": true,
     "sourceMap": true,
+    // uses tslib package
     "importHelpers": true,
     "declaration": true,
     // "declarationMap": true,

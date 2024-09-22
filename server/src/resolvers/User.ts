@@ -1,7 +1,7 @@
 import { FieldError, User, UserAccessToken, UserInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-import argon2 from "argon2"
+import { hash, verify } from "argon2"
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql"
 
 // TODO: Refactor to "throw" graphql errors instead of returning? -- NO, maybe union types
@@ -49,7 +49,7 @@ export class UserResolver {
     }
     if (errors.length > 0) return { errors }
 
-    const passwordHash = await argon2.hash(password)
+    const passwordHash = await hash(password)
 
     try {
       const user = await prisma.user.create({
@@ -106,7 +106,7 @@ export class UserResolver {
 
     const user = await prisma.user.findUnique({ where: { username } })
 
-    if (user === null || !(await argon2.verify(user.password, password))) {
+    if (user === null || !(await verify(user.password, password))) {
       return {
         errors: [{ field: "password", message: "Username or password incorrect" }],
       }

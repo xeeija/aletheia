@@ -65,9 +65,11 @@ export interface ClientToServerEvents {
   "rewardlink:join": (token: string) => void
 }
 
-export interface InterServerEvents {}
+// export interface InterServerEvents {}
+export type InterServerEvents = Record<string, never>
 
-export interface SocketData {}
+// export interface SocketData {}
+export type SocketData = Record<string, never>
 
 export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add",
