@@ -4,7 +4,7 @@ import "@/styles/global.css"
 import { theme } from "@/theme"
 import { CssBaseline, ThemeProvider } from "@mui/material"
 import type { AppProps } from "next/app"
-import { Provider as UrqlProvider, createClient } from "urql"
+import { Provider as UrqlProvider, cacheExchange, createClient, fetchExchange } from "urql"
 
 type LayoutAppProps = AppProps & {
   Component: LayoutNextPage
@@ -20,6 +20,7 @@ const App = ({ Component, pageProps }: LayoutAppProps) => {
     fetchOptions: {
       credentials: "include",
     },
+    exchanges: [cacheExchange, fetchExchange],
   })
 
   return (
