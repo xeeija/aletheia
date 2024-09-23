@@ -163,7 +163,12 @@ const logFunction = (level: LogLevel, message: string, name: string = "", showTi
   logFn(messageFormatted)
 }
 
-const parseParams = (...params: unknown[]) => params?.join(" ")
+const parseParams = (...params: unknown[]) => {
+  // const mappedParams = params.map((param) =>
+  //   typeof param === "number" ? `${colorWrapper("red")(param.toString())}` : param
+  // )
+  return params.join(" ")
+}
 
 // const parseParams = (message: any, ...params: any[]) =>
 // `${message}${params !== undefined ? ` ${params?.join(" ")}` : ""}`
@@ -180,19 +185,19 @@ export interface Logger {
 
 export const createLogger = (name = "") => {
   const logger: Logger = {
-    error: (message, params) => logFunction(LogLevel.Error, parseParams(message, params), name),
-    warn: (message, params) => logFunction(LogLevel.Warn, parseParams(message, params), name),
-    info: (message, params) => logFunction(LogLevel.Info, parseParams(message, params), name),
-    log: (message, params) => logFunction(LogLevel.Info, parseParams(message, params), name),
-    debug: (message, params) => logFunction(LogLevel.Debug, parseParams(message, params), name),
-    trace: (message, params) => logFunction(LogLevel.Trace, parseParams(message, params), name),
+    error: (...params) => logFunction(LogLevel.Error, parseParams(...params), name),
+    warn: (...params) => logFunction(LogLevel.Warn, parseParams(...params), name),
+    info: (...params) => logFunction(LogLevel.Info, parseParams(...params), name),
+    log: (...params) => logFunction(LogLevel.Info, parseParams(...params), name),
+    debug: (...params) => logFunction(LogLevel.Debug, parseParams(...params), name),
+    trace: (...params) => logFunction(LogLevel.Trace, parseParams(...params), name),
     time: {
-      error: (message, params) => logFunction(LogLevel.Error, parseParams(message, params), name, true),
-      warn: (message, params) => logFunction(LogLevel.Warn, parseParams(message, params), name, true),
-      info: (message, params) => logFunction(LogLevel.Info, parseParams(message, params), name, true),
-      log: (message, params) => logFunction(LogLevel.Info, parseParams(message, params), name, true),
-      debug: (message, params) => logFunction(LogLevel.Debug, parseParams(message, params), name, true),
-      trace: (message, params) => logFunction(LogLevel.Trace, parseParams(message, params), name, true),
+      error: (...params) => logFunction(LogLevel.Error, parseParams(...params), name, true),
+      warn: (...params) => logFunction(LogLevel.Warn, parseParams(...params), name, true),
+      info: (...params) => logFunction(LogLevel.Info, parseParams(...params), name, true),
+      log: (...params) => logFunction(LogLevel.Info, parseParams(...params), name, true),
+      debug: (...params) => logFunction(LogLevel.Debug, parseParams(...params), name, true),
+      trace: (...params) => logFunction(LogLevel.Trace, parseParams(...params), name, true),
     },
   }
 
