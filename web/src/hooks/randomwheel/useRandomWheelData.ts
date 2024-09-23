@@ -41,7 +41,7 @@ export interface RandomWheelData {
   lastWinnerEntry?: RandomWheelEntry
 }
 
-type FetchFunction = (opts?: Partial<OperationContext> | undefined) => void
+type FetchFunction = (opts?: Partial<OperationContext>) => void
 
 export interface RandomWheelFetch {
   fetchWheel: FetchFunction

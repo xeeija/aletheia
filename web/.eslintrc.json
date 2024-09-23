@@ -43,10 +43,10 @@
     // maybe enable floating promises again, and mark them with 'void' instead
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/ban-types": [
+    "@typescript-eslint/no-empty-object-type": ["error", { "allowWithName": "Props$" }],
+    "@typescript-eslint/no-restricted-types": [
       "warn",
       {
-        "extendDefaults": true,
         "types": {
           "React.FC": {
             "message": "Use `FC` instead. Useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177",
