@@ -10,7 +10,7 @@ import { AppError } from "@/resolvers/types.js"
 import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
-import { random, randomBase64Url, randomNumber, slugify } from "@/utils/index.js"
+import { loggerGraphql as logger, loggerSocket, random, randomBase64Url, randomNumber, slugify } from "@/utils/index.js"
 import { Prisma } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
@@ -232,8 +232,8 @@ export class RandomWheelResolver {
       //   errorCode: 404,
       //   errorMessage: "Not found"
       // }
-    } catch (ex: unknown) {
-      console.error(ex)
+    } catch (err) {
+      logger.error("Failed to find wheel:", err)
 
       return {
         errorCode: 500,
@@ -284,10 +284,10 @@ export class RandomWheelResolver {
       // })
 
       return randomWheel
-    } catch (ex: unknown) {
-      if (ex instanceof Prisma.PrismaClientKnownRequestError) {
-        if (ex.code === "P2002") {
-          const errorFields = ex.meta?.target as string[]
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === "P2002") {
+          const errorFields = err.meta?.target as string[]
 
           return {
             errorCode: 400,
@@ -299,7 +299,7 @@ export class RandomWheelResolver {
         }
       }
 
-      console.error(ex)
+      logger.error("Failed to create wheel:", err)
 
       return {
         errorCode: 500,
@@ -408,10 +408,10 @@ export class RandomWheelResolver {
       }
 
       return newWheel
-    } catch (ex: unknown) {
-      if (ex instanceof Prisma.PrismaClientKnownRequestError) {
-        if (ex.code === "P2002") {
-          const errorFields = ex.meta?.target as string[]
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === "P2002") {
+          const errorFields = err.meta?.target as string[]
 
           return {
             errorCode: 400,
@@ -423,7 +423,7 @@ export class RandomWheelResolver {
         }
       }
 
-      console.error(ex)
+      logger.error("Failed to create wheel:", err)
 
       return {
         errorCode: 500,
@@ -489,6 +489,8 @@ export class RandomWheelResolver {
     const totalWeight = wheel.entries.reduce((acc, entry) => acc + entry.weight || 1, 0)
 
     const winnerNumber = await randomNumber(0, totalWeight)
+    logger.trace(`Spin: generated number ${winnerNumber} from [0, ${totalWeight - 1}]`)
+
     let winnerAcc = 0
     const winnerIndex = wheel.entries.findIndex((entry) => {
       if (winnerNumber >= winnerAcc && winnerNumber < winnerAcc + entry.weight) {
@@ -516,7 +518,11 @@ export class RandomWheelResolver {
     const winnerDeg = random(0.1, 0.9)
 
     const newRotation = 360 - winnerNumber * sectorDeg - sectorDeg * winnerDeg + 90
-    // console.warn({ winnerIndex, rotateDuration, rotations, sectorDeg, winnerDeg, newRotation })
+
+    const winChance = `${winnerEntry.weight}:${totalWeight}`
+
+    const wheelLog = `${wheel.name || `#${wheel.slug}`}, ${wheel.id.slice(0, 6)}*`
+    logger.debug(`Spin: New winner '${winner.name}' #${winnerIndex} with ${winChance} chance (${wheelLog})`)
 
     await prisma.randomWheel.update({
       where: { id: wheel.id },
@@ -529,11 +535,7 @@ export class RandomWheelResolver {
       rotation: newRotation % 360,
     })
 
-    console.log(
-      `emit to wheel/${wheel.id.substring(0, 6)} (${socketIo.in(`wheel/${wheel.id}`).allSockets.length}) wheel:spin`
-    )
-
-    // console.log({ winnerIndex, newRotation: newRotation % 360 })
+    loggerSocket.debug(`Emit wheel:spin to room wheel/${wheel.id.slice(0, 6)}*`)
 
     // TODO: Fire websocket event here
     // Maybe add win chance (1 / entries) to winner?

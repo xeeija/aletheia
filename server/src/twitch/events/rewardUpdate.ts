@@ -1,5 +1,6 @@
 import { activeSubscriptions } from "@/twitch/index.js"
 import { EventSubConfigRewardUpdate, EventSubType, SocketServer, SubscriptionType } from "@/types.js"
+import { loggerEventsub as logger, loggerSocket } from "@/utils/index.js"
 import { PrismaClient } from "@prisma/client"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
@@ -25,7 +26,7 @@ export const handleSubscriptionRewardUpdate = async (
 
   // delete subscription if no groups are active
   if (userRewardLinks.length === 0) {
-    console.log("[eventsub] reward link: no links, removing subscription")
+    logger.info(`Found no reward links for twitch user ${subConfig.twitchUserId} after update, removing subscription`)
 
     activeSubscriptions.get(existingSub?.id ?? "")?.stop()
     activeSubscriptions.delete(existingSub?.id ?? "")
@@ -38,8 +39,7 @@ export const handleSubscriptionRewardUpdate = async (
   }
 
   const addedSub = eventSub.onChannelRewardUpdate(subConfig.twitchUserId, (event) => {
-    // debug
-    console.log(`[eventsub] Received reward update for ${event.broadcasterName}: '${event.title}'`)
+    logger.debug(`Updated reward '${event.title}' of user ${event.broadcasterName}`)
 
     const eventRewardId = event.id
     const relevantLinks = userRewardLinks.filter((rl) => rl.rewardId === eventRewardId)
@@ -58,6 +58,12 @@ export const handleSubscriptionRewardUpdate = async (
     //   isPaused: event.isPaused,
     //   isInStock: event.isInStock,
     // }
+
+    if (rooms.length > 0) {
+      loggerSocket.debug(
+        `Emit reward:update to ${rooms.length} rooms after reward '${event.title}' (${event.broadcasterName}) was updated`
+      )
+    }
 
     socketIo.to(rooms).emit("reward:update")
   })
@@ -79,8 +85,7 @@ export const handleSubscriptionRewardUpdate = async (
     },
   })
 
-  // console.log("id", id, addedSub.id)
-  // console.log("cli: ", await addedSub.getCliTestCommand())
+  logger.trace(`Added channelRewardUpdate subscrption, id: ${addedSub.id}, cli:`, await addedSub.getCliTestCommand())
 
   activeSubscriptions.set(subscription.id, addedSub)
 

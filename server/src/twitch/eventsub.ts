@@ -1,3 +1,5 @@
+import "dotenv/config"
+
 import {
   handleSubscriptionRewardGroup,
   handleSubscriptionRewardUpdate,
@@ -6,12 +8,16 @@ import {
 } from "@/twitch/events/index.js"
 import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch/index.js"
 import { EventSubType, type SocketServer } from "@/types.js"
+import { loggerEventsub as logger } from "@/utils/index.js"
 import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
-import "dotenv/config"
 
 const strictHostCheck = process.env.EVENTSUB_STRICT_HOST_CHECK !== "0"
+
+if (!process.env.EVENTSUB_SECRET) {
+  logger.warn("EVENTSUB_SECRET is not set")
+}
 
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
@@ -31,54 +37,66 @@ export const eventSubMiddleware = new EventSubMiddleware({
 
 export const activeSubscriptions = new Map<string, EventSubSubscription>()
 
-export const showEventSubDebug =
-  process.env.TWITCH_DEBUG === "1" || process.env.TWITCH_DEBUG?.toLocaleLowerCase() === "true"
+// export const showEventSubDebug =
+//   process.env.TWITCH_DEBUG === "1" || process.env.TWITCH_DEBUG?.toLocaleLowerCase() === "true"
+
+// const eventTypePattern = /^([a-z_.]+[a-z_])/
+// const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 
 // const eventTypePattern = /^([\w.]+)\.(\d+)\.([\da-f-]+)$/
-const eventTypePattern = /^([a-z_.]+[a-z_])/
-
-const eventType = (eventId: string) => eventId.match(eventTypePattern)?.[1]
 // const eventType = (eventId: string) => {
 //   const r = eventId.match(eventTypePattern)
 //   return `${r?.[1]}.${r?.[3]}`
 // }
 
 export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: PrismaClient, socketIo: SocketServer) => {
-  if (showEventSubDebug) {
-    eventSub.onSubscriptionCreateFailure((ev, err) => {
-      console.log("[eventsub] create failure", eventType(ev.id), err.name, err.message)
-    })
-    eventSub.onSubscriptionCreateSuccess((ev) => {
-      console.log("[eventsub] create success", eventType(ev.id))
-    })
-    eventSub.onSubscriptionDeleteFailure((ev, err) => {
-      console.log("[eventsub] delete failure", eventType(ev.id), err.name, err.message)
-    })
-    eventSub.onSubscriptionDeleteSuccess((ev) => {
-      console.log("[eventsub] delete success", eventType(ev.id))
-    })
-    eventSub.onVerify((success, sub) => {
-      console.log(`[eventsub] verify ${success ? "succes" : "failure"}`, eventType(sub.id))
-    })
-  }
+  eventSub.onSubscriptionCreateFailure((ev, err) => {
+    logger.error(`Failed to create subscription ${ev.id}:`, err)
+  })
+
+  eventSub.onSubscriptionCreateSuccess((ev) => {
+    logger.debug(`Created subscription ${ev.id}`)
+  })
+
+  eventSub.onSubscriptionDeleteFailure((ev, err) => {
+    logger.error(`Failed to delete subscription ${ev.id}:`, err)
+  })
+
+  eventSub.onSubscriptionDeleteSuccess((ev) => {
+    logger.debug(`Deleted subscription ${ev.id}`)
+  })
+
+  eventSub.onVerify((success, ev) => {
+    if (success) {
+      logger.debug(`Verified subscription ${ev.id}`)
+    } else {
+      logger.error(`Failed to verify subscription ${ev.id}`)
+    }
+  })
 
   eventSub.onRevoke(async (sub, status) => {
-    console.log(`[eventsub] revoked ${eventType(sub.id)} ${sub.authUserId?.slice(0, 4)}, Status ${status}`)
+    // maybe log as info
+    logger.debug(`Revoked subscription ${sub.id} with status ${status} (user ${sub.authUserId})`)
 
     if (status === "authorization_revoked") {
-      await prisma.eventSubscription.deleteMany({
+      const deletedSubscriptions = await prisma.eventSubscription.deleteMany({
         where: {
           twitchUserId: sub.authUserId ?? "",
         },
       })
 
-      await prisma.userAccessToken.deleteMany({
+      const deletedToken = await prisma.userAccessToken.deleteMany({
         where: {
           twitchUserId: sub.authUserId,
         },
       })
 
-      console.log("[eventsub] revoke: removed token successfully")
+      if (deletedToken.count > 0 || deletedSubscriptions.count > 0) {
+        logger.info(
+          `Deleted ${deletedToken.count} access tokens and`,
+          `${deletedSubscriptions.count} subscriptions of user ${sub.authUserId} after revoke`
+        )
+      }
     }
   })
 
@@ -96,7 +114,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // initialize wheel sync subscriptions
   const storedSync = storedSubscriptions.filter((s) => s.type === EventSubType.wheelSync.toString())
 
-  console.log(`[eventsub] initialize`, storedSync.length, `wheel sync subscriptions`)
+  logger.debug(`Initialize ${storedSync.length} wheel sync subscriptions`)
 
   // find unique rewardIds
   const rewardIdsSync = storedSync.flatMap((sub) => sub.wheelSync.map((s) => s.rewardId))
@@ -117,7 +135,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // initialize reward group subscriptions
   const storedGroup = storedSubscriptions.filter((s) => s.type === EventSubType.rewardGroup.toString())
 
-  console.log(`[eventsub] initialize`, storedGroup.length, `reward group subscriptions`)
+  logger.debug(`Initialize ${storedGroup.length} reward group subscriptions`)
 
   await Promise.all(
     storedGroup.map(async (sub) => {
@@ -141,7 +159,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   })
 
   if (pausedRewardGroups.length) {
-    console.log(`[eventsub] reward group: resuming`, pausedRewardGroups.length, `reward groups to unpause`)
+    logger.info(`Resuming ${pausedRewardGroups.length} reward groups to unpause`)
   }
 
   for (const group of pausedRewardGroups) {
@@ -163,7 +181,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
   // initialize reward link subscriptions
   const storedLink = storedSubscriptions.filter((s) => s.type === EventSubType.rewardLink.toString())
 
-  console.log(`[eventsub] initialize`, storedLink.length, `reward link subscriptions`)
+  logger.debug(`Initialize ${storedLink.length} reward link subscriptions`)
 
   await Promise.all(
     storedLink.map(async (sub) => {
@@ -174,7 +192,10 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
     })
   )
 
+  const initializedSubs = storedSync.length + storedGroup.length + storedLink.length
+  logger.info(`Initialized ${initializedSubs} subscriptions (${storedSubscriptions.length} stored)`)
+
   // await apiClient.eventSub.deleteAllSubscriptions()
 
-  // console.log(await redemptionsSubscription.getCliTestCommand())
+  // logger.debug(await redemptionsSubscription.getCliTestCommand())
 }

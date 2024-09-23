@@ -3,7 +3,7 @@ import { handleSubscriptionRewardGroup } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import { getRewards } from "@/twitch/mock/index.js"
 import { type GraphqlContext } from "@/types.js"
-import { randomBase64Url } from "@/utils/index.js"
+import { loggerGraphql as logger, randomBase64Url } from "@/utils/index.js"
 import { HelixCustomReward } from "@twurple/api"
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql"
 
@@ -156,9 +156,12 @@ export class RewardGroupResolver {
         !updateItems.map((i) => i.rewardId).includes(d.rewardId)
     )
 
-    // console.log("update", updateItems)
-    // console.log("create", createItems)
-    // console.log("delete", deleteItems)
+    logger.debug(
+      `Update reward group '${group.name}':`,
+      `create ${createItems?.length},`,
+      `update ${updateItems?.length}`,
+      `and delete ${deleteItems?.length} items`
+    )
 
     const updateItemsFalse = updateItems?.filter((i) => i.triggerCooldown === false)
 

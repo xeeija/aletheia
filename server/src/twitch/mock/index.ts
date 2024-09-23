@@ -1,3 +1,4 @@
+import { loggerTwitchAuth as logger } from "@/utils/index.js"
 import { HelixCustomReward } from "@twurple/api"
 import { AccessToken, RefreshingAuthProvider } from "@twurple/auth"
 import { readFile } from "fs/promises"
@@ -34,6 +35,6 @@ export const addMockAccessTokens = async (mockAuthProvider: RefreshingAuthProvid
     // }
     mockAuthProvider.addUser(process.env.TWITCH_MOCK_USER_ID ?? "", tokenJson)
   } catch (err) {
-    console.error("[twitch] mock: Error loading mock API token:", err)
+    logger.error("Failed to load Mock API token:", err)
   }
 }

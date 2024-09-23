@@ -1,6 +1,6 @@
 import { authProvider, getRewardIconData, updateRewardByLink } from "@/twitch/index.js"
 import type { AccessTokenResponse } from "@/types.js"
-import { randomBase64Url } from "@/utils/index.js"
+import { loggerTwitchAuth as logger, randomBase64Url } from "@/utils/index.js"
 import { PrismaClient } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { ApiClient } from "@twurple/api"
@@ -27,7 +27,7 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
       })
 
       if (!validState?.state) {
-        console.warn("[twitch] invalid state")
+        logger.warn("Received access token with invalid 'state' parameter (unauthorized)")
         res.status(401).send({ error: "invalid state" })
         return
       }
@@ -50,7 +50,7 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
         method: "POST",
       })
 
-      const body = <AccessTokenResponse>await response.json()
+      const body = (await response.json()) as AccessTokenResponse
 
       const tokenInfo = await getTokenInfo(body.access_token, process.env.TWITCH_CLIENT_ID)
 
@@ -62,6 +62,7 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
       }
 
       if (!tokenInfo.userId) {
+        logger.warn("userId of access token is null or empty:", JSON.stringify(tokenInfo.userId))
         // res.status(400).json({ respone: body, message: "userId of token not found" })
         res.status(400).send({ error: "userId of token not found" })
 
@@ -94,8 +95,8 @@ export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
 
       // TODO: success code as query param and open a success popup
     } catch (err: unknown) {
+      logger.error("Failed to create access token:", err)
       if (err instanceof Error) {
-        console.error(err.message)
         res.send(500).send({ error: err.message })
         return
       }

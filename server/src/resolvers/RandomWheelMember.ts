@@ -1,5 +1,6 @@
 import { RandomWheelMemberFull, RandomWheelMemberInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
+import { loggerGraphql as logger } from "@/utils/index.js"
 import { Prisma } from "@prisma/client"
 import type { GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
@@ -27,8 +28,8 @@ export const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
     }
 
     return include
-  } catch (ex: unknown) {
-    console.error("includeRandomWheelMember error", ex)
+  } catch (err) {
+    logger.error("Error in includeRandomWheelMember:", err)
     return {}
   }
 }

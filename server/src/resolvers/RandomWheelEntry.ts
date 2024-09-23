@@ -1,5 +1,6 @@
 import { RandomWheelEntry, RandomWheelEntryInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
+import { loggerSocket as logger } from "@/utils/index.js"
 import { GraphQLError } from "graphql"
 import { Arg, Ctx, Int, Mutation, Resolver } from "type-graphql"
 
@@ -46,9 +47,9 @@ export class RandomWheelEntryResolver {
       },
     })
 
-    socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
-    // console.log(`emit to wheel:entries`)
+    logger.debug(`Emit wheel:entries add to room wheel/${randomWheelId.slice(0, 7)}*`)
 
+    socketIo.to(`wheel/${randomWheelId}`).emit("wheel:entries", "add")
     return entry
   }
 
@@ -100,9 +101,9 @@ export class RandomWheelEntryResolver {
       where: { id },
     })
 
-    socketIo.to(`wheel/${entry.randomWheelId}`).emit("wheel:entries", "delete")
-    // console.log(`emit wheel:entries`)
+    logger.debug(`Emit wheel:entries delete to room wheel/${entry.randomWheelId.slice(0, 7)}*`)
 
+    socketIo.to(`wheel/${entry.randomWheelId}`).emit("wheel:entries", "delete")
     return true
   }
 
@@ -117,9 +118,9 @@ export class RandomWheelEntryResolver {
       data: { rotation: 0 },
     })
 
-    socketIo.to(`wheel/${id}`).emit("wheel:entries", "clear")
-    // console.log(`emit to wheel:entries c`)
+    logger.debug(`Emit wheel:entries clear to room wheel/${id.slice(0, 7)}*`)
 
+    socketIo.to(`wheel/${id}`).emit("wheel:entries", "clear")
     return res.count
   }
 }

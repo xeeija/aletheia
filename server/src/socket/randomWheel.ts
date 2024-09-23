@@ -1,15 +1,17 @@
 import type { SocketHandler } from "@/types.js"
+import { loggerSocket as logger } from "@/utils/index.js"
 
 // const prefix = "wheel"
 
 export const randomWheelHandler: SocketHandler = (socket) => {
   socket.on("wheel:join", async (id) => {
-    // console.log(`join wheel/${id.substring(0, 6)}`)
+    // const socketLog = `${socket.id.slice(0, 6)}`
+    // logger.trace(`${socketLog} requests to join in wheel room with id ${id.slice(0, 7)}*`)
 
     // TODO: User authentication
     // prisma instance from socket.data to check wheel id
 
-    // console.log(`[socket] join in wheel/${id} from ${socket.id.slice(0, 6)}`)
+    logger.debug(`Join in room wheel/${id.slice(0, 7)}*`)
     await socket.join(`wheel/${id}`)
   })
 

@@ -1,6 +1,7 @@
 export * from "./compare.js"
 export * from "./database.js"
 export * from "./log.js"
+export * from "./logger.js"
 export * from "./random.js"
 export * from "./retry.js"
 export * from "./slug.js"

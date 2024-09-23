@@ -1,13 +1,17 @@
 import { apiClient, findRewardByLink } from "@/twitch/index.js"
 import type { SocketHandler } from "@/types.js"
+import { loggerSocket as logger } from "@/utils/index.js"
 
 export const rewardLinkHandler: SocketHandler = (socket, { prisma }) => {
   socket.on("rewardlink:join", async (token) => {
     try {
+      const socketLog = `${socket.id.slice(0, 6)}`
+      // logger.debug(`Client ${socketLog} joined in rewardlink/${token.slice(0, 6)}*`)
+      logger.trace(`${socketLog} requests to join in rewardlink room with token ${token.slice(0, 6)}*`)
+
       const { rewardLink } = await findRewardByLink(apiClient, prisma, token)
 
-      // debug
-      // console.log(`[socket] join in rewardlink/${token.slice(0, 6)} from ${socket.id.slice(0, 6)}`)
+      logger.debug(`Join in rewardlink/${rewardLink.id.slice(0, 6)}* and reward/${rewardLink.rewardId.slice(0, 6)}*`)
 
       // join a room for reward for updates and one for rewardlink
       await socket.join(`reward/${rewardLink.rewardId}`)
@@ -15,10 +19,12 @@ export const rewardLinkHandler: SocketHandler = (socket, { prisma }) => {
     } catch (err) {
       if (err instanceof Error) {
         if (err.message !== "Invalid token") {
-          console.error("Error joining rewardLink room:", err.message)
+          logger.error("Failed to join rewardLink room:", err.message)
+        } else {
+          logger.debug("Failed to join rewardLink room:", err.message)
         }
       } else {
-        console.error("Error joining rewardLink room:", err)
+        logger.error("Failed to join rewardLink room:", err)
       }
     }
   })

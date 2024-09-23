@@ -1,4 +1,5 @@
 // must be before any resolvers or type-graphql imports
+import "dotenv/config"
 import "reflect-metadata"
 
 import { Resolvers } from "@/resolvers/index.js"

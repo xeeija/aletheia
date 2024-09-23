@@ -1,5 +1,6 @@
 import { FieldError, User, UserAccessToken, UserInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
+import { loggerGraphql as logger } from "@/utils/index.js"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { hash, verify } from "argon2"
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql"
@@ -129,7 +130,7 @@ export class UserResolver {
     return new Promise<boolean>((resolve) => {
       req.session.destroy((err: unknown) => {
         if (err) {
-          console.log("Can't destroy session: ", { err })
+          logger.error("Logout: Failed to destroy session:", err)
           resolve(false)
         }
 
@@ -218,16 +219,10 @@ export class UserResolver {
 
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
-        console.error(
-          "error revoking twitch refresh token:",
-          response.status,
-          response.statusText,
-          "\n",
-          await response.text()
-        )
-        throw new Error(
-          `error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`
-        )
+        const errorMessage = `Failed to revoke twitch refresh token: ${response.status} ${response.statusText}\n`
+        logger.error(errorMessage, await response.text())
+
+        throw new Error(`${errorMessage}${await response.text()}`)
       }
     }
 
@@ -241,16 +236,10 @@ export class UserResolver {
 
       // token succesfully revoked or token was already invalid
       if (!response.ok && response.status !== 400) {
-        console.error(
-          "error revoking twitch refresh token:",
-          response.status,
-          response.statusText,
-          "\n",
-          await response.text()
-        )
-        throw new Error(
-          `error revoking twitch refresh token: ${response.status}, ${response.statusText}\n ${await response.text()}`
-        )
+        const errorMessage = `Failed to revoke twitch access token: ${response.status} ${response.statusText}\n`
+        logger.error(errorMessage, await response.text())
+
+        throw new Error(`${errorMessage}${await response.text()}`)
       }
     }
 

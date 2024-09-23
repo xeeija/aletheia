@@ -1,4 +1,6 @@
 import "dotenv/config"
+
+import { loggerTwitchAuth as logger } from "@/utils/index.js"
 import { writeFile } from "fs/promises"
 
 const port = process.env.TWITCH_MOCK_SERVER_PORT ?? "8080"
@@ -43,7 +45,7 @@ const main = async () => {
 
   await writeFile(`./src/twitch/mock/data/token.json`, JSON.stringify(newToken, null, 2), "utf-8")
 
-  console.log("Fetched new user access token for", userId)
+  logger.info(`Fetched new user access token for ${userId}`)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
