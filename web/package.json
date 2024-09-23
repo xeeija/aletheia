@@ -15,7 +15,7 @@
     "codegen": "graphql-codegen --config codegen.yaml"
   },
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=20.16.0"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",
