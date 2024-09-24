@@ -1,6 +1,5 @@
-// must be before any resolvers or type-graphql imports
 import "dotenv/config"
-import "reflect-metadata"
+import "reflect-metadata" // must be before any resolvers or type-graphql imports
 
 import { Resolvers } from "@/resolvers/index.js"
 import { socketHandlers } from "@/socket/index.js"
@@ -202,6 +201,19 @@ const main = async () => {
 
   process.on("unhandledRejection", (error) => {
     logger.error("Unhandled promise rejection:", error)
+  })
+
+  process.on("SIGINT", () => {
+    logger.info("Shutting down... (Ctrl-C)")
+
+    // client.destroy()
+    httpServer.close((err) => {
+      if (err) {
+        logger.error("Server closed with error:", err)
+      } else {
+        logger.info("Server closed")
+      }
+    })
   })
 
   process.on("SIGTERM", () => {
