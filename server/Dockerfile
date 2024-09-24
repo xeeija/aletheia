@@ -35,6 +35,9 @@ RUN npx prisma generate
 
 RUN npm run build
 
+# remove tsc build info files from incremental build (not needed, saves space)
+RUN rm ./dist/*.tsbuildinfo
+
 # TODO: Use a bundler like webpack or vite if possible
 # Install again without dev dependencies
 RUN rm -Rf ./node_modules
