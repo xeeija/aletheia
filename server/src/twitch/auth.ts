@@ -1,3 +1,5 @@
+import "dotenv/config"
+
 import { useMockServer } from "@/twitch/index.js"
 import { addMockAccessTokens } from "@/twitch/mock/index.js"
 import type { HttpError } from "@/types.js"
@@ -5,7 +7,6 @@ import { loggerTwitch as logger, loggerTwitchAuth as loggerAuth } from "@/utils/
 import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { type AccessToken, RefreshingAuthProvider } from "@twurple/auth"
-import "dotenv/config"
 
 const clientId = process.env.TWITCH_CLIENT_ID ?? ""
 const clientSecret = process.env.TWITCH_CLIENT_SECRET ?? ""
@@ -75,7 +76,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
   }
 
   authProvider.onRefresh(async (userId, newTokenData) => {
-    loggerAuth.debug(`Refreshing access token for user ${userId})`)
+    loggerAuth.info(`Refreshed access token for user ${userId}`)
 
     await prisma.userAccessToken.updateMany({
       where: {
@@ -150,7 +151,7 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
               loggerAuth.error(`Failed to refresh access token for user ${userLog}:`, err)
 
               // user revoked access? or token got invalid somehow, delete the token and all its subscriptions
-              if (process.env.TWITCH_DELETE_ON_VALIDATE !== "0") {
+              if (process.env.TWITCH_DELETE_ON_VALIDATE === "1") {
                 userTokensToDelete.push(token.twitchUserId)
               }
             }
