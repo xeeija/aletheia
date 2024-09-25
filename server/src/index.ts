@@ -18,7 +18,7 @@ import type {
   ServerToClientEvents,
   SocketData,
 } from "@/types.js"
-import { checkInitialDatabase, logger } from "@/utils/index.js"
+import { checkInitialDatabase, isDefined, logger } from "@/utils/index.js"
 import { ApolloServer } from "@apollo/server"
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground"
 import { expressMiddleware } from "@apollo/server/express4"
@@ -63,6 +63,10 @@ const main = async () => {
 
   if (!process.env.SESSION_SECRET) {
     logger.warn("No session secret is set")
+  }
+
+  if (process.env.NODE_ENV === "production" && isDefined(process.env.TRUST_PROXY)) {
+    app.set("trust proxy", parseInt(process.env.TRUST_PROXY) || 0)
   }
 
   const sessionMiddleware = session({
