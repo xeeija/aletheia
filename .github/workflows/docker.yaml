@@ -47,7 +47,7 @@ jobs:
           images: |
             ${{ vars.DOCKER_REGISTRY != '' && format('{0}/', vars.DOCKER_REGISTRY) || '' }}${{ matrix.image }}
           tags: |
-            type=ref,event=branch,suffix=-{{ github.sha | slice(0, 7) }}
+            type=ref,event=branch,suffix=-{{sha}}
             type=semver,pattern={{version}}
 
           # type=semver,pattern={{major}}.{{minor}}
