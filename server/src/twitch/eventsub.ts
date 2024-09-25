@@ -8,7 +8,7 @@ import {
 } from "@/twitch/events/index.js"
 import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch/index.js"
 import { EventSubType, type SocketServer } from "@/types.js"
-import { loggerEventsub as logger } from "@/utils/index.js"
+import { loggerEventsub as logger, useColors } from "@/utils/index.js"
 import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
@@ -18,6 +18,8 @@ const strictHostCheck = process.env.EVENTSUB_STRICT_HOST_CHECK !== "0"
 if (!process.env.EVENTSUB_SECRET) {
   logger.warn("EVENTSUB_SECRET is not set")
 }
+
+// const twurpleLogger = createLogger("twurple:eventsub")
 
 export const eventSubMiddleware = new EventSubMiddleware({
   apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
@@ -29,9 +31,18 @@ export const eventSubMiddleware = new EventSubMiddleware({
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
     minLevel: Number(process.env.EVENTSUB_LOGLEVEL) || undefined,
     emoji: false,
-    timestamps: false,
+    timestamps: process.env.LOG_TIME === "1",
+    colors: useColors,
     // name: "twurple:eventsub",
-    // colors: false,
+    // custom: {
+    //   crit: (message) => twurpleLogger.error("[CRIT]", message),
+    //   error: (message) => twurpleLogger.error(message),
+    //   warn: (message) => twurpleLogger.warn(message),
+    //   info: (message) => twurpleLogger.info(message),
+    //   log: (message) => twurpleLogger.log(message),
+    //   debug: (message) => twurpleLogger.debug(message),
+    //   trace: (message) => twurpleLogger.trace(message),
+    // },
   },
 })
 

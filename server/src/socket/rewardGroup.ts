@@ -11,7 +11,7 @@ export const rewardGroupHandler: SocketHandler = (socket) => {
     }
 
     // logger.debug(`Join in room rewardgroup/${userId.slice(0, 7)}* from ${socket.id.slice(0, 6)}*`)
-    logger.debug(`Join in room rewardgroup/${userId.slice(0, 7)}*`)
+    logger.trace(`Join in room rewardgroup/${userId.slice(0, 7)}*`)
 
     await socket.join(`rewardgroup/${userId}`)
   })

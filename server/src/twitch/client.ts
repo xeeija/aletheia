@@ -1,4 +1,5 @@
 import { authProvider, mockAuthProvider } from "@/twitch/index.js"
+import { useColors } from "@/utils/index.js"
 import { PrismaClient, UserAccessToken } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import "dotenv/config"
@@ -15,8 +16,8 @@ export const apiClient = new ApiClient({
     // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug, 7 = trace
     minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
     emoji: false,
-    timestamps: false,
-    // colors: false,
+    timestamps: process.env.LOG_TIME === "1",
+    colors: useColors,
     // name: "twurple:api",
   },
 })
@@ -31,7 +32,8 @@ export const eventSubApiClient = useMockServer
         // 0 = critical, 1 = error, 2 = warning, 3 = info, 4 = debug
         minLevel: Number(process.env.TWITCH_LOGLEVEL) || undefined,
         emoji: false,
-        timestamps: false,
+        timestamps: process.env.LOG_TIME === "1",
+        colors: useColors,
       },
     })
   : null

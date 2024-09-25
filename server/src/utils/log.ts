@@ -98,6 +98,8 @@ const LogLevelToBgColor: Record<LogLevel, ColorFunction> = {
   [LogLevel.Trace]: bgColorWrapper("bgCyan", colorWrapper("black")),
 }
 
+export const useColors = process.env.NO_COLOR !== "1" && ((process.stdout as WriteStream | undefined)?.isTTY ?? true)
+
 // Names
 
 const loglevelNames = new Map<string, LogLevel>()
@@ -141,9 +143,6 @@ const logFunction = (level: LogLevel, message: string, name: string = "", showTi
   if (level > (nameToLogLevel(name) ?? logLevel)) {
     return
   }
-
-  const noColor = process.env.NO_COLOR === "1"
-  const useColors = !noColor && ((process.stdout as WriteStream | undefined)?.isTTY ?? true)
 
   const useTime = showTime || process.env.LOG_TIME === "1"
   const timeMsg = useTime ? `${new Date(Date.now()).toISOString()} ` : ""

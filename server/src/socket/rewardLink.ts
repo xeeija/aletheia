@@ -11,7 +11,7 @@ export const rewardLinkHandler: SocketHandler = (socket, { prisma }) => {
 
       const { rewardLink } = await findRewardByLink(apiClient, prisma, token)
 
-      logger.debug(`Join in rewardlink/${rewardLink.id.slice(0, 6)}* and reward/${rewardLink.rewardId.slice(0, 6)}*`)
+      logger.trace(`Join in rewardlink/${rewardLink.id.slice(0, 6)}* and reward/${rewardLink.rewardId.slice(0, 6)}*`)
 
       // join a room for reward for updates and one for rewardlink
       await socket.join(`reward/${rewardLink.rewardId}`)

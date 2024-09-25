@@ -11,7 +11,7 @@ export const randomWheelHandler: SocketHandler = (socket) => {
     // TODO: User authentication
     // prisma instance from socket.data to check wheel id
 
-    logger.debug(`Join in room wheel/${id.slice(0, 7)}*`)
+    logger.trace(`Join in room wheel/${id.slice(0, 7)}*`)
     await socket.join(`wheel/${id}`)
   })
 
