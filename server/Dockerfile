@@ -59,7 +59,16 @@ WORKDIR /server
 COPY --from=build /server/dist ./dist
 COPY --from=build /server/node_modules/ ./node_modules
 
+ARG BUILD_TIME
+ARG COMMIT_SHA
+ARG COMMIT_TIME
+ARG VERSION
+
 ENV NODE_ENV="production"
+ENV BUILD_TIME=${BUILD_TIME}
+ENV COMMIT_SHA=${COMMIT_SHA}
+ENV COMMIT_TIME=${COMMIT_TIME}
+ENV VERSION=${VERSION}
 
 ENV PORT=4000
 
