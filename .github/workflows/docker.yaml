@@ -11,6 +11,7 @@ on:
 jobs:
   build-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       # max-parallel: 1
@@ -51,13 +52,12 @@ jobs:
             type=ref,event=branch,suffix=-{{sha}}
 
         # add commit timestamp to ${{ env }}, from event timestamp if available in event
-        # otherwise get timestamp from git (for workflow_dispatch)
+        # otherwise get timestamp from git (for workflow_dispatch), --pretty=%aI prints only the author date in ISO format
       - name: Extract Git metadata
         run: |
           export timestamp=${{ github.event.head_commit.timestamp }}
           export COMMIT_TIME=$([ -n "$timestamp" ] && echo $timestamp || git log -1 --pretty=%aI)
           echo "COMMIT_TIME=$COMMIT_TIME" >> $GITHUB_ENV
-        # if: github.github.event_name == 'workflow_dispatch'
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -82,4 +82,3 @@ jobs:
             BUILD_TIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
             COMMIT_SHA=${{ github.sha }}
             COMMIT_TIME=${{ env.COMMIT_TIME }}
-          # COMMIT_TIME=${{ github.event.head_commit.timestamp || env.COMMIT_TIME }}
