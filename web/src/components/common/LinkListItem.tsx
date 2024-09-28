@@ -1,4 +1,4 @@
-import { LinkItem } from "@/components"
+import { ThemeColor } from "@/types"
 import {
   Divider,
   ListItem,
@@ -7,10 +7,22 @@ import {
   ListItemTextProps,
   SxProps,
   Theme,
+  Typography,
   useTheme,
 } from "@mui/material"
 import Link from "next/link"
-import { forwardRef } from "react"
+import { forwardRef, MouseEventHandler, ReactNode } from "react"
+
+export interface LinkItem {
+  name?: ReactNode
+  subtitle?: ReactNode
+  icon?: ReactNode
+  divider?: ReactNode
+  onClick?: MouseEventHandler
+  href?: string
+  disabled?: boolean
+  color?: ThemeColor
+}
 
 type ItemProps = LinkItem & {
   sx?: SxProps<Theme>
@@ -20,9 +32,26 @@ type ItemProps = LinkItem & {
 // Display name is shown in debugger instead of underlying element name
 // eslint-disable-next-line react/display-name
 export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
-  ({ name = "", icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
+  ({ name = "", subtitle, icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
     const theme = useTheme()
     const themeColor = color ? theme.palette[color].main : undefined
+
+    const subtitleText = (
+      <Typography
+        component="span"
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: 0.75,
+        }}
+      >
+        <span>{name}</span>
+        <Typography component="span" color="text.secondary">
+          {subtitle}
+        </Typography>
+      </Typography>
+    )
 
     const linkItem = (
       <ListItem
@@ -45,7 +74,7 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
         >
           {icon}
         </ListItemIcon>
-        <ListItemText primary={name} {...textProps} />
+        <ListItemText primary={subtitle ? subtitleText : name} {...textProps} />
       </ListItem>
     )
 

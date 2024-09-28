@@ -1,17 +1,6 @@
-import { LinkListItem } from "@/components"
-import type { ThemeColor } from "@/types"
+import { LinkItem, LinkListItem } from "@/components"
 import { List, ListProps } from "@mui/material"
-import { FC, MouseEventHandler, ReactNode } from "react"
-
-export interface LinkItem {
-  name?: string
-  icon?: ReactNode
-  divider?: ReactNode
-  onClick?: MouseEventHandler
-  href?: string
-  disabled?: boolean
-  color?: ThemeColor
-}
+import { FC, ReactNode } from "react"
 
 type LinkListProps = Omit<ListProps, "children"> & {
   items: LinkItem[]
@@ -31,7 +20,7 @@ export const LinkList: FC<LinkListProps> = ({ children, items, ...listProps }) =
           // 3. the list is never reordered or filtered
 
           return (
-            <li key={item.name || index}>
+            <li key={item.name?.toString() || index}>
               {(childrenFn ? children?.(item, index) : null) ?? <LinkListItem {...item} />}
             </li>
           )
