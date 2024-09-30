@@ -24,14 +24,13 @@ export const RegisterForm: FC<Props> = () => {
   const passwordHelperText = "Min. length 8, must contain a-z, A-Z, 0-9 and special letters"
 
   const validationSchema = object().shape({
-    username: string().required("Required"),
-    // .min(4, "Must have at least 4 characters")
+    username: string().required("Required").min(4, "Must have at least 4 characters"),
     // .max(32, "Can only have 32 characters"),
     // .test({
     //   test: async (value) => (await validateUsername(value)) === undefined,
     //   // message: "$resolved",
     // }),
-    displayname: string(),
+    displayname: string().min(3, "Must have at least 3 characters"),
     password: string()
       .required("Required")
       .test({
@@ -113,7 +112,7 @@ export const RegisterForm: FC<Props> = () => {
             validate={validateUsername}
           />
 
-          <InputField name="displayname" label="Display name" margin="normal" fullWidth />
+          <InputField name="displayname" label="Display name" margin="normal" fullWidth icon />
 
           {/* width: calc(100% - 36px) */}
           {/* Password Strength Meter: transition width input::after, border-width: 6-8px, border-bottom-right-radius 0 if 100% width */}
@@ -146,13 +145,13 @@ export const RegisterForm: FC<Props> = () => {
             loading={isSubmitting}
             disabled={submitCount > 0 && !isValid}
             position="end"
-            endIcon={<SvgIcon component={TiArrowRight} />}
+            endIcon={<SvgIcon component={TiArrowRight} viewBox="4 2 20 20" />}
             sx={{ mt: 2 }}
           >
             Register
           </LoadingButton>
 
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1.5 }}>
             {"Already have an account? "}
             <LinkText href="/login">Login</LinkText>
           </Typography>

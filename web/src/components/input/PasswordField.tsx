@@ -1,6 +1,6 @@
 import { InputField, InputFieldProps } from "@/components"
 import { passwordStrengthColor } from "@/utils/password"
-import { IconButton, InputAdornment, useTheme } from "@mui/material"
+import { IconButton, InputAdornment, Tooltip, useTheme } from "@mui/material"
 import { useFormikContext } from "formik"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
@@ -24,17 +24,17 @@ export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, 
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            <IconButton
-              edge="end"
-              disableRipple
-              tabIndex={-1}
-              sx={{ opacity: 0.7 }}
-              onMouseDown={() => setShowPassword(true)}
-              onMouseUp={() => setShowPassword(false)}
-              onMouseLeave={() => setShowPassword(false)}
-            >
-              {showPassword ? <HiEye /> : <HiEyeOff />}
-            </IconButton>
+            <Tooltip title={"Show password"} arrow enterDelay={1000}>
+              <IconButton
+                edge="end"
+                sx={{ opacity: 0.7, mr: -1, ml: -0.75 }}
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onMouseLeave={() => setShowPassword(false)}
+              >
+                {showPassword ? <HiEye /> : <HiEyeOff />}
+              </IconButton>
+            </Tooltip>
           </InputAdornment>
         ),
         ...(strength !== undefined && {

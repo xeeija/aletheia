@@ -94,13 +94,13 @@ export const LoginForm: FC<Props> = () => {
             fullWidth
             loading={isSubmitting}
             position="end"
-            endIcon={<SvgIcon component={TiArrowRight} viewBox="2 2 20 20" />}
+            endIcon={<SvgIcon component={TiArrowRight} viewBox="4 2 20 20" />}
             sx={{ mt: 2 }}
           >
             Login
           </LoadingButton>
 
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1.5 }}>
             {"Don't have an account yet? "}
             <LinkText href="/register">Register</LinkText>
           </Typography>
