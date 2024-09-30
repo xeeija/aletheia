@@ -11,6 +11,7 @@ on:
 jobs:
   build-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       # max-parallel: 1
@@ -47,11 +48,16 @@ jobs:
           images: |
             ${{ vars.DOCKER_REGISTRY != '' && format('{0}/', vars.DOCKER_REGISTRY) || '' }}${{ matrix.image }}
           tags: |
-            type=ref,event=branch,suffix=-{{sha}}
             type=semver,pattern={{version}}
+            type=ref,event=branch,suffix=-{{sha}}
 
-          # type=semver,pattern={{major}}.{{minor}}
-          # type=semver,pattern={{major}}.{{minor}}.{{patch}}
+        # add commit timestamp to ${{ env }}, from event timestamp if available in event
+        # otherwise get timestamp from git (for workflow_dispatch), --pretty=%aI prints only the author date in ISO format
+      - name: Extract Git metadata
+        run: |
+          export timestamp=${{ github.event.head_commit.timestamp }}
+          export COMMIT_TIME=$([ -n "$timestamp" ] && echo $timestamp || git log -1 --pretty=%aI)
+          echo "COMMIT_TIME=$COMMIT_TIME" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -67,35 +73,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: ${{ matrix.context }}
-
-  # server:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     IMAGE_NAME: ${{ vars.IMAGE_NAME_SERVER }}
-
-  #   steps:
-  #     - name: Extract Docker metadata
-  #       id: meta
-  #       uses: docker/metadata-action@v4
-  #       with:
-  #         # name=,enable=true
-  #         images: |
-  #           ${{ vars.DOCKER_REGISTRY != '' && format('{0}/', vars.DOCKER_REGISTRY) || '' }}${{ env.IMAGE_NAME }}
-  #         tags: |
-  #           type=ref,event=branch
-  #           type=semver,pattern={{major}}.{{minor}}
-  #           type=semver,pattern={{major}}.{{minor}}.{{path}}
-
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: ${{ vars.DOCKER_REGISTRY }}
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         push: true
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #         labels: ${{ steps.meta.outputs.labels }}
+          # docker-metadata annotations see https://github.com/opencontainers/image-spec/blob/main/annotations.md
+          # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+          # github.event.head_commit.timestamp is only set on push event, not worflow_dispatch
+          # for workflow_dispatch: fetch commit using API? https://docs.github.com/de/rest/commits/commits?apiVersion=2022-11-28#get-a-commit
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            BUILD_TIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            COMMIT_SHA=${{ github.sha }}
+            COMMIT_TIME=${{ env.COMMIT_TIME }}

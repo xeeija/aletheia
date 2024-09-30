@@ -1,6 +1,15 @@
 import { LoadingButton } from "@/components"
 import { Awaitable, ThemeColor } from "@/types"
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SvgIcon } from "@mui/material"
+import {
+  Button,
+  ButtonOwnProps,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  SvgIcon,
+} from "@mui/material"
 import { ElementType, FC, ReactNode, useState } from "react"
 
 export interface ConfirmDialogProps {
@@ -9,11 +18,15 @@ export interface ConfirmDialogProps {
   type: ThemeColor
   confirmText: ReactNode
   onClose: () => void
-  onConfirm: () => Awaitable<void> | Awaitable<boolean>
+  onConfirm?: () => Awaitable<void> | Awaitable<boolean>
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
   icon?: ElementType
+  iconViewBox?: string
   children?: ReactNode
   cancelText?: ReactNode
+  hideCancel?: boolean
+  confirmVariant?: ButtonOwnProps["variant"]
+  cancelVariant?: ButtonOwnProps["variant"]
   id?: string
   closeOnConfirm?: boolean
 }
@@ -26,14 +39,17 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   type = "primary",
   maxWidth = "xs",
   icon,
+  iconViewBox,
   children,
+  hideCancel,
   confirmText,
   cancelText,
+  confirmVariant,
+  cancelVariant,
   id = "confirm",
   closeOnConfirm = true,
 }) => {
   const [deleting, setDeleting] = useState(false)
-
   return (
     <Dialog
       fullWidth
@@ -53,7 +69,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
       >
         {typeof title === "string" ? (
           <>
-            {icon && <SvgIcon component={icon} color={type} viewBox="0 -2 24 24" />}
+            {icon && <SvgIcon component={icon} color={type} viewBox={iconViewBox} />}
             <span>{title}</span>
           </>
         ) : (
@@ -64,17 +80,19 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" variant="outlined" onClick={onClose}>
-          {cancelText ?? "Cancel"}
-        </Button>
+        {!hideCancel && (
+          <Button color="secondary" variant={cancelVariant ?? "outlined"} onClick={onClose}>
+            {cancelText ?? "Cancel"}
+          </Button>
+        )}
 
         <LoadingButton
           color={type}
-          variant="contained"
+          variant={confirmVariant ?? "contained"}
           loading={deleting}
           onClick={async () => {
             setDeleting(true)
-            const confirmed = await onConfirm()
+            const confirmed = await onConfirm?.()
 
             setDeleting(false)
 

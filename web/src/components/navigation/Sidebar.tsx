@@ -1,4 +1,4 @@
-import { LinkItem, LinkList, LinkListItem, LogoIcon } from "@/components"
+import { LinkItem, LinkList, LinkListItem, LogoListItem } from "@/components"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
 import { Dispatch, FC, ReactNode, SetStateAction } from "react"
 
@@ -58,17 +58,7 @@ export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen
           }),
         }}
       >
-        <Tooltip title="Aletheia" arrow placement="right" enterDelay={1000}>
-          <LinkListItem
-            name="Aletheia"
-            onClick={() => setOpen(!open)}
-            // margin left (px): (width - base size) / 2
-            icon={<LogoIcon sx={{ width: 30, height: "auto", ml: -(3 / 8) }} />}
-            sx={{ width: itemWidth, mt: 1.25, mb: 1.25 }}
-            textProps={{ primaryTypographyProps: { variant: "h6" } }}
-          />
-        </Tooltip>
-
+        <LogoListItem itemWidth={itemWidth} onClick={() => setOpen(!open)} />
         <Divider variant="middle" sx={{ borderBottomWidth: 4 }} />
 
         <LinkList items={items} sx={{ p: 0 }}>

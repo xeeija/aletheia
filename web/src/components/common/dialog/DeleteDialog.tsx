@@ -10,6 +10,12 @@ type Props = Omit<ConfirmDialogProps, "confirmText" | "type"> & {
 
 export const DeleteDialog: FC<Props> = ({ confirmText, type, icon, ...props }) => {
   return (
-    <ConfirmDialog icon={icon ?? TiWarning} confirmText={confirmText ?? "Delete"} type={type ?? "error"} {...props} />
+    <ConfirmDialog
+      type={type ?? "error"}
+      confirmText={confirmText ?? "Delete"}
+      icon={icon ?? TiWarning}
+      iconViewBox="1 0.5 22 22"
+      {...props}
+    />
   )
 }
