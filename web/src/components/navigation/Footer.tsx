@@ -30,6 +30,7 @@ export const Footer: FC<Props> = () => {
           </Typography>{" "}
           by Xeeija
         </span>
+        {/* <EnvInfoBadge /> */}
       </Typography>
     </Box>
   )

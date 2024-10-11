@@ -1,4 +1,4 @@
-import { ConfirmDialog } from "@/components"
+import { ConfirmDialog, EnvInfoBadge } from "@/components"
 import { Box } from "@mui/material"
 import { FC } from "react"
 import { HiInformationCircle } from "react-icons/hi"
@@ -23,7 +23,12 @@ export const AboutDialog: FC<Props> = ({ open, onClose }) => {
       onClose={onClose}
       id="about"
       type="secondary"
-      title="Aletheia"
+      title={
+        <>
+          <span>Aletheia</span>
+          <EnvInfoBadge opacity={0.8} />
+        </>
+      }
       confirmText="Close"
       confirmVariant="outlined"
       hideCancel

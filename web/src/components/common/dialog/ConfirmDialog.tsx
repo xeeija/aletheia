@@ -73,7 +73,10 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
             <span>{title}</span>
           </>
         ) : (
-          title
+          <>
+            {icon && <SvgIcon component={icon} color={type} viewBox={iconViewBox} />}
+            {title}
+          </>
         )}
       </DialogTitle>
       <DialogContent>
