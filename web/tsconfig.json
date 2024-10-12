@@ -29,14 +29,18 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/styles/*": ["./styles/*"],
-    }
+    },
+    "plugins": [
+      { "name": "next" },
+    ],
   },
   "include": [
     "next-env.d.ts",
+    ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
 }
