@@ -1,3 +1,5 @@
+"use client"
+
 import { BooleanFieldHelper, BooleanFieldLabel } from "@/components"
 import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
 import { useField, useFormikContext } from "formik"

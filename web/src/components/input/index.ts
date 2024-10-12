@@ -1,3 +1,5 @@
+"use client"
+
 export * from "./BooleanField"
 export * from "./BooleanFieldHelper"
 export * from "./BooleanFieldLabel"

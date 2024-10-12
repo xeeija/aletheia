@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useRegisterMutation } from "@/generated/graphql"
 import { useAlert, useUsernameValidator } from "@/hooks"

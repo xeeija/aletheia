@@ -1,9 +1,11 @@
+"use client"
+
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useLoginMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"
 import { SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC } from "react"
 import { TiArrowRight } from "react-icons/ti"
 import { object, string } from "yup"
@@ -62,7 +64,7 @@ export const LoginForm: FC<Props> = () => {
         }
 
         // Go to home page
-        await router.push("/")
+        router.push("/")
       }}
     >
       {({ isSubmitting }) => (

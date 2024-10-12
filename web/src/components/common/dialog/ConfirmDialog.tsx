@@ -1,3 +1,5 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { Awaitable, ThemeColor } from "@/types"
 import {

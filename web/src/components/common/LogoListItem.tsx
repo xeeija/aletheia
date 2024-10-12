@@ -1,3 +1,5 @@
+"use client"
+
 import { AboutDialog, LinkListItem, LogoIcon } from "@/components"
 import { Tooltip, Typography } from "@mui/material"
 import { FC, useState } from "react"

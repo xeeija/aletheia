@@ -1,3 +1,5 @@
+"use client"
+
 import { AlertContent } from "@/components"
 import { Grow } from "@mui/material"
 import { SnackbarProvider } from "notistack"

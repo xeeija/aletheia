@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField, InputFieldProps } from "@/components"
 import { passwordStrengthColor } from "@/utils/password"
 import { IconButton, InputAdornment, Tooltip, useTheme } from "@mui/material"

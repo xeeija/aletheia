@@ -1,3 +1,5 @@
+"use client"
+
 import { MaxLengthAdornment } from "@/components"
 import {
   CircularProgress,

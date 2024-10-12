@@ -1,3 +1,5 @@
+"use client"
+
 import { Alert, AlertColor, Snackbar, SnackbarCloseReason, useTheme } from "@mui/material"
 import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useEffect, useState } from "react"
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi"

@@ -1,3 +1,5 @@
+"use client"
+
 import { dialogBackground } from "@/theme"
 import { AlertBaseProps } from "@/types"
 import { Alert, useTheme } from "@mui/material"
