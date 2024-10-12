@@ -1,3 +1,5 @@
+"use client"
+
 import { createTheme, ThemeOptions } from "@mui/material"
 
 export const dialogBackground = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"

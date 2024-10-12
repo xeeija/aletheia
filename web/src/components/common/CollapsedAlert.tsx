@@ -1,3 +1,5 @@
+"use client"
+
 import { Alert, AlertColor, Collapse } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
 import { TiWarning } from "react-icons/ti"

@@ -1,3 +1,5 @@
+"use client"
+
 import { BaseInputFieldProps, InputFieldBasic } from "@/components"
 import { FieldValidator, useField, useFormikContext } from "formik"
 import { FC, useEffect, useState } from "react"

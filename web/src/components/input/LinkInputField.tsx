@@ -1,3 +1,5 @@
+"use client"
+
 import { ThemeColor } from "@/types"
 import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip } from "@mui/material"
 import { FC, MouseEventHandler, useState } from "react"
