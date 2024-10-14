@@ -97,7 +97,7 @@ export const RegisterForm: FC<Props> = () => {
 
         // TODO: Redirect to "welcome page"?
         // Redirect to home page
-        await router.push("/")
+        router.push("/")
       }}
     >
       {({ isSubmitting, values, isValid, submitCount }) => (

@@ -3,7 +3,7 @@ import { WheelFormFields } from "@/components/randomWheel"
 import { useCreateRandomWheelMutation } from "@/generated/graphql"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC, RefObject } from "react"
 
 export type WheelValues = {
@@ -51,7 +51,7 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
 
         if (response.data?.createRandomWheel) {
           // TODO: Success snackbar
-          await router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
+          router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
         }
       }}
     >

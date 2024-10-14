@@ -2,7 +2,7 @@ import { Dropdown, LinkListItem } from "@/components"
 import { CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, WheelSyncDialog } from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
 import { IconButton, List, Paper, SvgIcon, Tooltip } from "@mui/material"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
 import { HiDotsVertical, HiPencil, HiTrash } from "react-icons/hi"
 import { TiArrowRepeat, TiUserAdd } from "react-icons/ti"
@@ -26,7 +26,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
 
   const onDeleteDialog = async () => {
     await deleteWheel()
-    await router.push("/randomwheel")
+    router.push("/randomwheel")
   }
 
   const wheelEditable = wheel.editable || wheel.editAnonymous
