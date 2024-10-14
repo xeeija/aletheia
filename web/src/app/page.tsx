@@ -1,4 +1,5 @@
 import { getTitle } from "@/components"
+import { EnvInfoBadge } from "@/components/common/EnvInfoBadgeApp"
 import { Typography } from "@mui/material"
 import { Metadata } from "next"
 import { FC } from "react"
@@ -11,6 +12,7 @@ const IndexPage: FC = () => {
   return (
     <div>
       <Typography variant="h2">Dashboard</Typography>
+      <EnvInfoBadge />
     </div>
   )
 }
