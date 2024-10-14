@@ -1,3 +1,5 @@
+"use client"
+
 import { getTitle } from "@/components"
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
