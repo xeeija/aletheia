@@ -1,13 +1,14 @@
 "use client"
 
 import { ErrorFallback, getTitle } from "@/components"
-import { productSans } from "@/styles/fonts"
 import { theme } from "@/theme"
 import { AppErrorProps } from "@/types"
 import { CssBaseline, ThemeProvider } from "@mui/material"
 import { Metadata } from "next"
 import { FC } from "react"
 
+import { productSans } from "@/styles/fonts"
+// import "@/styles/fonts.css"
 import "@/styles/global.css"
 
 export const metadata: Metadata = {
