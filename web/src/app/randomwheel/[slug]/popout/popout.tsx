@@ -3,10 +3,9 @@
 import { getTitle } from "@/components"
 import { Wheel, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
-import NotFoundPage from "@/pages/404"
 import { Box, Skeleton, useTheme } from "@mui/material"
 import Head from "next/head"
-import { useParams, useSearchParams } from "next/navigation"
+import { notFound, useParams, useSearchParams } from "next/navigation"
 import { FC, useState } from "react"
 
 // type SearchParams = {
@@ -83,7 +82,8 @@ export const Popout: FC = () => {
 
   if (!wheel || !wheel.viewable) {
     // TODO: Proper error pages
-    return <NotFoundPage />
+    notFound()
+    // return <NotFoundPage />
   }
 
   const diameter = 680

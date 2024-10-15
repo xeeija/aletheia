@@ -1,5 +1,5 @@
 import { getTitle } from "@/components"
-import NotFoundPage from "@/pages/404"
+import NotFoundPage from "@/pages_old/404"
 import { Box, Typography } from "@mui/material"
 import { NextPage } from "next"
 import Head from "next/head"

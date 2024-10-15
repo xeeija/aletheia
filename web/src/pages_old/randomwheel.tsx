@@ -14,7 +14,7 @@ const RandomWheelPage: LayoutNextPage = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
 
-  const { user } = useAuth()
+  const { user, authenticated } = useAuth()
 
   const [{ data, fetching }] = useMyRandomWheelsQuery({
     variables: {
@@ -69,7 +69,7 @@ const RandomWheelPage: LayoutNextPage = () => {
         </TabPanel>
       ))}
 
-      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} />}
+      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} authenticated={authenticated} />}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
     </>

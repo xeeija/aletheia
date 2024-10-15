@@ -1,7 +1,7 @@
 import { LayoutNextPage, getTitle } from "@/components"
 import { Wheel, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
-import NotFoundPage from "@/pages/404"
+import NotFoundPage from "@/pages_old/404"
 import { Box, Skeleton, useTheme } from "@mui/material"
 import Head from "next/head"
 import { useRouter } from "next/router"
