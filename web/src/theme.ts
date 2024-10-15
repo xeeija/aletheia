@@ -1,5 +1,6 @@
 "use client"
 
+import { productSans } from "@/styles/fonts"
 import { createTheme, ThemeOptions } from "@mui/material"
 
 export const dialogBackground = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"
@@ -31,15 +32,18 @@ const baseTheme = createTheme({
     borderRadius: 6,
   },
   typography: () => ({
-    fontFamily: [
-      "Product Sans",
-      // "Roboto",
-      // System default fonts as backup
-      "Segoe UI",
-      "Helvetica Neue",
-      "-apple-system",
-      "sans-serif",
-    ].join(", "),
+    fontFamily: productSans.style.fontFamily,
+    // fontFamily: "var(--font-family)",
+    // fontFamily: [
+    //   // `var(--font-family)`,
+    //   "Product Sans",
+    //   // "Roboto",
+    //   // System default fonts as backup
+    //   "Segoe UI",
+    //   "Helvetica Neue",
+    //   "-apple-system",
+    //   "sans-serif",
+    // ].join(", "),
     h1: {
       fontSize: "2.25rem",
       fontWeight: 500,
