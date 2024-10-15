@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField } from "@/components"
 import { RandomWheelEntryFragment, useUpdateRandomWheelEntryMutation } from "@/generated/graphql"
 import { Form, Formik } from "formik"

@@ -1,6 +1,5 @@
 import { BooleanField, ColorMenuItem, InputField, RadioGroupField, SelectField, SliderField } from "@/components"
-import { useColorThemesQuery } from "@/generated/graphql"
-import { useAuth } from "@/hooks"
+import { ColorTheme } from "@/generated/graphql"
 import { Grid } from "@mui/material"
 import { FC, ReactNode } from "react"
 
@@ -16,12 +15,12 @@ const durationLabelFormat = (x: number) => `${x}s`
 const durationMarks: Mark[] = durations.map((x) => ({ value: x * 1000, label: `${x}s` }))
 // [2, 3, 5, 8]
 
-interface Props {}
+interface Props {
+  authenticated: boolean
+  colorThemes: ColorTheme[] | undefined
+}
 
-export const WheelFormFields: FC<Props> = () => {
-  const { authenticated } = useAuth()
-  const [{ data }] = useColorThemesQuery()
-
+export const WheelFormFields: FC<Props> = ({ authenticated, colorThemes }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -72,7 +71,7 @@ export const WheelFormFields: FC<Props> = () => {
           name="theme"
           label="Color theme"
           sx={{ width: "16rem" }}
-          options={data?.colorThemes?.map((option) => ({
+          options={colorThemes?.map((option) => ({
             value: option.id,
             label: <ColorMenuItem noMenuItem name={option.name} colors={option.colors} />,
           }))}

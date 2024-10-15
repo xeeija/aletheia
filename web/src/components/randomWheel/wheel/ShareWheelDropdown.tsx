@@ -1,3 +1,5 @@
+"use client"
+
 import { Dropdown, LinkInputField } from "@/components"
 import { IconButton, Paper, Tooltip, Typography } from "@mui/material"
 import { FC, useState } from "react"

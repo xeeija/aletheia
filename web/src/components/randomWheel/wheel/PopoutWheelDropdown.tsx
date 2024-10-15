@@ -1,3 +1,5 @@
+"use client"
+
 import { DeleteDialog, Dropdown, LoadingButton, LoadingIconButton } from "@/components"
 import { LinkAdd } from "@/components/icons"
 import { BooleanField, LinkInputField } from "@/components/input"

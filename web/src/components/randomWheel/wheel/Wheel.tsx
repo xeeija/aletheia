@@ -1,3 +1,5 @@
+"use client"
+
 import { RandomWheelEntryFragment } from "@/generated/graphql"
 import { Sector, logistic, pointOnCircle } from "@/utils/math"
 import { Box, useTheme } from "@mui/material"
@@ -63,6 +65,7 @@ export const Wheel: FC<Props> = ({
   //   return () => observer.disconnect()
   // })
 
+  // TODO: refactor to server component when mui theme is updated to work with Server Components
   const theme = useTheme()
 
   colors =

@@ -1,21 +1,16 @@
 import { NoData } from "@/components"
-import { useAuth } from "@/hooks"
+import { NoDataWheelListActions } from "@/components/randomWheel"
 import { Button, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
-import { FC, useState } from "react"
-import { TiPlus, TiStarOutline } from "react-icons/ti"
-import { CreateEditWheelDialog } from "../edit/CreateEditWheelDialog"
+import { FC } from "react"
+import { TiStarOutline } from "react-icons/ti"
 
 interface Props {
   type: "my" | "shared" | "favorite"
+  authenticated: boolean
 }
 
-export const NoDataWheelList: FC<Props> = ({ type = "my" }) => {
-  const { user } = useAuth()
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-
-  const loggedIn = !!user?.username
-
+export const NoDataWheelList: FC<Props> = ({ type = "my", authenticated }) => {
   const image = {
     my: undefined,
     shared: "/img/share.svg",
@@ -23,37 +18,34 @@ export const NoDataWheelList: FC<Props> = ({ type = "my" }) => {
   }
 
   return (
-    <NoData image={!loggedIn ? "/img/buffer.svg" : image[type]} iconSize={loggedIn && type === "my" ? "lg" : 200}>
+    <NoData
+      image={!authenticated ? "/img/buffer.svg" : image[type]}
+      iconSize={authenticated && type === "my" ? "lg" : 200}
+    >
       <Typography variant="h5" color="text.secondary">
         {type === "my" && "You don't have any Random Wheels yet."}
         {type === "shared" && "You don't have any shared Random Wheels yet."}
         {type === "favorite" && "You don't have any favorites yet."}
       </Typography>
 
-      {loggedIn && type === "my" && (
+      {authenticated && type === "my" && (
         <>
           <Typography color="textSecondary" sx={{ mt: -2, textAlign: "center" }}>
             Create your first wheel! We will save all your wheels here, <br />
             so you always have them ready.
           </Typography>
-          <Button
-            variant="contained"
-            color="success"
-            endIcon={<SvgIcon component={TiPlus} viewBox="0 1 24 24" />}
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            New Wheel
-          </Button>
+
+          <NoDataWheelListActions />
         </>
       )}
 
-      {loggedIn && type === "shared" && (
+      {authenticated && type === "shared" && (
         <Typography color="textSecondary" sx={{ mt: -2, textAlign: "center" }}>
           Shared wheels of other users will be shown here.
         </Typography>
       )}
 
-      {loggedIn && type === "favorite" && (
+      {authenticated && type === "favorite" && (
         <Typography color="textSecondary" sx={{ mt: -2, textAlign: "center" }}>
           Add a wheel to your favorites with the
           <SvgIcon
@@ -67,9 +59,7 @@ export const NoDataWheelList: FC<Props> = ({ type = "my" }) => {
         </Typography>
       )}
 
-      <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
-
-      {!loggedIn && (
+      {!authenticated && (
         <>
           <Typography color="textSecondary" sx={{ mt: -1, mb: -1, textAlign: "center" }}>
             Login to save your created wheels and join other private wheels!

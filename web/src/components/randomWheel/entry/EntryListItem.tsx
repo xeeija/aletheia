@@ -1,3 +1,5 @@
+"use client"
+
 import { UpdateEntryForm } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"

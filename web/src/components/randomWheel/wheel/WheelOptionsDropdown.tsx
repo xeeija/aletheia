@@ -1,3 +1,5 @@
+"use client"
+
 import { Dropdown, LinkListItem } from "@/components"
 import { CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, WheelSyncDialog } from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"

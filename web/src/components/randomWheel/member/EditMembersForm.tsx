@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField, LoadingButton, NoData, SelectField } from "@/components"
 import { useRandomWheel } from "@/hooks"
 import {

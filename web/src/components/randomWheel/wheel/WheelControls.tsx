@@ -1,3 +1,5 @@
+"use client"
+
 import { ClearEntriesDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
 import { Button, Paper, SvgIcon } from "@mui/material"
