@@ -1,3 +1,5 @@
+"use client"
+
 export * from "./useAlert"
 export * from "./useAuth"
 export * from "./useInterval"
@@ -7,8 +9,8 @@ export * from "./randomwheel"
 
 export * from "./twitch/useChannelRewards"
 export * from "./twitch/useRewardGroups"
-export * from "./twitch/useRewardLinkToken"
 export * from "./twitch/useRewardLinks"
+export * from "./twitch/useRewardLinkToken"
 export * from "./twitch/useWheelSync"
 
 export * from "./socket/useRandomWheelSocket"

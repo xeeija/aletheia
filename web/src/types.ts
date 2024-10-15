@@ -1,6 +1,6 @@
 import { CustomRewardMenuItemFragment, RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
 import { AlertColor } from "@mui/material"
-import { FormikProps } from "formik"
+import type { FormikProps } from "formik"
 import { NextApiRequest, NextApiResponse } from "next"
 import { FC, RefObject } from "react"
 import { Socket as SocketDefault } from "socket.io-client"
