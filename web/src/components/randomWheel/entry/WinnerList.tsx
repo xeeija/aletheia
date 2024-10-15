@@ -1,8 +1,8 @@
 import { NoData } from "@/components"
+import { Virtuoso } from "@/components/client/react-virtuoso"
 import { RandomWheelWinnerFragment } from "@/generated/graphql"
 import { Box, ListItem, ListItemText, Skeleton, Typography } from "@mui/material"
 import { FC } from "react"
-import { Virtuoso } from "react-virtuoso"
 
 interface Props {
   winners: RandomWheelWinnerFragment[]

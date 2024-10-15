@@ -1,11 +1,11 @@
 "use client"
 
 import { NoData } from "@/components"
+import { Virtuoso, VirtuosoHandle } from "@/components/client/react-virtuoso"
 import { EntryListItem } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"
 import { Box, List, Skeleton, Typography } from "@mui/material"
 import { FC, useEffect, useMemo, useRef, useState } from "react"
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
 interface Props {
   entries: RandomWheelEntryFragment[]
