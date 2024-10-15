@@ -18,7 +18,7 @@ export const Randomwheel: FC<Props> = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
 
-  const { user } = useAuth()
+  const { user, authenticated } = useAuth()
 
   const [{ data, fetching }] = useMyRandomWheelsQuery({
     variables: {
@@ -73,7 +73,7 @@ export const Randomwheel: FC<Props> = () => {
         </TabPanel>
       ))}
 
-      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} />}
+      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} authenticated={authenticated} />}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
     </>

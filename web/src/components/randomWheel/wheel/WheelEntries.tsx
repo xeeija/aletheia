@@ -1,3 +1,5 @@
+"use client"
+
 import { TabPanel } from "@/components"
 import { AddEntryForm, EntryList, WinnerList } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, RandomWheelWinnerFragment } from "@/generated/graphql"

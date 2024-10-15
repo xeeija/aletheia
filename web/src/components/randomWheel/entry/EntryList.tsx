@@ -1,3 +1,5 @@
+"use client"
+
 import { NoData } from "@/components"
 import { EntryListItem } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"

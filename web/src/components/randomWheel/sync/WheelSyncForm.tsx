@@ -1,3 +1,5 @@
+"use client"
+
 import { BooleanField, LoadingButton, NoData, SelectField, SkeletonList } from "@/components"
 import { ChannelRewardMenuItem } from "@/components/twitch"
 import { WheelSyncItem, useChannelRewards, useRandomWheel, useWheelSync } from "@/hooks"

@@ -1,3 +1,5 @@
+"use client"
+
 import { CreateWheelForm, EditWheelForm, WheelValues } from "@/components/randomWheel"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"

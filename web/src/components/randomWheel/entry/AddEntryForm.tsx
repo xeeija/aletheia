@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField } from "@/components"
 import { SendMessage } from "@/components/icons"
 import { useAddRandomWheelEntryMutation } from "@/generated/graphql"

@@ -1,6 +1,9 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { WheelFormFields } from "@/components/randomWheel"
-import { useCreateRandomWheelMutation } from "@/generated/graphql"
+import { useColorThemesQuery, useCreateRandomWheelMutation } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
 import { useRouter } from "next/navigation"
@@ -36,6 +39,9 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
 
   const [, createRandomWheel] = useCreateRandomWheelMutation()
 
+  const { authenticated } = useAuth()
+  const [{ data }] = useColorThemesQuery()
+
   return (
     <Formik
       innerRef={formRef}
@@ -57,7 +63,7 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
     >
       {({ isSubmitting }) => (
         <Form id="createRandomWheelForm">
-          <WheelFormFields />
+          <WheelFormFields authenticated={authenticated} colorThemes={data?.colorThemes} />
 
           <Portal container={dialogActionsRef?.current}>
             <LoadingButton
