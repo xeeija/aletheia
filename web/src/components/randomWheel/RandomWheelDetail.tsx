@@ -3,9 +3,9 @@
 import { getTitle } from "@/components"
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
-import NotFoundPage from "@/pages/404"
 import { Box, Paper } from "@mui/material"
 import Head from "next/head"
+import { notFound } from "next/navigation"
 import { FC, useState } from "react"
 
 interface Props {
@@ -37,7 +37,8 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
 
   if (!wheel || !wheel.viewable) {
     // TODO: Proper error pages
-    return <NotFoundPage />
+    notFound()
+    // return <NotFoundPage />
   }
 
   // TODO: Use members, server-side
