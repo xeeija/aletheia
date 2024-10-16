@@ -19,12 +19,12 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
         justifyContent: "center",
         alignItems: "center",
         gap: 6,
-        py: 4,
+        pt: 8,
         px: 2,
       }}
     >
       <Image
-        src={global ? "/img/server_down.svg" : "/img/monitor.svg"}
+        src={global ? "/img/server_down-error.svg" : "/img/bug_fixing-error.svg"}
         alt=""
         width={300}
         height={240}
@@ -35,10 +35,9 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
         }}
       />
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, maxWidth: 600 }}>
         <Typography variant="h4" className="muted" sx={{ mt: 2, mb: 0 }}>
-          {/* {500} {error.name} */}
-          Error
+          {global ? "500 Internal Server Error" : "Error"}
         </Typography>
 
         <Typography variant="h1" sx={{ mb: 2 }}>
@@ -64,6 +63,7 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
               sx={{ mt: 2 }}
             >
               Try again
+              {/* Git gud */}
             </Button>
           </div>
         )}
