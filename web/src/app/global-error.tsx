@@ -7,9 +7,9 @@ import { CssBaseline } from "@mui/material"
 import { Metadata } from "next"
 import { FC } from "react"
 
-import { productSans } from "@/styles/fonts"
-// import "@/styles/fonts.css"
-import "@/styles/global.css"
+import { productSans } from "@/style/fonts"
+// import "@/style/fonts.css"
+import "@/style/global.css"
 
 export const metadata: Metadata = {
   icons: "/favicon.svg",

@@ -1,6 +1,6 @@
 "use client"
 
-import { dialogBackground } from "@/theme"
+import { dialogBackground } from "@/style"
 import { AlertBaseProps } from "@/types"
 import { Alert, useTheme } from "@mui/material"
 import { CustomContentProps, closeSnackbar } from "notistack"
