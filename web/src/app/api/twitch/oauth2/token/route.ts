@@ -5,13 +5,18 @@ import { RouteHandler } from "@/types"
 export const GET: RouteHandler = async (req) => {
   const errorCode = req.nextUrl.searchParams.get("error")
 
+  const serverUrl = process.env.SERVER_URL ?? "http://localhost:4000"
+  const origin = req.nextUrl.origin
+
+  console.log({ url: req.url, ...req.nextUrl })
+
   // handle errors
   if (errorCode) {
     console.error("Error twitch/ouath2/token:", errorCode)
-    return Response.redirect(`/settings#error=${errorCode}`)
+    return Response.redirect(`${origin}/settings#error=${errorCode}`)
   }
 
-  const requestUrl = `${process.env.SERVER_URL ?? "http://localhost:4000"}${req.url}`
+  const requestUrl = `${serverUrl}${req.nextUrl.pathname}${req.nextUrl.search}`
   // console.log("token:", req.method, requestUrl)
 
   try {
@@ -21,7 +26,7 @@ export const GET: RouteHandler = async (req) => {
     })
 
     if (serverRes.ok) {
-      return Response.redirect("/settings")
+      return Response.redirect(`${origin}/settings`)
     } else {
       if (serverRes.status < 500) {
         const body = (await serverRes.json()) as unknown
@@ -31,10 +36,10 @@ export const GET: RouteHandler = async (req) => {
         console.error("[twitch/oauth2/token] error:", serverRes.status, body)
       }
 
-      return Response.redirect(`/settings#error=${serverRes.status}`)
+      return Response.redirect(`${origin}/settings#error=${serverRes.status}`)
     }
   } catch (err: unknown) {
     console.error("[twitch/oauth2/token] unkown error:", err)
-    return Response.redirect(`/settings#error=unknown`)
+    return Response.redirect(`${origin}/settings#error=unknown`)
   }
 }
