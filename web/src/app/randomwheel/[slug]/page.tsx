@@ -1,5 +1,10 @@
 import { RandomWheelDetail } from "@/components/randomWheel"
 import { Page } from "@/types"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Random Wheel",
+}
 
 type Params = {
   slug: string
@@ -17,10 +22,8 @@ const SlugPage: Page<Params, SearchParams> = ({ params, searchParams }) => {
 
   // const queryParams = useSearchParams()
   // const token = queryParams?.get("token") ?? undefined
-  const token = searchParams.token
-  const token2 = new URLSearchParams(searchParams.token).get("token") ?? undefined
-
-  console.log("slug page", { params, searchParams, token2 })
+  const queryParams = new URLSearchParams(searchParams)
+  const token = queryParams.get("token") ?? undefined
 
   return <RandomWheelDetail slug={slug} token={token} />
 }

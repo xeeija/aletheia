@@ -1,8 +1,8 @@
 "use client"
 
-import { getTitle } from "@/components"
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
+import { getTitle } from "@/utils"
 import { Box, Paper } from "@mui/material"
 import Head from "next/head"
 import { notFound } from "next/navigation"
