@@ -1,4 +1,7 @@
+"use client"
+
 import { transitionMixin } from "@/components"
+import { useSidebar } from "@/hooks"
 import { AppBar, Toolbar, useTheme } from "@mui/material"
 import { FC, ReactNode } from "react"
 
@@ -9,19 +12,19 @@ interface Props {
   children?: ReactNode
 }
 
-export const Navbar: FC<Props> = ({ children, open = false, marginLeft = 0, borderRadius }) => {
+export const Navbar: FC<Props> = ({ children, open: openInput, marginLeft = 0, borderRadius: brInput }) => {
   const theme = useTheme()
+  const borderRadius = brInput ?? theme.shape.borderRadius * 2
+
+  const [sidebarOpen] = useSidebar()
+  const open = openInput ?? sidebarOpen
 
   return (
-    <AppBar
-      position="fixed"
-      sx={
-        {
-          // zIndex: theme.zIndex.drawer + 1 // Set Appbar above Drawer
-          // background: "transparent"
-        }
-      }
-    >
+    <AppBar position="fixed">
+      {/* // sx={{
+      //   // zIndex: theme.zIndex.drawer + 1 // Set Appbar above Drawer
+      //   // background: "transparent"
+      // }} */}
       <Toolbar
         sx={{
           ...(open && {
