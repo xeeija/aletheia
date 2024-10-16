@@ -1,6 +1,5 @@
 "use client"
 
-import { productSans } from "@/styles/fonts"
 import { createTheme, ThemeOptions } from "@mui/material"
 
 export const dialogBackground = "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))"
@@ -32,8 +31,8 @@ const baseTheme = createTheme({
     borderRadius: 6,
   },
   typography: () => ({
-    fontFamily: productSans.style.fontFamily,
-    // fontFamily: "var(--font-family)",
+    fontFamily: "var(--font-family)",
+    // fontFamily: productSans.style.fontFamily,
     // fontFamily: [
     //   // `var(--font-family)`,
     //   "Product Sans",

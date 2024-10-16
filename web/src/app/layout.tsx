@@ -1,4 +1,5 @@
 import { ClientRootLayout, getTitle, Providers } from "@/components"
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter"
 import { Metadata } from "next"
 import { FC, ReactNode } from "react"
 
@@ -19,9 +20,11 @@ const RootLayout: FC<Props> = ({ children }) => {
   return (
     <html lang="en" className={`${productSans.className} ${productSans.variable}`}>
       <body>
-        <Providers>
-          <ClientRootLayout>{children}</ClientRootLayout>
-        </Providers>
+        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+          <Providers>
+            <ClientRootLayout>{children}</ClientRootLayout>
+          </Providers>
+        </AppRouterCacheProvider>
       </body>
     </html>
   )
