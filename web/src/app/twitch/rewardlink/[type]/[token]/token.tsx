@@ -1,9 +1,9 @@
 "use client"
 
-import { getTitle } from "@/components"
 import { ChannelRewardIcon, ChannelRewardStatusOverlay } from "@/components/twitch"
 import { useInterval, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
+import { getTitle } from "@/utils"
 import { Box, Skeleton } from "@mui/material"
 import Head from "next/head"
 import { useParams, useSearchParams } from "next/navigation"

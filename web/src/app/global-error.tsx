@@ -1,6 +1,6 @@
 "use client"
 
-import { ErrorFallback, getTitle } from "@/components"
+import { ErrorFallback } from "@/components"
 import { MuiProvider } from "@/components/providers"
 import { AppErrorProps } from "@/types"
 import { CssBaseline } from "@mui/material"
@@ -13,7 +13,7 @@ import "@/style/global.css"
 
 export const metadata: Metadata = {
   icons: "/favicon.svg",
-  title: getTitle(),
+  title: "Aletheia",
 }
 
 const GlobalError: FC<AppErrorProps> = ({ error, reset }) => {

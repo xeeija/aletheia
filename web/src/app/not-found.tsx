@@ -1,11 +1,10 @@
-import { getTitle } from "@/components"
 import { Page } from "@/types"
 import { Box, Typography } from "@mui/material"
 import { Metadata } from "next"
 import Image from "next/image"
 
 export const metadata: Metadata = {
-  title: getTitle("Not Found"),
+  title: "Not Found",
 }
 
 const NotFound: Page = () => {

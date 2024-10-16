@@ -1,4 +1,5 @@
-import { ClientRootLayout, getTitle, Providers } from "@/components"
+import { ClientRootLayout, Providers } from "@/components"
+import { getTitle } from "@/utils"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter"
 import { Metadata } from "next"
 import { FC, ReactNode } from "react"
@@ -9,7 +10,10 @@ import "@/style/global.css"
 
 export const metadata: Metadata = {
   icons: "/favicon.svg",
-  title: getTitle(),
+  title: {
+    default: "Aletheia",
+    template: getTitle("%s"),
+  },
 }
 
 interface Props {
