@@ -1,10 +1,12 @@
-import { AlertProvider, LayoutNextPage, defaultLayout } from "@/components"
-import "@/styles/fonts.css"
-import "@/styles/global.css"
-import { theme } from "@/theme"
+import { LayoutNextPage, defaultLayout } from "@/components"
+import { AlertProvider } from "@/components/providers"
+import { theme } from "@/style"
 import { CssBaseline, ThemeProvider } from "@mui/material"
 import type { AppProps } from "next/app"
 import { Provider as UrqlProvider, cacheExchange, createClient, fetchExchange } from "urql"
+
+import "@/style/fonts.css"
+import "@/style/global.css"
 
 type LayoutAppProps = AppProps & {
   Component: LayoutNextPage

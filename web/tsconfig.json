@@ -28,7 +28,8 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@/styles/*": ["./styles/*"],
+      "@/style/*": ["./style/*"],
+      "@/style": ["./style/index"],
     },
     "plugins": [
       { "name": "next" },
