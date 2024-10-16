@@ -3,4 +3,5 @@
 
 export * from "./AlertProvider"
 export * from "./MuiProvider"
+export * from "./SidebarProvider"
 export * from "./UrqlProvider"

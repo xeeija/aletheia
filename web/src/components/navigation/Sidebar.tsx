@@ -1,4 +1,5 @@
 import { LinkItem, LinkList, LinkListItem, LogoListItem } from "@/components"
+import { useSidebar } from "@/hooks"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
 import { Dispatch, FC, ReactNode, SetStateAction } from "react"
 
@@ -30,13 +31,17 @@ const closedMixin = (theme: Theme): CSSObject => ({
 interface Props {
   items: LinkItem[]
   openedWidth: number
-  open: boolean
-  setOpen: Dispatch<SetStateAction<boolean>>
+  open?: boolean
+  setOpen?: Dispatch<SetStateAction<boolean>>
   children?: ReactNode
 }
 
 // #BetterMiniDrawer
-export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen }) => {
+export const Sidebar: FC<Props> = ({ children, items, openedWidth, open: openInput, setOpen: setOpenInput }) => {
+  const [sidebarOpen, setSidebarOpen] = useSidebar()
+  const open = openInput ?? sidebarOpen
+  const setOpen = setOpenInput ?? setSidebarOpen
+
   const theme = useTheme()
   const itemWidth = `calc(100% - ${theme.spacing(2)})`
 
