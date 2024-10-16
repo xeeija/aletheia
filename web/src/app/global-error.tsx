@@ -1,9 +1,9 @@
 "use client"
 
 import { ErrorFallback, getTitle } from "@/components"
-import { theme } from "@/theme"
+import { MuiProvider } from "@/components/providers"
 import { AppErrorProps } from "@/types"
-import { CssBaseline, ThemeProvider } from "@mui/material"
+import { CssBaseline } from "@mui/material"
 import { Metadata } from "next"
 import { FC } from "react"
 
@@ -20,10 +20,10 @@ const GlobalError: FC<AppErrorProps> = ({ error, reset }) => {
   return (
     <html lang="en" className={`${productSans.className} ${productSans.variable}`}>
       <body>
-        <ThemeProvider theme={theme}>
+        <MuiProvider>
           <CssBaseline />
           <ErrorFallback global showReset error={error} reset={reset} />
-        </ThemeProvider>
+        </MuiProvider>
       </body>
     </html>
   )
