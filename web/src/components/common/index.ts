@@ -11,6 +11,7 @@ export * from "./LoadingIconButton"
 export * from "./LogoIcon"
 export * from "./LogoListItem"
 export * from "./NoData"
+export * from "./PageContainer"
 export * from "./SkeletonList"
 export * from "./TabPanel"
 

@@ -3,7 +3,7 @@ import { AlertColor } from "@mui/material"
 import type { FormikProps } from "formik"
 import { NextApiRequest, NextApiResponse } from "next"
 import { NextRequest, NextResponse } from "next/server"
-import { FC, RefObject } from "react"
+import { FC, ReactNode, RefObject } from "react"
 import { Socket as SocketDefault } from "socket.io-client"
 
 export type Awaitable<T> = T | Promise<T>
@@ -19,8 +19,17 @@ export interface AppPageProps<Params extends object = Empty, SearchParams extend
   params: Params
   searchParams: SearchParams
 }
-
 export type Page<P extends object = Empty, SP extends object = Empty> = FC<AppPageProps<P, SP>>
+
+export interface AppLayoutProps<Params extends object = Empty> {
+  children: ReactNode
+  params: Params
+}
+
+// use like this: type Slots = "a" | "b", default never (no slots, except children)
+// https://nextjs.org/docs/app/building-your-application/routing/parallel-routes#slots
+export type LayoutSlots<Names extends string = never> = Record<Names, ReactNode>
+export type Layout<P extends object = Empty, S extends string = never> = FC<AppLayoutProps<P> & LayoutSlots<S>>
 
 export type ErrorDigest = Error & { digest?: string }
 export interface AppErrorProps {
