@@ -20,3 +20,5 @@ export * from "./alert/AlertPopup"
 
 export * from "./dialog/ConfirmDialog"
 export * from "./dialog/DeleteDialog"
+
+export * from "./fallback/NotFound"

@@ -1,21 +1,21 @@
 import { RegisterForm } from "@/components"
-import { Box, Typography } from "@mui/material"
+import { Page } from "@/types"
+import { Typography } from "@mui/material"
 import { Metadata } from "next"
-import { FC } from "react"
 
 export const metadata: Metadata = {
   title: "Register",
 }
 
-const RegisterPage: FC = () => {
+const RegisterPage: Page = () => {
   return (
-    <Box sx={{ width: 360, mx: "auto" }}>
+    <div>
       <Typography variant="h4" sx={{ mb: 1 }}>
         Register
       </Typography>
 
       <RegisterForm />
-    </Box>
+    </div>
   )
 }
 
