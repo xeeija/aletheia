@@ -127,14 +127,16 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
                   helperText="Customize this link with the options below."
                 />
 
-                <LoadingIconButton
-                  color="error"
-                  loading={fetchingReset}
-                  tooltip="Reset token"
-                  onClick={() => setResetDialogOpen(true)}
-                >
-                  <TiRefresh viewBox="1 2 20 20" />
-                </LoadingIconButton>
+                {privateWheel && (
+                  <LoadingIconButton
+                    color="error"
+                    loading={fetchingReset}
+                    tooltip="Reset token"
+                    onClick={() => setResetDialogOpen(true)}
+                  >
+                    <TiRefresh viewBox="1 2 20 20" />
+                  </LoadingIconButton>
+                )}
 
                 <DeleteDialog
                   title="Reset token?"

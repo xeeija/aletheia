@@ -6,13 +6,14 @@ interface Props {
   children: ReactNode
   title?: ReactNode
   maxWidth?: string | number
+  fullWidth?: boolean
 }
 
-export const PageContainer: FC<Props> = ({ children, title, maxWidth = 1360 }) => {
+export const PageContainer: FC<Props> = ({ children, title, maxWidth = 1360, fullWidth }) => {
   return (
     <>
       <AppNavbar>{title}</AppNavbar>
-      <Box sx={{ maxWidth, mx: "auto" }}>{children}</Box>
+      <Box sx={{ maxWidth: fullWidth ? undefined : maxWidth, mx: "auto" }}>{children}</Box>
     </>
   )
 }

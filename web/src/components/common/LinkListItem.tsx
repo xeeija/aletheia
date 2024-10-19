@@ -46,7 +46,9 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
           gap: 0.75,
         }}
       >
-        <span>{name}</span>
+        <Typography component="span" {...textProps?.primaryTypographyProps}>
+          {name}
+        </Typography>
         <Typography component="span" color="text.secondary">
           {subtitle}
         </Typography>
