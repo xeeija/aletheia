@@ -52,6 +52,8 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   closeOnConfirm = true,
 }) => {
   const [deleting, setDeleting] = useState(false)
+  const childrenIsText = ["string", "number", "bigint"].includes(typeof children)
+
   return (
     <Dialog
       fullWidth
@@ -81,9 +83,12 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
           </>
         )}
       </DialogTitle>
-      <DialogContent>
-        <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>
+
+      <DialogContent id={childrenIsText ? undefined : `dialog-description-${id}`}>
+        {childrenIsText && <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>}
+        {!childrenIsText && children}
       </DialogContent>
+
       <DialogActions>
         {!hideCancel && (
           <Button color="secondary" variant={cancelVariant ?? "outlined"} onClick={onClose}>

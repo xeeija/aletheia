@@ -18,7 +18,6 @@ export { AboutDialog } from "./common/AboutDialog"
 export { CollapsedAlert } from "./common/CollapsedAlert"
 export { Dropdown } from "./common/Dropdown"
 export { EnvInfoBadge } from "./common/EnvInfoBadge"
-export { ErrorFallback } from "./common/ErrorFallback"
 export { LinkList } from "./common/LinkList"
 export { LinkListItem, type LinkItem } from "./common/LinkListItem"
 export { LinkText } from "./common/LinkText"
@@ -37,6 +36,7 @@ export { AlertPopup } from "./common/alert/AlertPopup"
 export { ConfirmDialog, type ConfirmDialogProps } from "./common/dialog/ConfirmDialog"
 export { DeleteDialog } from "./common/dialog/DeleteDialog"
 
+export { ErrorFallback } from "./common/fallback/ErrorFallback"
 export { NotFound } from "./common/fallback/NotFound"
 
 // input
