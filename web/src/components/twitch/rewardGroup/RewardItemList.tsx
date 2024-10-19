@@ -1,3 +1,5 @@
+"use client"
+
 import { RewardGroupValues, RewardItemListItem } from "@/components/twitch"
 import { CustomRewardFragment, RewardGroupItemInput } from "@/generated/graphql"
 import { Button, FormHelperText, List, SvgIcon } from "@mui/material"

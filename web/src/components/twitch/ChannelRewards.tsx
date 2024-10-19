@@ -1,3 +1,5 @@
+"use client"
+
 import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
 import { useAlert, useChannelRewards } from "@/hooks"

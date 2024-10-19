@@ -1,3 +1,5 @@
+"use client"
+
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from "@mui/material"
 import { useField } from "formik"
 import { FC, ReactNode } from "react"

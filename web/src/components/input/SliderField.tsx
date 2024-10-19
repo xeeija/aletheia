@@ -1,3 +1,5 @@
+"use client"
+
 import { FormControl, FormLabel, Slider, SliderProps } from "@mui/material"
 import { useField } from "formik"
 import { FC, ReactNode } from "react"

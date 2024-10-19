@@ -1,3 +1,5 @@
+"use client"
+
 import { FormDialog } from "@/components"
 import { CreateRewardGroupForm, EditRewardGroupForm, RewardGroupValues } from "@/components/twitch"
 import { RewardGroupFragment } from "@/generated/graphql"

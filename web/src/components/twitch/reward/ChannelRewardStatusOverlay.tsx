@@ -1,3 +1,8 @@
+"use client"
+// use client in this component because of error:
+// Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server"
+// component={TiWarning}
+
 import { ChannelRewardIconTitle } from "@/components/twitch"
 import { Box, CircularProgress, SvgIcon, SxProps } from "@mui/material"
 import { FC, ReactNode } from "react"

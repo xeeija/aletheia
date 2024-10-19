@@ -1,3 +1,5 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { RewardFormFields } from "@/components/twitch"
 import { useAlert, useChannelRewards } from "@/hooks"

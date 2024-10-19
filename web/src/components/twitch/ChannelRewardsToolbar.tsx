@@ -1,3 +1,5 @@
+"use client"
+
 import { FilterSelect } from "@/components"
 import { ChannelRewardDialog } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon } from "@mui/material"
