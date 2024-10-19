@@ -1,3 +1,5 @@
+"use client"
+
 import { LinkItem, LinkList, LinkListItem, LogoListItem } from "@/components"
 import { useSidebar } from "@/hooks"
 import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"

@@ -17,7 +17,7 @@
 export { AboutDialog } from "./common/AboutDialog"
 export { CollapsedAlert } from "./common/CollapsedAlert"
 export { Dropdown } from "./common/Dropdown"
-export { EnvInfoBadge } from "./common/EnvInfoBadge"
+export { EnvInfoBadge } from "./common/EnvInfoBadgeApp"
 export { LinkList } from "./common/LinkList"
 export { LinkListItem, type LinkItem } from "./common/LinkListItem"
 export { LinkText } from "./common/LinkText"

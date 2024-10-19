@@ -20,7 +20,7 @@ export interface ConfirmDialogProps {
   type: ThemeColor
   confirmText: ReactNode
   onClose: () => void
-  onConfirm?: () => Awaitable<void> | Awaitable<boolean>
+  onConfirm?: () => Awaitable<void | boolean>
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
   icon?: ElementType
   iconViewBox?: string
