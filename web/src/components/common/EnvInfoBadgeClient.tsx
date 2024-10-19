@@ -1,9 +1,10 @@
+"use client"
+
+import { getEnvironment } from "@/app/actions"
 import { ThemeColor } from "@/types"
-import { Chip, Tooltip } from "@mui/material"
-import { unstable_noStore as noStore } from "next/cache"
-import { FC } from "react"
+import { Chip } from "@mui/material"
+import { FC, useEffect, useState } from "react"
 import { HiBeaker } from "react-icons/hi"
-import { EnvInfoBadgeClient } from "./EnvInfoBadgeClient"
 
 const capitalize = (text?: string) => (text ? `${text?.slice(0, 1).toUpperCase()}${text?.slice(1)}` : text)
 
@@ -13,14 +14,15 @@ interface Props {
   outlined?: boolean
 }
 
-export const EnvInfoBadge: FC<Props> = ({ color, opacity, outlined }) => {
-  // noStore opts into dynamic rendering for this component (instead of static rendering at build time)
-  noStore()
+export const EnvInfoBadgeClient: FC<Props> = ({ color, opacity, outlined }) => {
+  const [env, setEnv] = useState<string>()
+  useEffect(() => {
+    const loadEnv = async () => {
+      setEnv(await getEnvironment())
+    }
 
-  const env = process.env.ENVIRONMENT
-  if (!env) {
-    return <EnvInfoBadgeClient color={color} opacity={opacity} outlined={outlined} />
-  }
+    loadEnv()
+  }, [])
 
   const environment = env === "production" ? null : capitalize(env)
 
@@ -28,11 +30,7 @@ export const EnvInfoBadge: FC<Props> = ({ color, opacity, outlined }) => {
     <span>
       <Chip
         label={environment}
-        icon={
-          <Tooltip title={`Environment: ${environment}`}>
-            <HiBeaker />
-          </Tooltip>
-        }
+        icon={<HiBeaker />}
         color={typeof color === "boolean" ? "success" : color ?? "default"}
         size="small"
         variant={outlined ? "outlined" : "filled"}
