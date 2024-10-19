@@ -1,3 +1,5 @@
+"use client"
+
 import { BooleanFieldPlain } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"

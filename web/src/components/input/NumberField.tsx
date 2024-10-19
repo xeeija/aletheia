@@ -1,3 +1,5 @@
+"use client"
+
 import { InputField, InputFieldProps } from "@/components"
 import { useFormikContext } from "formik"
 import { FC } from "react"

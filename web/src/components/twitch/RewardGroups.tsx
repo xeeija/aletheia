@@ -1,3 +1,5 @@
+"use client"
+
 import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { RewardGroupDialog, RewardGroupListItem } from "@/components/twitch"
 import { useAlert, useRewardGroups } from "@/hooks"

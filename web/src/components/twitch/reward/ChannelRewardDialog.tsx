@@ -1,3 +1,5 @@
+"use client"
+
 import { FormDialog } from "@/components"
 import { ChannelRewardValues, CreateChannelRewardForm, EditChannelRewardForm } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"

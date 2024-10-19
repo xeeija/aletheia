@@ -1,3 +1,5 @@
+"use client"
+
 import { LinkText, NoData } from "@/components"
 import { useAuth } from "@/hooks"
 import { Button, Typography } from "@mui/material"

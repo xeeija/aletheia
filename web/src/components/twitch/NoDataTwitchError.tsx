@@ -1,3 +1,5 @@
+"use client"
+
 import { NoData } from "@/components"
 import { parseTwitchApiError } from "@/utils/twitch"
 import { Typography } from "@mui/material"

@@ -1,3 +1,5 @@
+"use client"
+
 import { RewardGroupDialog } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon } from "@mui/material"
 import { FC, useState } from "react"

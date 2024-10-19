@@ -1,3 +1,5 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { RewardGroupFormFields, RewardItemList } from "@/components/twitch"
 import { RewardGroupItemInput } from "@/generated/graphql"

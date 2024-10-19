@@ -1,3 +1,5 @@
+"use client"
+
 import { BooleanFieldPlain } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
 import { useAlert, useInterval, useRewardGroups } from "@/hooks"

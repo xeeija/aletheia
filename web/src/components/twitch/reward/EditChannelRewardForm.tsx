@@ -1,3 +1,5 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
