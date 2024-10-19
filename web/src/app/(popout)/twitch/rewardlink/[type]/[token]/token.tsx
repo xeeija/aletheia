@@ -1,12 +1,12 @@
 "use client"
 
-import { ChannelRewardIcon, ChannelRewardStatusOverlay } from "@/components/twitch"
+import { ChannelRewardIcon } from "@/components/twitch"
 import { useInterval, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
 import { getTitle } from "@/utils"
 import { Box, Skeleton } from "@mui/material"
 import Head from "next/head"
-import { useParams, useSearchParams } from "next/navigation"
+import { notFound, useParams, useSearchParams } from "next/navigation"
 import { FC, ReactNode, useState } from "react"
 
 type Params = {
@@ -48,19 +48,7 @@ export const Token: FC = () => {
   })
 
   if (!reward && !fetching) {
-    return (
-      <>
-        <Head>
-          <title>{getTitle(`Not Found`)}</title>
-        </Head>
-
-        <ChannelRewardStatusOverlay size={skeletonSize} statusSize={skeletonSize / 2} enabled error="Not Found">
-          <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
-        </ChannelRewardStatusOverlay>
-
-        <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
-      </>
-    )
+    notFound()
   }
 
   const handleUpdate = async () => {
