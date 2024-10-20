@@ -33,9 +33,7 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
         }}
       >
         {/* <Tooltip
-        arrow
         placement="top"
-        enterDelay={1000}
         title={entries?.length ? `${entries?.length ?? 0} entries` : ""}
       > */}
         <Tab

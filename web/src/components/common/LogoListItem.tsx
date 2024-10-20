@@ -1,7 +1,7 @@
 "use client"
 
-import { AboutDialog, LinkListItem, LogoIcon } from "@/components"
-import { Tooltip, Typography } from "@mui/material"
+import { AboutDialog, LinkListItem, LogoIcon, Tooltip } from "@/components"
+import { Typography } from "@mui/material"
 import { FC, useState } from "react"
 
 interface Props {
@@ -17,7 +17,7 @@ export const LogoListItem: FC<Props> = ({ onClick, itemWidth }) => {
 
   return (
     <span>
-      <Tooltip title="Aletheia" arrow placement="right" enterDelay={1000}>
+      <Tooltip title="Aletheia" placement="right">
         <LinkListItem
           name="Aletheia"
           subtitle={

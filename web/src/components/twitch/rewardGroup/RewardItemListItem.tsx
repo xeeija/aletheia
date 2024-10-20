@@ -1,7 +1,7 @@
-import { BooleanField, SelectField } from "@/components"
+import { BooleanField, SelectField, Tooltip } from "@/components"
 import { ChannelRewardMenuItem } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { Box, IconButton, ListItem, SvgIcon, Tooltip } from "@mui/material"
+import { Box, IconButton, ListItem, SvgIcon } from "@mui/material"
 import { FC } from "react"
 import { HiTrash } from "react-icons/hi"
 
@@ -44,7 +44,7 @@ export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete,
 
       {!hideDelete && (
         <Box>
-          <Tooltip title="Delete" arrow enterDelay={1000}>
+          <Tooltip title="Delete">
             <IconButton role="button" aria-label="Delete item" onClick={() => onDelete?.(index)} disabled={hideDelete}>
               <SvgIcon component={HiTrash} viewBox="0 0 20 20" color={hideDelete ? "disabled" : "error"} />
             </IconButton>

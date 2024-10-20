@@ -59,7 +59,7 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
   )
 
   return (
-    <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
+    <Tooltip title={tooltip ?? ""} {...tooltipProps}>
       <TextField
         variant="filled"
         size="small"
@@ -91,20 +91,20 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
                 <>
                   <InputAdornment position="end" sx={{ gap: 0.5 }}>
                     {!hasError && !isValidating && (
-                      <Tooltip title="" arrow enterDelay={1000}>
-                        <IconButton edge="end" disableRipple aria-disabled sx={{ cursor: "text" }}>
-                          <SvgIcon component={TiTick} color="success" />
+                      <Tooltip title={props.label ? <>{props.label} is valid</> : "Valid"}>
+                        <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
+                          <SvgIcon component={TiTick} color="success" sx={{ mr: 0.25 }} />
                         </IconButton>
                       </Tooltip>
                     )}
                     {hasError && !isValidating && (
-                      <Tooltip title={"Input is invalid"} arrow enterDelay={1000}>
-                        <IconButton edge="end" disableRipple aria-disabled sx={{ cursor: "text" }}>
-                          <SvgIcon component={TiWarning} color="error" />
+                      <Tooltip title={props.label ? <>{props.label} is invalid</> : "Invalid input"}>
+                        <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
+                          <SvgIcon component={TiWarning} color="error" sx={{ mr: 0.25 }} />
                         </IconButton>
                       </Tooltip>
                     )}
-                    {isValidating && <CircularProgress color="info" sx={{ p: 1.25, m: -0.75 }} />}
+                    {isValidating && <CircularProgress color="info" sx={{ p: 1.25, m: -0.75, mr: -1 }} />}
                     {showMax ? maxLengthAdornment : null}
                     {props.InputProps?.endAdornment}
                   </InputAdornment>

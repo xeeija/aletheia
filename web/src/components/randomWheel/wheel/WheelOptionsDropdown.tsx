@@ -1,9 +1,9 @@
 "use client"
 
-import { Dropdown, LinkListItem } from "@/components"
+import { Dropdown, LinkListItem, Tooltip } from "@/components"
 import { CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, WheelSyncDialog } from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
-import { IconButton, List, Paper, SvgIcon, Tooltip } from "@mui/material"
+import { IconButton, List, Paper, SvgIcon } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
 import { HiDotsVertical, HiPencil, HiTrash } from "react-icons/hi"
@@ -35,12 +35,10 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
 
   return (
     <>
-      <Tooltip arrow placement="bottom-end" title={wheelEditable ? "More options" : ""}>
-        <span>
-          <IconButton color="secondary" disabled={!wheelEditable} onClick={(ev) => setOptionsAnchor(ev.currentTarget)}>
-            <HiDotsVertical />
-          </IconButton>
-        </span>
+      <Tooltip placement="bottom-end" title={"More options"}>
+        <IconButton color="secondary" disabled={!wheelEditable} onClick={(ev) => setOptionsAnchor(ev.currentTarget)}>
+          <HiDotsVertical />
+        </IconButton>
       </Tooltip>
 
       <Dropdown anchor={optionsAnchor} setAnchor={setOptionsAnchor}>

@@ -1,6 +1,6 @@
 "use client"
 
-import { TabPanel } from "@/components"
+import { TabPanel, Tooltip } from "@/components"
 import { CreateEditWheelDialog, NoDataWheelList, WheelList } from "@/components/randomWheel"
 import { useMyRandomWheelsQuery } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
@@ -59,11 +59,11 @@ export const Randomwheel: FC<Props> = () => {
             New Wheel
           </Button>
 
-          {/* <Tooltip placement="bottom-end" title="More options"> */}
-          <IconButton color="secondary" disabled>
-            <HiDotsVertical />
-          </IconButton>
-          {/* </Tooltip> */}
+          <Tooltip placement="bottom-end" title="More options">
+            <IconButton color="secondary" disabled>
+              <HiDotsVertical />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 

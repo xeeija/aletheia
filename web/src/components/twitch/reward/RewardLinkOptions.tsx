@@ -8,13 +8,14 @@ import {
   LoadingIconButton,
   NumberField,
   SelectField,
+  Tooltip,
 } from "@/components"
 import { LinkAdd } from "@/components/icons"
 import { ChannelRewardIcon } from "@/components/twitch"
 import { CustomRewardMenuItemFragment, RewardLinkFragment } from "@/generated/graphql"
 import { useRewardLinks } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
-import { Box, FormHelperText, IconButton, Skeleton, SvgIcon, Tooltip } from "@mui/material"
+import { Box, FormHelperText, IconButton, Skeleton, SvgIcon } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useEffect, useState } from "react"
 import { HiCog, HiEye, HiEyeOff, HiTrash } from "react-icons/hi"
@@ -106,7 +107,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
   }
 
   const hideIcon = (
-    <Tooltip arrow placement="bottom" title={hide ? "Show link" : "Hide link"}>
+    <Tooltip placement="bottom" title={hide ? "Show link" : "Hide link"}>
       <IconButton onClick={() => setHide((x) => !x)} sx={{ p: 0.75, ml: 0.75, mr: -0.75, opacity: 0.7 }}>
         <SvgIcon component={hide ? HiEye : HiEyeOff} viewBox="-2 -2 24 24" />
       </IconButton>
@@ -127,7 +128,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
               }}
             />
 
-            <Tooltip arrow placement="bottom" title={"Options / Preview"}>
+            <Tooltip placement="bottom" title={"Options / Preview"}>
               <IconButton color="secondary" sx={{ ml: 0.5 }} onClick={() => setShowOptions((x) => !x)}>
                 <HiCog />
               </IconButton>

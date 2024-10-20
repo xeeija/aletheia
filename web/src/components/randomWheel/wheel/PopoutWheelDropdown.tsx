@@ -1,10 +1,17 @@
 "use client"
 
-import { DeleteDialog, Dropdown, LoadingButton, LoadingIconButton } from "@/components"
+import {
+  BooleanField,
+  DeleteDialog,
+  Dropdown,
+  LinkInputField,
+  LoadingButton,
+  LoadingIconButton,
+  Tooltip,
+} from "@/components"
 import { LinkAdd } from "@/components/icons"
-import { BooleanField, LinkInputField } from "@/components/input"
 import { RandomWheelDetails, useRandomWheelActions } from "@/hooks"
-import { Box, IconButton, Paper, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, IconButton, Paper, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useEffect, useState } from "react"
 import { HiExternalLink } from "react-icons/hi"
@@ -78,7 +85,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   // if (!privateWheel) {
   //   return (
-  //     <Tooltip arrow placement="bottom" title="Popout">
+  //     <Tooltip placement="bottom" title="Popout">
   //       <IconButton color="secondary" href={shareUrl} target="_blank" sx={{ ml: 1 }}>
   //         <SvgIcon component={HiExternalLink} viewBox="1 1 18 18" />
   //       </IconButton>
@@ -88,7 +95,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   return (
     <>
-      <Tooltip arrow placement="bottom" title={wheelEditable ? "Popout" : ""}>
+      <Tooltip placement="bottom" title={wheelEditable ? "Popout" : ""}>
         <IconButton
           color="secondary"
           disabled={!wheelEditable}

@@ -1,7 +1,7 @@
 "use client"
 
-import { Dropdown, LinkInputField } from "@/components"
-import { IconButton, Paper, Tooltip, Typography } from "@mui/material"
+import { Dropdown, LinkInputField, Tooltip } from "@/components"
+import { IconButton, Paper, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiShare } from "react-icons/hi"
 
@@ -16,7 +16,7 @@ export const ShareWheelDropdown: FC<Props> = ({ slug }) => {
 
   return (
     <>
-      <Tooltip arrow placement="bottom" title="Share">
+      <Tooltip placement="bottom" title="Share">
         <IconButton color="secondary" onClick={(ev) => setAnchor(ev.currentTarget)}>
           <HiShare />
           {/* <HiLink /> */}

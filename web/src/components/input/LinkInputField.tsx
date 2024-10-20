@@ -1,7 +1,8 @@
 "use client"
 
+import { Tooltip } from "@/components"
 import { ThemeColor } from "@/types"
-import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps, Tooltip } from "@mui/material"
+import { IconButton, InputAdornment, SvgIcon, TextField, TextFieldProps } from "@mui/material"
 import { FC, MouseEventHandler, useState } from "react"
 import { IconType } from "react-icons"
 import { HiClipboardCheck, HiClipboardCopy } from "react-icons/hi"
@@ -30,7 +31,7 @@ export const LinkInputField: FC<Props> = ({ copyIcon, position = "end", copyColo
   const copyAdornment = (
     <InputAdornment position={position} sx={{ gap: 0.5 }}>
       {position === "end" && InputProps?.endAdornment}
-      <Tooltip arrow placement="bottom" title="Copy to clipboard">
+      <Tooltip placement="top" enterDelay={500} title="Copy to clipboard">
         <IconButton onClick={copyHandler} sx={{ p: 0.75, mx: -0.25 }}>
           {copied && (
             <SvgIcon color={copyColor ?? "success"} component={copyIcon ?? HiClipboardCheck} viewBox="0 -1 22 22" />

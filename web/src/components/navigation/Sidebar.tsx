@@ -1,8 +1,8 @@
 "use client"
 
-import { LinkItem, LinkList, LinkListItem, LogoListItem } from "@/components"
+import { LinkItem, LinkList, LinkListItem, LogoListItem, Tooltip } from "@/components"
 import { useSidebar } from "@/hooks"
-import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
+import { Box, CSSObject, Divider, Drawer, Theme, useTheme } from "@mui/material"
 import { Dispatch, FC, ReactNode, SetStateAction } from "react"
 
 // Animate expand (transition)
@@ -73,15 +73,13 @@ export const Sidebar: FC<Props> = ({ children, items, openedWidth, open: openInp
             divider ? (
               <LinkListItem divider={divider} />
             ) : (
-              <Tooltip title={!props.disabled ? name : ""} arrow placement="right" enterDelay={1000}>
-                <span>
-                  <LinkListItem
-                    name={name}
-                    {...props}
-                    sx={{ width: itemWidth }}
-                    textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
-                  />
-                </span>
+              <Tooltip title={!props.disabled ? name : ""} placement="right">
+                <LinkListItem
+                  name={name}
+                  {...props}
+                  sx={{ width: itemWidth }}
+                  textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
+                />
               </Tooltip>
             )
           }

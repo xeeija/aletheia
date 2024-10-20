@@ -1,7 +1,6 @@
-import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
+import { BooleanFieldHelper, BooleanFieldLabel, Tooltip } from "@/components"
+import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, TooltipProps } from "@mui/material"
 import { FC, ReactNode } from "react"
-import { BooleanFieldHelper } from "./BooleanFieldHelper"
-import { BooleanFieldLabel } from "./BooleanFieldLabel"
 
 type Props = CheckboxProps & {
   name?: string
@@ -57,7 +56,7 @@ export const BooleanFieldPlain: FC<Props> = ({
 
   return (
     <Box>
-      <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
+      <Tooltip title={tooltip ?? ""} {...tooltipProps}>
         <Box>
           {hasLabel ? (
             <BooleanFieldLabel
