@@ -2,6 +2,7 @@
 
 export * from "./useAlert"
 export * from "./useAuth"
+export * from "./useDelayedState"
 export * from "./useInterval"
 export * from "./useSidebar"
 export * from "./useUsernameValidator"
