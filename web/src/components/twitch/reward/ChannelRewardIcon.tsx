@@ -15,6 +15,7 @@ interface Props {
   showTitle?: boolean
   showStatus?: boolean
   loading?: boolean
+  stale?: boolean
   error?: ReactNode
   customTitle?: string
   fontSize?: number
@@ -29,6 +30,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   showTitle,
   showStatus,
   loading,
+  stale,
   error,
   customTitle,
   fontSize,
@@ -44,7 +46,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   }
 
   const notActive = reward.isPaused || !reward.isEnabled || loading || !!error
-  const disabledPaused = (reward.isPaused && !reward.isEnabled && !error) || loading
+  const disabledPaused = (reward.isPaused && !reward.isEnabled && !error) || loading || stale
   const showTitleBottom = sizeInput !== "xl" || titleBottom
 
   const imageAdjust = (!reward.image || reward.image.match(defaultImagePattern)) && sizeInput !== "xl" ? 1.2 : 1
@@ -67,12 +69,13 @@ export const ChannelRewardIcon: FC<Props> = ({
             size={size}
             statusSize={statusSize}
             enabled={notActive}
-            loading={loading}
+            loading={loading || stale}
+            stale={stale}
             error={error}
             fontSize={fontSize}
           >
-            {!reward.isEnabled && <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />}
-            {reward.isPaused && (
+            {!stale && !reward.isEnabled && <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />}
+            {!stale && reward.isPaused && (
               <SvgIcon
                 component={TiMediaPause}
                 fontSize="inherit"

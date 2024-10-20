@@ -14,6 +14,7 @@ interface Props {
   fontSize?: number
   enabled?: boolean
   loading?: boolean
+  stale?: boolean
   error?: ReactNode
   errorIcon?: ReactNode
   errorSx?: SxProps
@@ -28,6 +29,7 @@ export const ChannelRewardStatusOverlay: FC<Props> = ({
   fontSize,
   enabled,
   loading,
+  stale,
   error,
   errorIcon,
   errorSx,
@@ -46,7 +48,7 @@ export const ChannelRewardStatusOverlay: FC<Props> = ({
         justifyContent: "center",
         alignItems: "center",
         fontSize: statusSize,
-        opacity: enabled ? "1" : "0",
+        opacity: stale ? "0.5" : enabled ? "1" : "0",
         transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)",
         borderRadius: 1,
       }}

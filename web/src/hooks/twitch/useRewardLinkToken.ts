@@ -8,7 +8,7 @@ type RewardLinkConfig = {
 }
 
 export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => {
-  const [{ data, fetching, error }, fetchReward] = useRewardByTokenQuery({
+  const [{ data, fetching, error, stale }, fetchReward] = useRewardByTokenQuery({
     variables: {
       token,
       type,
@@ -52,5 +52,6 @@ export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => 
     },
     fetchingUpdate,
     errorUpdate,
+    stale,
   }
 }

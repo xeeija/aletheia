@@ -1,13 +1,15 @@
 "use client"
 
 import { ChannelRewardIcon } from "@/components/twitch"
-import { useInterval, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
+import { useDelayedState, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
 import { getTitle } from "@/utils"
 import { Box, Skeleton } from "@mui/material"
 import Head from "next/head"
 import { notFound, useParams, useSearchParams } from "next/navigation"
 import { FC, ReactNode, useState } from "react"
+
+const errorMessagePattern = /^\[GraphQL\] /
 
 type Params = {
   type: string
@@ -30,7 +32,7 @@ export const Token: FC = () => {
   const size = ["sm", "md", "lg", "xl"].includes(sizeString ?? "") ? (sizeString as ItemSize) : undefined
   const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size ?? "xl"]
 
-  const { reward, fetching, updateReward, refetch } = useRewardLinkToken({
+  const { reward, fetching, updateReward, refetch, stale } = useRewardLinkToken({
     token: token ?? "",
     type: type as RewardLinkType,
   })
@@ -40,25 +42,32 @@ export const Token: FC = () => {
   })
 
   const [error, setError] = useState<ReactNode>(null)
+  const [loading, setLoading] = useDelayedState(false, 250)
 
   // refetch the reward every 10 minutes, to check if status changed
-  useInterval(() => refetch(), {
-    ms: 10 * 60 * 1000,
-    disable: true, // || !reward,
-  })
+  // useInterval(() => refetch(), {
+  //   ms: 10 * 60 * 1000,
+  //   disable: true, // || !reward,
+  // })
 
   if (!reward && !fetching) {
     notFound()
   }
 
   const handleUpdate = async () => {
+    // trigger loading after 250ms (custom delayed setLoading)
+    setLoading(true)
     const { error } = await updateReward()
 
+    setLoading(false, 0)
+    // reset loading to false if not reset after 5s
+    // setTimeout(() => setLoading(false, true), 5000)
+
     if (error) {
-      setError(error.message)
+      setError(error.message.replace(errorMessagePattern, "gql: "))
       console.error(error.message)
 
-      setTimeout(() => setError(null), 5000)
+      // setTimeout(() => setError(null), 5000)
     }
   }
 
@@ -67,7 +76,6 @@ export const Token: FC = () => {
       <Head>
         <title>{getTitle(`Reward ${reward?.title} (${type})`)}</title>
       </Head>
-
       {reward && !fetching && (
         <Box sx={{ width: "fit-content" }}>
           <ChannelRewardIcon
@@ -76,6 +84,8 @@ export const Token: FC = () => {
             showTitle={!hideTitle}
             showStatus
             error={error}
+            loading={loading}
+            stale={stale}
             customTitle={customTitle}
             fontSize={Number(fontSize) || undefined}
             titleBottom={titleBottom}
