@@ -13,6 +13,7 @@ export * from "./NoData"
 export * from "./PageContainer"
 export * from "./SkeletonList"
 export * from "./TabPanel"
+export * from "./Tooltip"
 
 export * from "./alert/AlertContent"
 export * from "./alert/AlertPopup"
