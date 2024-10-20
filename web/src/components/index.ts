@@ -29,6 +29,7 @@ export { NoData } from "./common/NoData"
 export { PageContainer } from "./common/PageContainer"
 export { SkeletonList } from "./common/SkeletonList"
 export { TabPanel } from "./common/TabPanel"
+export { Tooltip } from "./common/Tooltip"
 
 export { AlertContent } from "./common/alert/AlertContent"
 export { AlertPopup } from "./common/alert/AlertPopup"

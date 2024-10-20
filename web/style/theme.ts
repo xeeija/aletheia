@@ -106,6 +106,10 @@ const componentOverrides: ThemeOptions = {
           },
         },
       },
+      defaultProps: {
+        enterDelay: 1000,
+        arrow: true,
+      },
     },
     MuiDialog: {
       styleOverrides: {
