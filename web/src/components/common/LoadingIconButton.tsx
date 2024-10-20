@@ -1,4 +1,5 @@
-import { CircularProgress, CircularProgressProps, IconButton, IconButtonProps, Tooltip } from "@mui/material"
+import { Tooltip } from "@/components"
+import { CircularProgress, CircularProgressProps, IconButton, IconButtonProps } from "@mui/material"
 import { FC, ReactNode } from "react"
 
 type Props = IconButtonProps & {
@@ -33,19 +34,17 @@ export const LoadingIconButton: FC<Props> = ({
   )
 
   return (
-    <Tooltip arrow placement="bottom" title={!disabled ? tooltip : ""} enterDelay={1000}>
-      <span>
-        <IconButton
-          {...props}
-          sx={{
-            mx: loading ? 0.25 : 0,
-            ...props.sx,
-          }}
-          disabled={disabled}
-        >
-          {loading ? loadingSpinner : children}
-        </IconButton>
-      </span>
+    <Tooltip placement="bottom" title={tooltip}>
+      <IconButton
+        {...props}
+        sx={{
+          mx: loading ? 0.25 : 0,
+          ...props.sx,
+        }}
+        disabled={disabled}
+      >
+        {loading ? loadingSpinner : children}
+      </IconButton>
     </Tooltip>
   )
 }

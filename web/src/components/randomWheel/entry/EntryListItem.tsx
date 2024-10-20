@@ -1,9 +1,10 @@
 "use client"
 
+import { Tooltip } from "@/components"
 import { UpdateEntryForm } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"
-import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, Tooltip, useTheme } from "@mui/material"
+import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, useTheme } from "@mui/material"
 import { FC, useMemo, useState } from "react"
 import { HiTrash } from "react-icons/hi"
 
@@ -100,7 +101,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
           >
             <UpdateEntryForm entry={entry} disabled={disabled} totalWeight={totalWeight} />
 
-            <Tooltip title="Delete" arrow enterDelay={1000} placement="top">
+            <Tooltip title="Delete" placement="top">
               <IconButton
                 onClick={async () => await onDelete?.(entry)}
                 // onClick={async () => await onDelete(entry)}

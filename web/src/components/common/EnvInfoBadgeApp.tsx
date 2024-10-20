@@ -1,5 +1,6 @@
+import { Tooltip } from "@/components"
 import { ThemeColor } from "@/types"
-import { Chip, Tooltip } from "@mui/material"
+import { Chip } from "@mui/material"
 import { unstable_noStore as noStore } from "next/cache"
 import { FC } from "react"
 import { HiBeaker } from "react-icons/hi"

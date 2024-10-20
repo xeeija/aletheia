@@ -1,6 +1,7 @@
+import { Tooltip } from "@/components"
 import { AccessTypeBadge } from "@/components/randomWheel"
 import { RandomWheelDetailsFragment } from "@/generated/graphql"
-import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC } from "react"
 import { TiThList } from "react-icons/ti"
@@ -17,7 +18,7 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
       <Link href={`randomwheel/${wheel.slug}`} passHref legacyBehavior>
         <CardActionArea sx={{ height: "100%" }}>
           <CardContent>
-            <Tooltip title={wheelName} arrow enterDelay={1000} placement="top">
+            <Tooltip title={wheelName} placement="top">
               <Typography variant="h6" className="line-clamp line-clamp-2">
                 {wheelName}
               </Typography>

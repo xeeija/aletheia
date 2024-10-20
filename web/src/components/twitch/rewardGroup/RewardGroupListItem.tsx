@@ -1,9 +1,9 @@
 "use client"
 
-import { BooleanFieldPlain } from "@/components"
+import { BooleanFieldPlain, Tooltip } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
 import { useAlert, useInterval, useRewardGroups } from "@/hooks"
-import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiPencil, HiTrash } from "react-icons/hi"
 import { TiStopwatch, TiThList } from "react-icons/ti"
@@ -59,7 +59,7 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
 
           {/* Icons für isPaused, isInStock, skipQueue, cooldown expiry etc. */}
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1, width: "max(12%, 180px)" }}>
-            <Tooltip arrow placement="bottom" title={`${rewardGroup.items?.length ?? 0} rewards`}>
+            <Tooltip placement="bottom" title={`${rewardGroup.items?.length ?? 0} rewards`} enterDelay={0}>
               <Chip
                 size="small"
                 variant="outlined"
@@ -70,7 +70,7 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
             </Tooltip>
 
             {cooldownActive && (
-              <Tooltip arrow placement="bottom" title={`Cooldown until ${cooldownExpiry}`}>
+              <Tooltip placement="bottom" enterDelay={0} title={`Cooldown until ${cooldownExpiry}`}>
                 <Box sx={{ display: "flex", flexDirection: "row", gap: 0.5 }}>
                   <SvgIcon color="info">
                     <TiStopwatch />
@@ -118,7 +118,7 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
                   Edit
                 </Button>
 
-                <Tooltip arrow placement="bottom" title="Delete">
+                <Tooltip placement="bottom" title="Delete">
                   <IconButton color="error" onClick={() => onDelete?.(rewardGroup)}>
                     <HiTrash />
                   </IconButton>

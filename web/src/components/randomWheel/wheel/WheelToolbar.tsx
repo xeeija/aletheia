@@ -1,5 +1,6 @@
 "use client"
 
+import { Tooltip } from "@/components"
 import {
   AccessTypeBadge,
   PopoutWheelDropdown,
@@ -7,7 +8,7 @@ import {
   WheelOptionsDropdown,
 } from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
-import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, IconButton, SvgIcon, Typography } from "@mui/material"
 import { FC } from "react"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
 
@@ -29,7 +30,7 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
         </Box>
 
         <Box>
-          <Tooltip arrow placement="bottom" title="Favorite">
+          <Tooltip placement="bottom" title="Favorite">
             <IconButton
               color={wheel.liked ? "error" : "secondary"}
               disabled={!user}

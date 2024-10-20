@@ -1,8 +1,8 @@
 "use client"
 
-import { InputField, InputFieldProps } from "@/components"
+import { InputField, InputFieldProps, Tooltip } from "@/components"
 import { passwordStrengthColor } from "@/utils/password"
-import { IconButton, InputAdornment, Tooltip, useTheme } from "@mui/material"
+import { IconButton, InputAdornment, useTheme } from "@mui/material"
 import { useFormikContext } from "formik"
 import { FC, useState } from "react"
 import { HiEye, HiEyeOff } from "react-icons/hi"
@@ -26,7 +26,7 @@ export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, 
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            <Tooltip title={"Show password"} arrow enterDelay={1000}>
+            <Tooltip title={"Show password"}>
               <IconButton
                 edge="end"
                 sx={{ opacity: 0.7, mr: -1, ml: -0.75 }}

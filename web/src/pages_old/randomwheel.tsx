@@ -1,4 +1,4 @@
-import { LayoutNextPage, TabPanel, defaultLayout } from "@/components"
+import { LayoutNextPage, TabPanel, Tooltip, defaultLayout } from "@/components"
 import { CreateEditWheelDialog, NoDataWheelList, WheelList } from "@/components/randomWheel"
 import { useMyRandomWheelsQuery } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
@@ -55,11 +55,11 @@ const RandomWheelPage: LayoutNextPage = () => {
             New Wheel
           </Button>
 
-          {/* <Tooltip placement="bottom-end" title="More options"> */}
-          <IconButton color="secondary" disabled>
-            <HiDotsVertical />
-          </IconButton>
-          {/* </Tooltip> */}
+          <Tooltip placement="bottom-end" title="More options">
+            <IconButton color="secondary" disabled>
+              <HiDotsVertical />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 

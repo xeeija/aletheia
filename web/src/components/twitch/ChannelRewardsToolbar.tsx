@@ -1,6 +1,6 @@
 "use client"
 
-import { FilterSelect } from "@/components"
+import { FilterSelect, Tooltip } from "@/components"
 import { ChannelRewardDialog } from "@/components/twitch"
 import { Box, Button, IconButton, SvgIcon } from "@mui/material"
 import { ChangeEvent, FC, useState } from "react"
@@ -37,11 +37,11 @@ export const ChannelRewardsToolbar: FC<Props> = ({ onFilter }) => {
 
       <ChannelRewardDialog onClose={() => setCreateRewardOpen(false)} open={createRewardOpen} type="create" />
 
-      {/* <Tooltip placement="bottom-end" title="More options"> */}
-      <IconButton color="secondary" disabled>
-        <HiDotsVertical />
-      </IconButton>
-      {/* </Tooltip> */}
+      <Tooltip placement="bottom-end" title="More options">
+        <IconButton color="secondary" disabled>
+          <HiDotsVertical />
+        </IconButton>
+      </Tooltip>
     </Box>
   )
 }
