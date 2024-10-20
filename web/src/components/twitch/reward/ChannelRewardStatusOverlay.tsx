@@ -11,6 +11,7 @@ import { TiWarning } from "react-icons/ti"
 interface Props {
   size: number
   statusSize: number
+  fontSize?: number
   enabled?: boolean
   loading?: boolean
   error?: ReactNode
@@ -24,6 +25,7 @@ interface Props {
 export const ChannelRewardStatusOverlay: FC<Props> = ({
   size,
   statusSize,
+  fontSize,
   enabled,
   loading,
   error,
@@ -56,7 +58,7 @@ export const ChannelRewardStatusOverlay: FC<Props> = ({
           {errorIcon ?? <SvgIcon component={TiWarning} color="warning" fontSize="inherit" viewBox="0 2 24 24" />}
 
           {hasErrorMessage && (
-            <ChannelRewardIconTitle fontSize={12} sx={{ mb: -1, ...errorSx }}>
+            <ChannelRewardIconTitle fontSize={fontSize} sx={{ mb: -1, ...errorSx }}>
               {error}
             </ChannelRewardIconTitle>
           )}

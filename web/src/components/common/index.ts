@@ -1,4 +1,5 @@
 export * from "./AboutDialog"
+export * from "./ButtonContainer"
 export * from "./CollapsedAlert"
 export * from "./Dropdown"
 export * from "./EnvInfoBadge"

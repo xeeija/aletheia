@@ -15,6 +15,7 @@
 // ### explicit re-export of everything
 // common
 export { AboutDialog } from "./common/AboutDialog"
+export { ButtonContainer } from "./common/ButtonContainer"
 export { CollapsedAlert } from "./common/CollapsedAlert"
 export { Dropdown } from "./common/Dropdown"
 export { EnvInfoBadge } from "./common/EnvInfoBadgeApp"

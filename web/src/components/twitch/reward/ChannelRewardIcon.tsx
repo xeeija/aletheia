@@ -1,7 +1,8 @@
+import { ButtonContainer } from "@/components"
 import { ChannelRewardIconTitle, ChannelRewardStatusOverlay } from "@/components/twitch"
 import { CustomRewardMenuItemFragment } from "@/generated/graphql"
 import { ItemSize } from "@/types"
-import { Avatar, Box, ButtonBase, SvgIcon } from "@mui/material"
+import { Avatar, Box, SvgIcon } from "@mui/material"
 import Image from "next/image"
 import { FC, ReactNode } from "react"
 import { TiMediaPause, TiPower } from "react-icons/ti"
@@ -68,6 +69,7 @@ export const ChannelRewardIcon: FC<Props> = ({
             enabled={notActive}
             loading={loading}
             error={error}
+            fontSize={fontSize}
           >
             {!reward.isEnabled && <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />}
             {reward.isPaused && (
@@ -111,21 +113,5 @@ export const ChannelRewardIcon: FC<Props> = ({
         <Box sx={{ width: sizeInput === "xl" ? size * 1.25 : size * 1.75, mt: 0.25 }}>{rewardTitle}</Box>
       )}
     </Box>
-  )
-}
-
-interface ButtonContainerProps {
-  button?: boolean
-  onClick?: () => void
-  children: ReactNode
-}
-
-const ButtonContainer: FC<ButtonContainerProps> = ({ button, onClick, children }) => {
-  return button ? (
-    <ButtonBase sx={{ borderRadius: 1 }} onClick={onClick}>
-      {children}
-    </ButtonBase>
-  ) : (
-    children
   )
 }
