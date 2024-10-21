@@ -1,14 +1,22 @@
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useSocket } from "@/hooks"
-import { useEffect, useState } from "react"
+import { SocketSetupFn, useSocket } from "@/hooks"
+import { useCallback, useEffect, useState } from "react"
 
 export const useRewardGroupSocket = (disable?: boolean) => {
-  const socket = useSocket({
-    disableSocket: disable,
-    onConnect: (socket) => {
-      socket.emit("rewardgroup:join")
+  const setup = useCallback<SocketSetupFn>(
+    (socket) => {
+      if (disable) {
+        return
+      }
+
+      socket.on("connect", () => {
+        socket.emit("rewardgroup:join")
+      })
     },
-  })
+    [disable]
+  )
+
+  const socket = useSocket(setup)
 
   const [pausedGroups, setPausedGroups] = useState<RewardGroupFragment[]>([])
 

@@ -1,38 +1,32 @@
-import { useSocket } from "@/hooks"
-import { useEffect } from "react"
+import { SocketSetupFn, useSocket } from "@/hooks"
+import { useCallback, useEffect } from "react"
 
 // rewardData?: CustomRewardMenuItemFragment,
-export const useRewardLinkSocket = (token: string, disable?: boolean, fn?: () => void) => {
-  const socket = useSocket({
-    disableSocket: disable,
-    onConnect: (socket) => {
-      socket.emit("rewardlink:join", token)
-    },
-  })
+export const useRewardLinkSocket = (token: string, disable?: boolean, onUpdate?: () => void) => {
+  const setup = useCallback<SocketSetupFn>(
+    (socket) => {
+      if (!token || disable) {
+        return
+      }
 
-  // const [reward, setReward] = useState(rewardData)
-  // useEffect(() => {
-  //   console.log("reward update from component", rewardData)
-  //   // setReward(rewardData)
-  // }, [rewardData])
+      socket.on("connect", () => {
+        socket.emit("rewardlink:join", token)
+      })
+    },
+    [token, disable]
+  )
+
+  const socket = useSocket(setup)
 
   useEffect(() => {
-    if (disable) {
-      return
-    }
-
     socket.on("reward:update", () => {
-      fn?.()
-
-      // if (updatedRewardData) {
-      //   // setReward(updatedRewardData)
-      // }
+      onUpdate?.()
     })
 
     return () => {
       socket.off("reward:update")
     }
-  }, [socket, disable, fn])
+  }, [socket, onUpdate])
 
   // return reward
 }
