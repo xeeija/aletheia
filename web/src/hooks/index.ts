@@ -3,6 +3,7 @@
 export * from "./useAlert"
 export * from "./useAuth"
 export * from "./useDelayedState"
+export * from "./useDelayedValue"
 export * from "./useInterval"
 export * from "./useSidebar"
 export * from "./useUsernameValidator"

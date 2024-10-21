@@ -13,12 +13,13 @@ export const useDelayedState = <T>(initialState: T | (() => T), delayMs: number)
 
   let timeout: NodeJS.Timeout
   // const [timeout, updateTimeout] = useState<NodeJS.Timeout>()
+  // const timeoutRef = useRef<NodeJS.Timeout>()
 
   // useEffect to clear timeouts when inital state or delay changes?
 
   const updateState: SetState<T> = (stateAction, delayMsUpdate) => {
-    const ts = Date.now()
-    console.log("updateState", ts, { delayMsUpdate })
+    // const ts = Date.now()
+    // console.log("delayedState update", ts, { delayMsUpdate })
     clearTimeout(timeout)
 
     if (delayMsUpdate === 0) {
@@ -26,7 +27,7 @@ export const useDelayedState = <T>(initialState: T | (() => T), delayMs: number)
     } else {
       // const to = setTimeout(() => {
       timeout = setTimeout(() => {
-        console.log("setState", ts)
+        // console.log("setState", ts)
         setState(stateAction)
       }, delayMsUpdate ?? delayMs)
       // updateTimeout(to)
@@ -37,6 +38,31 @@ export const useDelayedState = <T>(initialState: T | (() => T), delayMs: number)
     clearTimeout(timeout)
     // updateTimeout(undefined)
   }
+
+  // const updateState = useCallback(() => {
+  //   const updateFn: SetState<T> = (stateAction, delayMsUpdate) => {
+  //     const ts = Date.now()
+  //     console.log("delayedState update", ts, { delayMsUpdate })
+  //     clearTimeout(timeoutRef.current)
+
+  //     if (delayMsUpdate === 0) {
+  //       console.log("delayedState set immediate", ts)
+  //       setState(stateAction)
+  //     } else {
+  //       // const to = setTimeout(() => {
+  //       timeoutRef.current = setTimeout(() => {
+  //         console.log("delayedState set", ts)
+  //         setState(stateAction)
+  //       }, delayMsUpdate ?? delayMs)
+  //       // updateTimeout(to)
+  //     }
+  //   }
+  //   return updateFn
+  // }, [delayMs])
+
+  // const clearDelay = useCallback(() => {
+  //   clearTimeout(timeoutRef.current)
+  // }, [])
 
   return [state, updateState, clearDelay] as DelayedState<T>
 
