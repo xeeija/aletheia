@@ -31,7 +31,7 @@ const baseTheme = createTheme({
     borderRadius: 6,
   },
   typography: () => ({
-    fontFamily: "var(--font-family)",
+    fontFamily: `var(--font-family, Product Sans, Helvetica Neue, -apple-system, sans-serif)`,
     // fontFamily: productSans.style.fontFamily,
     // fontFamily: [
     //   // `var(--font-family)`,
