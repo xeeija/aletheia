@@ -86,7 +86,7 @@ export class RewardLinkResolver {
       twitchUserId: realTwitchUserId,
     })
 
-    socketIo.to(`rewardlink/${rewardLink.id}`).emit("reward:update")
+    socketIo.to(`rewardlink/${rewardLink.id}`).emit("rewardlink:delete")
 
     return deleted !== null
   }

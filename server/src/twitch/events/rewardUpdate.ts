@@ -1,5 +1,5 @@
 import { activeSubscriptions } from "@/twitch/index.js"
-import { EventSubConfigRewardUpdate, EventSubType, SocketServer, SubscriptionType } from "@/types.js"
+import { EventSubConfigRewardUpdate, EventSubType, RewardIconData, SocketServer, SubscriptionType } from "@/types.js"
 import { loggerEventsub as logger, loggerSocket } from "@/utils/index.js"
 import { PrismaClient } from "@prisma/client"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
@@ -65,7 +65,17 @@ export const handleSubscriptionRewardUpdate = async (
       )
     }
 
-    socketIo.to(rooms).emit("reward:update")
+    const updatedReward: RewardIconData = {
+      id: event.id,
+      title: event.title,
+      backgroundColor: event.backgroundColor,
+      image: event.getImageUrl(2),
+      isPaused: event.isPaused,
+      isEnabled: event.isEnabled,
+      isInStock: event.isInStock,
+    }
+
+    socketIo.to(rooms).emit("reward:update", updatedReward)
   })
 
   const id = existingSub?.id ?? randomUUID()
