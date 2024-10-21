@@ -55,7 +55,8 @@ export interface ServerToClientEvents {
   "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
   "wheel:update": (type: string) => void
   "rewardgroup:pause": (rewardGroup: RewardGroupFull[], paused: boolean) => void
-  "reward:update": (reward?: RewardIconData) => void
+  "reward:update": (reward: RewardIconData) => void
+  "rewardlink:delete": () => void
 }
 
 export interface ClientToServerEvents {

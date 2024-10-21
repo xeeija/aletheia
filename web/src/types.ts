@@ -107,7 +107,8 @@ export interface ServerToClientEvents {
   "wheel:spin": (spinResult: SpinResult) => void
   "wheel:update": (type: string) => void
   "rewardgroup:pause": (rewardGroup: RewardGroup[], paused: boolean) => void
-  "reward:update": (reward?: CustomRewardMenuItemFragment) => void
+  "reward:update": (reward: CustomRewardMenuItemFragment) => void
+  "rewardlink:delete": () => void
 }
 
 export interface ClientToServerEvents {

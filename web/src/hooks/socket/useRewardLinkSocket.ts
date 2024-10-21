@@ -1,7 +1,10 @@
 import { SocketSetupFn, useSocket } from "@/hooks"
 import { useCallback, useEffect } from "react"
 
+// export type RewardLinkUpdateFn = (reward: CustomRewardMenuItemFragment | undefined) => void
+
 // rewardData?: CustomRewardMenuItemFragment,
+// onUpdate?: RewardLinkUpdateFn //(reward: CustomRewardMenuItemFragment | undefined) => void
 export const useRewardLinkSocket = (token: string, disable?: boolean, onUpdate?: () => void) => {
   const setup = useCallback<SocketSetupFn>(
     (socket) => {
@@ -20,6 +23,7 @@ export const useRewardLinkSocket = (token: string, disable?: boolean, onUpdate?:
 
   useEffect(() => {
     socket.on("reward:update", () => {
+      // onUpdate?.(reward)
       onUpdate?.()
     })
 
