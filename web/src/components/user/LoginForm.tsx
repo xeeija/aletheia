@@ -2,7 +2,7 @@
 
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useLoginMutation } from "@/generated/graphql"
-import { useAlert } from "@/hooks"
+import { useAlert, useAuth } from "@/hooks"
 import { SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -14,6 +14,8 @@ interface Props {}
 
 export const LoginForm: FC<Props> = () => {
   const [, login] = useLoginMutation()
+  const { refetchUser } = useAuth()
+
   const router = useRouter()
 
   const { showError } = useAlert()
@@ -62,6 +64,8 @@ export const LoginForm: FC<Props> = () => {
           values.password = ""
           return
         }
+
+        await refetchUser()
 
         // Go to home page
         router.push("/")
