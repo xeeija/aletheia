@@ -31,7 +31,7 @@ export const EnvInfoBadge: FC<Props> = ({ color, opacity, outlined }) => {
         label={environment}
         icon={
           <Tooltip title={`Environment: ${environment}`}>
-            <HiBeaker />
+            <HiBeaker viewBox="0 -2 20 20" />
           </Tooltip>
         }
         color={typeof color === "boolean" ? "success" : color ?? "default"}
