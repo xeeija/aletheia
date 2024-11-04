@@ -1,4 +1,4 @@
-import { AlertProvider, MuiProvider, UrqlProvider } from "@/components/providers"
+import { AlertProvider, MuiProvider, UrqlSsrProvider } from "@/components/providers"
 import { FC, ReactNode } from "react"
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 export const Providers: FC<Props> = ({ children }) => {
   return (
     <MuiProvider>
-      <UrqlProvider>
+      <UrqlSsrProvider>
         <AlertProvider>{children}</AlertProvider>
-      </UrqlProvider>
+      </UrqlSsrProvider>
     </MuiProvider>
   )
 }

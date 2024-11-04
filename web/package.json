@@ -23,6 +23,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/material": "^5.15.12",
     "@mui/material-nextjs": "^6.1.4",
+    "@urql/next": "^1.1.2",
     "formik": "^2.4.6",
     "graphql": "^16.9.0",
     "next": "^14.2.13",
@@ -33,11 +34,13 @@
     "react-virtuoso": "^4.10.4",
     "sharp": "^0.33.5",
     "socket.io-client": "^4.8.0",
-    "urql": "^4.1.0",
+    "urql": "^4.2.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@graphql-codegen/add": "^5.0.3",
     "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typed-document-node": "^5.0.11",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-operations": "4.2.3",
     "@graphql-codegen/typescript-urql": "^4.0.0",
