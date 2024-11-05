@@ -1,10 +1,7 @@
+import { NotFound } from "@/components"
 import { RandomWheelDetail } from "@/components/randomWheel"
-import { Page } from "@/types"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Random Wheel",
-}
+import { MetadataFn, Page } from "@/types"
+import { getRandomWheel } from "@/utils/graphql/randomwheel"
 
 type Params = {
   slug: string
@@ -14,8 +11,28 @@ type SearchParams = {
   token?: string
 }
 
+export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ params, searchParams }) => {
+  const queryParams = new URLSearchParams(searchParams)
+  const token = queryParams.get("token") ?? undefined
+
+  const wheel = await getRandomWheel(params.slug, token)
+
+  if (!wheel) {
+    return {
+      title: "Not Found",
+    }
+    // notFound()
+  }
+
+  const title = wheel.name || `Wheel #${wheel.slug}`
+
+  return {
+    title,
+  }
+}
+
 // const SlugPage: Page<{ slug: string }, { token?: string }> = ({ params, searchParams }) => {
-const SlugPage: Page<Params, SearchParams> = ({ params, searchParams }) => {
+const SlugPage: Page<Params, SearchParams> = async ({ params, searchParams }) => {
   // server functions
   // const params = useParams<Params>()
   const slug = params.slug
@@ -25,7 +42,18 @@ const SlugPage: Page<Params, SearchParams> = ({ params, searchParams }) => {
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
-  return <RandomWheelDetail slug={slug} token={token} />
+  const wheel = await getRandomWheel(slug, token)
+
+  if (!wheel) {
+    // notFound()
+    return <NotFound />
+  }
+
+  return (
+    <>
+      <RandomWheelDetail slug={slug} token={token} />
+    </>
+  )
 }
 
 export default SlugPage

@@ -1,7 +1,7 @@
 import { CustomRewardMenuItemFragment, RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
 import { AlertColor } from "@mui/material"
 import type { FormikProps } from "formik"
-import { NextApiRequest, NextApiResponse } from "next"
+import { Metadata, NextApiRequest, NextApiResponse, ResolvingMetadata } from "next"
 import { NextRequest, NextResponse } from "next/server"
 import { FC, ReactNode, RefObject } from "react"
 import { Socket as SocketDefault } from "socket.io-client"
@@ -15,6 +15,7 @@ export type ServerComponent<P> = Awaitable<FC<P>>
 export type SC<P = Empty> = ServerComponent<P>
 
 // Page, Layout
+// SearchParams are only available in a page.tsx
 export interface AppPageProps<Params extends object = Empty, SearchParams extends object = Empty> {
   params: Params
   searchParams: SearchParams
@@ -36,6 +37,11 @@ export interface AppErrorProps {
   error: ErrorDigest
   reset: () => void
 }
+
+export type MetadataFn<P extends object = Empty, SP extends object = Empty> = (
+  props: AppPageProps<P, SP>,
+  parent: ResolvingMetadata
+) => Awaitable<Metadata>
 
 // Route Handlers (and old API routes)
 export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse<T>) => Awaitable<void>
