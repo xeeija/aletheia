@@ -23,20 +23,22 @@ export const UserAvatar: FC<Props> = ({ user, setDropdownAnchor }) => {
             height: 36,
             backgroundColor: "transparent",
             "& .MuiAvatar-img": {
-              // pointerEvents: "none", // make avatar img unselectable
+              pointerEvents: "none", // make avatar img unselectable
             },
           }}
         >
           <SvgIcon
             color="primary"
-            component={TiUser}
+            // component={TiUser}
             sx={{
               height: 36,
               width: 36,
               borderRadius: "50%",
               // border: `2px solid ${theme.palette.primary.main}a0`,
             }}
-          />
+          >
+            <TiUser />
+          </SvgIcon>
         </Avatar>
       </IconButton>
     </UserStatusDot>

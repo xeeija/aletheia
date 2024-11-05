@@ -21,7 +21,7 @@ const sidebarItems: LinkItem[] = [
     href: "/randomwheel",
     icon: (
       <SvgIcon color="secondary" viewBox="0 1 22 22">
-        <TiChartPie />
+        <TiChartPie viewBox="0 1 22 22" />
       </SvgIcon>
     ),
   },
@@ -100,7 +100,8 @@ export const AppSidebar: FC<Props> = ({ children, fullHeight = true }) => {
             display: "flex",
             flexDirection: "column",
             flexGrow: 1,
-            p: 2,
+            p: 3,
+            pb: 2,
             gap: 2,
             minHeight: fullHeight ? "100vh" : undefined,
           }}

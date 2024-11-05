@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@/components"
 import { LinkAdd } from "@/components/icons"
-import { RandomWheelDetails, useRandomWheelActions } from "@/hooks"
+import { RandomWheelDetails, useLocation, useRandomWheelActions } from "@/hooks"
 import { Box, IconButton, Paper, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useEffect, useState } from "react"
@@ -48,7 +48,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const privateWheel = wheel.accessType === "PRIVATE"
 
-  const baseUrl = `${window.location.href}`
+  const baseUrl = useLocation()?.href ?? "" // `${window.location.href}`
 
   const initialUrl = `${baseUrl}/popout${privateWheel ? `?token=${token}` : ""}`
   const [shareUrl, setShareUrl] = useState(initialUrl)
@@ -81,7 +81,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const validUrlExists = !privateWheel || token
 
-  const wheelEditable = wheel.editable || wheel.editAnonymous
+  const shareDisabled = !(wheel.editable || wheel.editAnonymous || wheel.accessType === "PUBLIC")
 
   // if (!privateWheel) {
   //   return (
@@ -95,10 +95,10 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   return (
     <>
-      <Tooltip placement="bottom" title={wheelEditable ? "Popout" : ""}>
+      <Tooltip placement="bottom" title="Popout">
         <IconButton
           color="secondary"
-          disabled={!wheelEditable}
+          disabled={shareDisabled}
           onClick={(ev) => setAnchor(ev.currentTarget)}
           sx={{ ml: 1 }}
         >
