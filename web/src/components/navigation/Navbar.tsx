@@ -27,6 +27,7 @@ export const Navbar: FC<Props> = ({ children, open: openInput, marginLeft = 0, b
       // }} */}
       <Toolbar
         sx={{
+          gap: 3,
           ...(open && {
             ml: `${marginLeft}px`,
           }),

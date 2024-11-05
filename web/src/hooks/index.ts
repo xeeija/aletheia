@@ -5,8 +5,10 @@ export * from "./useAuth"
 export * from "./useDelayedState"
 export * from "./useDelayedValue"
 export * from "./useInterval"
+export * from "./useLocation"
 export * from "./useSidebar"
 export * from "./useUsernameValidator"
+export * from "./useWindow"
 
 export * from "./randomwheel"
 

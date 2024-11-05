@@ -19,6 +19,7 @@ export const NotFound: FC<Props> = () => {
     >
       <Image
         src="/img/mathematics.svg"
+        priority
         alt=""
         width={300}
         height={240}

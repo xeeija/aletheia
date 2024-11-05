@@ -1,6 +1,7 @@
 "use client"
 
 import { Dropdown, LinkInputField, Tooltip } from "@/components"
+import { useLocation } from "@/hooks"
 import { IconButton, Paper, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiShare } from "react-icons/hi"
@@ -12,7 +13,7 @@ interface Props {
 export const ShareWheelDropdown: FC<Props> = ({ slug }) => {
   const [anchor, setAnchor] = useState<Element | null>(null)
 
-  const shareUrl = `${window.location.host}/r/${slug}`
+  const shareUrl = `${useLocation()?.host ?? ""}/r/${slug}`
 
   return (
     <>

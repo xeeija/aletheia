@@ -48,7 +48,7 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
             {global ? "500 Internal Server Error" : "Error"}
           </Typography>
 
-          <Typography variant="h1" sx={{ mb: 2 }}>
+          <Typography variant="h1" sx={{ mb: 1 }}>
             Oops, something went wrong.
           </Typography>
 
@@ -56,10 +56,16 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
             {"But dont worry, it's not on your end - it's us."}
           </Typography>
 
-          <Typography variant="body1" className="muted">
+          <Typography variant="body1" className="muted" sx={{ fontSize: "1em", mt: 2 }}>
             {error.name}: {error.message} <br />
             {error.cause ? `Cause: ${JSON.stringify(error.cause ?? null)}` : null}
           </Typography>
+
+          {error.digest && (
+            <Typography variant="body1" className="muted" sx={{ fontSize: "0.925em", mb: 1 }}>
+              Digest: {error.digest}
+            </Typography>
+          )}
 
           {showReset && (
             <div>
