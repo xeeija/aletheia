@@ -6,6 +6,9 @@ interface Props {
   children?: ReactNode
 }
 
+/**
+ * @deprecated Use import from `@/app/components` instead. Workaround for error "Can only import next/headers in Server Component"
+ */
 export const AppNavbar: FC<Props> = ({ children }) => {
   const sidebarWidth = 240
 
@@ -16,6 +19,12 @@ export const AppNavbar: FC<Props> = ({ children }) => {
           {children}
         </Typography>
         <UserMenu />
+        {/*
+          UserMenuApp always has a build error:
+          You're importing a component that needs next/headers.
+          That only works in a Server Component which is not supported in the pages/ directory.
+        */}
+        {/* <UserMenuApp /> */}
       </Navbar>
 
       <Box sx={{ mt: 8 }} />
