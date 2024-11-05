@@ -6,31 +6,33 @@ import {
   useUserAccessTokenQuery,
 } from "@/generated/graphql"
 
-export const useAuth = (config?: { includeToken?: boolean }) => {
-  const [{ data: user, error: errorUser, fetching: fetchingUser }, fetchUser] = useMeQuery()
+type Config = {
+  includeToken?: boolean
+  initialUser?: UserNameFragment
+}
+
+export const useAuth = (config?: Config) => {
+  const [{ data: user, error: errorUser, fetching: fetchingUser }, fetchUser] = useMeQuery({
+    // required for initial page load, as long as initialUser is not provided
+    requestPolicy: "cache-and-network",
+  })
   const [{ data: token, error: errorToken, fetching: fetchingToken }] = useUserAccessTokenQuery({
     pause: !config?.includeToken,
   })
   const [{ fetching: fetchingDisconnect }, disconnectAccessToken] = useDisconnectAccessTokenMutation()
 
   return {
-    user: user?.me as UserNameFragment | undefined,
+    user: user?.me ?? config?.initialUser, // as UserNameFragment | undefined,
     error: errorUser,
     fetchingUser,
     refetchUser: async () =>
       new Promise<void>((resolve) => {
-        console.log("start refetch")
         fetchUser({
           requestPolicy: "cache-and-network",
         })
 
-        // workaround to wait for fetchUser to finish
-        const interval = setInterval(() => {
-          if (!fetchingUser) {
-            resolve()
-            setTimeout(() => clearInterval(interval), 50)
-          }
-        }, 10)
+        // does not work quite well yet
+        setTimeout(resolve, 250)
       }),
     authenticated: !!user?.me,
     userAccessToken: token?.userAccesToken as UserAccessTokenFragment | undefined,

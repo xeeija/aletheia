@@ -1,4 +1,4 @@
-import { PageContainer } from "@/components"
+import { PageContainer } from "@/app/components"
 import { Layout } from "@/types"
 
 const ChannelPointsLayout: Layout = ({ children }) => {
