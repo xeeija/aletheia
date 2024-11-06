@@ -9,6 +9,7 @@
 
 export { DisconnectTwitchDialog } from "./DisconnectTwitchDialog"
 export { LoginForm } from "./LoginForm"
+export { LogoutButton } from "./LogoutButton"
 export { RegisterForm } from "./RegisterForm"
 export { UserAvatar } from "./UserAvatar"
 export { UserMenu } from "./UserMenu"

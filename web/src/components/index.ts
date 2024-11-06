@@ -83,5 +83,6 @@ export { UserMenu } from "./user/UserMenu"
 // somehow build fails with UserMenuApp export, because next/headers (in urql client)
 // can only be imported into Server Components, not pages/ directory
 // export { UserMenuApp } from "./user/UserMenuApp"
+export { LogoutButton } from "./user/LogoutButton"
 export { UserMenuDropdown } from "./user/UserMenuDropdown"
 export { UserStatusDot } from "./user/UserStatusDot"
