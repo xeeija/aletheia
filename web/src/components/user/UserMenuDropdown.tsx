@@ -1,25 +1,21 @@
 "use client"
 
-import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar, UserStatusDot } from "@/components"
-import { useLogoutMutation, UserNameFragment } from "@/generated/graphql"
+import { Dropdown, LinkItem, LinkList, LogoutButton, UserAvatar, UserStatusDot } from "@/components"
+import { UserNameFragment } from "@/generated/graphql"
 import { useAuth } from "@/hooks/useAuth"
-import { Alert, Box, Divider, ListItemIcon, Paper, Skeleton, Snackbar, SvgIcon, Typography } from "@mui/material"
-import { useRouter } from "next/navigation"
+import { Alert, Box, Divider, Paper, Skeleton, Snackbar, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
-import { TiPower, TiSpanner, TiUser, TiWarning } from "react-icons/ti"
+import { TiSpanner, TiUser, TiWarning } from "react-icons/ti"
 
 interface Props {
   user?: UserNameFragment
 }
 
 export const UserMenuDropdown: FC<Props> = ({ user: initialUser }) => {
-  const router = useRouter()
-
-  const { user } = useAuth({ initialUser })
+  const { user, logout } = useAuth({ initialUser })
 
   const showUsername = user?.displayname && user.username !== user.displayname
 
-  const [, logout] = useLogoutMutation()
   const [logoutError, setLogoutError] = useState(false)
   // fetching from logout mutation doesnt work (button is forever in "loading" state and disabled)
   const [fetchingLogout, setFetchingLogout] = useState(false)
@@ -44,35 +40,18 @@ export const UserMenuDropdown: FC<Props> = ({ user: initialUser }) => {
   const handleLogout = async () => {
     setFetchingLogout(true)
 
-    const response = await logout(
-      {},
-      {
-        additionalTypenames: ["User"],
-      }
-    )
+    const response = await logout("/")
 
-    if (response.error) {
-      console.log({ error: response.error })
-      // Show error snackbar?
-      setLogoutError(true)
-      return
+    if (!response.error) {
+      setTimeout(() => {
+        setDropdownAnchor(null)
+      })
     }
 
-    if (!response.data?.logout) {
-      console.log("Logout: ", response.data?.logout)
-      setLogoutError(true)
-      return
-    }
-
-    setDropdownAnchor(null)
-    setTimeout(() => {
-      setFetchingLogout(false)
-    }, 500)
-
-    // TODO: Show snackbar "Logged out successfully"
-
-    // Redirect to home
-    router.push("/")
+    setFetchingLogout(false)
+    // setTimeout(() => {
+    //   setFetchingLogout(false)
+    // }, 500)
   }
 
   return (
@@ -114,31 +93,7 @@ export const UserMenuDropdown: FC<Props> = ({ user: initialUser }) => {
 
               <LinkList items={userDropdownItems} dense sx={{ p: 0 }}>
                 <li>
-                  <LoadingButton
-                    variant="text"
-                    color="error"
-                    fullWidth
-                    loading={fetchingLogout}
-                    fade
-                    onClick={() => void handleLogout()}
-                    position="start"
-                    sx={{
-                      justifyContent: "start",
-                      textTransform: "inherit",
-                      py: 0.5,
-                      mt: 0.5,
-                    }}
-                    startIcon={
-                      <ListItemIcon sx={{ ml: 0.5, color: "inherit" }}>
-                        <SvgIcon component={TiPower} />
-                      </ListItemIcon>
-                    }
-                    progressProps={{ color: "inherit", sx: { ml: 1, mr: 3.5 } }} // props for position start
-                  >
-                    <Typography variant="body1" component="span">
-                      Logout
-                    </Typography>
-                  </LoadingButton>
+                  <LogoutButton loading={fetchingLogout} onClick={handleLogout} />
                 </li>
               </LinkList>
             </Paper>
