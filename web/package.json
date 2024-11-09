@@ -53,6 +53,7 @@
     "eslint-plugin-next": "^0.0.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.36.1",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-63b359f-20241101",
     "prettier": "^3.2.4",
     "typescript": "^5.5.4"
   }
