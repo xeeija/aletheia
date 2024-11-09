@@ -11,9 +11,7 @@ export type DelayedState<T> = [T, SetState<T>, () => void]
 export const useDelayedState = <T>(initialState: T | (() => T), delayMs: number) => {
   const [state, setState] = useState(initialState)
 
-  let timeout: NodeJS.Timeout
-  // const [timeout, updateTimeout] = useState<NodeJS.Timeout>()
-  // const timeoutRef = useRef<NodeJS.Timeout>()
+  const [timeout, updateTimeout] = useState<NodeJS.Timeout>()
 
   // useEffect to clear timeouts when inital state or delay changes?
 
@@ -25,12 +23,12 @@ export const useDelayedState = <T>(initialState: T | (() => T), delayMs: number)
     if (delayMsUpdate === 0) {
       setState(stateAction)
     } else {
-      // const to = setTimeout(() => {
-      timeout = setTimeout(() => {
+      const to = setTimeout(() => {
         // console.log("setState", ts)
         setState(stateAction)
       }, delayMsUpdate ?? delayMs)
-      // updateTimeout(to)
+
+      updateTimeout(to)
     }
   }
 
