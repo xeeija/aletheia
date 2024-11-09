@@ -1,7 +1,9 @@
-/** @type {import('next').NextConfig} */
-module.exports = {
+import { NextConfig } from "next"
+
+export const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
+  // eslint-disable-next-line @typescript-eslint/require-await
   redirects: async () => [
     {
       source: "/r/:path",
@@ -22,3 +24,5 @@ module.exports = {
     ],
   },
 }
+
+export default nextConfig
