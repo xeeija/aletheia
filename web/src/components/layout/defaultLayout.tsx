@@ -5,7 +5,7 @@ import { ReactElement, ReactNode } from "react"
 import { Navigation, NavigationProps } from "../navigation"
 
 export type LayoutNextPage<P = object, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode
+  getLayout?: (page: ReactElement<unknown>) => ReactNode
 }
 
 // •
@@ -18,7 +18,7 @@ type Props = NavigationProps & {
 
 // Helper to pass props to Navigation
 // eslint-disable-next-line react/display-name
-export const defaultLayout = (props?: Props) => (page: ReactElement) => {
+export const defaultLayout = (props?: Props) => (page: ReactElement<unknown>) => {
   const { title, fullWidth = true, ...navProps } = props ?? {}
   return (
     <>
