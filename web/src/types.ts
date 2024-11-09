@@ -17,14 +17,14 @@ export type SC<P = Empty> = ServerComponent<P>
 // Page, Layout
 // SearchParams are only available in a page.tsx
 export interface AppPageProps<Params extends object = Empty, SearchParams extends object = Empty> {
-  params: Params
-  searchParams: SearchParams
+  params: Promise<Params>
+  searchParams: Promise<SearchParams>
 }
 export type Page<P extends object = Empty, SP extends object = Empty> = FC<AppPageProps<P, SP>>
 
 export interface AppLayoutProps<Params extends object = Empty> {
   children: ReactNode
-  params: Params
+  params: Promise<Params>
 }
 
 // use like this: type Slots = "a" | "b", default never (no slots, except children)

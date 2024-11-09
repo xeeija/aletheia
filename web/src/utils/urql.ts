@@ -4,19 +4,26 @@ import { cacheExchange, createClient, fetchExchange } from "urql"
 
 // Note: client side urql client is created directly in UrqlProvider/UrqlSsrProvider component
 
-const makeClient = () => {
-  return createClient({
-    url: `${process.env.SERVER_URL || ""}/api/graphql`,
-    exchanges: [cacheExchange, fetchExchange],
-    fetchOptions: () => ({
-      credentials: "include",
-      //  manually include cookies (from server component)
-      headers: {
-        // cookies() throws an error when it is not called from a server component
-        cookie: cookies().toString(),
-      },
-    }),
-  })
+const makeClient = async () => {
+  const cookieStore = await cookies()
+
+  return () =>
+    createClient({
+      url: `${process.env.SERVER_URL || ""}/api/graphql`,
+      exchanges: [cacheExchange, fetchExchange],
+      fetchOptions: () => ({
+        credentials: "include",
+        //  manually include cookies (from server component)
+        headers: {
+          // cookies() throws an error when it is not called from a server component
+          cookie: cookieStore.toString(),
+        },
+      }),
+    })
 }
 
-export const { getClient: getUrqlClient } = registerUrql(makeClient)
+export const getUrqlClient = async () => {
+  const makeClientFn = await makeClient()
+  const { getClient } = registerUrql(makeClientFn)
+  return getClient()
+}
