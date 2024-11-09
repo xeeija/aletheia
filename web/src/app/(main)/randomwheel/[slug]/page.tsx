@@ -11,7 +11,9 @@ type SearchParams = {
   token?: string
 }
 
-export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ params, searchParams }) => {
+export const generateMetadata: MetadataFn<Params, SearchParams> = async (props) => {
+  const [params, searchParams] = await Promise.all([props.params, props.searchParams])
+
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
@@ -32,7 +34,9 @@ export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ param
 }
 
 // const SlugPage: Page<{ slug: string }, { token?: string }> = ({ params, searchParams }) => {
-const SlugPage: Page<Params, SearchParams> = async ({ params, searchParams }) => {
+const SlugPage: Page<Params, SearchParams> = async (props) => {
+  const [params, searchParams] = await Promise.all([props.params, props.searchParams])
+
   // server functions
   // const params = useParams<Params>()
   const slug = params.slug
