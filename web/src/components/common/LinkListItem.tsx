@@ -1,7 +1,7 @@
 import { ThemeColor } from "@/types"
 import {
   Divider,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   ListItemTextProps,
@@ -56,14 +56,16 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     )
 
     const linkItem = (
-      <ListItem
-        button
+      <ListItemButton
         ref={ref}
         component={href ? "a" : "button"}
         disabled={disabled}
         sx={{
           color: themeColor,
-          "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined },
+          width: "100%",
+          "&:hover": {
+            backgroundColor: color ? `${themeColor}14` : undefined,
+          },
           ...sx,
         }}
         {...props}
@@ -77,7 +79,7 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
           {icon}
         </ListItemIcon>
         <ListItemText primary={subtitle ? subtitleText : name} {...textProps} />
-      </ListItem>
+      </ListItemButton>
     )
 
     const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
