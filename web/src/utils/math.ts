@@ -20,6 +20,11 @@ export const pointOnCircle = (center: Point, radius: number, angleDeg: number, a
   }
 }
 
+export const froundPoint = (point: Point): Point => ({
+  x: Math.fround(point.x),
+  y: Math.fround(point.y),
+})
+
 interface LogisticOptions {
   x: number
   max: number
