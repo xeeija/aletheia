@@ -12,7 +12,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemSecondaryAction,
   Portal,
   Skeleton,
   SvgIcon,
@@ -137,7 +136,116 @@ export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
                     <List role="list" dense>
                       {values.wheelSync.map((sync, i) => (
                         // subscription.reward &&
-                        <ListItem key={sync.id} role="listitem" sx={{ width: "100%" }}>
+                        <ListItem
+                          key={sync.id}
+                          role="listitem"
+                          sx={{ width: "100%" }}
+                          secondaryAction={
+                            !sync.delete && (
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Typography variant="body2" color="textSecondary" sx={{ mr: -0.5 }}>
+                                  {sync.pending ? "Pending" : sync.paused ? "Paused" : "Active"}
+                                </Typography>
+
+                                {/* {subscription.pending &&
+                                  <IconButton color="info" sx={{ mr: -1.5 }}>
+                                    <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
+                                      onClick={async () => {
+                                        await syncEntries({ randomWheelId: wheel.id, rewardId: entries.rewardId })
+                                        setFieldValue("rewardId", "")
+                                        refetchSubscriptions({
+                                          additionalTypenames: ["EventSubscription"]
+                                        })
+                                      }}
+                                    />
+                                  </IconButton>
+                                } */}
+
+                                {sync.pending && !sync.paused && (
+                                  <IconButton color="info" sx={{ mr: 0.25 }}>
+                                    <SvgIcon
+                                      component={TiRefresh}
+                                      viewBox="2 2 20 20"
+                                      // {/* <SvgIcon component={TiWarning} color="warning" */}
+                                      onClick={() => {
+                                        // await syncEntries(entries.rewardId)
+                                        void pauseWheelSync(sync.id, false)
+                                      }}
+                                    />
+                                  </IconButton>
+                                )}
+
+                                {(fetchingPause || sync.pending) && (
+                                  <IconButton disabled sx={{ mr: 1, mt: "2px" }}>
+                                    <CircularProgress size={18} color="inherit" />
+                                  </IconButton>
+                                )}
+                                {!(fetchingPause || sync.pending) && (
+                                  <BooleanField
+                                    name={`wheelSync[${i}].paused`}
+                                    tooltip={sync.paused ? "Activate" : "Pause"}
+                                    value={sync.paused}
+                                    checked={sync.paused}
+                                    // indeterminate={subscription.pending || fetchingPause}
+                                    // disabled={subscription.pending || fetchingPause}
+                                    // indeterminateIcon={<CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
+                                    icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
+                                    checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
+                                    onClick={() => {
+                                      // console.log("pause", subscription.paused)
+                                      void pauseWheelSync(sync.id, !sync.paused)
+                                    }}
+                                  />
+                                )}
+
+                                {/* {!subscription.paused && !fetchingPause && !subscription.pending &&
+                                      <IconButton color="success"
+                                        onClick={async () => {
+                                          console.log("pause", subscription.paused)
+                                          await pauseEntriesSync(subscription.id, !subscription.paused)
+                                        }}>
+                                        <SvgIcon component={TiMediaPause} viewBox="1 1 22 22" />
+                                      </IconButton>
+                                    }
+
+                                    {subscription.paused && !fetchingPause && !subscription.pending &&
+                                      <IconButton color="success"
+                                        onClick={async () => {
+                                          console.log("pause", subscription.paused)
+                                          await pauseEntriesSync(subscription.id, !subscription.paused)
+                                        }}>
+                                        <SvgIcon component={TiMediaPlay}
+                                        // viewBox="2 2 20 20"
+                                        />
+                                      </IconButton>
+                                    } */}
+
+                                {sync.pending && !fetchingPause && (
+                                  <IconButton color="info" sx={{ ml: 0 }}>
+                                    <SvgIcon
+                                      component={TiRefresh}
+                                      viewBox="2 2 20 20"
+                                      // {/* <SvgIcon component={TiWarning} color="warning" */}
+                                      onClick={() => {
+                                        // await syncEntries(entries.rewardId)
+                                        void pauseWheelSync(sync.id, false)
+                                      }}
+                                    />
+                                  </IconButton>
+                                )}
+
+                                <IconButton
+                                  onClick={() => {
+                                    setFieldValue(`wheelSync[${i}].delete`, true)
+                                  }}
+                                  role="button"
+                                >
+                                  <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
+                                </IconButton>
+                              </Box>
+                            )
+                          }
+                        >
                           {sync.reward.id && !sync.delete && (
                             <Box
                               sx={{
@@ -175,116 +283,6 @@ export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
                             // <Typography color="textSecondary" sx={{ fontStyle: "italic" }}>
                             //   Failed to load reward
                             // </Typography>
-                          )}
-
-                          {!sync.delete && (
-                            <ListItemSecondaryAction
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
-                              <Typography variant="body2" color="textSecondary" sx={{ mr: -0.5 }}>
-                                {sync.pending ? "Pending" : sync.paused ? "Paused" : "Active"}
-                              </Typography>
-
-                              {/* {subscription.pending &&
-                              <IconButton color="info" sx={{ mr: -1.5 }}>
-                                <SvgIcon component={TiRefresh} viewBox="2 2 20 20"
-                                  onClick={async () => {
-                                    await syncEntries({ randomWheelId: wheel.id, rewardId: entries.rewardId })
-                                    setFieldValue("rewardId", "")
-                                    refetchSubscriptions({
-                                      additionalTypenames: ["EventSubscription"]
-                                    })
-                                  }}
-                                />
-                              </IconButton>
-                            } */}
-
-                              {sync.pending && !sync.paused && (
-                                <IconButton color="info" sx={{ mr: 0.25 }}>
-                                  <SvgIcon
-                                    component={TiRefresh}
-                                    viewBox="2 2 20 20"
-                                    // {/* <SvgIcon component={TiWarning} color="warning" */}
-                                    onClick={() => {
-                                      // await syncEntries(entries.rewardId)
-                                      void pauseWheelSync(sync.id, false)
-                                    }}
-                                  />
-                                </IconButton>
-                              )}
-
-                              {(fetchingPause || sync.pending) && (
-                                <IconButton disabled sx={{ mr: 1, mt: "2px" }}>
-                                  <CircularProgress size={18} color="inherit" />
-                                </IconButton>
-                              )}
-                              {!(fetchingPause || sync.pending) && (
-                                <BooleanField
-                                  name={`wheelSync[${i}].paused`}
-                                  tooltip={sync.paused ? "Activate" : "Pause"}
-                                  value={sync.paused}
-                                  checked={sync.paused}
-                                  // indeterminate={subscription.pending || fetchingPause}
-                                  // disabled={subscription.pending || fetchingPause}
-                                  // indeterminateIcon={<CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
-                                  icon={<SvgIcon component={TiMediaPause} color="success" viewBox="1 1 22 22" />}
-                                  checkedIcon={<SvgIcon component={TiMediaPlay} color="success" />}
-                                  onClick={() => {
-                                    // console.log("pause", subscription.paused)
-                                    void pauseWheelSync(sync.id, !sync.paused)
-                                  }}
-                                />
-                              )}
-
-                              {/* {!subscription.paused && !fetchingPause && !subscription.pending &&
-                              <IconButton color="success"
-                                onClick={async () => {
-                                  console.log("pause", subscription.paused)
-                                  await pauseEntriesSync(subscription.id, !subscription.paused)
-                                }}>
-                                <SvgIcon component={TiMediaPause} viewBox="1 1 22 22" />
-                              </IconButton>
-                            }
-
-                            {subscription.paused && !fetchingPause && !subscription.pending &&
-                              <IconButton color="success"
-                                onClick={async () => {
-                                  console.log("pause", subscription.paused)
-                                  await pauseEntriesSync(subscription.id, !subscription.paused)
-                                }}>
-                                <SvgIcon component={TiMediaPlay}
-                                // viewBox="2 2 20 20"
-                                />
-                              </IconButton>
-                            } */}
-
-                              {sync.pending && !fetchingPause && (
-                                <IconButton color="info" sx={{ ml: 0 }}>
-                                  <SvgIcon
-                                    component={TiRefresh}
-                                    viewBox="2 2 20 20"
-                                    // {/* <SvgIcon component={TiWarning} color="warning" */}
-                                    onClick={() => {
-                                      // await syncEntries(entries.rewardId)
-                                      void pauseWheelSync(sync.id, false)
-                                    }}
-                                  />
-                                </IconButton>
-                              )}
-
-                              <IconButton
-                                onClick={() => {
-                                  setFieldValue(`wheelSync[${i}].delete`, true)
-                                }}
-                                role="button"
-                              >
-                                <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
-                              </IconButton>
-                            </ListItemSecondaryAction>
                           )}
                         </ListItem>
                       ))}

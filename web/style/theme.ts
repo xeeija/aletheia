@@ -163,6 +163,27 @@ const componentOverrides: ThemeOptions = {
         },
       },
     },
+    // same style as ListItem, because ListItemButton was a ListItem before
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: baseTheme.shape.borderRadius,
+          margin: baseTheme.spacing(1),
+          padding: baseTheme.spacing(0.5, 1.5),
+        },
+        dense: {
+          margin: baseTheme.spacing(0),
+          marginTop: baseTheme.spacing(0.5),
+          padding: baseTheme.spacing(0.5, 1.5),
+          "& .MuiListItemIcon-root": {
+            minWidth: baseTheme.spacing(6),
+          },
+          "& .MuiListItemText-primary": {
+            fontSize: "0.925rem",
+          },
+        },
+      },
+    },
     MuiSkeleton: {
       styleOverrides: {
         rectangular: {
