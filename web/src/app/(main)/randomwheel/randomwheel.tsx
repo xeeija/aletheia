@@ -2,8 +2,7 @@
 
 import { TabPanel, Tooltip } from "@/components"
 import { CreateEditWheelDialog, NoDataWheelList, WheelList } from "@/components/randomWheel"
-import { useMyRandomWheelsQuery } from "@/generated/graphql"
-import { useAuth } from "@/hooks"
+import { useAuth, useMyRandomWheels } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs } from "@mui/material"
 import { FC, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
@@ -20,13 +19,8 @@ export const Randomwheel: FC<Props> = () => {
 
   const { user, authenticated } = useAuth()
 
-  const [{ data, fetching }] = useMyRandomWheelsQuery({
-    variables: {
-      type: wheelsTypes[wheelsTab],
-    },
-  })
+  const { wheels, fetching } = useMyRandomWheels(wheelsTypes[wheelsTab])
 
-  const wheels = data?.myRandomWheels
   const wheelsEmpty = (wheels?.length ?? 0) === 0
 
   return (

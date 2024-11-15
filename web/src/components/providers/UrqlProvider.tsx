@@ -7,6 +7,9 @@ interface Props {
   children: ReactNode
 }
 
+/**
+ * @deprecated Use `UrqlSsrProvider` instead for SSR integration with the app router
+ */
 export const UrqlProvider: FC<Props> = ({ children }) => {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ""
 

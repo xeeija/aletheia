@@ -2,9 +2,7 @@
 
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
 import { useRandomWheel } from "@/hooks"
-import { getTitle } from "@/utils"
 import { Box, Paper } from "@mui/material"
-import Head from "next/head"
 import { notFound } from "next/navigation"
 import { FC, useState } from "react"
 
@@ -44,14 +42,11 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
   // TODO: Use members, server-side
   // https://nextjs.org/docs/advanced-features/middleware
 
-  const title = wheel.name || `Wheel #${slug}`
   const wheelDiameter = 688
 
   return (
     <>
-      <Head>
-        <title>{getTitle(title)}</title>
-      </Head>
+      {/* <pre>{JSON.stringify(wheel, undefined, 2)}</pre> */}
 
       <WheelToolbar wheel={wheel} />
 

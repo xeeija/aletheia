@@ -1,6 +1,6 @@
+import { cacheExchange, createClient, fetchExchange } from "@urql/next"
 import { registerUrql } from "@urql/next/rsc"
 import { cookies } from "next/headers"
-import { cacheExchange, createClient, fetchExchange } from "urql"
 
 // Note: client side urql client is created directly in UrqlProvider/UrqlSsrProvider component
 
@@ -10,7 +10,9 @@ const makeClient = async () => {
   return () =>
     createClient({
       url: `${process.env.SERVER_URL || ""}/api/graphql`,
+      // exchanges: [devtoolsExchange, cacheExchange, ssrCache, fetchExchange],
       exchanges: [cacheExchange, fetchExchange],
+      suspense: true,
       fetchOptions: () => ({
         credentials: "include",
         //  manually include cookies (from server component)

@@ -8,7 +8,7 @@ import {
   UserNameFragment,
   useUserAccessTokenQuery,
 } from "@/generated/graphql"
-import { useAlert, useRouterAsync } from "@/hooks"
+import { useAlert, useRouterAsync, useUrqlContextCookies } from "@/hooks"
 import { CombinedError } from "urql"
 
 type Config = {
@@ -17,9 +17,11 @@ type Config = {
 }
 
 export const useAuth = (config?: Config) => {
+  const context = useUrqlContextCookies()
   const [{ data: user, error: errorUser, fetching: fetchingUser }, fetchUser] = useMeQuery({
     // required for initial page load, as long as initialUser is not provided
-    requestPolicy: "cache-and-network",
+    // requestPolicy: "cache-and-network",
+    context,
   })
 
   const [, loginFn] = useLoginMutation()
@@ -34,6 +36,7 @@ export const useAuth = (config?: Config) => {
   // twitch
   const [{ data: token, error: errorToken, fetching: fetchingToken }] = useUserAccessTokenQuery({
     pause: !config?.includeToken,
+    context,
   })
   const [{ fetching: fetchingDisconnect }, disconnectAccessToken] = useDisconnectAccessTokenMutation()
 
