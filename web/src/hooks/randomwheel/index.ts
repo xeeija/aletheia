@@ -1,3 +1,4 @@
+export * from "./useMyRandomWheels"
 export * from "./useRandomWheel"
 export * from "./useRandomWheelActions"
 export * from "./useRandomWheelData"

@@ -9,6 +9,7 @@ export * from "./useLocation"
 export * from "./usePromise"
 export * from "./useRouterAsync"
 export * from "./useSidebar"
+export * from "./useUrqlContextCookies"
 export * from "./useUsernameValidator"
 export * from "./useWindow"
 

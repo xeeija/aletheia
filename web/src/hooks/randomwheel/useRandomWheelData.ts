@@ -12,6 +12,7 @@ import {
 } from "@/generated/graphql"
 import { useAuth } from "@/hooks/useAuth"
 import { OperationContext } from "urql"
+import { useUrqlContextCookies } from "../useUrqlContextCookies"
 
 export interface RandomWheelDetailsQuery extends RandomWheelDetailsFragment {
   owner: UserNameFragment
@@ -62,9 +63,13 @@ interface DataOptions {
 export const useRandomWheelData = (wheelSlug: string | string[] | undefined, options?: DataOptions) => {
   const slug = typeof wheelSlug === "string" ? wheelSlug : wheelSlug?.[0] ?? ""
 
+  const context = useUrqlContextCookies()
+
   const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelBySlugQuery({
     variables: { slug, token: options?.token },
     pause: !options?.details || options.fetchOnly,
+    // requestPolicy: "cache-and-network",
+    context,
   })
   const wheel = wheelData?.randomWheelBySlug as RandomWheelDetailsQuery | undefined
 
@@ -77,18 +82,22 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
     variables: { slug, token: options?.token },
     pause: !options?.entries || options.fetchOnly,
+    // requestPolicy: "cache-and-network",
+    context,
   })
   const entries = entriesData?.randomWheelBySlug?.entries as RandomWheelEntryFragment[] | undefined
 
   const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
     variables: { slug, token: options?.token },
     pause: !options?.winners || options.fetchOnly,
+    context,
   })
   const winners = winnersData?.randomWheelBySlug?.winners as RandomWheelWinnerFragment[] | undefined
 
   const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelBySlugMembersQuery({
     variables: { slug, token: options?.token },
     pause: !options?.members || options.fetchOnly,
+    context,
   })
   const members = membersData?.randomWheelBySlug?.members as RandomWheelMemberFragment[] | undefined
 
