@@ -50,6 +50,16 @@ export const useAuth = (config?: Config) => {
     }
   }
 
+  const handleRedirect = async (redirectHref?: string) => {
+    if (location.pathname === redirectHref) {
+      await routerAsync.refresh()
+    }
+
+    if (redirectHref) {
+      await routerAsync.push(redirectHref)
+    }
+  }
+
   return {
     user: user?.me ?? config?.initialUser, // as UserNameFragment | undefined,
     error: errorUser,
@@ -82,11 +92,7 @@ export const useAuth = (config?: Config) => {
       }
 
       if (!response.error && response.data?.login.user) {
-        await routerAsync.refresh()
-
-        if (redirectHref) {
-          await routerAsync.push(redirectHref)
-        }
+        await handleRedirect(redirectHref)
       }
 
       return response
@@ -110,11 +116,7 @@ export const useAuth = (config?: Config) => {
       }
 
       if (!response.error && response.data?.logout) {
-        await routerAsync.refresh()
-
-        if (redirectHref) {
-          await routerAsync.push(redirectHref)
-        }
+        await handleRedirect(redirectHref)
       }
 
       // setFetchingLogout(true)
