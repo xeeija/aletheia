@@ -2,8 +2,8 @@
 
 import { LoadingButton } from "@/components"
 import { RewardGroupFormFields, RewardItemList } from "@/components/twitch"
-import { RewardGroupItemInput } from "@/generated/graphql"
-import { useAlert, useChannelRewards, useRewardGroups } from "@/hooks"
+import { CustomRewardFragment, RewardGroupItemInput } from "@/generated/graphql"
+import { useAlert, useRewardGroupsActions } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { Box, Portal, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
@@ -21,11 +21,12 @@ const defaultItem: RewardGroupItemInput = {
   triggerCooldown: true,
 }
 
-type Props = FormDialogProps<RewardGroupValues>
+type Props = FormDialogProps<RewardGroupValues> & {
+  channelRewards?: CustomRewardFragment[]
+}
 
-export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
-  const { createGroup, fetchingCreate } = useRewardGroups()
-  const { channelRewards } = useChannelRewards()
+export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose, channelRewards }) => {
+  const { createGroup, fetchingCreate } = useRewardGroupsActions()
 
   const { showSuccess, showError } = useAlert()
 

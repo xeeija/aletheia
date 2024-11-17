@@ -2,7 +2,7 @@
 
 import { BooleanFieldPlain, Tooltip } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useAlert, useInterval, useRewardGroups } from "@/hooks"
+import { useAlert, useInterval, useRewardGroupsActions } from "@/hooks"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiPencil, HiTrash } from "react-icons/hi"
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, onEdit, onDelete }) => {
-  const { updateGroup, fetchingUpdate } = useRewardGroups({ socket: false })
+  const { updateGroup, fetchingUpdate } = useRewardGroupsActions()
 
   const { showError } = useAlert()
 

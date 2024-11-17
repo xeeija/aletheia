@@ -4,7 +4,7 @@ import { BooleanFieldPlain, Tooltip } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useAlert, useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewardsActions } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
@@ -23,7 +23,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
 
   const { showError } = useAlert()
 
-  const { updateReward, fetchingUpdate } = useChannelRewards(false)
+  const { updateReward, fetchingUpdate } = useChannelRewardsActions()
 
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream

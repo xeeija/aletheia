@@ -3,7 +3,7 @@
 import { LoadingButton } from "@/components"
 import { ChannelRewardValues, RewardFormFields } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useAlert, useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewardsActions } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { getDurationUnit } from "@/utils/math"
 import { handleTwitchApiError } from "@/utils/twitch"
@@ -18,7 +18,7 @@ type Props = FormDialogProps<ChannelRewardValues> & {
 }
 
 export const EditChannelRewardForm: FC<Props> = ({ reward, formRef, actionsRef, onClose, readonly }) => {
-  const { updateReward, fetchingUpdate } = useChannelRewards(false)
+  const { updateReward, fetchingUpdate } = useChannelRewardsActions()
   const { showSuccess, showError } = useAlert()
 
   const cooldownUnit = reward.globalCooldown ? getDurationUnit(reward.globalCooldown) : 60
