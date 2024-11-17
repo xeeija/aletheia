@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, onEdit, onDelete }) => {
-  const { updateGroup, fetchingUpdate } = useRewardGroups()
+  const { updateGroup, fetchingUpdate } = useRewardGroups({ socket: false })
 
   const { showError } = useAlert()
 

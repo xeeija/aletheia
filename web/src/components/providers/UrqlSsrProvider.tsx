@@ -1,6 +1,14 @@
 "use client"
 
-import { LoginMutation, MeDocument, MyRandomWheelsDocument } from "@/generated/graphql"
+import {
+  ChannelRewardsDocument,
+  DeleteChannelRewardMutationVariables,
+  DeleteRewardGroupMutationVariables,
+  LoginMutation,
+  MeDocument,
+  MyRandomWheelsDocument,
+  RewardGroupsDocument,
+} from "@/generated/graphql"
 import { devtoolsExchange } from "@urql/devtools"
 import { cacheExchange } from "@urql/exchange-graphcache"
 import { createClient, fetchExchange, ssrExchange, UrqlProvider } from "@urql/next"
@@ -58,9 +66,8 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
               me: null,
             }))
 
-            const key = "Query"
             cache
-              .inspectFields(key)
+              .inspectFields("Query")
               .filter((field) => field.fieldName === "myRandomWheels")
               .forEach((field) => {
                 cache.updateQuery(
@@ -71,6 +78,34 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                 //     // cache.invalidate(key, field.fieldKey)
                 //     // or alternatively:
                 //     // cache.invalidate(key, field.fieldName, field.arguments)
+              })
+          },
+          deleteChannelReward: (_result, _args: DeleteChannelRewardMutationVariables, cache) => {
+            // const rewards = cache.resolve({ __typename: "Query" }, "channelRewards", { onlyManageable: false })
+            // console.log("cache rewards", { _args, rewards })
+
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "channelRewards")
+              .forEach((field) => {
+                cache.updateQuery(
+                  { query: ChannelRewardsDocument, variables: field.arguments ?? undefined },
+                  (data) => ({
+                    ...data,
+                    channelRewards: data?.channelRewards.filter((r) => r.id !== _args.rewardId) ?? [],
+                  })
+                )
+              })
+          },
+          deleteRewardGroup: (_result, _args: DeleteRewardGroupMutationVariables, cache) => {
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "rewardGroups")
+              .forEach((field) => {
+                cache.updateQuery({ query: RewardGroupsDocument, variables: field.arguments ?? undefined }, (data) => ({
+                  ...data,
+                  rewardGroups: data?.rewardGroups.filter((r) => r.id !== _args.id) ?? [],
+                }))
               })
           },
         },

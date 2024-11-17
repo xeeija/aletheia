@@ -41,7 +41,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
     userInputRequired: false,
     isEnabled: true,
     autoFulfill: false,
-    backgroundColor: "#000000",
+    backgroundColor: "",
     globalCooldown: "",
     maxRedemptionsPerStream: "",
     maxRedemptionsPerUserPerStream: "",

@@ -17,7 +17,7 @@ export const Randomwheel: FC<Props> = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
 
-  const { user, authenticated } = useAuth()
+  const { authenticated } = useAuth()
 
   const { wheels, fetching } = useMyRandomWheels(wheelsTypes[wheelsTab])
 
@@ -33,7 +33,7 @@ export const Randomwheel: FC<Props> = () => {
       >
         {/* <Typography variant="h2">My Wheels</Typography> */}
 
-        {user && (
+        {authenticated && (
           <Tabs value={wheelsTab} onChange={(_, value: number) => setWheelsTab(value)}>
             {/* itemType prop for new variant, because there is no variant prop */}
             <Tab label="My Wheels" itemType="capitalize" />
@@ -41,7 +41,7 @@ export const Randomwheel: FC<Props> = () => {
             <Tab label="Favorites" itemType="capitalize" />
           </Tabs>
         )}
-        {!user && <div></div>}
+        {!authenticated && <div></div>}
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
