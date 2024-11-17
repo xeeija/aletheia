@@ -2,14 +2,17 @@
 
 import { Tooltip } from "@/components"
 import { RewardGroupDialog } from "@/components/twitch"
+import { CustomRewardFragment } from "@/generated/graphql"
 import { Box, Button, IconButton, SvgIcon } from "@mui/material"
 import { FC, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
-interface Props {}
+interface Props {
+  channelRewards?: CustomRewardFragment[]
+}
 
-export const RewardGroupsToolbar: FC<Props> = () => {
+export const RewardGroupsToolbar: FC<Props> = ({ channelRewards }) => {
   const [createGroupOpen, setCreateGroupOpen] = useState(false)
 
   return (
@@ -24,7 +27,12 @@ export const RewardGroupsToolbar: FC<Props> = () => {
         New Group
       </Button>
 
-      <RewardGroupDialog onClose={() => setCreateGroupOpen(false)} open={createGroupOpen} type="create" />
+      <RewardGroupDialog
+        onClose={() => setCreateGroupOpen(false)}
+        open={createGroupOpen}
+        type="create"
+        channelRewards={channelRewards}
+      />
 
       {/* )} */}
       <Tooltip placement="bottom-end" title="More options">

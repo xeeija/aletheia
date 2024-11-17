@@ -14,12 +14,7 @@ export * from "./useUsernameValidator"
 export * from "./useWindow"
 
 export * from "./randomwheel"
-
-export * from "./twitch/useChannelRewards"
-export * from "./twitch/useRewardGroups"
-export * from "./twitch/useRewardLinks"
-export * from "./twitch/useRewardLinkToken"
-export * from "./twitch/useWheelSync"
+export * from "./twitch"
 
 export * from "./socket/useRandomWheelSocket"
 export * from "./socket/useRewardGroupSocket"

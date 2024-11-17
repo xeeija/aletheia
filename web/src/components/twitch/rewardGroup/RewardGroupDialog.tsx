@@ -2,7 +2,7 @@
 
 import { FormDialog } from "@/components"
 import { CreateRewardGroupForm, EditRewardGroupForm, RewardGroupValues } from "@/components/twitch"
-import { RewardGroupFragment } from "@/generated/graphql"
+import { CustomRewardFragment, RewardGroupFragment } from "@/generated/graphql"
 import { FormikProps } from "formik"
 import { FC, useRef } from "react"
 
@@ -12,9 +12,10 @@ interface Props {
   rewardGroup?: RewardGroupFragment
   type: "create" | "edit"
   readonly?: boolean
+  channelRewards?: CustomRewardFragment[]
 }
 
-export const RewardGroupDialog: FC<Props> = ({ open, onClose, rewardGroup, type, readonly }) => {
+export const RewardGroupDialog: FC<Props> = ({ open, onClose, rewardGroup, type, readonly, channelRewards }) => {
   const formRef = useRef<FormikProps<RewardGroupValues>>(null)
   const actionsRef = useRef(null)
 
@@ -50,9 +51,17 @@ export const RewardGroupDialog: FC<Props> = ({ open, onClose, rewardGroup, type,
           rewardGroup={rewardGroup}
           onClose={closeHandler}
           readonly={readonly}
+          channelRewards={channelRewards}
         />
       )}
-      {type === "create" && <CreateRewardGroupForm actionsRef={actionsRef} formRef={formRef} onClose={closeHandler} />}
+      {type === "create" && (
+        <CreateRewardGroupForm
+          actionsRef={actionsRef}
+          formRef={formRef}
+          onClose={closeHandler}
+          channelRewards={channelRewards}
+        />
+      )}
     </FormDialog>
   )
 }

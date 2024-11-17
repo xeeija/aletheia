@@ -20,7 +20,7 @@ export const Channelpoints: FC<Props> = () => {
 
   const [filterRewards, setFilterRewards] = useState(false)
   const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({ includeToken: true })
-  const { fetching: fetchingRewards, error } = useChannelRewards(true, filterRewards)
+  const { channelRewards, fetching: fetchingRewards, error } = useChannelRewards(true, filterRewards)
 
   const tokenAvailable = user && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
@@ -49,7 +49,7 @@ export const Channelpoints: FC<Props> = () => {
               <ChannelRewardsToolbar onFilter={(ev) => setFilterRewards(ev.target.value === "manageable")} />
             )}
 
-            {tab === 1 && <RewardGroupsToolbar />}
+            {tab === 1 && <RewardGroupsToolbar channelRewards={channelRewards} />}
           </>
         )}
       </Box>
@@ -59,7 +59,7 @@ export const Channelpoints: FC<Props> = () => {
           <>
             {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
 
-            {tab === 1 && <RewardGroups />}
+            {tab === 1 && <RewardGroups channelRewards={channelRewards} />}
           </>
         )}
 
