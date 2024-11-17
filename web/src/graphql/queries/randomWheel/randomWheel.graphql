@@ -1,0 +1,41 @@
+query RandomWheel($slug: String!, $token: String) {
+  randomWheel(slug: $slug, token: $token) {
+    ...RandomWheel
+    # ...RandomWheel
+    # ...RandomWheelMembers
+  }
+}
+
+query RandomWheelShareToken($slug: String!, $token: String) {
+  randomWheel(slug: $slug, token: $token) {
+    id
+    shareToken
+  }
+}
+
+query RandomWheelEntries($slug: String!, $token: String) {
+  randomWheel(slug: $slug, token: $token) {
+    id
+    entries {
+      ...RandomWheelEntry
+    }
+  }
+}
+
+query RandomWheelWinners($slug: String!, $token: String) {
+  randomWheel(slug: $slug, token: $token) {
+    id
+    winners {
+      ...RandomWheelWinner
+    }
+  }
+}
+
+query RandomWheelMembers($slug: String!, $token: String) {
+  randomWheel(slug: $slug, token: $token) {
+    id
+    members {
+      ...RandomWheelMember
+    }
+  }
+}

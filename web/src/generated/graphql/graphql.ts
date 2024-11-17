@@ -310,6 +310,7 @@ export type Query = {
   colorThemes: Array<ColorTheme>
   me?: Maybe<User>
   myRandomWheels: Array<RandomWheel>
+  randomWheel?: Maybe<RandomWheel>
   randomWheelBySlug?: Maybe<RandomWheel>
   rewardByToken: CustomReward
   rewardGroup: RewardGroup
@@ -330,6 +331,11 @@ export type QueryColorThemesArgs = {
 
 export type QueryMyRandomWheelsArgs = {
   type?: Scalars["String"]["input"]
+}
+
+export type QueryRandomWheelArgs = {
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type QueryRandomWheelBySlugArgs = {
@@ -381,6 +387,7 @@ export type RandomWheel = {
   theme?: Maybe<ColorTheme>
   themeId?: Maybe<Scalars["String"]["output"]>
   uniqueEntries: Scalars["Boolean"]["output"]
+  viewable: Scalars["Boolean"]["output"]
   winners: Array<RandomWheelWinner>
 }
 
@@ -614,22 +621,86 @@ export type CustomRewardMenuItemFragment = {
   image: string
 }
 
+export type RandomWheelFragment = {
+  __typename?: "RandomWheel"
+  id: string
+  slug: string
+  name?: string | null
+  createdAt: Date
+  accessType: string
+  viewable: boolean
+  editable: boolean
+  editAnonymous: boolean
+  shareToken?: string | null
+  rotation: number
+  spinDuration: number
+  fadeDuration: number
+  uniqueEntries: boolean
+  liked: boolean
+  theme?: {
+    __typename?: "ColorTheme"
+    id: string
+    name?: string | null
+    colors: Array<string>
+    creatorId?: string | null
+    global: boolean
+  } | null
+  owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+}
+
 export type RandomWheelDetailsFragment = {
   __typename?: "RandomWheel"
   id: string
   slug: string
   name?: string | null
   createdAt: Date
+  accessType: string
+  viewable: boolean
+  editable: boolean
+  editAnonymous: boolean
+  shareToken?: string | null
   rotation: number
   spinDuration: number
   fadeDuration: number
+  uniqueEntries: boolean
+  liked: boolean
+  theme?: {
+    __typename?: "ColorTheme"
+    id: string
+    name?: string | null
+    colors: Array<string>
+    creatorId?: string | null
+    global: boolean
+  } | null
+}
+
+export type RandomWheelOwnerFragment = {
+  __typename?: "RandomWheel"
+  owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+}
+
+export type RandomWheelMembersFragment = {
+  __typename?: "RandomWheel"
+  owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+  members: Array<{
+    __typename?: "RandomWheelMember"
+    id: string
+    roleName: string
+    userId: string
+    user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
+  }>
+}
+
+export type RandomWheelListItemFragment = {
+  __typename?: "RandomWheel"
+  id: string
+  slug: string
+  name?: string | null
+  createdAt: Date
   accessType: string
   editable: boolean
   editAnonymous: boolean
-  uniqueEntries: boolean
   shareToken?: string | null
-  liked: boolean
-  theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
   _count?: { __typename?: "RandomWheelCount"; entries: number } | null
 }
 
@@ -647,6 +718,7 @@ export type RandomWheelMemberFragment = {
   __typename?: "RandomWheelMember"
   id: string
   roleName: string
+  userId: string
   user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
 }
 
@@ -740,6 +812,21 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 
 export type LogoutMutation = { __typename?: "Mutation"; logout: boolean }
 
+export type RegisterMutationVariables = Exact<{
+  username: Scalars["String"]["input"]
+  password: Scalars["String"]["input"]
+  displayname?: InputMaybe<Scalars["String"]["input"]>
+}>
+
+export type RegisterMutation = {
+  __typename?: "Mutation"
+  register: {
+    __typename?: "UserResponse"
+    user?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
+    errors?: Array<{ __typename?: "FieldError"; field: string; message: string }> | null
+  }
+}
+
 export type AddRandomWheelEntryMutationVariables = Exact<{
   randomWheelId: Scalars["String"]["input"]
   name: Scalars["String"]["input"]
@@ -772,17 +859,25 @@ export type CreateRandomWheelMutation = {
     slug: string
     name?: string | null
     createdAt: Date
+    accessType: string
+    viewable: boolean
+    editable: boolean
+    editAnonymous: boolean
+    shareToken?: string | null
     rotation: number
     spinDuration: number
     fadeDuration: number
-    accessType: string
-    editable: boolean
-    editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: string | null
     liked: boolean
-    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
-    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
+    theme?: {
+      __typename?: "ColorTheme"
+      id: string
+      name?: string | null
+      colors: Array<string>
+      creatorId?: string | null
+      global: boolean
+    } | null
+    owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
   }
 }
 
@@ -853,17 +948,25 @@ export type UpdateRandomWheelMutation = {
     slug: string
     name?: string | null
     createdAt: Date
+    accessType: string
+    viewable: boolean
+    editable: boolean
+    editAnonymous: boolean
+    shareToken?: string | null
     rotation: number
     spinDuration: number
     fadeDuration: number
-    accessType: string
-    editable: boolean
-    editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: string | null
     liked: boolean
-    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
-    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
+    theme?: {
+      __typename?: "ColorTheme"
+      id: string
+      name?: string | null
+      colors: Array<string>
+      creatorId?: string | null
+      global: boolean
+    } | null
+    owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
   } | null
 }
 
@@ -884,22 +987,13 @@ export type UpdateRandomWheelMembersMutationVariables = Exact<{
 
 export type UpdateRandomWheelMembersMutation = {
   __typename?: "Mutation"
-  updateRandomWheelMembers?: Array<{ __typename?: "RandomWheelMember"; id: string }> | null
-}
-
-export type RegisterMutationVariables = Exact<{
-  username: Scalars["String"]["input"]
-  password: Scalars["String"]["input"]
-  displayname?: InputMaybe<Scalars["String"]["input"]>
-}>
-
-export type RegisterMutation = {
-  __typename?: "Mutation"
-  register: {
-    __typename?: "UserResponse"
-    user?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
-    errors?: Array<{ __typename?: "FieldError"; field: string; message: string }> | null
-  }
+  updateRandomWheelMembers?: Array<{
+    __typename?: "RandomWheelMember"
+    id: string
+    roleName: string
+    userId: string
+    user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
+  }> | null
 }
 
 export type AddWheelSyncMutationVariables = Exact<{
@@ -1176,6 +1270,12 @@ export type UpdateUserMutation = {
   }
 }
 
+export type UsernameExistsMutationVariables = Exact<{
+  username: Scalars["String"]["input"]
+}>
+
+export type UsernameExistsMutation = { __typename?: "Mutation"; usernameExists: boolean }
+
 export type ColorThemesQueryVariables = Exact<{
   type?: InputMaybe<Scalars["String"]["input"]>
 }>
@@ -1211,105 +1311,81 @@ export type MyRandomWheelsQuery = {
     slug: string
     name?: string | null
     createdAt: Date
-    rotation: number
-    spinDuration: number
-    fadeDuration: number
     accessType: string
     editable: boolean
     editAnonymous: boolean
-    uniqueEntries: boolean
     shareToken?: string | null
-    liked: boolean
-    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
     _count?: { __typename?: "RandomWheelCount"; entries: number } | null
   }>
 }
 
-export type RandomWheelBySlugQueryVariables = Exact<{
+export type RandomWheelQueryVariables = Exact<{
   slug: Scalars["String"]["input"]
   token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
-export type RandomWheelBySlugQuery = {
+export type RandomWheelQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: {
+  randomWheel?: {
     __typename?: "RandomWheel"
     id: string
     slug: string
     name?: string | null
     createdAt: Date
+    accessType: string
+    viewable: boolean
+    editable: boolean
+    editAnonymous: boolean
+    shareToken?: string | null
     rotation: number
     spinDuration: number
     fadeDuration: number
-    accessType: string
-    editable: boolean
-    editAnonymous: boolean
     uniqueEntries: boolean
-    shareToken?: string | null
     liked: boolean
-    owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
-    members: Array<{
-      __typename?: "RandomWheelMember"
+    theme?: {
+      __typename?: "ColorTheme"
       id: string
-      roleName: string
-      user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
-    }>
-    theme?: { __typename?: "ColorTheme"; id: string; name?: string | null; colors: Array<string> } | null
-    _count?: { __typename?: "RandomWheelCount"; entries: number } | null
+      name?: string | null
+      colors: Array<string>
+      creatorId?: string | null
+      global: boolean
+    } | null
+    owner?: { __typename?: "User"; id: string; username: string; displayname?: string | null } | null
   } | null
 }
 
-export type RandomWheelBySlugShareTokenQueryVariables = Exact<{
+export type RandomWheelShareTokenQueryVariables = Exact<{
   slug: Scalars["String"]["input"]
   token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
-export type RandomWheelBySlugShareTokenQuery = {
+export type RandomWheelShareTokenQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: { __typename?: "RandomWheel"; shareToken?: string | null } | null
+  randomWheel?: { __typename?: "RandomWheel"; id: string; shareToken?: string | null } | null
 }
 
-export type RandomWheelBySlugEntriesQueryVariables = Exact<{
+export type RandomWheelEntriesQueryVariables = Exact<{
   slug: Scalars["String"]["input"]
   token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
-export type RandomWheelBySlugEntriesQuery = {
+export type RandomWheelEntriesQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: {
+  randomWheel?: {
     __typename?: "RandomWheel"
     id: string
     entries: Array<{ __typename?: "RandomWheelEntry"; id: string; name: string; weight: number }>
   } | null
 }
 
-export type RandomWheelBySlugMembersQueryVariables = Exact<{
+export type RandomWheelWinnersQueryVariables = Exact<{
   slug: Scalars["String"]["input"]
   token?: InputMaybe<Scalars["String"]["input"]>
 }>
 
-export type RandomWheelBySlugMembersQuery = {
+export type RandomWheelWinnersQuery = {
   __typename?: "Query"
-  randomWheelBySlug?: {
-    __typename?: "RandomWheel"
-    id: string
-    members: Array<{
-      __typename?: "RandomWheelMember"
-      id: string
-      roleName: string
-      user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
-    }>
-  } | null
-}
-
-export type RandomWheelBySlugWinnersQueryVariables = Exact<{
-  slug: Scalars["String"]["input"]
-  token?: InputMaybe<Scalars["String"]["input"]>
-}>
-
-export type RandomWheelBySlugWinnersQuery = {
-  __typename?: "Query"
-  randomWheelBySlug?: {
+  randomWheel?: {
     __typename?: "RandomWheel"
     id: string
     winners: Array<{
@@ -1318,6 +1394,26 @@ export type RandomWheelBySlugWinnersQuery = {
       name: string
       createdAt: Date
       winnerIndex?: number | null
+    }>
+  } | null
+}
+
+export type RandomWheelMembersQueryVariables = Exact<{
+  slug: Scalars["String"]["input"]
+  token?: InputMaybe<Scalars["String"]["input"]>
+}>
+
+export type RandomWheelMembersQuery = {
+  __typename?: "Query"
+  randomWheel?: {
+    __typename?: "RandomWheel"
+    id: string
+    members: Array<{
+      __typename?: "RandomWheelMember"
+      id: string
+      roleName: string
+      userId: string
+      user: { __typename?: "User"; id: string; username: string; displayname?: string | null }
     }>
   } | null
 }
@@ -1480,32 +1576,6 @@ export type UserAccessTokenQuery = {
   } | null
 }
 
-export type UsernameExistsMutationVariables = Exact<{
-  username: Scalars["String"]["input"]
-}>
-
-export type UsernameExistsMutation = { __typename?: "Mutation"; usernameExists: boolean }
-
-export const ColorThemeFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ColorTheme" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "colors" } },
-          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
-          { kind: "Field", name: { kind: "Name", value: "global" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ColorThemeFragment, unknown>
 export const CustomRewardFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1561,6 +1631,26 @@ export const CustomRewardMenuItemFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<CustomRewardMenuItemFragment, unknown>
+export const ColorThemeFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ColorThemeFragment, unknown>
 export const RandomWheelDetailsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1575,27 +1665,315 @@ export const RandomWheelDetailsFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "viewable" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "rotation" } },
           { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
           { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "editable" } },
-          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
-          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "liked" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "theme" },
             selectionSet: {
               kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "colors" } },
-              ],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "ColorTheme" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelDetailsFragment, unknown>
+export const UserNameFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserNameFragment, unknown>
+export const RandomWheelOwnerFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelOwner" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "owner" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelOwnerFragment, unknown>
+export const RandomWheelFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheel" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } },
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelOwner" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelDetails" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "slug" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "viewable" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
+          { kind: "Field", name: { kind: "Name", value: "rotation" } },
+          { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
+          { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
+          { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
+          { kind: "Field", name: { kind: "Name", value: "liked" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "theme" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "ColorTheme" } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelOwner" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "owner" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelFragment, unknown>
+export const RandomWheelMemberFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelMember" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "roleName" } },
+          { kind: "Field", name: { kind: "Name", value: "userId" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelMemberFragment, unknown>
+export const RandomWheelMembersFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelMembers" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "owner" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "members" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelMember" } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelMember" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "roleName" } },
+          { kind: "Field", name: { kind: "Name", value: "userId" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelMembersFragment, unknown>
+export const RandomWheelListItemFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelListItem" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "slug" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "_count" },
@@ -1608,7 +1986,7 @@ export const RandomWheelDetailsFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<RandomWheelDetailsFragment, unknown>
+} as unknown as DocumentNode<RandomWheelListItemFragment, unknown>
 export const RandomWheelEntryFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1646,62 +2024,6 @@ export const RandomWheelWinnerFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<RandomWheelWinnerFragment, unknown>
-export const UserNameFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserName" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "username" } },
-          { kind: "Field", name: { kind: "Name", value: "displayname" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UserNameFragment, unknown>
-export const RandomWheelMemberFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "RandomWheelMember" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "roleName" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "user" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserName" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "username" } },
-          { kind: "Field", name: { kind: "Name", value: "displayname" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<RandomWheelMemberFragment, unknown>
 export const RandomWheelSyncFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1971,6 +2293,96 @@ export const LogoutDocument = {
     },
   ],
 } as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>
+export const RegisterDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "Register" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "username" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "password" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "displayname" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "register" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "username" },
+                value: { kind: "Variable", name: { kind: "Name", value: "username" } },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "password" },
+                value: { kind: "Variable", name: { kind: "Name", value: "password" } },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "displayname" },
+                value: { kind: "Variable", name: { kind: "Name", value: "displayname" } },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "user" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "NormalUser" } }],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errors" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "field" } },
+                      { kind: "Field", name: { kind: "Name", value: "message" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "NormalUser" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>
 export const AddRandomWheelEntryDocument = {
   kind: "Document",
   definitions: [
@@ -2133,9 +2545,24 @@ export const CreateRandomWheelDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } }],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheel" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
         ],
       },
     },
@@ -2150,35 +2577,67 @@ export const CreateRandomWheelDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "viewable" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "rotation" } },
           { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
           { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "editable" } },
-          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
-          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "liked" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "theme" },
             selectionSet: {
               kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "colors" } },
-              ],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "ColorTheme" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelOwner" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "_count" },
+            name: { kind: "Name", value: "owner" },
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "Field", name: { kind: "Name", value: "entries" } }],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheel" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } },
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelOwner" } },
         ],
       },
     },
@@ -2425,9 +2884,24 @@ export const UpdateRandomWheelDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } }],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheel" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
         ],
       },
     },
@@ -2442,35 +2916,67 @@ export const UpdateRandomWheelDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "viewable" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "rotation" } },
           { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
           { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "editable" } },
-          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
-          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
           { kind: "Field", name: { kind: "Name", value: "liked" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "theme" },
             selectionSet: {
               kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "colors" } },
-              ],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "ColorTheme" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelOwner" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "_count" },
+            name: { kind: "Name", value: "owner" },
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "Field", name: { kind: "Name", value: "entries" } }],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheel" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } },
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelOwner" } },
         ],
       },
     },
@@ -2587,84 +3093,7 @@ export const UpdateRandomWheelMembersDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UpdateRandomWheelMembersMutation, UpdateRandomWheelMembersMutationVariables>
-export const RegisterDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "Register" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "username" } },
-          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "password" } },
-          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "displayname" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "register" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "username" },
-                value: { kind: "Variable", name: { kind: "Name", value: "username" } },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "password" },
-                value: { kind: "Variable", name: { kind: "Name", value: "password" } },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "displayname" },
-                value: { kind: "Variable", name: { kind: "Name", value: "displayname" } },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "user" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "NormalUser" } }],
-                  },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "errors" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "field" } },
-                      { kind: "Field", name: { kind: "Name", value: "message" } },
-                    ],
-                  },
-                },
-              ],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelMember" } }],
             },
           },
         ],
@@ -2672,7 +3101,7 @@ export const RegisterDocument = {
     },
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "NormalUser" },
+      name: { kind: "Name", value: "UserName" },
       typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
       selectionSet: {
         kind: "SelectionSet",
@@ -2683,8 +3112,29 @@ export const RegisterDocument = {
         ],
       },
     },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelMember" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "roleName" } },
+          { kind: "Field", name: { kind: "Name", value: "userId" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
   ],
-} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>
+} as unknown as DocumentNode<UpdateRandomWheelMembersMutation, UpdateRandomWheelMembersMutationVariables>
 export const AddWheelSyncDocument = {
   kind: "Document",
   definitions: [
@@ -3726,6 +4176,39 @@ export const UpdateUserDocument = {
     },
   ],
 } as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>
+export const UsernameExistsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UsernameExists" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "username" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "usernameExists" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "username" },
+                value: { kind: "Variable", name: { kind: "Name", value: "username" } },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UsernameExistsMutation, UsernameExistsMutationVariables>
 export const ColorThemesDocument = {
   kind: "Document",
   definitions: [
@@ -3843,7 +4326,7 @@ export const MyRandomWheelsDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } }],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelListItem" } }],
             },
           },
         ],
@@ -3851,7 +4334,7 @@ export const MyRandomWheelsDocument = {
     },
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "RandomWheelDetails" },
+      name: { kind: "Name", value: "RandomWheelListItem" },
       typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
       selectionSet: {
         kind: "SelectionSet",
@@ -3860,27 +4343,10 @@ export const MyRandomWheelsDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "rotation" } },
-          { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
-          { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },
-          { kind: "Field", name: { kind: "Name", value: "liked" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "theme" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "colors" } },
-              ],
-            },
-          },
           {
             kind: "Field",
             name: { kind: "Name", value: "_count" },
@@ -3894,13 +4360,13 @@ export const MyRandomWheelsDocument = {
     },
   ],
 } as unknown as DocumentNode<MyRandomWheelsQuery, MyRandomWheelsQueryVariables>
-export const RandomWheelBySlugDocument = {
+export const RandomWheelDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "RandomWheelBySlug" },
+      name: { kind: "Name", value: "RandomWheel" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -3918,7 +4384,7 @@ export const RandomWheelBySlugDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "randomWheelBySlug" },
+            name: { kind: "Name", value: "randomWheel" },
             arguments: [
               {
                 kind: "Argument",
@@ -3933,25 +4399,54 @@ export const RandomWheelBySlugDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [
-                { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "owner" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
-                  },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "members" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelMember" } }],
-                  },
-                },
-              ],
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheel" } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ColorTheme" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "ColorTheme" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "creatorId" } },
+          { kind: "Field", name: { kind: "Name", value: "global" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelDetails" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "slug" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "accessType" } },
+          { kind: "Field", name: { kind: "Name", value: "viewable" } },
+          { kind: "Field", name: { kind: "Name", value: "editable" } },
+          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
+          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
+          { kind: "Field", name: { kind: "Name", value: "rotation" } },
+          { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
+          { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
+          { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
+          { kind: "Field", name: { kind: "Name", value: "liked" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "theme" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "ColorTheme" } }],
             },
           },
         ],
@@ -3972,59 +4467,14 @@ export const RandomWheelBySlugDocument = {
     },
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "RandomWheelDetails" },
+      name: { kind: "Name", value: "RandomWheelOwner" },
       typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "slug" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "rotation" } },
-          { kind: "Field", name: { kind: "Name", value: "spinDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "fadeDuration" } },
-          { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "editable" } },
-          { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
-          { kind: "Field", name: { kind: "Name", value: "uniqueEntries" } },
-          { kind: "Field", name: { kind: "Name", value: "shareToken" } },
-          { kind: "Field", name: { kind: "Name", value: "liked" } },
           {
             kind: "Field",
-            name: { kind: "Name", value: "theme" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "colors" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "_count" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [{ kind: "Field", name: { kind: "Name", value: "entries" } }],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "RandomWheelMember" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "roleName" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "user" },
+            name: { kind: "Name", value: "owner" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
@@ -4033,15 +4483,27 @@ export const RandomWheelBySlugDocument = {
         ],
       },
     },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheel" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheel" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelDetails" } },
+          { kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelOwner" } },
+        ],
+      },
+    },
   ],
-} as unknown as DocumentNode<RandomWheelBySlugQuery, RandomWheelBySlugQueryVariables>
-export const RandomWheelBySlugShareTokenDocument = {
+} as unknown as DocumentNode<RandomWheelQuery, RandomWheelQueryVariables>
+export const RandomWheelShareTokenDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "RandomWheelBySlugShareToken" },
+      name: { kind: "Name", value: "RandomWheelShareToken" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -4059,7 +4521,7 @@ export const RandomWheelBySlugShareTokenDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "randomWheelBySlug" },
+            name: { kind: "Name", value: "randomWheel" },
             arguments: [
               {
                 kind: "Argument",
@@ -4074,21 +4536,24 @@ export const RandomWheelBySlugShareTokenDocument = {
             ],
             selectionSet: {
               kind: "SelectionSet",
-              selections: [{ kind: "Field", name: { kind: "Name", value: "shareToken" } }],
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "shareToken" } },
+              ],
             },
           },
         ],
       },
     },
   ],
-} as unknown as DocumentNode<RandomWheelBySlugShareTokenQuery, RandomWheelBySlugShareTokenQueryVariables>
-export const RandomWheelBySlugEntriesDocument = {
+} as unknown as DocumentNode<RandomWheelShareTokenQuery, RandomWheelShareTokenQueryVariables>
+export const RandomWheelEntriesDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "RandomWheelBySlugEntries" },
+      name: { kind: "Name", value: "RandomWheelEntries" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -4106,7 +4571,7 @@ export const RandomWheelBySlugEntriesDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "randomWheelBySlug" },
+            name: { kind: "Name", value: "randomWheel" },
             arguments: [
               {
                 kind: "Argument",
@@ -4151,14 +4616,14 @@ export const RandomWheelBySlugEntriesDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<RandomWheelBySlugEntriesQuery, RandomWheelBySlugEntriesQueryVariables>
-export const RandomWheelBySlugMembersDocument = {
+} as unknown as DocumentNode<RandomWheelEntriesQuery, RandomWheelEntriesQueryVariables>
+export const RandomWheelWinnersDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "RandomWheelBySlugMembers" },
+      name: { kind: "Name", value: "RandomWheelWinners" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -4176,97 +4641,7 @@ export const RandomWheelBySlugMembersDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "randomWheelBySlug" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "slug" },
-                value: { kind: "Variable", name: { kind: "Name", value: "slug" } },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "token" },
-                value: { kind: "Variable", name: { kind: "Name", value: "token" } },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "members" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelMember" } }],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserName" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "username" } },
-          { kind: "Field", name: { kind: "Name", value: "displayname" } },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "RandomWheelMember" },
-      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "roleName" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "user" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<RandomWheelBySlugMembersQuery, RandomWheelBySlugMembersQueryVariables>
-export const RandomWheelBySlugWinnersDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "RandomWheelBySlugWinners" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "slug" } },
-          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "token" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "randomWheelBySlug" },
+            name: { kind: "Name", value: "randomWheel" },
             arguments: [
               {
                 kind: "Argument",
@@ -4312,7 +4687,98 @@ export const RandomWheelBySlugWinnersDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<RandomWheelBySlugWinnersQuery, RandomWheelBySlugWinnersQueryVariables>
+} as unknown as DocumentNode<RandomWheelWinnersQuery, RandomWheelWinnersQueryVariables>
+export const RandomWheelMembersDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "RandomWheelMembers" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "slug" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "token" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "randomWheel" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "slug" },
+                value: { kind: "Variable", name: { kind: "Name", value: "slug" } },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "token" },
+                value: { kind: "Variable", name: { kind: "Name", value: "token" } },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "members" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "RandomWheelMember" } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserName" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "User" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "displayname" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "RandomWheelMember" },
+      typeCondition: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelMember" } },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "roleName" } },
+          { kind: "Field", name: { kind: "Name", value: "userId" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [{ kind: "FragmentSpread", name: { kind: "Name", value: "UserName" } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RandomWheelMembersQuery, RandomWheelMembersQueryVariables>
 export const ChannelRewardsDocument = {
   kind: "Document",
   definitions: [
@@ -4792,36 +5258,3 @@ export const UserAccessTokenDocument = {
     },
   ],
 } as unknown as DocumentNode<UserAccessTokenQuery, UserAccessTokenQueryVariables>
-export const UsernameExistsDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "UsernameExists" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "username" } },
-          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "usernameExists" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "username" },
-                value: { kind: "Variable", name: { kind: "Name", value: "username" } },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UsernameExistsMutation, UsernameExistsMutationVariables>

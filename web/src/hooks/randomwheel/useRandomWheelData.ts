@@ -1,29 +1,23 @@
 import {
-  RandomWheelDetailsFragment,
   RandomWheelEntry,
   RandomWheelEntryFragment,
+  RandomWheelFragment,
   RandomWheelMemberFragment,
   RandomWheelWinnerFragment,
-  useRandomWheelBySlugEntriesQuery,
-  useRandomWheelBySlugMembersQuery,
-  useRandomWheelBySlugQuery,
-  useRandomWheelBySlugWinnersQuery,
-  UserNameFragment,
+  useRandomWheelEntriesQuery,
+  useRandomWheelMembersQuery,
+  useRandomWheelQuery,
+  useRandomWheelWinnersQuery,
 } from "@/generated/graphql"
 import { useUrqlContextCookies } from "@/hooks"
-import { useAuth } from "@/hooks/useAuth"
 import { OperationContext } from "urql"
 
-export interface RandomWheelDetailsQuery extends RandomWheelDetailsFragment {
-  owner: UserNameFragment
-  members: {
-    userId: string
-    roleName: string
-  }[]
-}
+// export interface RandomWheelFragmentFull extends RandomWheelFragment, RandomWheelMembersFragment {}
+// owner: UserNameFragment
+// members: RandomWheelMemberFragment[]
 
-export interface RandomWheelDetails extends RandomWheelDetailsQuery {
-  viewable: boolean
+export interface RandomWheelDetails extends RandomWheelFragment {
+  // viewable: boolean
   spinning: boolean
 }
 
@@ -65,61 +59,49 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
 
   const context = useUrqlContextCookies()
 
-  const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelBySlugQuery({
+  const [{ data: wheelData, fetching: fetchingWheel }, fetchWheel] = useRandomWheelQuery({
     variables: { slug, token: options?.token },
     pause: !options?.details || options.fetchOnly,
-    // requestPolicy: "cache-and-network",
     context,
   })
-  const wheel = wheelData?.randomWheelBySlug as RandomWheelDetailsQuery | undefined
+  const wheel = wheelData?.randomWheel as RandomWheelFragment | undefined
 
-  // const [{ data: shareTokenData, fetching: fetchingShareToken }, fetchShareToken] = useRandomWheelBySlugShareTokenQuery({
-  //   variables: { slug, token: options?.token },
-  //   pause: !options?.details || options.fetchOnly,
-  // })
-  // const shareToken = shareTokenData?.randomWheelBySlug?.shareToken
-
-  const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelBySlugEntriesQuery({
+  const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelEntriesQuery({
     variables: { slug, token: options?.token },
     pause: !options?.entries || options.fetchOnly,
-    // requestPolicy: "cache-and-network",
     context,
   })
-  const entries = entriesData?.randomWheelBySlug?.entries as RandomWheelEntryFragment[] | undefined
+  const entries = entriesData?.randomWheel?.entries as RandomWheelEntryFragment[] | undefined
 
-  const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelBySlugWinnersQuery({
+  const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelWinnersQuery({
     variables: { slug, token: options?.token },
     pause: !options?.winners || options.fetchOnly,
     context,
   })
-  const winners = winnersData?.randomWheelBySlug?.winners as RandomWheelWinnerFragment[] | undefined
+  const winners = winnersData?.randomWheel?.winners as RandomWheelWinnerFragment[] | undefined
 
-  const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelBySlugMembersQuery({
+  const [{ data: membersData, fetching: fetchingMembers }, fetchMembers] = useRandomWheelMembersQuery({
     variables: { slug, token: options?.token },
     pause: !options?.members || options.fetchOnly,
     context,
   })
-  const members = membersData?.randomWheelBySlug?.members as RandomWheelMemberFragment[] | undefined
+  const members = membersData?.randomWheel?.members as RandomWheelMemberFragment[] | undefined
 
-  const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheelBySlug?.id
+  const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheel?.id
 
-  const { user } = useAuth()
-  const viewable =
-    wheel?.accessType === "PUBLIC" ||
-    wheel?.owner === null ||
-    wheel?.owner?.id === user?.id ||
-    wheel?.members.some((member) => member.userId === user?.id) ||
-    wheel?.shareToken === options?.token
+  const viewable = wheel?.viewable || (wheel?.shareToken && wheel?.shareToken === options?.token)
+  // const { user } = useAuth()
+  // const viewable =
+  //   wheel?.accessType === "PUBLIC" ||
+  //   wheel?.owner === null ||
+  //   wheel?.owner?.id === user?.id ||
+  //   wheel?.members.some((member) => member.userId === user?.id) ||
+  //   wheel?.shareToken === options?.token
 
   return [
     {
       id,
-      wheel: wheel
-        ? {
-            ...wheel,
-            viewable,
-          }
-        : undefined,
+      wheel: wheel ? { ...wheel, viewable } : undefined,
       entries: entries,
       winners: winners,
       members: members,

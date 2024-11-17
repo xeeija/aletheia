@@ -12,6 +12,6 @@ mutation CreateRandomWheel(
     fadeDuration: $fadeDuration
     editAnonymous: $editAnonymous
   ) {
-    ...RandomWheelDetails
+    ...RandomWheel
   }
 }
