@@ -1,4 +1,4 @@
-import { RandomWheel, useMyRandomWheelsQuery } from "@/generated/graphql"
+import { RandomWheel, RandomWheelListItemFragment, useMyRandomWheelsQuery } from "@/generated/graphql"
 import { useUrqlContextCookies } from "@/hooks"
 
 export const useMyRandomWheels = (type?: string, wheels?: RandomWheel[]) => {
@@ -6,12 +6,11 @@ export const useMyRandomWheels = (type?: string, wheels?: RandomWheel[]) => {
 
   const [{ data, fetching, error }, refetch] = useMyRandomWheelsQuery({
     variables: { type },
-    // requestPolicy: "cache-and-network",
     context,
   })
 
   return {
-    wheels: data?.myRandomWheels ?? wheels, // as RandomWheel[] | undefined,
+    wheels: (data?.myRandomWheels ?? wheels) as RandomWheelListItemFragment[] | undefined,
     fetching,
     error,
     refetch,

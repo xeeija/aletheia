@@ -147,6 +147,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
                 <DeleteDialog
                   title="Reset token?"
+                  confirmText="Reset"
                   open={resetDialogOpen}
                   closeOnConfirm
                   onConfirm={async () => {

@@ -1,5 +1,5 @@
 mutation UpdateRandomWheelMembers($randomWheelId: String!, $members: [RandomWheelMemberInput!]!) {
   updateRandomWheelMembers(randomWheelId: $randomWheelId, members: $members) {
-    id
+    ...RandomWheelMember
   }
 }

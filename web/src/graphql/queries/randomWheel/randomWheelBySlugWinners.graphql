@@ -1,8 +1,0 @@
-query RandomWheelBySlugWinners($slug: String!, $token: String) {
-  randomWheelBySlug(slug: $slug, token: $token) {
-    id
-    winners {
-      ...RandomWheelWinner
-    }
-  }
-}

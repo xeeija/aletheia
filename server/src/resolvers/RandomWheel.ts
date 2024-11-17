@@ -102,25 +102,37 @@ export class RandomWheelResolver {
   async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously
 
-    if (randomWheel.ownerId === req.session.userId || randomWheel.ownerId === null) {
+    const userId = req.session.userId
+    if (randomWheel.ownerId === userId || randomWheel.ownerId === null) {
       return true
     }
 
     // if session.userId is undefined in the prisma query
     // it is treated as not beeing in the query, so any user with edit is found - fix with this if
-    if (req.session.userId === undefined && randomWheel.ownerId) {
+    if (userId === undefined && randomWheel.ownerId) {
       return false
     }
 
     const member = await prisma.randomWheelMember.findFirst({
       where: {
         randomWheelId: randomWheel.id,
-        userId: req.session.userId,
+        userId: userId,
         roleName: "EDIT",
       },
     })
 
     return member !== null
+  }
+
+  @FieldResolver(() => Boolean)
+  viewable(@Root() wheel: RandomWheelFull, @Ctx() { req }: GraphqlContext) {
+    const isPublic = wheel.accessType === "PUBLIC" || wheel.owner === null
+
+    const userId = req.session.userId
+    const isOwnerOrMember = wheel.owner?.id === userId || wheel.members?.some((member) => member.userId === userId)
+
+    // const hasToken = wheel.shareToken === options?.token
+    return isPublic || isOwnerOrMember // || hasToken
   }
 
   @FieldResolver(() => Boolean)
@@ -245,6 +257,43 @@ export class RandomWheelResolver {
         errorCode: 500,
         errorMessage: "Unknown error",
       }
+    }
+  }
+
+  @Query(() => RandomWheelFull, { nullable: true })
+  async randomWheel(
+    @Ctx() { req, prisma }: GraphqlContext,
+    @Arg("slug") slug: string,
+    @Arg("token", () => String, { nullable: true }) token: string | undefined,
+    @Info() info: GraphQLResolveInfo
+  ) {
+    try {
+      const wheel = await prisma.randomWheel.findFirst({
+        where: {
+          slug: slug,
+          accessType: !req.session.userId && !token ? "PUBLIC" : undefined,
+          OR: [
+            { accessType: "PUBLIC" },
+            { ownerId: req.session.userId },
+            { shareToken: token ?? "" },
+            {
+              members: {
+                some: { userId: req.session.userId },
+              },
+            },
+          ],
+        },
+        include: {
+          ...includeRandomWheel(info),
+        },
+        // TODO: Maybe select only the requested fields
+      })
+
+      return wheel as RandomWheelFull
+    } catch (err) {
+      logger.error("Failed to find wheel:", err)
+
+      throw new Error("Failed to find wheel")
     }
   }
 

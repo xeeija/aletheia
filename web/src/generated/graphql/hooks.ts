@@ -12,6 +12,12 @@ export function useLogoutMutation() {
   return Urql.useMutation<Operations.LogoutMutation, Operations.LogoutMutationVariables>(Operations.LogoutDocument)
 }
 
+export function useRegisterMutation() {
+  return Urql.useMutation<Operations.RegisterMutation, Operations.RegisterMutationVariables>(
+    Operations.RegisterDocument
+  )
+}
+
 export function useAddRandomWheelEntryMutation() {
   return Urql.useMutation<Operations.AddRandomWheelEntryMutation, Operations.AddRandomWheelEntryMutationVariables>(
     Operations.AddRandomWheelEntryDocument
@@ -79,12 +85,6 @@ export function useUpdateRandomWheelMembersMutation() {
     Operations.UpdateRandomWheelMembersMutation,
     Operations.UpdateRandomWheelMembersMutationVariables
   >(Operations.UpdateRandomWheelMembersDocument)
-}
-
-export function useRegisterMutation() {
-  return Urql.useMutation<Operations.RegisterMutation, Operations.RegisterMutationVariables>(
-    Operations.RegisterDocument
-  )
 }
 
 export function useAddWheelSyncMutation() {
@@ -189,6 +189,12 @@ export function useUpdateUserMutation() {
   )
 }
 
+export function useUsernameExistsMutation() {
+  return Urql.useMutation<Operations.UsernameExistsMutation, Operations.UsernameExistsMutationVariables>(
+    Operations.UsernameExistsDocument
+  )
+}
+
 export function useColorThemesQuery(options?: Omit<Urql.UseQueryArgs<Operations.ColorThemesQueryVariables>, "query">) {
   return Urql.useQuery<Operations.ColorThemesQuery, Operations.ColorThemesQueryVariables>({
     query: Operations.ColorThemesDocument,
@@ -209,47 +215,45 @@ export function useMyRandomWheelsQuery(
   })
 }
 
-export function useRandomWheelBySlugQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelBySlugQueryVariables>, "query">
-) {
-  return Urql.useQuery<Operations.RandomWheelBySlugQuery, Operations.RandomWheelBySlugQueryVariables>({
-    query: Operations.RandomWheelBySlugDocument,
+export function useRandomWheelQuery(options: Omit<Urql.UseQueryArgs<Operations.RandomWheelQueryVariables>, "query">) {
+  return Urql.useQuery<Operations.RandomWheelQuery, Operations.RandomWheelQueryVariables>({
+    query: Operations.RandomWheelDocument,
     ...options,
   })
 }
 
-export function useRandomWheelBySlugShareTokenQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelBySlugShareTokenQueryVariables>, "query">
+export function useRandomWheelShareTokenQuery(
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelShareTokenQueryVariables>, "query">
 ) {
-  return Urql.useQuery<
-    Operations.RandomWheelBySlugShareTokenQuery,
-    Operations.RandomWheelBySlugShareTokenQueryVariables
-  >({ query: Operations.RandomWheelBySlugShareTokenDocument, ...options })
-}
-
-export function useRandomWheelBySlugEntriesQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelBySlugEntriesQueryVariables>, "query">
-) {
-  return Urql.useQuery<Operations.RandomWheelBySlugEntriesQuery, Operations.RandomWheelBySlugEntriesQueryVariables>({
-    query: Operations.RandomWheelBySlugEntriesDocument,
+  return Urql.useQuery<Operations.RandomWheelShareTokenQuery, Operations.RandomWheelShareTokenQueryVariables>({
+    query: Operations.RandomWheelShareTokenDocument,
     ...options,
   })
 }
 
-export function useRandomWheelBySlugMembersQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelBySlugMembersQueryVariables>, "query">
+export function useRandomWheelEntriesQuery(
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelEntriesQueryVariables>, "query">
 ) {
-  return Urql.useQuery<Operations.RandomWheelBySlugMembersQuery, Operations.RandomWheelBySlugMembersQueryVariables>({
-    query: Operations.RandomWheelBySlugMembersDocument,
+  return Urql.useQuery<Operations.RandomWheelEntriesQuery, Operations.RandomWheelEntriesQueryVariables>({
+    query: Operations.RandomWheelEntriesDocument,
     ...options,
   })
 }
 
-export function useRandomWheelBySlugWinnersQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelBySlugWinnersQueryVariables>, "query">
+export function useRandomWheelWinnersQuery(
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelWinnersQueryVariables>, "query">
 ) {
-  return Urql.useQuery<Operations.RandomWheelBySlugWinnersQuery, Operations.RandomWheelBySlugWinnersQueryVariables>({
-    query: Operations.RandomWheelBySlugWinnersDocument,
+  return Urql.useQuery<Operations.RandomWheelWinnersQuery, Operations.RandomWheelWinnersQueryVariables>({
+    query: Operations.RandomWheelWinnersDocument,
+    ...options,
+  })
+}
+
+export function useRandomWheelMembersQuery(
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelMembersQueryVariables>, "query">
+) {
+  return Urql.useQuery<Operations.RandomWheelMembersQuery, Operations.RandomWheelMembersQueryVariables>({
+    query: Operations.RandomWheelMembersDocument,
     ...options,
   })
 }
@@ -309,10 +313,4 @@ export function useUserAccessTokenQuery(
     query: Operations.UserAccessTokenDocument,
     ...options,
   })
-}
-
-export function useUsernameExistsMutation() {
-  return Urql.useMutation<Operations.UsernameExistsMutation, Operations.UsernameExistsMutationVariables>(
-    Operations.UsernameExistsDocument
-  )
 }
