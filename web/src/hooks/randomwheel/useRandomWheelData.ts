@@ -10,9 +10,9 @@ import {
   useRandomWheelBySlugWinnersQuery,
   UserNameFragment,
 } from "@/generated/graphql"
+import { useUrqlContextCookies } from "@/hooks"
 import { useAuth } from "@/hooks/useAuth"
 import { OperationContext } from "urql"
-import { useUrqlContextCookies } from "../useUrqlContextCookies"
 
 export interface RandomWheelDetailsQuery extends RandomWheelDetailsFragment {
   owner: UserNameFragment

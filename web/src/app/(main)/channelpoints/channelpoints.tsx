@@ -22,7 +22,7 @@ export const Channelpoints: FC<Props> = () => {
   const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({ includeToken: true })
   const { fetching: fetchingRewards, error } = useChannelRewards(true, filterRewards)
 
-  const tokenAvailable = user?.username && userAccessToken?.twitchUserId
+  const tokenAvailable = user && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
 
   return (
@@ -35,11 +35,13 @@ export const Channelpoints: FC<Props> = () => {
       >
         {/* <AlertPopup severity="warning" messageState={[showError, setShowError]} hideDuration={8000} /> */}
 
-        <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
-          {/* itemType prop for new variant, because there is no variant prop */}
-          <Tab label="Rewards" itemType="capitalize" />
-          <Tab label="Reward Groups" itemType="capitalize" />
-        </Tabs>
+        {user && (
+          <Tabs value={tab} onChange={(_, value: number) => setTab(value)}>
+            {/* itemType prop for new variant, because there is no variant prop */}
+            <Tab label="Rewards" itemType="capitalize" />
+            <Tab label="Reward Groups" itemType="capitalize" />
+          </Tabs>
+        )}
 
         {tokenAvailable && !error && (
           <>

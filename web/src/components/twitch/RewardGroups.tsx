@@ -4,7 +4,7 @@ import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { RewardGroupDialog, RewardGroupListItem } from "@/components/twitch"
 import { useAlert, useRewardGroups } from "@/hooks"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, useMemo, useState } from "react"
 import { TiPlus } from "react-icons/ti"
 
 interface Props {}
@@ -18,7 +18,7 @@ export const RewardGroups: FC<Props> = () => {
 
   const { showSuccess, showError } = useAlert()
 
-  const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ groups: true, socket: true })
+  const { rewardGroups, fetching, deleteGroup } = useRewardGroups(useMemo(() => ({ groups: true, socket: true }), []))
   const rewardGroupsEmpty = (rewardGroups?.length ?? 0) === 0
 
   return (

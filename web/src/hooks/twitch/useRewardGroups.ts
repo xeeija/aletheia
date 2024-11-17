@@ -81,15 +81,10 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     refetch: () => refetchRewardGroups({ requestPolicy: "cache-and-network" }),
     refetchGroup: () => refetchRewardGroup({ requestPolicy: "cache-and-network" }),
     createGroup: async (rewardGroup: RewardGroupInput, items: RewardGroupItemInput | RewardGroupItemInput[]) => {
-      const response = await createRewardGroup(
-        {
-          rewardGroup,
-          items,
-        },
-        {
-          requestPolicy: "cache-and-network",
-        }
-      )
+      const response = await createRewardGroup({
+        rewardGroup,
+        items,
+      })
 
       return {
         rewardGroup: response.data?.createRewardGroup as RewardGroupFragment | undefined,
@@ -103,16 +98,11 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
       rewardGroup?: RewardGroupInput,
       items?: RewardGroupItemInput | RewardGroupItemInput[]
     ) => {
-      const response = await updateRewardGroup(
-        {
-          id,
-          rewardGroup,
-          items,
-        },
-        {
-          requestPolicy: "cache-and-network",
-        }
-      )
+      const response = await updateRewardGroup({
+        id,
+        rewardGroup,
+        items,
+      })
 
       return {
         rewardGroup: response.data?.updateRewardGroup as RewardGroupFragment | undefined,
@@ -122,14 +112,7 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     fetchingUpdate,
     errorUpdate,
     deleteGroup: async (id: string) => {
-      const response = await deleteRewardGroup(
-        { id },
-        {
-          // "RewardGroupItem"
-          additionalTypenames: ["RewardGroup"],
-          requestPolicy: "cache-and-network",
-        }
-      )
+      const response = await deleteRewardGroup({ id })
 
       return {
         deleted: response.data?.deleteRewardGroup,
@@ -139,16 +122,11 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     fetchingDelete,
     errorDelete,
     addItem: async (rewardGroupId: string, rewardId: string, triggerCooldown?: boolean) => {
-      const response = await addRewardGroupItem(
-        {
-          rewardGroupId,
-          rewardId,
-          triggerCooldown,
-        },
-        {
-          requestPolicy: "cache-and-network",
-        }
-      )
+      const response = await addRewardGroupItem({
+        rewardGroupId,
+        rewardId,
+        triggerCooldown,
+      })
 
       return {
         item: response.data?.addRewardGroupItem as RewardGroupItemFragment | undefined,
@@ -158,14 +136,7 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
     fetchingAdd,
     errorAdd,
     deleteItem: async (id: string) => {
-      const response = await deleteItem(
-        { id },
-        {
-          // "RewardGroup"
-          additionalTypenames: ["RewardGroupItem"],
-          requestPolicy: "cache-and-network",
-        }
-      )
+      const response = await deleteItem({ id })
 
       return {
         deleted: response.data?.deleteRewardGroupItem,
