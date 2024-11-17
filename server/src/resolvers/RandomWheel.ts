@@ -49,6 +49,13 @@ import { Arg, Ctx, FieldResolver, Info, Int, Mutation, Query, Resolver, Root } f
 // workaround: generic RandomWheelList type: with "items" property that is the list
 // const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
 
+const WheelListTypes = ["my", "shared", "favorite"] as const
+type WheelListType = (typeof WheelListTypes)[number]
+
+const isWheelListType = (value: string): value is WheelListType => {
+  return WheelListTypes.includes(value as WheelListType)
+}
+
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
   const fields = resolveInfo?.fieldsByTypeName.RandomWheel ?? {}
@@ -140,16 +147,15 @@ export class RandomWheelResolver {
   async myRandomWheels(
     @Ctx() { req, prisma }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
-    @Arg("type", { defaultValue: "my" }) type: string // "should" be: "my" | "shared" | "favorite"
+    @Arg("type", { defaultValue: "my" }) type: WheelListType // "should" be: "my" | "shared" | "favorite"
   ) {
     // TODO: FIX so it throws a proper Graphql Error or so
     if (!req.session.userId) {
       return []
     }
 
-    if (!["my", "shared", "favorite"].includes(type)) {
-      // TODO: unsupported type, maybe use enum instead and throw proper Graphql Error
-      return []
+    if (!isWheelListType(type)) {
+      throw new Error(`Invalid type. Must be one of: ${WheelListTypes.join(", ")}`)
     }
 
     const randomWheels = await prisma.randomWheel.findMany({
