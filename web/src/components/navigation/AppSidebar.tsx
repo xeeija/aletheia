@@ -2,8 +2,7 @@ import { Footer, LinkItem, Sidebar } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { Box, SvgIcon } from "@mui/material"
 import { FC, ReactNode } from "react"
-import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
-import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
+import { TiChartPie, TiHome } from "react-icons/ti"
 import { SidebarProvider } from "../providers"
 
 const sidebarItems: LinkItem[] = [
@@ -26,61 +25,61 @@ const sidebarItems: LinkItem[] = [
     ),
   },
   { name: "Channel Points", href: "/channelpoints", icon: <ChannelPoints color="info" viewBox="0 0 20 20" /> },
-  {
-    name: "Bingo",
-    href: "/bingo",
-    icon: (
-      <SvgIcon color="success" viewBox="0 0 20 20">
-        <HiViewGridAdd />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
-  {
-    name: "Color Palette",
-    icon: (
-      <SvgIcon color="info">
-        <TiPipette />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
-  {
-    name: "Pile of Shame",
-    icon: (
-      <SvgIcon color="warning" viewBox="0 0 20 20">
-        <HiDuplicate />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
-  {
-    name: "Notes",
-    icon: (
-      <SvgIcon color="error">
-        <TiThList />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
-  {
-    name: "Countdown",
-    icon: (
-      <SvgIcon color="primary" viewBox="0 0 20 20">
-        <HiClock />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
-  {
-    name: "Rock Paper Scissors",
-    icon: (
-      <SvgIcon color="secondary" viewBox="2 2 20 20">
-        <TiScissors />
-      </SvgIcon>
-    ),
-    disabled: true,
-  },
+  // {
+  //   name: "Bingo",
+  //   href: "/bingo",
+  //   icon: (
+  //     <SvgIcon color="success" viewBox="0 0 20 20">
+  //       <HiViewGridAdd />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
+  // {
+  //   name: "Color Palette",
+  //   icon: (
+  //     <SvgIcon color="info">
+  //       <TiPipette />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
+  // {
+  //   name: "Pile of Shame",
+  //   icon: (
+  //     <SvgIcon color="warning" viewBox="0 0 20 20">
+  //       <HiDuplicate />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
+  // {
+  //   name: "Notes",
+  //   icon: (
+  //     <SvgIcon color="error">
+  //       <TiThList />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
+  // {
+  //   name: "Countdown",
+  //   icon: (
+  //     <SvgIcon color="primary" viewBox="0 0 20 20">
+  //       <HiClock />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
+  // {
+  //   name: "Rock Paper Scissors",
+  //   icon: (
+  //     <SvgIcon color="secondary" viewBox="2 2 20 20">
+  //       <TiScissors />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: true,
+  // },
   // { divider: true },
 ]
 
