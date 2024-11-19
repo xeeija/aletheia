@@ -33,9 +33,9 @@ fragment RandomWheelDetails on RandomWheel {
   id
   slug
   name
+  title
   createdAt
   accessType
-  viewable
   editable
   editAnonymous
   shareToken
@@ -69,6 +69,7 @@ fragment RandomWheelListItem on RandomWheel {
   id
   slug
   name
+  title
   createdAt
   accessType
   editable

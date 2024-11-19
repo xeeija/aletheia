@@ -386,8 +386,8 @@ export type RandomWheel = {
   spinDuration: Scalars["Int"]["output"]
   theme?: Maybe<ColorTheme>
   themeId?: Maybe<Scalars["String"]["output"]>
+  title: Scalars["String"]["output"]
   uniqueEntries: Scalars["Boolean"]["output"]
-  viewable: Scalars["Boolean"]["output"]
   winners: Array<RandomWheelWinner>
 }
 
@@ -626,9 +626,9 @@ export type RandomWheelFragment = {
   id: string
   slug: string
   name?: string | null
+  title: string
   createdAt: Date
   accessType: string
-  viewable: boolean
   editable: boolean
   editAnonymous: boolean
   shareToken?: string | null
@@ -653,9 +653,9 @@ export type RandomWheelDetailsFragment = {
   id: string
   slug: string
   name?: string | null
+  title: string
   createdAt: Date
   accessType: string
-  viewable: boolean
   editable: boolean
   editAnonymous: boolean
   shareToken?: string | null
@@ -696,6 +696,7 @@ export type RandomWheelListItemFragment = {
   id: string
   slug: string
   name?: string | null
+  title: string
   createdAt: Date
   accessType: string
   editable: boolean
@@ -858,9 +859,9 @@ export type CreateRandomWheelMutation = {
     id: string
     slug: string
     name?: string | null
+    title: string
     createdAt: Date
     accessType: string
-    viewable: boolean
     editable: boolean
     editAnonymous: boolean
     shareToken?: string | null
@@ -947,9 +948,9 @@ export type UpdateRandomWheelMutation = {
     id: string
     slug: string
     name?: string | null
+    title: string
     createdAt: Date
     accessType: string
-    viewable: boolean
     editable: boolean
     editAnonymous: boolean
     shareToken?: string | null
@@ -1310,6 +1311,7 @@ export type MyRandomWheelsQuery = {
     id: string
     slug: string
     name?: string | null
+    title: string
     createdAt: Date
     accessType: string
     editable: boolean
@@ -1331,9 +1333,9 @@ export type RandomWheelQuery = {
     id: string
     slug: string
     name?: string | null
+    title: string
     createdAt: Date
     accessType: string
-    viewable: boolean
     editable: boolean
     editAnonymous: boolean
     shareToken?: string | null
@@ -1664,9 +1666,9 @@ export const RandomWheelDetailsFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "viewable" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },
@@ -1810,9 +1812,9 @@ export const RandomWheelFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "viewable" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },
@@ -1969,6 +1971,7 @@ export const RandomWheelListItemFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
@@ -2576,9 +2579,9 @@ export const CreateRandomWheelDocument = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "viewable" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },
@@ -2915,9 +2918,9 @@ export const UpdateRandomWheelDocument = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "viewable" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },
@@ -4342,6 +4345,7 @@ export const MyRandomWheelsDocument = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
@@ -4430,9 +4434,9 @@ export const RandomWheelDocument = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "accessType" } },
-          { kind: "Field", name: { kind: "Name", value: "viewable" } },
           { kind: "Field", name: { kind: "Name", value: "editable" } },
           { kind: "Field", name: { kind: "Name", value: "editAnonymous" } },
           { kind: "Field", name: { kind: "Name", value: "shareToken" } },

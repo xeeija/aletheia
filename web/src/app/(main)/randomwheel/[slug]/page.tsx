@@ -1,7 +1,7 @@
-import { NotFound } from "@/components"
 import { RandomWheelDetail } from "@/components/randomWheel"
 import { MetadataFn, Page } from "@/types"
 import { getRandomWheel } from "@/utils/graphql/randomwheel"
+import { notFound } from "next/navigation"
 
 type Params = {
   slug: string
@@ -20,16 +20,11 @@ export const generateMetadata: MetadataFn<Params, SearchParams> = async (props) 
   const wheel = await getRandomWheel(params.slug, token)
 
   if (!wheel) {
-    return {
-      title: "Not Found",
-    }
-    // notFound()
+    notFound()
   }
 
-  const title = wheel.name || `Wheel #${wheel.slug}`
-
   return {
-    title,
+    title: wheel.title,
   }
 }
 
@@ -49,15 +44,10 @@ const SlugPage: Page<Params, SearchParams> = async (props) => {
   const wheel = await getRandomWheel(slug, token)
 
   if (!wheel) {
-    // notFound()
-    return <NotFound />
+    notFound()
   }
 
-  return (
-    <>
-      <RandomWheelDetail slug={slug} token={token} />
-    </>
-  )
+  return <RandomWheelDetail slug={slug} token={token} />
 }
 
 export default SlugPage
