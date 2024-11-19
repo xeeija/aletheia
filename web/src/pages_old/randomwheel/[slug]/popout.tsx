@@ -70,7 +70,7 @@ const RandomWheelPopoutPage: LayoutNextPage = () => {
     )
   }
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     // TODO: Proper error pages
     return <NotFoundPage />
   }

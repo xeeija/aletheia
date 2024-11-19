@@ -22,7 +22,7 @@ export const generateMetadata: MetadataFn<Params, PopoutSearchParams> = async (p
 
   const wheel = await getRandomWheel(params.slug, token)
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     notFound()
   }
 
@@ -42,7 +42,7 @@ const PopoutPage: Page<Params, PopoutSearchParams> = async (props) => {
 
   const wheel = await getRandomWheel(slug, token)
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     notFound()
   }
 

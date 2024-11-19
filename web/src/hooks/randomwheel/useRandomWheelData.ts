@@ -89,7 +89,6 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
 
   const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheel?.id
 
-  const viewable = wheel?.viewable || (wheel?.shareToken && wheel?.shareToken === options?.token)
   // const { user } = useAuth()
   // const viewable =
   //   wheel?.accessType === "PUBLIC" ||
@@ -101,7 +100,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   return [
     {
       id,
-      wheel: wheel ? { ...wheel, viewable } : undefined,
+      wheel: wheel,
       entries: entries,
       winners: winners,
       members: members,

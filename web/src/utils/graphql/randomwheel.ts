@@ -7,11 +7,7 @@ import {
 import { getUrqlClient } from "@/utils/urql"
 
 export const getRandomWheel = async (slug: string, token?: string) => {
-  const client = await getUrqlClient({
-    headers: {
-      authorization: token ? `Bearer ${token}` : "",
-    },
-  })
+  const client = await getUrqlClient()
 
   const wheelResult = await client.query(RandomWheelDocument, { slug, token })
 
