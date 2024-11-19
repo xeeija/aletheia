@@ -125,14 +125,27 @@ export class RandomWheelResolver {
   }
 
   @FieldResolver(() => Boolean)
-  viewable(@Root() wheel: RandomWheelFull, @Ctx() { req }: GraphqlContext) {
+  async viewable(@Root() wheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     const isPublic = wheel.accessType === "PUBLIC" || wheel.owner === null
 
     const userId = req.session.userId
-    const isOwnerOrMember = wheel.owner?.id === userId || wheel.members?.some((member) => member.userId === userId)
+    const isOwner = wheel.owner?.id === userId // || wheel.members?.some((member) => member.userId === userId)
 
-    // const hasToken = wheel.shareToken === options?.token
-    return isPublic || isOwnerOrMember // || hasToken
+    const hasToken = wheel.shareToken && `Bearer ${wheel.shareToken}` === req.headers?.authorization
+
+    if (isPublic || isOwner || hasToken) {
+      return true
+    }
+
+    const member = await prisma.randomWheelMember.findFirst({
+      where: {
+        randomWheelId: wheel.id,
+        userId: userId,
+        roleName: "EDIT",
+      },
+    })
+
+    return member !== null
   }
 
   @FieldResolver(() => Boolean)

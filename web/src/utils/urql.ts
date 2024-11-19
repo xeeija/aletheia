@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 
 // Note: client side urql client is created directly in UrqlProvider/UrqlSsrProvider component
 
-const makeClient = async () => {
+const makeClient = async (fetchOptions?: RequestInit) => {
   const cookieStore = await cookies()
 
   return () =>
@@ -14,18 +14,20 @@ const makeClient = async () => {
       exchanges: [cacheExchange, fetchExchange],
       suspense: true,
       fetchOptions: () => ({
+        ...fetchOptions,
         credentials: "include",
         //  manually include cookies (from server component)
         headers: {
           // cookies() throws an error when it is not called from a server component
+          ...fetchOptions?.headers,
           cookie: cookieStore.toString(),
         },
       }),
     })
 }
 
-export const getUrqlClient = async () => {
-  const makeClientFn = await makeClient()
+export const getUrqlClient = async (fetchOptions?: RequestInit) => {
+  const makeClientFn = await makeClient(fetchOptions)
   const { getClient } = registerUrql(makeClientFn)
   return getClient()
 }
