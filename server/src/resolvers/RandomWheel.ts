@@ -98,6 +98,11 @@ export class RandomWheelResolver {
   // [x] remove entry
   // [x] clear all entries
 
+  @FieldResolver(() => String)
+  title(@Root() wheel: RandomWheelFull) {
+    return wheel.name || `Wheel #${wheel.slug}`
+  }
+
   @FieldResolver(() => Boolean)
   async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously

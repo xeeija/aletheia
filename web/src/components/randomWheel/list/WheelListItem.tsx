@@ -1,26 +1,24 @@
 import { Tooltip } from "@/components"
 import { AccessTypeBadge } from "@/components/randomWheel"
-import { RandomWheelDetailsFragment } from "@/generated/graphql"
+import { RandomWheelListItemFragment } from "@/generated/graphql"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC } from "react"
 import { TiThList } from "react-icons/ti"
 
 interface Props {
-  wheel: RandomWheelDetailsFragment
+  wheel: RandomWheelListItemFragment
 }
 
 export const WheelListItem: FC<Props> = ({ wheel }) => {
-  const wheelName = wheel.name || `Wheel #${wheel.slug}`
-
   return (
     <Card>
       <Link href={`randomwheel/${wheel.slug}`} passHref legacyBehavior>
         <CardActionArea sx={{ height: "100%" }}>
           <CardContent>
-            <Tooltip title={wheelName} placement="top">
+            <Tooltip title={wheel.title} placement="top">
               <Typography variant="h6" className="line-clamp line-clamp-2">
-                {wheelName}
+                {wheel.title}
               </Typography>
             </Tooltip>
             <Typography variant="body2" color="text.secondary">

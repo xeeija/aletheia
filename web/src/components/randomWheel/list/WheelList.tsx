@@ -1,11 +1,11 @@
 import { SkeletonList } from "@/components"
 import { WheelListItem } from "@/components/randomWheel"
-import { RandomWheelDetailsFragment } from "@/generated/graphql"
+import { RandomWheelListItemFragment } from "@/generated/graphql"
 import { Box } from "@mui/material"
 import { FC } from "react"
 
 interface Props {
-  items?: RandomWheelDetailsFragment[]
+  items?: RandomWheelListItemFragment[]
   loading?: boolean
 }
 

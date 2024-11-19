@@ -26,10 +26,8 @@ export const generateMetadata: MetadataFn<Params, PopoutSearchParams> = async (p
     notFound()
   }
 
-  const title = wheel.name || `Wheel #${wheel.slug}`
-
   return {
-    title,
+    title: wheel.title,
   }
 }
 
