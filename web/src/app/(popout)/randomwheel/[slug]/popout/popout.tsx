@@ -44,7 +44,7 @@ export const Popout: FC<Props> = ({ slug, token }) => {
 
   const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     notFound()
   }
 

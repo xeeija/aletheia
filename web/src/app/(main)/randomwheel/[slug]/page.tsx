@@ -48,7 +48,7 @@ const SlugPage: Page<Params, SearchParams> = async (props) => {
 
   const wheel = await getRandomWheel(slug, token)
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     // notFound()
     return <NotFound />
   }

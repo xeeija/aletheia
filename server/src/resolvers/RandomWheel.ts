@@ -125,30 +125,6 @@ export class RandomWheelResolver {
   }
 
   @FieldResolver(() => Boolean)
-  async viewable(@Root() wheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
-    const isPublic = wheel.accessType === "PUBLIC" || wheel.owner === null
-
-    const userId = req.session.userId
-    const isOwner = wheel.owner?.id === userId // || wheel.members?.some((member) => member.userId === userId)
-
-    const hasToken = wheel.shareToken && `Bearer ${wheel.shareToken}` === req.headers?.authorization
-
-    if (isPublic || isOwner || hasToken) {
-      return true
-    }
-
-    const member = await prisma.randomWheelMember.findFirst({
-      where: {
-        randomWheelId: wheel.id,
-        userId: userId,
-        roleName: "EDIT",
-      },
-    })
-
-    return member !== null
-  }
-
-  @FieldResolver(() => Boolean)
   async liked(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
     if (req.session.userId === undefined) {
       return false
@@ -281,19 +257,18 @@ export class RandomWheelResolver {
     @Info() info: GraphQLResolveInfo
   ) {
     try {
+      const userId = req.session.userId
+
       const wheel = await prisma.randomWheel.findFirst({
         where: {
           slug: slug,
           accessType: !req.session.userId && !token ? "PUBLIC" : undefined,
           OR: [
             { accessType: "PUBLIC" },
-            { ownerId: req.session.userId },
             { shareToken: token ?? "" },
-            {
-              members: {
-                some: { userId: req.session.userId },
-              },
-            },
+            userId ? { ownerId: userId } : {},
+            // userId ? { members: { some: { userId } } } : {},
+            { members: userId ? { some: { userId } } : {} },
           ],
         },
         include: {

@@ -33,7 +33,7 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
     return <WheelSkeleton />
   }
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     // TODO: Proper error pages
     notFound()
     // return <NotFoundPage />
