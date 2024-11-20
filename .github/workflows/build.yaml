@@ -33,7 +33,8 @@ jobs:
           cache-dependency-path: "./web/package-lock.json"
 
       - name: Install packages
-        run: npm ci
+        # TODO: remove legacy peer deps with stable React 19 (added because React 19 RC)
+        run: npm ci --legacy-peer-deps
 
       - name: Run Lint
         id: lint

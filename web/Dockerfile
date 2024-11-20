@@ -10,7 +10,8 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
 
-RUN npm ci
+# TODO: remove legacy peer deps with stable React 19 (added because React 19 RC)
+RUN npm ci --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS build
