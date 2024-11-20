@@ -1,12 +1,11 @@
-import { RouteConfig, RouteHandler } from "@/types"
+import { RouteHandler } from "@/types"
 import { AuthCodeParams, scopes } from "@/utils/twitch"
-import { NextResponse } from "next/server"
 
 // make route dynamic
 // by default, GET requests without using request object or dynamic functions are cached
 // https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
 // export const revalidate = 0
-export const dynamic: RouteConfig["dynamic"] = "force-dynamic"
+// export const dynamic: RouteConfig["dynamic"] = "force-dynamic"
 
 export const GET: RouteHandler = async () => {
   if (!process.env.TWITCH_REDIRECT_URI) {
@@ -45,5 +44,5 @@ export const GET: RouteHandler = async () => {
 
   const redirectUrl = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/oauth2/token`
 
-  return NextResponse.redirect(`https://id.twitch.tv/oauth2/authorize?${paramsString}&${redirectUrl}`)
+  return Response.redirect(`https://id.twitch.tv/oauth2/authorize?${paramsString}&${redirectUrl}`)
 }
