@@ -12,7 +12,8 @@
     // "prettier",
     "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
+    "next/typescript"
   ],
   "plugins": [
     "react",
