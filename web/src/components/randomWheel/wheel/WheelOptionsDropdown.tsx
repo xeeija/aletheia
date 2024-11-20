@@ -117,7 +117,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
           open={redemptionDialogOpen}
           slug={wheel.slug}
           onClose={() => setRedemptionDialogOpen(false)}
-          readonly={wheel.owner.id !== user?.id}
+          readonly={wheel.owner?.id !== user?.id}
         />
       )}
 

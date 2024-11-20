@@ -50,8 +50,9 @@ export type RouteHandler<Params extends object = Empty, Body = unknown> = (
   request: NextRequest,
   context: RouteContext<Params>
 ) => Awaitable<NextResponse<Body> | Response>
+
 export type RouteContext<Params extends object = Empty> = {
-  params: Params
+  params: Promise<Params>
 }
 
 // Route Segment config

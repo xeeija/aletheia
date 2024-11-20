@@ -11,7 +11,8 @@ type SearchParams = {
   size?: string
 }
 
-const NotFoundRewardLink: Page<Empty, SearchParams> = ({ searchParams }) => {
+const NotFoundRewardLink: Page<Empty, SearchParams> = async (props) => {
+  const [searchParams] = await Promise.all([props.searchParams])
   const sizeString = searchParams?.size
 
   const size = ["sm", "md", "lg", "xl"].includes(sizeString ?? "") ? (sizeString as ItemSize) : undefined
