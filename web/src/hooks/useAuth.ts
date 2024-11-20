@@ -51,13 +51,11 @@ export const useAuth = (config?: Config) => {
   }
 
   const handleRedirect = async (redirectHref?: string) => {
-    if (location.pathname === redirectHref) {
-      await routerAsync.refresh()
-    }
-
     if (redirectHref) {
       await routerAsync.push(redirectHref)
     }
+
+    await routerAsync.refresh()
   }
 
   return {
