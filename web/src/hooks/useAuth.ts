@@ -31,7 +31,7 @@ export const useAuth = (config?: Config) => {
   // const [refresh] = useRouterRefresh()
   const routerAsync = useRouterAsync()
 
-  const { showError } = useAlert()
+  const { showSuccess, showError } = useAlert()
 
   // twitch
   const [{ data: token, error: errorToken, fetching: fetchingToken }] = useUserAccessTokenQuery({
@@ -115,6 +115,7 @@ export const useAuth = (config?: Config) => {
 
       if (!response.error && response.data?.logout) {
         await handleRedirect(redirectHref)
+        showSuccess("Logged out successfully")
       }
 
       // setFetchingLogout(true)
