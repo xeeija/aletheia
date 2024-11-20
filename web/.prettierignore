@@ -3,5 +3,6 @@ README.md
 tsconfig.json
 # next.config.js
 # src/generated/graphql.tsx
+.eslintrc.json
 eslint_report.json
 package.json
