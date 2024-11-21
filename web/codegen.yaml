@@ -1,9 +1,9 @@
 overwrite: true
 schema: "http://localhost:4000/api/graphql"
 documents: "src/graphql/**/*.graphql"
-hooks:
-  afterOneFileWrite:
-    - "npm run format"
+# hooks:
+#   afterOneFileWrite:
+#     - "npm run format"
 
 generates:
   # src/generated/graphql.ts:
@@ -35,6 +35,9 @@ generates:
         DateTimeISO: "Date"
         BigInt: "bigint"
         JSON: "Record<string, any>"
+    hooks:
+      afterOneFileWrite:
+        - "npm run format"
 
   # src/generated/graphql-urql.ts:
   # src/generated/graphql.ts:
@@ -59,6 +62,7 @@ generates:
         # replace comment with "use client" as workaround,
         # because add plugin "sorts" everything except comments together with imports, so "use client" is not the 1. line
         - "sed -i '1s;// use client;\"use client\"\\n;'"
+        - "npm run format"
 
   src/generated/graphql/index.ts:
     plugins:
@@ -67,6 +71,21 @@ generates:
             - export * from "./graphql"
             - export * from "./hooks"
             - ""
+    hooks:
+      afterOneFileWrite:
+        - "npm run format"
+
+  # urql has a custom introspection plugin, but it doesnt have minify, so I use the "default" introspection
+  # see https://the-guild.dev/graphql/codegen/plugins/other/urql-introspection
+  # maybe add a custom npm script for "optimize" with @urql/introspection minify and add it as hook
+  # see https://commerce.nearform.com/open-source/urql/docs/graphcache/schema-awareness/#optimizing-a-schema
+  src/generated/graphql/schema.json:
+    plugins:
+      - introspection
+    config:
+      minify: true
+      descriptions: false
+
 
   # # Client preset
   # src/generated/graphql-client/:

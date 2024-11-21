@@ -9,6 +9,7 @@ import {
   MyRandomWheelsDocument,
   RewardGroupsDocument,
 } from "@/generated/graphql"
+import schema from "@/generated/graphql/schema.json"
 import { devtoolsExchange } from "@urql/devtools"
 import { cacheExchange } from "@urql/exchange-graphcache"
 import { createClient, fetchExchange, ssrExchange, UrqlProvider } from "@urql/next"
@@ -29,6 +30,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
     const ssrCache = ssrExchange({ isClient })
 
     const graphCache = cacheExchange({
+      schema,
       keys: {
         RandomWheelCount: () => null,
       },
