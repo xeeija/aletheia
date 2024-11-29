@@ -94,6 +94,7 @@ export const useRandomWheelSocket = (
     socket.on("wheel:entries", () => {
       // TODO: Refactor to update the "local" entries with entry from socket?
       // Depending on type, add/delete/clear
+      // Does it actually work, because updating cache is only possible in the graphcache config
       fetchEntries({
         requestPolicy: "cache-and-network",
       })

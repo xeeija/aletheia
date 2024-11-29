@@ -1,12 +1,17 @@
 "use client"
 
 import {
+  AddRandomWheelEntryMutation,
+  AddRandomWheelEntryMutationVariables,
   ChannelRewardsDocument,
   DeleteChannelRewardMutationVariables,
+  DeleteRandomWheelEntryMutationVariables,
   DeleteRewardGroupMutationVariables,
   LoginMutation,
   MeDocument,
   MyRandomWheelsDocument,
+  RandomWheelEntriesDocument,
+  RandomWheelEntriesQueryVariables,
   RewardGroupsDocument,
 } from "@/generated/graphql"
 import schema from "@/generated/graphql/schema.json"
@@ -82,7 +87,79 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                 //     // cache.invalidate(key, field.fieldName, field.arguments)
               })
           },
-          deleteChannelReward: (_result, _args: DeleteChannelRewardMutationVariables, cache) => {
+          // Note: add and delete wheel entry are only useful for "own" updates (triggered from "own" browser tab),
+          // not updates through web socket, which is sent to all clients as long I dont know how to exclude,
+          // the one client how triggered the add/delete entry
+          addRandomWheelEntry: (
+            result: AddRandomWheelEntryMutation,
+            args: AddRandomWheelEntryMutationVariables,
+            cache
+          ) => {
+            // console.log("addRandomWheelEntry", { _result, _args: args, _info })
+
+            // const todos = cache.resolve("Query", "todos")
+            // cache.link("Query", "todos", [...todos, newTodo])
+
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "randomWheel")
+              .forEach((field) => {
+                if (field.arguments) {
+                  const variables = field.arguments as RandomWheelEntriesQueryVariables
+                  const wheel = cache.readQuery({ query: RandomWheelEntriesDocument, variables })
+                  console.log("q wheel", wheel)
+
+                  if (wheel?.randomWheel?.id !== args.randomWheelId) {
+                    return
+                  }
+
+                  cache.updateQuery({ query: RandomWheelEntriesDocument, variables }, (data) => {
+                    data?.randomWheel?.entries.push(result.addRandomWheelEntry)
+                    return data
+                  })
+
+                  // cache.link({ __typename: "RandomWheel", id: wheel?.randomWheel?.id ?? "" }, "entries", [
+                  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                  //   ...((wheel?.randomWheel?.entries ?? []) as any),
+                  //   _result.addRandomWheelEntry,
+                  // ])
+
+                  // const en = cache.resolve(
+                  //   { __typename: "RandomWheel", id: wheel?.randomWheel?.id ?? "" },
+                  //   "entries",
+                  //   field.arguments
+                  // )
+                  // console.log("en wheel", en)
+                }
+
+                // const wk = cache.inspectFields({ __typename: "RandomWheel", id:  })
+                // console.log("q wk", field, wk)
+
+                // cache.link({ id: _result.addRandomWheelEntry.id }, "")
+              })
+          },
+          deleteRandomWheelEntry: (_result, args: DeleteRandomWheelEntryMutationVariables, cache) => {
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "randomWheel")
+              .forEach((field) => {
+                if (field.arguments) {
+                  const variables = field.arguments as RandomWheelEntriesQueryVariables
+                  // const wheel = cache.readQuery({ query: RandomWheelEntriesDocument, variables })
+                  // console.log("q wheel2", wheel)
+
+                  cache.updateQuery({ query: RandomWheelEntriesDocument, variables }, (data) => {
+                    if (!data?.randomWheel?.entries) {
+                      return data
+                    }
+
+                    data.randomWheel.entries = data.randomWheel.entries.filter((entry) => entry.id !== args.id)
+                    return data
+                  })
+                }
+              })
+          },
+          deleteChannelReward: (_result, args: DeleteChannelRewardMutationVariables, cache) => {
             // const rewards = cache.resolve({ __typename: "Query" }, "channelRewards", { onlyManageable: false })
             // console.log("cache rewards", { _args, rewards })
 
@@ -94,19 +171,19 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                   { query: ChannelRewardsDocument, variables: field.arguments ?? undefined },
                   (data) => ({
                     ...data,
-                    channelRewards: data?.channelRewards.filter((r) => r.id !== _args.rewardId) ?? [],
+                    channelRewards: data?.channelRewards.filter((r) => r.id !== args.rewardId) ?? [],
                   })
                 )
               })
           },
-          deleteRewardGroup: (_result, _args: DeleteRewardGroupMutationVariables, cache) => {
+          deleteRewardGroup: (_result, args: DeleteRewardGroupMutationVariables, cache) => {
             cache
               .inspectFields("Query")
               .filter((field) => field.fieldName === "rewardGroups")
               .forEach((field) => {
                 cache.updateQuery({ query: RewardGroupsDocument, variables: field.arguments ?? undefined }, (data) => ({
                   ...data,
-                  rewardGroups: data?.rewardGroups.filter((r) => r.id !== _args.id) ?? [],
+                  rewardGroups: data?.rewardGroups.filter((r) => r.id !== args.id) ?? [],
                 }))
               })
           },
