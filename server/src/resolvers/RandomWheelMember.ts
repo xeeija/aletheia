@@ -88,6 +88,9 @@ export class RandomWheelMemberResolver {
         return await prisma.randomWheelMember.update({
           where: { id: member.id },
           data: { roleName: memberInput.role },
+          include: {
+            ...includeRandomWheelMember(info),
+          },
         })
       } else {
         const userToUpdate = await prisma.user.findUnique({
@@ -99,6 +102,9 @@ export class RandomWheelMemberResolver {
             randomWheelId: randomWwheelId,
             userId: userToUpdate?.id ?? "",
             roleName: memberInput.role,
+          },
+          include: {
+            ...includeRandomWheelMember(info),
           },
         })
       }
