@@ -2,8 +2,7 @@ import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
-import { HiClock, HiDuplicate, HiViewGridAdd } from "react-icons/hi"
-import { TiChartPie, TiHome, TiPipette, TiScissors, TiThList } from "react-icons/ti"
+import { TiChartPie, TiHome } from "react-icons/ti"
 
 export interface NavigationProps {
   noAppbar?: boolean
@@ -20,25 +19,25 @@ const sidebarItems: LinkItem[] = [
     icon: <SvgIcon component={TiChartPie} color="secondary" viewBox="0 1 22 22" />,
   },
   { name: "Channel Points", href: "/channelpoints", icon: <ChannelPoints color="info" viewBox="0 0 20 20" /> },
-  {
-    name: "Bingo",
-    href: "/bingo",
-    icon: <SvgIcon component={HiViewGridAdd} color="success" viewBox="0 0 20 20" />,
-    disabled: true,
-  },
-  { name: "Color Palette", icon: <SvgIcon component={TiPipette} color="info" />, disabled: true },
-  {
-    name: "Pile of Shame",
-    icon: <SvgIcon component={HiDuplicate} color="warning" viewBox="0 0 20 20" />,
-    disabled: true,
-  },
-  { name: "Notes", icon: <SvgIcon component={TiThList} color="error" />, disabled: true },
-  { name: "Countdown", icon: <SvgIcon component={HiClock} color="primary" viewBox="0 0 20 20" />, disabled: true },
-  {
-    name: "Rock Paper Scissors",
-    icon: <SvgIcon component={TiScissors} color="secondary" viewBox="2 2 20 20" />,
-    disabled: true,
-  },
+  // {
+  //   name: "Bingo",
+  //   href: "/bingo",
+  //   icon: <SvgIcon component={HiViewGridAdd} color="success" viewBox="0 0 20 20" />,
+  //   disabled: true,
+  // },
+  // { name: "Color Palette", icon: <SvgIcon component={TiPipette} color="info" />, disabled: true },
+  // {
+  //   name: "Pile of Shame",
+  //   icon: <SvgIcon component={HiDuplicate} color="warning" viewBox="0 0 20 20" />,
+  //   disabled: true,
+  // },
+  // { name: "Notes", icon: <SvgIcon component={TiThList} color="error" />, disabled: true },
+  // { name: "Countdown", icon: <SvgIcon component={HiClock} color="primary" viewBox="0 0 20 20" />, disabled: true },
+  // {
+  //   name: "Rock Paper Scissors",
+  //   icon: <SvgIcon component={TiScissors} color="secondary" viewBox="2 2 20 20" />,
+  //   disabled: true,
+  // },
   // { divider: true },
 ]
 
