@@ -23,8 +23,8 @@ interface InitialValues {
 
 interface Props {
   slug: string
-  dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<InitialValues>>
+  dialogActionsRef?: RefObject<Element | null>
+  formRef?: RefObject<FormikProps<InitialValues> | null>
   readonly?: boolean
 }
 

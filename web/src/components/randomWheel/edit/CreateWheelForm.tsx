@@ -30,8 +30,8 @@ const wheelDraft: WheelValues = {
 }
 
 interface Props {
-  dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<WheelValues>>
+  dialogActionsRef?: RefObject<Element | null>
+  formRef?: RefObject<FormikProps<WheelValues> | null>
 }
 
 export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {

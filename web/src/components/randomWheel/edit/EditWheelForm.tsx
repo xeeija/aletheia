@@ -10,8 +10,8 @@ import { FC, RefObject } from "react"
 
 interface Props {
   slug: string
-  dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<WheelValues>>
+  dialogActionsRef?: RefObject<Element | null>
+  formRef?: RefObject<FormikProps<WheelValues> | null>
 }
 
 export const EditWheelForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {

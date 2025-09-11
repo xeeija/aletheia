@@ -1,7 +1,7 @@
 "use client"
 
 import { Alert, AlertColor, Snackbar, SnackbarCloseReason, useTheme } from "@mui/material"
-import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useEffect, useState } from "react"
+import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useEffect, useState, type ReactElement } from "react"
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi"
 import { TiWarning } from "react-icons/ti"
 
@@ -11,7 +11,7 @@ interface Props {
   messageState: [ReactNode, Dispatch<SetStateAction<ReactNode>>]
 }
 
-const alertIcons: { [key in AlertColor | "default"]: JSX.Element | null } = {
+const alertIcons: { [key in AlertColor | "default"]: ReactElement | null } = {
   success: <HiCheckCircle />,
   info: <HiInformationCircle />, // HiLightBulb //<SvgIcon component={HiExclamationCircle} viewBox="0 0 20 20" sx={{ height: 22, transform: "rotateX(180deg)" }} />,
   warning: <TiWarning />,

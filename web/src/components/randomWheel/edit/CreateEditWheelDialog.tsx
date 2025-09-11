@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const CreateEditWheelDialog: FC<Props> = ({ open, onClose, slug, type }) => {
-  const actionsRef = useRef(null)
+  const actionsRef = useRef<Element>(null)
   const formRef = useRef<FormikProps<WheelValues>>(null)
 
   const closeHandler = () => {

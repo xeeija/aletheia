@@ -24,8 +24,8 @@ import { TiMediaPause, TiMediaPlay, TiPlus, TiRefresh, TiTimes, TiUser } from "r
 
 interface Props {
   slug: string
-  dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<InitialValues>>
+  dialogActionsRef?: RefObject<Element | null>
+  formRef?: RefObject<FormikProps<InitialValues> | null>
 }
 
 interface WheelSyncEntry extends WheelSyncItem {

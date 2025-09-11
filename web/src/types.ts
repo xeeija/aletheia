@@ -90,8 +90,8 @@ export type SpinResult = {
 }
 
 export type FormDialogProps<T> = {
-  formRef?: RefObject<FormikProps<T>>
-  actionsRef?: RefObject<Element>
+  formRef?: RefObject<FormikProps<T> | null>
+  actionsRef?: RefObject<Element | null>
   onClose?: () => void
 }
 
