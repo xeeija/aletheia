@@ -29,16 +29,12 @@ export const UserMenuApp: FC<Props> = async () => {
 
       {!user && (
         <>
-          <Link href="/register" passHref legacyBehavior>
-            <Button variant="outlined" color="secondary">
-              Register
-            </Button>
-          </Link>
-          <Link href="/login" passHref legacyBehavior>
-            <Button variant="outlined" color="primary">
-              Login
-            </Button>
-          </Link>
+          <Button href="/register" LinkComponent={Link} variant="outlined" color="secondary">
+            Register
+          </Button>
+          <Button href="/login" LinkComponent={Link} variant="outlined" color="primary">
+            Login
+          </Button>
         </>
       )}
     </Box>

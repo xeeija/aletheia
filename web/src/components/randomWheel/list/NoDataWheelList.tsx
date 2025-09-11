@@ -68,11 +68,9 @@ export const NoDataWheelList: FC<Props> = ({ type = "my", authenticated }) => {
             You can also create wheels without logging in, but all wheels <br />
             will be public and you can&apos;t set permissions for accessing them.
           </Typography>
-          <Link href="/login" passHref legacyBehavior>
-            <Button variant="outlined" color="primary">
-              Login
-            </Button>
-          </Link>
+          <Button href="/login" LinkComponent={Link} variant="outlined" color="primary">
+            Login
+          </Button>
         </>
       )}
     </NoData>

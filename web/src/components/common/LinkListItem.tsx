@@ -58,7 +58,9 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     const linkItem = (
       <ListItemButton
         ref={ref}
-        component={href ? "a" : "button"}
+        // component={href ? Link : "button"}
+        component={Link}
+        href={href ?? "#"}
         disabled={disabled}
         sx={{
           color: themeColor,
@@ -88,12 +90,6 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
       return divider === true ? defaultDivider : divider
     }
 
-    return !href ? (
-      linkItem
-    ) : (
-      <Link href={href} passHref legacyBehavior>
-        {linkItem}
-      </Link>
-    )
+    return linkItem
   }
 )
