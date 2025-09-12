@@ -256,7 +256,7 @@ export type MutationResetShareTokenArgs = {
 }
 
 export type MutationSpinRandomWheelArgs = {
-  randommWheelId: Scalars["String"]["input"]
+  randomWheelId: Scalars["String"]["input"]
 }
 
 export type MutationUpdateChannelRewardArgs = {
@@ -920,7 +920,7 @@ export type ResetShareTokenMutationVariables = Exact<{
 export type ResetShareTokenMutation = { __typename?: "Mutation"; resetShareToken?: boolean | null }
 
 export type SpinRandomWheelMutationVariables = Exact<{
-  wheelId: Scalars["String"]["input"]
+  randomWheelId: Scalars["String"]["input"]
 }>
 
 export type SpinRandomWheelMutation = {
@@ -2814,7 +2814,7 @@ export const SpinRandomWheelDocument = {
       variableDefinitions: [
         {
           kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "wheelId" } },
+          variable: { kind: "Variable", name: { kind: "Name", value: "randomWheelId" } },
           type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
         },
       ],
@@ -2827,8 +2827,8 @@ export const SpinRandomWheelDocument = {
             arguments: [
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "randommWheelId" },
-                value: { kind: "Variable", name: { kind: "Name", value: "wheelId" } },
+                name: { kind: "Name", value: "randomWheelId" },
+                value: { kind: "Variable", name: { kind: "Name", value: "randomWheelId" } },
               },
             ],
             selectionSet: {

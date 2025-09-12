@@ -517,10 +517,7 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => RandomWheelWinner)
-  async spinRandomWheel(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
-    @Arg("randommWheelId") randomWheelId: string
-  ) {
+  async spinRandomWheel(@Ctx() { prisma, req, socketIo }: GraphqlContext, @Arg("randomWheelId") randomWheelId: string) {
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
       include: {

@@ -1,5 +1,5 @@
-mutation SpinRandomWheel($wheelId: String!) {
-  spinRandomWheel(randommWheelId: $wheelId) {
+mutation SpinRandomWheel($randomWheelId: String!) {
+  spinRandomWheel(randomWheelId: $randomWheelId) {
     id
     name
     createdAt

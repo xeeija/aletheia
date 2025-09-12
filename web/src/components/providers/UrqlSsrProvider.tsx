@@ -12,7 +12,11 @@ import {
   MyRandomWheelsDocument,
   RandomWheelEntriesDocument,
   RandomWheelEntriesQueryVariables,
+  RandomWheelWinnersDocument,
   RewardGroupsDocument,
+  type RandomWheelWinnersQueryVariables,
+  type SpinRandomWheelMutation,
+  type SpinRandomWheelMutationVariables,
 } from "@/generated/graphql"
 import schema from "@/generated/graphql/schema.json"
 import { devtoolsExchange } from "@urql/devtools"
@@ -154,6 +158,28 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                     }
 
                     data.randomWheel.entries = data.randomWheel.entries.filter((entry) => entry.id !== args.id)
+                    return data
+                  })
+                }
+              })
+          },
+          spinRandomWheel: (result: SpinRandomWheelMutation, args: SpinRandomWheelMutationVariables, cache) => {
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "randomWheel")
+              .forEach((field) => {
+                if (field.arguments) {
+                  const variables = field.arguments as RandomWheelWinnersQueryVariables
+                  const query = RandomWheelWinnersDocument
+
+                  const wheel = cache.readQuery({ query, variables })
+
+                  if (wheel?.randomWheel?.id !== args.randomWheelId) {
+                    return
+                  }
+
+                  cache.updateQuery({ query, variables }, (data) => {
+                    data?.randomWheel?.winners.unshift(result.spinRandomWheel)
                     return data
                   })
                 }

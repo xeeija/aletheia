@@ -1,7 +1,7 @@
 import { RandomWheelEntry } from "@/generated/graphql"
 import { useRandomWheelData } from "@/hooks/randomwheel"
 import { socket } from "@/utils/socket"
-import { Dispatch, SetStateAction, useEffect } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 export interface RandomWheelSocketOptions {
   disableSocket?: boolean
@@ -24,6 +24,8 @@ export const useRandomWheelSocket = (
     token,
   })
 
+  const [isConnected, setIsConnected] = useState(false)
+
   const disableSocket = options === false || options?.disableSocket
 
   useEffect(() => {
@@ -31,21 +33,36 @@ export const useRandomWheelSocket = (
       return
     }
 
+    const onConnect = () => {
+      setIsConnected(true)
     socket.connect()
+    }
+
+    const onDisconnect = () => {
+      setIsConnected(false)
+    }
 
     socket.on("connect", () => {
+      onConnect()
       socket.emit("wheel:join", wheel.id)
     })
 
+    socket.on("disconnect", () => onDisconnect)
+
+    socket.connect()
+
+
     return () => {
       socket.off("connect")
+      socket.off("disconnect")
+
       socket.disconnect()
     }
   }, [wheel?.id, disableSocket])
 
   // handle web socket
   useEffect(() => {
-    if (!wheel?.id || disableSocket) {
+    if (!wheel?.id || disableSocket || !isConnected) {
       return
     }
 
@@ -56,10 +73,11 @@ export const useRandomWheelSocket = (
       setSpinning(true)
       setRotation(rotation + 360 * revolutions)
 
+      console.log("socket:wheel:spin")
       options?.onSpinStarted?.(false)
 
       // TODO: Refactor to update the "local" winners with winner from socket?
-      fetchWinners({ requestPolicy: "cache-and-network" })
+      // fetchWinners({ requestPolicy: "cache-and-network" })
 
       setTimeout(
         () => {
@@ -73,6 +91,9 @@ export const useRandomWheelSocket = (
     })
 
     return () => {
+      console.log("disconnect wheel:spin")
+      // removes the last listener, and no listener is created anymore -> race condition?
+      // logs are gray, from "anonymous function", so it's not the "correct" instance of the react component anymore?
       socket.off("wheel:spin")
     }
   }, [
@@ -84,6 +105,7 @@ export const useRandomWheelSocket = (
     fetchWinners,
     options,
     disableSocket,
+    isConnected,
   ])
 
   useEffect(() => {
@@ -95,9 +117,7 @@ export const useRandomWheelSocket = (
       // TODO: Refactor to update the "local" entries with entry from socket?
       // Depending on type, add/delete/clear
       // Does it actually work, because updating cache is only possible in the graphcache config
-      fetchEntries({
-        requestPolicy: "cache-and-network",
-      })
+      fetchEntries({ requestPolicy: "cache-and-network" })
     })
 
     return () => {
@@ -111,9 +131,7 @@ export const useRandomWheelSocket = (
     }
 
     socket.on("wheel:update", () => {
-      fetchWheel({
-        requestPolicy: "cache-and-network",
-      })
+      fetchWheel({ requestPolicy: "cache-and-network" })
     })
 
     return () => {
