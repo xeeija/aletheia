@@ -42,10 +42,7 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
           hour: cooldownMax.getUTCHours() > 0 ? "2-digit" : undefined,
         })
       ),
-    {
-      ms: 1000,
-      duration: cooldownMax.getTime(),
-    }
+    1000
   )
 
   return (
