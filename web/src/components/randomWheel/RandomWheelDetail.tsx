@@ -1,6 +1,7 @@
 "use client"
 
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
+import { useLocalAddRandomWheelWinnerMutation } from "@/generated/graphql"
 import { RandomWheelSocketOptions, SpinFinishedFn, useRandomWheel } from "@/hooks"
 import { Box, Paper } from "@mui/material"
 import { notFound } from "next/navigation"
@@ -15,20 +16,26 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
   const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
   // const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
 
+  const [, addRandomWheelWinner] = useLocalAddRandomWheelWinnerMutation()
+
   const onSpinStarted = useCallback(() => {
     // console.log("onSpinStarted")
     setWinnerDialogOpen(false)
   }, [])
 
-  const onSpinFinished = useCallback<SpinFinishedFn>((result) => {
-    // console.log("onSpinFinished", result)
-    const wheel = result.wheel
+  const onSpinFinished = useCallback<SpinFinishedFn>(
+    ({ wheel, winner }) => {
+      // console.log("onSpinFinished", { wheel, winner })
 
-    if (wheel?.editable) {
-      setWinnerDialogOpen(true)
-      // setLastWinnerEntry(result.entry)
-    }
-  }, [])
+      addRandomWheelWinner({ winner }, { requestPolicy: "cache-only" })
+
+      if (wheel?.editable) {
+        setWinnerDialogOpen(true)
+        // setLastWinnerEntry(result.entry)
+      }
+    },
+    [addRandomWheelWinner]
+  )
 
   const socketOptions = useMemo<RandomWheelSocketOptions>(
     () => ({

@@ -14,6 +14,8 @@ import {
   RandomWheelEntriesQueryVariables,
   RandomWheelWinnersDocument,
   RewardGroupsDocument,
+  type LocalAddRandomWheelWinnerMutation,
+  type LocalAddRandomWheelWinnerMutationVariables,
   type RandomWheelWinnersQueryVariables,
   type SpinRandomWheelMutation,
   type SpinRandomWheelMutationVariables,
@@ -180,6 +182,42 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
 
                   cache.updateQuery({ query, variables }, (data) => {
                     data?.randomWheel?.winners.unshift(result.spinRandomWheel)
+                    return data
+                  })
+                }
+              })
+          },
+          addRandomWheelWinner: (
+            _: LocalAddRandomWheelWinnerMutation,
+            args: LocalAddRandomWheelWinnerMutationVariables,
+            cache
+          ) => {
+            // console.log("cache addRandomWheelEntry", { result, args })
+
+            cache
+              .inspectFields("Query")
+              .filter((field) => field.fieldName === "randomWheel")
+              .forEach((field) => {
+                if (field.arguments) {
+                  const variables = field.arguments as RandomWheelWinnersQueryVariables
+                  const query = RandomWheelWinnersDocument
+
+                  const wheel = cache.readQuery({ query, variables })
+
+                  if (wheel?.randomWheel?.id !== args.winner.randomWheelId) {
+                    return
+                  }
+
+                  cache.updateQuery({ query, variables }, (data) => {
+                    if (!args.winner) {
+                      return data
+                    }
+
+                    if (data?.randomWheel?.winners.some((w) => w.id === args.winner.id)) {
+                      return data
+                    }
+
+                    data?.randomWheel?.winners.unshift(args.winner)
                     return data
                   })
                 }

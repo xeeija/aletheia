@@ -117,6 +117,7 @@ export type FieldError = {
 export type Mutation = {
   __typename?: "Mutation"
   addRandomWheelEntry: RandomWheelEntry
+  addRandomWheelWinner?: Maybe<RandomWheelWinner>
   addRewardGroupItem?: Maybe<RewardGroupItem>
   addWheelSync?: Maybe<RandomWheelSync>
   clearRandomWheel: Scalars["Int"]["output"]
@@ -156,6 +157,10 @@ export type MutationAddRandomWheelEntryArgs = {
   name: Scalars["String"]["input"]
   randomWheelId: Scalars["String"]["input"]
   weight?: InputMaybe<Scalars["Float"]["input"]>
+}
+
+export type MutationAddRandomWheelWinnerArgs = {
+  winner: RandomWheelWinnerInput
 }
 
 export type MutationAddRewardGroupItemArgs = {
@@ -485,6 +490,15 @@ export type RandomWheelWinner = {
   name: Scalars["String"]["output"]
   randomWheelId: Scalars["String"]["output"]
   winnerIndex?: Maybe<Scalars["Int"]["output"]>
+}
+
+export type RandomWheelWinnerInput = {
+  createdAt: Scalars["DateTimeISO"]["input"]
+  drawnById?: InputMaybe<Scalars["String"]["input"]>
+  id: Scalars["String"]["input"]
+  name: Scalars["String"]["input"]
+  randomWheelId: Scalars["String"]["input"]
+  winnerIndex?: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type RewardGroup = {
@@ -836,6 +850,23 @@ export type AddRandomWheelEntryMutationVariables = Exact<{
 export type AddRandomWheelEntryMutation = {
   __typename?: "Mutation"
   addRandomWheelEntry: { __typename?: "RandomWheelEntry"; id: string; name: string; weight: number }
+}
+
+export type LocalAddRandomWheelWinnerMutationVariables = Exact<{
+  winner: RandomWheelWinnerInput
+}>
+
+export type LocalAddRandomWheelWinnerMutation = {
+  __typename?: "Mutation"
+  addRandomWheelWinner?: {
+    __typename?: "RandomWheelWinner"
+    id: string
+    randomWheelId: string
+    name: string
+    createdAt: Date
+    drawnById?: string | null
+    winnerIndex?: number | null
+  } | null
 }
 
 export type ClearRandomWheelMutationVariables = Exact<{
@@ -2446,6 +2477,53 @@ export const AddRandomWheelEntryDocument = {
     },
   ],
 } as unknown as DocumentNode<AddRandomWheelEntryMutation, AddRandomWheelEntryMutationVariables>
+export const LocalAddRandomWheelWinnerDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "LocalAddRandomWheelWinner" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "winner" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "RandomWheelWinnerInput" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "addRandomWheelWinner" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "winner" },
+                value: { kind: "Variable", name: { kind: "Name", value: "winner" } },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "randomWheelId" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "drawnById" } },
+                { kind: "Field", name: { kind: "Name", value: "winnerIndex" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<LocalAddRandomWheelWinnerMutation, LocalAddRandomWheelWinnerMutationVariables>
 export const ClearRandomWheelDocument = {
   kind: "Document",
   definitions: [

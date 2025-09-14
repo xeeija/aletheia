@@ -24,6 +24,13 @@ export function useAddRandomWheelEntryMutation() {
   )
 }
 
+export function useLocalAddRandomWheelWinnerMutation() {
+  return Urql.useMutation<
+    Operations.LocalAddRandomWheelWinnerMutation,
+    Operations.LocalAddRandomWheelWinnerMutationVariables
+  >(Operations.LocalAddRandomWheelWinnerDocument)
+}
+
 export function useClearRandomWheelMutation() {
   return Urql.useMutation<Operations.ClearRandomWheelMutation, Operations.ClearRandomWheelMutationVariables>(
     Operations.ClearRandomWheelDocument
