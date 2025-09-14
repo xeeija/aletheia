@@ -1,60 +1,67 @@
-import { RandomWheelEntry } from "@/generated/graphql"
+import { RandomWheelEntry, type RandomWheelWinner } from "@/generated/graphql"
 import { useRandomWheelData } from "@/hooks/randomwheel"
+import type { RandomWheelDetailsSpin, SpinResult } from "@/types"
 import { socket } from "@/utils/socket"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export interface RandomWheelSocketOptions {
   disableSocket?: boolean
+  enabled?: boolean
   token?: string
-  onSpinFinished?: (entry: RandomWheelEntry, self: boolean) => void
+  onSpinFinished?: SpinFinishedFn
   onSpinStarted?: (self: boolean) => void
 }
 
-export const useRandomWheelSocket = (
-  wheelSlug: string | string[] | undefined,
-  setSpinning: Dispatch<SetStateAction<boolean>>,
-  setRotation: Dispatch<SetStateAction<number | undefined>>,
-  setLastWinnerEntry: Dispatch<SetStateAction<RandomWheelEntry | undefined>>,
-  options?: RandomWheelSocketOptions | false
-) => {
-  const token = typeof options === "object" ? options.token : undefined
+export type SpinFinishedFn = (options: {
+  entry: RandomWheelEntry
+  winner: RandomWheelWinner
+  wheel: RandomWheelDetailsSpin
+  self: boolean
+}) => void
 
-  const [{ wheel }, { fetchWheel, fetchEntries, fetchWinners }] = useRandomWheelData(wheelSlug, {
+export const useRandomWheelSocket = (wheelSlug: string | string[] | undefined, options?: RandomWheelSocketOptions) => {
+  const token = options?.token
+
+  const [{ wheel }, { fetchWheel, fetchEntries }] = useRandomWheelData(wheelSlug, {
     details: true,
     token,
   })
 
+  const [rotation, setRotation] = useState<number>()
+  const [spinning, setSpinning] = useState(false)
+  const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
+
   const [isConnected, setIsConnected] = useState(false)
 
-  const disableSocket = options === false || options?.disableSocket
+  const disableSocket = !options?.enabled || options?.disableSocket
 
   useEffect(() => {
     if (!wheel?.id || disableSocket) {
-      return
+      return () => {}
     }
 
     const onConnect = () => {
+      // console.log("socket:connect")
       setIsConnected(true)
-    socket.connect()
+
+      socket.emit("wheel:join", wheel.id)
     }
 
     const onDisconnect = () => {
+      // console.log("socket:disconnect")
+
       setIsConnected(false)
     }
 
-    socket.on("connect", () => {
-      onConnect()
-      socket.emit("wheel:join", wheel.id)
-    })
-
-    socket.on("disconnect", () => onDisconnect)
+    socket.on("connect", onConnect)
+    socket.on("disconnect", onDisconnect)
 
     socket.connect()
 
-
     return () => {
-      socket.off("connect")
-      socket.off("disconnect")
+      // console.log("socket:off effect")
+      socket.off("connect", onConnect)
+      socket.off("disconnect", onDisconnect)
 
       socket.disconnect()
     }
@@ -62,50 +69,43 @@ export const useRandomWheelSocket = (
 
   // handle web socket
   useEffect(() => {
-    if (!wheel?.id || disableSocket || !isConnected) {
-      return
+    if (!wheel?.id || disableSocket) {
+      return () => {}
     }
+    // console.log("socket wheel:spin on")
 
-    // TODD: make listener functions named, so they can be removed specifically?
-    // actually bad currently, because socket.off("foo") removes all listeners for this event (also possibly in other components)
-    socket.on("wheel:spin", ({ rotation, entry /*winner*/ }) => {
+    const onWheelSpin = ({ wheel, entry, winner }: SpinResult) => {
+      // console.log("socket wheel:spin", { wheel, entry, winner, options })
       const revolutions = ~~(Math.random() * 2 + wheel.spinDuration / 1000 - 1)
       setSpinning(true)
-      setRotation(rotation + 360 * revolutions)
+      setRotation(wheel.rotation + 360 * revolutions)
 
-      console.log("socket:wheel:spin")
       options?.onSpinStarted?.(false)
-
-      // TODO: Refactor to update the "local" winners with winner from socket?
-      // fetchWinners({ requestPolicy: "cache-and-network" })
 
       setTimeout(
         () => {
           setSpinning(false)
-          setRotation(rotation)
+          setRotation(wheel.rotation)
           setLastWinnerEntry(entry)
-          options?.onSpinFinished?.(entry, false)
+          options?.onSpinFinished?.({ entry, winner, wheel, self: false })
+
+          // TODO: update urql cache
         },
         wheel.spinDuration + 500 + 20
       )
-    })
+    }
+
+    socket.on("wheel:spin", onWheelSpin)
 
     return () => {
-      console.log("disconnect wheel:spin")
-      // removes the last listener, and no listener is created anymore -> race condition?
-      // logs are gray, from "anonymous function", so it's not the "correct" instance of the react component anymore?
-      socket.off("wheel:spin")
+      // console.log("socket wheel:spin off")
+      socket.off("wheel:spin", onWheelSpin)
     }
   }, [
     wheel?.id,
-    wheel?.spinDuration,
-    setSpinning,
-    setRotation,
-    setLastWinnerEntry,
-    fetchWinners,
     options,
     disableSocket,
-    isConnected,
+    // isConnected,
   ])
 
   useEffect(() => {
@@ -138,4 +138,11 @@ export const useRandomWheelSocket = (
       socket.off("wheel:update")
     }
   }, [wheel?.id, disableSocket, fetchWheel])
+
+  return {
+    isConnected,
+    rotation,
+    spinning,
+    lastWinnerEntry,
+  }
 }

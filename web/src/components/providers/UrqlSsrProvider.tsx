@@ -111,7 +111,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                 if (field.arguments) {
                   const variables = field.arguments as RandomWheelEntriesQueryVariables
                   const wheel = cache.readQuery({ query: RandomWheelEntriesDocument, variables })
-                  console.log("q wheel", wheel)
+                  // console.log("q wheel", wheel)
 
                   if (wheel?.randomWheel?.id !== args.randomWheelId) {
                     return

@@ -104,11 +104,11 @@ export class RandomWheelResolver {
   }
 
   @FieldResolver(() => Boolean)
-  async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
+  async editable(@Root() randomWheel: RandomWheel, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously
 
     const userId = req.session.userId
-    if (randomWheel.ownerId === userId || randomWheel.ownerId === null) {
+    if (randomWheel.ownerId === userId || randomWheel.ownerId === null || randomWheel.editAnonymous) {
       return true
     }
 
@@ -517,7 +517,9 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => RandomWheelWinner)
-  async spinRandomWheel(@Ctx() { prisma, req, socketIo }: GraphqlContext, @Arg("randomWheelId") randomWheelId: string) {
+  async spinRandomWheel(@Ctx() context: GraphqlContext, @Arg("randomWheelId") randomWheelId: string) {
+    const { prisma, req, socketIo } = context
+
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
       include: {
@@ -569,15 +571,20 @@ export class RandomWheelResolver {
     const wheelLog = `${wheel.name || `#${wheel.slug}`}, ${wheel.id.slice(0, 6)}*`
     logger.debug(`Spin: New winner '${winner.name}' #${winnerIndex} with ${winChance} chance (${wheelLog})`)
 
-    await prisma.randomWheel.update({
+    const wheelDetails = await prisma.randomWheel.update({
       where: { id: wheel.id },
       data: { rotation: newRotation % 360 },
     })
 
+    const editable = await this.editable(wheel, context)
+
     socketIo.to(`wheel/${wheel.id}`).emit("wheel:spin", {
       winner: winner,
       entry: winnerEntry,
-      rotation: newRotation % 360,
+      wheel: {
+        ...wheelDetails,
+        editable,
+      },
     })
 
     loggerSocket.debug(`Emit wheel:spin to room wheel/${wheel.id.slice(0, 6)}*`)

@@ -1,4 +1,3 @@
-import { RandomWheelEntry } from "@/generated/graphql"
 import { RandomWheelSocketOptions, useRandomWheelSocket } from "@/hooks"
 import {
   RandomWheelActions,
@@ -9,7 +8,7 @@ import {
   useRandomWheelLike,
   useRandomWheelSpin,
 } from "@/hooks/randomwheel"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 interface RandomWheelHandlers extends RandomWheelActions, RandomWheelFetch {
   spin: () => Promise<void>
@@ -21,7 +20,7 @@ interface RandomWheelOptions {
   entries?: boolean
   winners?: boolean
   members?: boolean
-  socket?: RandomWheelSocketOptions | false
+  socket?: RandomWheelSocketOptions
   fetchOnly?: boolean
   token?: string
 }
@@ -41,13 +40,6 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   // TODO FIX: without options.details the actions dont work, because wheel.id is undefined
   const randomWheelActions = useRandomWheelActions(id)
 
-  const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
-
-  const [rotation, setRotation] = useState<number>()
-  const [spinning, setSpinning] = useState(false)
-  // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event?
-  const spin = useRandomWheelSpin(id, spinning)
-
   const [liked, setLiked] = useState(wheel?.liked)
   useEffect(() => {
     setLiked(wheel?.liked)
@@ -55,19 +47,18 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
 
   const like = useRandomWheelLike(id, liked, setLiked)
 
-  useRandomWheelSocket(
-    wheelSlug,
-    setSpinning,
-    setRotation,
-    setLastWinnerEntry,
-    options?.token
-      ? {
-          ...options?.socket,
-          disableSocket: options?.socket === false,
-          token: options?.token,
-        }
-      : options?.socket
+  const socketOptions = useMemo<RandomWheelSocketOptions>(
+    () => ({
+      ...options?.socket,
+      token: options?.socket?.token || options?.token,
+    }),
+    [options?.socket, options?.token]
   )
+
+  const { rotation, spinning, lastWinnerEntry, isConnected } = useRandomWheelSocket(wheelSlug, socketOptions)
+
+  // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event?
+  const spin = useRandomWheelSpin(id, spinning)
 
   return [
     {
@@ -82,6 +73,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
           }
         : undefined,
       lastWinnerEntry,
+      isConnected,
     } as RandomWheelData,
     {
       ...randomWheelActions,

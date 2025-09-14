@@ -1,10 +1,10 @@
 "use client"
 
 import { Wheel, WinnerDialog } from "@/components/randomWheel"
-import { useRandomWheel } from "@/hooks"
+import { useRandomWheel, type RandomWheelSocketOptions, type SpinFinishedFn } from "@/hooks"
 import { Box, useTheme } from "@mui/material"
 import { notFound, useSearchParams } from "next/navigation"
-import { FC, useState } from "react"
+import { FC, useCallback, useMemo, useState } from "react"
 
 // type SearchParams = {
 //   token?: string
@@ -27,22 +27,39 @@ export const Popout: FC<Props> = ({ slug, token }) => {
   const hideWinnerDialog = params.get("winnerDialog") === "false"
   const testMode = params.get("test") === "true"
 
+  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
+
+  const onSpinStarted = useCallback(() => {
+    setWinnerDialogOpen(false)
+  }, [])
+
+  const onSpinFinished = useCallback<SpinFinishedFn>(
+    (result) => {
+      const wheel = result.wheel
+
+      if (!hideWinnerDialog) {
+        setWinnerDialogOpen(true)
+        setTimeout(() => setWinnerDialogOpen(false), wheel?.fadeDuration ?? 6000)
+      }
+    },
+    [hideWinnerDialog]
+  )
+
+  const socketOptions = useMemo<RandomWheelSocketOptions>(
+    () => ({
+      enabled: true,
+      onSpinStarted,
+      onSpinFinished,
+    }),
+    [onSpinStarted, onSpinFinished]
+  )
+
   const [{ wheel, lastWinnerEntry, entries }] = useRandomWheel(slug ?? "", {
     details: true,
     entries: true,
     token: token,
-    socket: {
-      onSpinStarted: () => setWinnerDialogOpen(false),
-      onSpinFinished: () => {
-        if (!hideWinnerDialog) {
-          setWinnerDialogOpen(true)
-          setTimeout(() => setWinnerDialogOpen(false), (wheel?.fadeDuration ?? 6000) * 0.9)
-        }
-      },
-    },
+    socket: socketOptions,
   })
-
-  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
 
   if (!wheel) {
     notFound()

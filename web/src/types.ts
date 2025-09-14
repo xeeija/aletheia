@@ -1,4 +1,10 @@
-import { CustomRewardMenuItemFragment, RandomWheelEntry, RandomWheelWinner, RewardGroup } from "@/generated/graphql"
+import {
+  CustomRewardMenuItemFragment,
+  RandomWheelEntry,
+  RandomWheelWinner,
+  RewardGroup,
+  type RandomWheelDetailsFragment,
+} from "@/generated/graphql"
 import { AlertColor } from "@mui/material"
 import type { FormikProps } from "formik"
 import { Metadata, NextApiRequest, NextApiResponse, ResolvingMetadata } from "next"
@@ -86,7 +92,12 @@ export type ItemSize = "sm" | "md" | "lg" | "xl"
 export type SpinResult = {
   winner: RandomWheelWinner
   entry: RandomWheelEntry
-  rotation: number
+  wheel: RandomWheelDetailsSpin
+}
+
+export type RandomWheelDetailsSpin = Omit<RandomWheelDetailsFragment, "theme"> & {
+  themeId: string
+  ownerId: string
 }
 
 export type FormDialogProps<T> = {

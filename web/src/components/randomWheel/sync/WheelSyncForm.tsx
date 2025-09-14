@@ -40,7 +40,7 @@ interface InitialValues {
 }
 
 export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) => {
-  const [{ wheel }] = useRandomWheel(slug, { details: true, socket: false })
+  const [{ wheel }] = useRandomWheel(slug, { details: true })
 
   const { channelRewards } = useChannelRewards()
 

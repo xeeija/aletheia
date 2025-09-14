@@ -34,6 +34,7 @@ export interface RandomWheelData {
     members: boolean
   }
   lastWinnerEntry?: RandomWheelEntry
+  isConnected?: boolean
 }
 
 type FetchFunction = (opts?: Partial<OperationContext>) => void

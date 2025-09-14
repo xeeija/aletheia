@@ -1,10 +1,10 @@
 "use client"
 
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
-import { useRandomWheel } from "@/hooks"
+import { RandomWheelSocketOptions, SpinFinishedFn, useRandomWheel } from "@/hooks"
 import { Box, Paper } from "@mui/material"
 import { notFound } from "next/navigation"
-import { FC, useState } from "react"
+import { FC, useCallback, useMemo, useState } from "react"
 
 interface Props {
   slug: string | undefined
@@ -12,22 +12,40 @@ interface Props {
 }
 
 export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
+  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
+  // const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
+
+  const onSpinStarted = useCallback(() => {
+    // console.log("onSpinStarted")
+    setWinnerDialogOpen(false)
+  }, [])
+
+  const onSpinFinished = useCallback<SpinFinishedFn>((result) => {
+    // console.log("onSpinFinished", result)
+    const wheel = result.wheel
+
+    if (wheel?.editable) {
+      setWinnerDialogOpen(true)
+      // setLastWinnerEntry(result.entry)
+    }
+  }, [])
+
+  const socketOptions = useMemo<RandomWheelSocketOptions>(
+    () => ({
+      enabled: true,
+      onSpinStarted,
+      onSpinFinished,
+    }),
+    [onSpinStarted, onSpinFinished]
+  )
+
   const [{ wheel, entries, winners, fetching, lastWinnerEntry }, { deleteEntry }] = useRandomWheel(slug ?? "", {
     details: true,
     entries: true,
     winners: true,
     token: token,
-    socket: {
-      onSpinStarted: () => setWinnerDialogOpen(false),
-      onSpinFinished: () => {
-        if (wheel?.editable || wheel?.editAnonymous) {
-          setWinnerDialogOpen(true)
-        }
-      },
-    },
+    socket: socketOptions,
   })
-
-  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
 
   if (fetching.wheel || !slug) {
     return <WheelSkeleton />
