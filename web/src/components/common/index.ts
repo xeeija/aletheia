@@ -1,6 +1,7 @@
 export * from "./AboutDialog"
 export * from "./ButtonContainer"
 export * from "./CollapsedAlert"
+export * from "./CooldownTimer"
 export * from "./Dropdown"
 export * from "./EnvInfoBadge"
 export * from "./LinkList"

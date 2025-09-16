@@ -17,6 +17,7 @@
 export { AboutDialog } from "./common/AboutDialog"
 export { ButtonContainer } from "./common/ButtonContainer"
 export { CollapsedAlert } from "./common/CollapsedAlert"
+export { CooldownTimer } from "./common/CooldownTimer"
 export { Dropdown } from "./common/Dropdown"
 export { EnvInfoBadge } from "./common/EnvInfoBadgeApp"
 export { LinkList } from "./common/LinkList"

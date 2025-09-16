@@ -2,6 +2,7 @@
 
 export * from "./useAlert"
 export * from "./useAuth"
+export * from "./useCooldown"
 export * from "./useDebounce"
 export * from "./useDelayedState"
 export * from "./useDelayedValue"
