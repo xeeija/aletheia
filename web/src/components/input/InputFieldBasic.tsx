@@ -55,7 +55,12 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
   const showMaxDeferred = useDeferredValue(showMax)
 
   const maxLengthAdornment = (
-    <MaxLengthAdornment length={valueLength} maxLength={maxLength ?? 0} show={showMax ? showMaxDeferred : showMax} />
+    <MaxLengthAdornment
+      length={valueLength}
+      maxLength={maxLength ?? 0}
+      show={showMax ? showMaxDeferred : showMax}
+      multiline={props.multiline}
+    />
   )
 
   return (
