@@ -1,12 +1,12 @@
 "use client"
 
-import { BooleanFieldPlain, Tooltip } from "@/components"
+import { BooleanFieldPlain, CooldownTimer, Tooltip } from "@/components"
 import { RewardGroupFragment } from "@/generated/graphql"
-import { useAlert, useInterval, useRewardGroupsActions } from "@/hooks"
-import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Typography } from "@mui/material"
-import { FC, useState } from "react"
+import { useAlert, useRewardGroupsActions } from "@/hooks"
+import { Box, Button, Card, CardContent, Chip, IconButton, Typography } from "@mui/material"
+import { FC } from "react"
 import { HiPencil, HiTrash } from "react-icons/hi"
-import { TiStopwatch, TiThList } from "react-icons/ti"
+import { TiThList } from "react-icons/ti"
 
 interface Props {
   rewardGroup: RewardGroupFragment
@@ -19,31 +19,6 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
   const { updateGroup, fetchingUpdate } = useRewardGroupsActions()
 
   const { showError } = useAlert()
-
-  const groupActive = rewardGroup.active
-  const cooldownActive = !!rewardGroup.cooldownExpiry && rewardGroup.cooldownExpiry > new Date()
-  const cooldownExpiry = rewardGroup.cooldownExpiry?.toLocaleString(undefined, {
-    dateStyle: rewardGroup.cooldownExpiry > new Date(Date.now() + 24 * 3600 * 100) ? "medium" : undefined,
-    timeStyle: "medium",
-  })
-
-  const [cooldownLeft, setCooldownLeft] = useState<string>()
-  const cooldownMax = new Date((rewardGroup.cooldownExpiry?.getTime() || 0) - Date.now() + 1000)
-  const cooldownDaysNum = Math.floor(cooldownMax.getTime() / (24 * 3600 * 1000))
-  const cooldownDays = cooldownDaysNum > 0 && cooldownLeft ? `${cooldownDaysNum}d ` : ""
-
-  useInterval(
-    () =>
-      setCooldownLeft(
-        cooldownMax.toLocaleTimeString(undefined, {
-          timeZone: "utc",
-          second: "2-digit",
-          minute: "2-digit",
-          hour: cooldownMax.getUTCHours() > 0 ? "2-digit" : undefined,
-        })
-      ),
-    1000
-  )
 
   return (
     <Card>
@@ -66,27 +41,15 @@ export const RewardGroupListItem: FC<Props> = ({ rewardGroup, readonly = false, 
               />
             </Tooltip>
 
-            {cooldownActive && (
-              <Tooltip placement="bottom" enterDelay={0} title={`Cooldown until ${cooldownExpiry}`}>
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 0.5 }}>
-                  <SvgIcon color="info">
-                    <TiStopwatch />
-                  </SvgIcon>
-                  <Typography color="text.secondary">
-                    {cooldownDays}
-                    {cooldownLeft}
-                  </Typography>
-                </Box>
-              </Tooltip>
-            )}
+            <CooldownTimer expiry={rewardGroup.cooldownExpiry} />
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
             <BooleanFieldPlain
               name="isEnabled"
               toggle
-              checked={groupActive}
-              tooltip={groupActive ? "Active" : "Not active"}
+              checked={rewardGroup.active}
+              tooltip={rewardGroup.active ? "Active" : "Not active"}
               disabled={readonly || fetchingUpdate}
               onChange={async (ev) => {
                 const response = await updateGroup(rewardGroup.id, {

@@ -1,6 +1,6 @@
 "use client"
 
-import { BooleanFieldPlain, Tooltip } from "@/components"
+import { BooleanFieldPlain, CooldownTimer, Tooltip } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
@@ -65,7 +65,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
           </Box>
 
           {/* Icons für isPaused, isInStock, skipQueue, cooldown expiry etc. */}
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 1, width: "max(10%, 140px)" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1, width: "max(10%, 140px)" }}>
             <Tooltip
               placement="bottom"
               title={`${redemptionsCount} redemption${redemptions === 1 ? "" : "s"} this stream`}
@@ -81,7 +81,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
             </Tooltip>
 
             <Tooltip placement="bottom" title={inStock ? "In stock" : "Out of stock"} enterDelay={0}>
-              <SvgIcon color={inStock ? "info" : "disabled"}>
+              <SvgIcon color={inStock ? "info" : "disabled"} sx={{ display: "flex" }}>
                 {inStock ? <HiCollection /> : <HiOutlineCollection />}
               </SvgIcon>
             </Tooltip>
@@ -93,6 +93,8 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
                 </SvgIcon>
               </Tooltip>
             )}
+
+            <CooldownTimer expiry={reward.cooldownExpiryDate} />
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
