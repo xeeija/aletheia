@@ -48,3 +48,16 @@ input[type="number"].hidden-arrows,
   line-clamp: 3;
   -webkit-line-clamp: 3;
 }
+
+/* Animations */
+@keyframes stale-overlay {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}

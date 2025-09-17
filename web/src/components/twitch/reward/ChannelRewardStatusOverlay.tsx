@@ -48,9 +48,10 @@ export const ChannelRewardStatusOverlay: FC<Props> = ({
         justifyContent: "center",
         alignItems: "center",
         fontSize: statusSize,
-        opacity: stale ? "0.5" : enabled ? "1" : "0",
+        opacity: enabled ? "1" : "0",
         transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)",
         borderRadius: 1,
+        animation: stale ? "stale-overlay 2s ease-in-out 0.5s infinite" : undefined,
       }}
     >
       {loading && <CircularProgress color="inherit" size={Math.max(statusSize - 8, 20)} />}
