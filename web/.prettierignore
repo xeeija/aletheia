@@ -6,3 +6,4 @@ tsconfig.json
 .eslintrc.json
 eslint_report.json
 package.json
+src/generated/graphql/schema.json

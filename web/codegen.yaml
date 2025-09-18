@@ -86,7 +86,6 @@ generates:
       minify: true
       descriptions: false
 
-
   # # Client preset
   # src/generated/graphql-client/:
   #   preset: client
