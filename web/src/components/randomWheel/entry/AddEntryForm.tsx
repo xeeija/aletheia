@@ -1,8 +1,10 @@
-import { InputField } from "@/components"
+"use client"
+
+import { InputField, Tooltip } from "@/components"
 import { SendMessage } from "@/components/icons"
 import { useAddRandomWheelEntryMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"
-import { IconButton, InputAdornment, Tooltip } from "@mui/material"
+import { IconButton, InputAdornment } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC } from "react"
 
@@ -59,7 +61,7 @@ export const AddEntryForm: FC<Props> = ({ wheelId, spinning, entries }) => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip arrow placement="top" title="Add entry">
+                  <Tooltip placement="top" title="Add entry">
                     <IconButton
                       type="submit"
                       disabled={!values.entry.trim() || spinning}

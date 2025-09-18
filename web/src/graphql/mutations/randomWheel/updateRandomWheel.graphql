@@ -1,5 +1,5 @@
 mutation UpdateRandomWheel($id: String!, $options: RandomWheelInput!) {
   updateRandomWheel(id: $id, options: $options) {
-    ...RandomWheelDetails
+    ...RandomWheel
   }
 }

@@ -1,42 +1,68 @@
 import { Socket } from "@/types"
 import { socket } from "@/utils/socket"
-import { useEffect } from "react"
-import { Socket as SocketDefault } from "socket.io-client"
+import { EffectCallback, useEffect } from "react"
 
-export type SocketOptions = {
-  disableSocket?: boolean
-  onConnect?: (socket: Socket) => void
-  onDisonnect?: (socket: Socket, reason: SocketDefault.DisconnectReason) => void
-  cleanup?: (socket: Socket) => void
-}
+export type SocketSetupFn = (socket: Socket) => void | EffectCallback
 
-export const useSocket = (config: SocketOptions) => {
+// export type SocketOptions = {
+//   disableSocket?: boolean
+//   onConnect?: (socket: Socket) => void
+//   onDisconnect?: (socket: Socket, reason: SocketDefault.DisconnectReason) => void
+//   cleanup?: (socket: Socket) => void
+//   setup?: SocketSetupFn
+// }
+
+// `setup` should be a useCallback function or defined outside of a React component,
+// otherwise it will trigger on every render, which disconnects/connects the socket on every render
+export const useSocket = (setupCallback: SocketSetupFn) => {
+  // const setup = config.setup
   useEffect(() => {
-    if (config.disableSocket) {
-      return
-    }
-
-    socket.on("connect", () => {
-      config.onConnect?.(socket)
-    })
-
-    if (config.onDisonnect) {
-      socket.on("disconnect", (reason) => config.onDisonnect?.(socket, reason))
-    }
-
+    const cleanup = setupCallback?.(socket)
     socket.connect()
 
     return () => {
+      cleanup?.()
       socket.off("connect")
-
-      if (config.onDisonnect) {
-        socket.off("disconnect")
-      }
-
-      config.cleanup?.(socket)
       socket.disconnect()
     }
-  }, [config])
+  }, [setupCallback])
+
+  // const disable = config.disableSocket
+  // const onConnect = config.onConnect
+  // const onDisconnect = config.onDisconnect
+  // const cleanup = config.cleanup
+
+  // useEffect(() => {
+  //   if (disable) {
+  //     return
+  //   }
+
+  //   if (onConnect) {
+  //     socket.on("connect", () => {
+  //       onConnect(socket)
+  //     })
+  //   }
+
+  //   if (onDisconnect) {
+  //     socket.on("disconnect", (reason) => {
+  //       onDisconnect(socket, reason)
+  //     })
+  //   }
+
+  //   socket.connect()
+
+  //   return () => {
+  //     cleanup?.(socket)
+  //     socket.disconnect()
+
+  //     if (onDisconnect) {
+  //       socket.off("disconnect")
+  //     }
+  //     if (onConnect) {
+  //       socket.off("connect")
+  //     }
+  //   }
+  // }, [disable, onConnect, onDisconnect, cleanup])
 
   return socket
 }

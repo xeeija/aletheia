@@ -1,7 +1,8 @@
+import { ButtonContainer } from "@/components"
 import { ChannelRewardIconTitle, ChannelRewardStatusOverlay } from "@/components/twitch"
 import { CustomRewardMenuItemFragment } from "@/generated/graphql"
 import { ItemSize } from "@/types"
-import { Avatar, Box, ButtonBase, SvgIcon } from "@mui/material"
+import { Avatar, Box, SvgIcon } from "@mui/material"
 import Image from "next/image"
 import { FC, ReactNode } from "react"
 import { TiMediaPause, TiPower } from "react-icons/ti"
@@ -14,6 +15,7 @@ interface Props {
   showTitle?: boolean
   showStatus?: boolean
   loading?: boolean
+  stale?: boolean
   error?: ReactNode
   customTitle?: string
   fontSize?: number
@@ -28,6 +30,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   showTitle,
   showStatus,
   loading,
+  stale,
   error,
   customTitle,
   fontSize,
@@ -43,7 +46,7 @@ export const ChannelRewardIcon: FC<Props> = ({
   }
 
   const notActive = reward.isPaused || !reward.isEnabled || loading || !!error
-  const disabledPaused = (reward.isPaused && !reward.isEnabled && !error) || loading
+  const disabledPaused = (reward.isPaused && !reward.isEnabled && !error) || loading || stale
   const showTitleBottom = sizeInput !== "xl" || titleBottom
 
   const imageAdjust = (!reward.image || reward.image.match(defaultImagePattern)) && sizeInput !== "xl" ? 1.2 : 1
@@ -67,10 +70,12 @@ export const ChannelRewardIcon: FC<Props> = ({
             statusSize={statusSize}
             enabled={notActive}
             loading={loading}
+            stale={stale}
             error={error}
+            fontSize={fontSize}
           >
-            {!reward.isEnabled && <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />}
-            {reward.isPaused && (
+            {!stale && !reward.isEnabled && <SvgIcon component={TiPower} fontSize="inherit" viewBox="1 3 20 20" />}
+            {!stale && reward.isPaused && (
               <SvgIcon
                 component={TiMediaPause}
                 fontSize="inherit"
@@ -111,21 +116,5 @@ export const ChannelRewardIcon: FC<Props> = ({
         <Box sx={{ width: sizeInput === "xl" ? size * 1.25 : size * 1.75, mt: 0.25 }}>{rewardTitle}</Box>
       )}
     </Box>
-  )
-}
-
-interface ButtonContainerProps {
-  button?: boolean
-  onClick?: () => void
-  children: ReactNode
-}
-
-const ButtonContainer: FC<ButtonContainerProps> = ({ button, onClick, children }) => {
-  return button ? (
-    <ButtonBase sx={{ borderRadius: 1 }} onClick={onClick}>
-      {children}
-    </ButtonBase>
-  ) : (
-    children
   )
 }

@@ -1,0 +1,63 @@
+html {
+  font-size-adjust: 0.515;
+}
+
+.muted {
+  opacity: 0.8;
+}
+
+/* Hide arrows in number input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button.hidden-arrows,
+input::-webkit-inner-spin-button.hidden-arrows,
+.hidden-arrows input::-webkit-outer-spin-button,
+.hidden-arrows input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"].hidden-arrows,
+.hidden-arrows input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* line clamp must be set extra */
+.line-clamp {
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  word-break: break-word;
+}
+
+.line-clamp-1 {
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+}
+
+/* Animations */
+@keyframes stale-overlay {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}

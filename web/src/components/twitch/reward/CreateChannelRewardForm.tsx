@@ -1,6 +1,8 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { RewardFormFields } from "@/components/twitch"
-import { useAlert, useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewardsActions } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { handleTwitchApiError } from "@/utils/twitch"
 import { Box, Portal } from "@mui/material"
@@ -29,7 +31,7 @@ export interface ChannelRewardValues {
 type Props = FormDialogProps<ChannelRewardValues>
 
 export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClose }) => {
-  const { createReward, fetchingCreate } = useChannelRewards(false)
+  const { createReward, fetchingCreate } = useChannelRewardsActions()
   const { showSuccess, showError } = useAlert()
 
   const initialValues: ChannelRewardValues = {
@@ -39,7 +41,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
     userInputRequired: false,
     isEnabled: true,
     autoFulfill: false,
-    backgroundColor: "#000000",
+    backgroundColor: "",
     globalCooldown: "",
     maxRedemptionsPerStream: "",
     maxRedemptionsPerUserPerStream: "",

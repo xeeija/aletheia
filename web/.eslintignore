@@ -2,5 +2,5 @@
 **/dist
 tsconfig.json
 # next.config.js
+next-env.d.ts
 README.md
-src/generated/graphql.tsx

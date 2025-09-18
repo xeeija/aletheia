@@ -1,10 +1,12 @@
+"use client"
+
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
 import { useRegisterMutation } from "@/generated/graphql"
 import { useAlert, useUsernameValidator } from "@/hooks"
 import { passwordStrength } from "@/utils/password"
 import { SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC, useMemo } from "react"
 import { TiArrowRight } from "react-icons/ti"
 import { object, ref, string } from "yup"
@@ -95,7 +97,7 @@ export const RegisterForm: FC<Props> = () => {
 
         // TODO: Redirect to "welcome page"?
         // Redirect to home page
-        await router.push("/")
+        router.push("/")
       }}
     >
       {({ isSubmitting, values, isValid, submitCount }) => (

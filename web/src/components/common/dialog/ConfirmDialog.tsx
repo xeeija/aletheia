@@ -1,3 +1,5 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { Awaitable, ThemeColor } from "@/types"
 import {
@@ -18,7 +20,7 @@ export interface ConfirmDialogProps {
   type: ThemeColor
   confirmText: ReactNode
   onClose: () => void
-  onConfirm?: () => Awaitable<void> | Awaitable<boolean>
+  onConfirm?: () => Awaitable<void | boolean>
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
   icon?: ElementType
   iconViewBox?: string
@@ -50,6 +52,8 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   closeOnConfirm = true,
 }) => {
   const [deleting, setDeleting] = useState(false)
+  const childrenIsText = ["string", "number", "bigint"].includes(typeof children)
+
   return (
     <Dialog
       fullWidth
@@ -79,9 +83,12 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
           </>
         )}
       </DialogTitle>
-      <DialogContent>
-        <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>
+
+      <DialogContent id={childrenIsText ? undefined : `dialog-description-${id}`}>
+        {childrenIsText && <DialogContentText id={`dialog-description-${id}`}>{children}</DialogContentText>}
+        {!childrenIsText && children}
       </DialogContent>
+
       <DialogActions>
         {!hideCancel && (
           <Button color="secondary" variant={cancelVariant ?? "outlined"} onClick={onClose}>

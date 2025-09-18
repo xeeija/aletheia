@@ -1,8 +1,10 @@
-import { Dropdown, LinkListItem } from "@/components"
+"use client"
+
+import { Dropdown, LinkListItem, Tooltip } from "@/components"
 import { CreateEditWheelDialog, DeleteWheelDialog, EditMembersDialog, WheelSyncDialog } from "@/components/randomWheel"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
-import { IconButton, List, Paper, SvgIcon, Tooltip } from "@mui/material"
-import { useRouter } from "next/router"
+import { IconButton, List, Paper, SvgIcon } from "@mui/material"
+import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
 import { HiDotsVertical, HiPencil, HiTrash } from "react-icons/hi"
 import { TiArrowRepeat, TiUserAdd } from "react-icons/ti"
@@ -26,19 +28,17 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
 
   const onDeleteDialog = async () => {
     await deleteWheel()
-    await router.push("/randomwheel")
+    router.push("/randomwheel")
   }
 
   const wheelEditable = wheel.editable || wheel.editAnonymous
 
   return (
     <>
-      <Tooltip arrow placement="bottom-end" title={wheelEditable ? "More options" : ""}>
-        <span>
-          <IconButton color="secondary" disabled={!wheelEditable} onClick={(ev) => setOptionsAnchor(ev.currentTarget)}>
-            <HiDotsVertical />
-          </IconButton>
-        </span>
+      <Tooltip placement="bottom-end" title={"More options"}>
+        <IconButton color="secondary" disabled={!wheelEditable} onClick={(ev) => setOptionsAnchor(ev.currentTarget)}>
+          <HiDotsVertical />
+        </IconButton>
       </Tooltip>
 
       <Dropdown anchor={optionsAnchor} setAnchor={setOptionsAnchor}>
@@ -117,7 +117,7 @@ export const WheelOptionsDropdown: FC<Props> = ({ wheel }) => {
           open={redemptionDialogOpen}
           slug={wheel.slug}
           onClose={() => setRedemptionDialogOpen(false)}
-          readonly={wheel.owner.id !== user?.id}
+          readonly={wheel.owner?.id !== user?.id}
         />
       )}
 

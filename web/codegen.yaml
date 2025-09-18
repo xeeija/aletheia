@@ -1,17 +1,104 @@
 overwrite: true
 schema: "http://localhost:4000/api/graphql"
 documents: "src/graphql/**/*.graphql"
+# hooks:
+#   afterOneFileWrite:
+#     - "npm run format"
+
 generates:
-  src/generated/graphql.tsx:
+  # src/generated/graphql.ts:
+  #   plugins:
+  #     - "typescript"
+  #     - "typescript-operations"
+  #     - "typescript-urql"
+  #   config:
+  #     scalars:
+  #       DateTime: "Date"
+  #       # string is maybe better for DateTimeISO?
+  #       DateTimeISO: "Date"
+  #       BigInt: "bigint"
+  #       JSON: "Record<string, any>"
+  #   hooks:
+  #     afterOneFileWrite:
+  #       - "prettier --write --log-level warn"
+
+  src/generated/graphql/graphql.ts:
     plugins:
       - "typescript"
       - "typescript-operations"
-      - "typescript-urql"
+      - "typed-document-node"
     config:
+      useTypeImports: true
+      # dedupeFragments: true
       scalars:
         DateTime: "Date"
+        DateTimeISO: "Date"
         BigInt: "bigint"
         JSON: "Record<string, any>"
     hooks:
       afterOneFileWrite:
-        - "prettier --write --log-level warn"
+        - "npm run format"
+
+  # src/generated/graphql-urql.ts:
+  # src/generated/graphql.ts:
+  src/generated/graphql/hooks.ts:
+    plugins:
+      - "typescript-urql"
+      - add:
+          content:
+            - // use client
+    config:
+      urqlImportFrom: "@urql/next"
+      # import from typescript-operations and typed-document-node
+      # documentNodeImport: "@graphql-typed-document-node"
+      documentMode: external
+      importDocumentNodeExternallyFrom: "./graphql"
+      # importDocumentNodeExternallyFrom: "./graphql-client/graphql"
+      # use the operations imported from above imported with * as Operations
+      # eg. LoginDocument -> Operations.LoginDocument
+      importOperationTypesFrom: "Operations"
+    hooks:
+      afterOneFileWrite:
+        # replace comment with "use client" as workaround,
+        # because add plugin "sorts" everything except comments together with imports, so "use client" is not the 1. line
+        - "sed -i '1s;// use client;\"use client\"\\n;'"
+        - "npm run format"
+
+  src/generated/graphql/index.ts:
+    plugins:
+      - add:
+          content:
+            - export * from "./graphql"
+            - export * from "./hooks"
+            - ""
+    hooks:
+      afterOneFileWrite:
+        - "npm run format"
+
+  # urql has a custom introspection plugin, but it doesnt have minify, so I use the "default" introspection
+  # see https://the-guild.dev/graphql/codegen/plugins/other/urql-introspection
+  # maybe add a custom npm script for "optimize" with @urql/introspection minify and add it as hook
+  # see https://commerce.nearform.com/open-source/urql/docs/graphcache/schema-awareness/#optimizing-a-schema
+  src/generated/graphql/schema.json:
+    plugins:
+      - introspection
+    config:
+      minify: true
+      descriptions: false
+
+  # # Client preset
+  # src/generated/graphql-client/:
+  #   preset: client
+  #   presetConfig:
+  #     # disable fragment masking for now, maybe enable in the future
+  #     fragmentMasking: false
+  #     # fragmentMasking:
+  #     #   unmaskFunctionName: getFragment
+  #   config:
+  #     useTypeImports: true
+  #     # avoidOptionals: true
+  #     scalars:
+  #       DateTime: "Date"
+  #       DateTimeISO: "Date"
+  #       BigInt: "bigint"
+  #       JSON: "Record<string, any>"

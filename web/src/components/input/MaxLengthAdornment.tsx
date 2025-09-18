@@ -13,12 +13,11 @@ export const MaxLengthAdornment: FC<Props> = ({ length, maxLength, show = true, 
     <InputAdornment
       position="end"
       sx={{
-        alignItems: multiline ? "end" : undefined,
         opacity: show ? 1 : 0,
         transition: "opacity 175ms ease-out",
       }}
     >
-      <FormHelperText>
+      <FormHelperText sx={multiline ? { mt: -1, pb: 1 } : undefined}>
         {length}/{maxLength}
       </FormHelperText>
     </InputAdornment>

@@ -45,6 +45,7 @@ services:
     environment:
       SERVER_URL: http://server:4000
       SOCKET_SERVER_URL: http://server:4000
+      ENVIRONMENT: docker
 
   proxy:
     image: nginx:1.25.4-alpine

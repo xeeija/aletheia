@@ -1,13 +1,18 @@
+"use client"
+
 import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { RewardGroupDialog, RewardGroupListItem } from "@/components/twitch"
+import { CustomRewardFragment } from "@/generated/graphql"
 import { useAlert, useRewardGroups } from "@/hooks"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, useMemo, useState } from "react"
 import { TiPlus } from "react-icons/ti"
 
-interface Props {}
+interface Props {
+  channelRewards?: CustomRewardFragment[]
+}
 
-export const RewardGroups: FC<Props> = () => {
+export const RewardGroups: FC<Props> = ({ channelRewards }) => {
   const [createGroupOpen, setCreateGroupDialogOpen] = useState(false)
 
   const [editGroupOpen, setEditGroupOpen] = useState(false)
@@ -16,7 +21,7 @@ export const RewardGroups: FC<Props> = () => {
 
   const { showSuccess, showError } = useAlert()
 
-  const { rewardGroups, fetching, deleteGroup } = useRewardGroups({ groups: true, socket: true })
+  const { rewardGroups, fetching, deleteGroup } = useRewardGroups(useMemo(() => ({ groups: true, socket: true }), []))
   const rewardGroupsEmpty = (rewardGroups?.length ?? 0) === 0
 
   return (
@@ -84,6 +89,7 @@ export const RewardGroups: FC<Props> = () => {
         open={createGroupOpen || editGroupOpen}
         type={editGroup ? "edit" : "create"}
         rewardGroup={rewardGroups?.find((r) => r.id === editGroup)}
+        channelRewards={channelRewards}
       />
 
       <DeleteDialog

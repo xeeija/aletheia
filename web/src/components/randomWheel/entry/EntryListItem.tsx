@@ -1,8 +1,11 @@
+"use client"
+
+import { Tooltip } from "@/components"
 import { UpdateEntryForm } from "@/components/randomWheel"
 import { RandomWheelEntryFragment, useDeleteRandomWheelEntryMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"
-import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, SvgIcon, Tooltip, useTheme } from "@mui/material"
-import { FC, useMemo, useState } from "react"
+import { Box, IconButton, ListItem, ListItemText, SvgIcon, useTheme } from "@mui/material"
+import { FC, useMemo } from "react"
 import { HiTrash } from "react-icons/hi"
 
 interface Props {
@@ -28,7 +31,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
     [theme.transitions]
   )
 
-  const [hovered, setHovered] = useState(false)
+  // const [hovered, setHovered] = useState(false)
 
   const [, deleteEntry] = useDeleteRandomWheelEntryMutation()
 
@@ -52,7 +55,8 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
       key={entry.id}
       role="listitem"
       dense
-      button
+      // onMouseEnter={() => setHovered(true)}
+      // onMouseLeave={() => setHovered(false)}
       sx={{
         mt: "3px",
         "&:hover + .hoverItem, &:hover .hoverItem, &:focus-within + .hoverItem, &:focus-within .hoverItem": {
@@ -63,20 +67,10 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
           // transform: "scale(1) translateY(-50%)",
         },
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* TODO: For transitions, maybe makes it easier? -> https://mui.com/material-ui/transitions/ */}
-      <ListItemText
-        primary={entry.name}
-        primaryTypographyProps={{
-          fontSize: "0.925rem",
-          fontWeight: 500,
-        }}
-      />
-      {editable && (!scrolling || hovered) && !(scrolling && hovered) && (
-        <>
-          <ListItemSecondaryAction
+      secondaryAction={
+        editable &&
+        !scrolling && (
+          <Box
             className="hoverItem"
             sx={{
               display: "flex",
@@ -98,7 +92,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
           >
             <UpdateEntryForm entry={entry} disabled={disabled} totalWeight={totalWeight} />
 
-            <Tooltip title="Delete" arrow enterDelay={1000} placement="top">
+            <Tooltip title="Delete" placement="top">
               <IconButton
                 onClick={async () => await onDelete?.(entry)}
                 // onClick={async () => await onDelete(entry)}
@@ -115,9 +109,18 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
                 {/* <TiDelete fontSize="small" color="error" /> */}
               </IconButton>
             </Tooltip>
-          </ListItemSecondaryAction>
-        </>
-      )}
+          </Box>
+        )
+      }
+    >
+      {/* TODO: For transitions, maybe makes it easier? -> https://mui.com/material-ui/transitions/ */}
+      <ListItemText
+        primary={entry.name}
+        primaryTypographyProps={{
+          fontSize: "0.925rem",
+          fontWeight: 500,
+        }}
+      />
     </ListItem>
   )
 }

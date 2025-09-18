@@ -1,7 +1,8 @@
 import { RandomWheel, User } from "@/resolvers/index.js"
-import { Field, Int, ObjectType } from "type-graphql"
+import { Field, InputType, Int, ObjectType } from "type-graphql"
 
 @ObjectType("RandomWheelWinner")
+@InputType("RandomWheelWinnerInput")
 export class RandomWheelWinner {
   @Field()
   id: string

@@ -1,29 +1,84 @@
+# fragment RandomWheelDetails on RandomWheel {
+#   id
+#   slug
+#   name
+#   createdAt
+#   rotation
+#   spinDuration
+#   fadeDuration
+#   accessType
+#   editable
+#   editAnonymous
+#   uniqueEntries
+#   shareToken
+#   liked
+#   theme {
+#     id
+#     name
+#     colors
+#   }
+#   _count {
+#     entries
+#   }
+# }
+
+fragment RandomWheel on RandomWheel {
+  ...RandomWheelDetails
+  ...RandomWheelOwner
+  # ...RandomWheelMembers
+}
+
 fragment RandomWheelDetails on RandomWheel {
+  # ...RandomWheelListItem
   id
   slug
   name
+  title
   createdAt
-  rotation
-  spinDuration
-  fadeDuration
   accessType
   editable
   editAnonymous
-  uniqueEntries
   shareToken
+
+  rotation
+  spinDuration
+  fadeDuration
+  uniqueEntries
   liked
   theme {
-    id
-    name
-    colors
+    ...ColorTheme
   }
+}
+
+fragment RandomWheelOwner on RandomWheel {
+  owner {
+    ...UserName
+  }
+}
+
+fragment RandomWheelMembers on RandomWheel {
+  owner {
+    ...UserName
+  }
+  members {
+    ...RandomWheelMember
+  }
+}
+
+fragment RandomWheelListItem on RandomWheel {
+  id
+  slug
+  name
+  title
+  createdAt
+  accessType
+  editable
+  editAnonymous
+  shareToken
   _count {
     entries
   }
 }
-
-# TODO: Maybe RandomWheelOverview
-# only whats relevant for list view, then _count could be removed from details
 
 fragment RandomWheelEntry on RandomWheelEntry {
   id
@@ -41,6 +96,7 @@ fragment RandomWheelWinner on RandomWheelWinner {
 fragment RandomWheelMember on RandomWheelMember {
   id
   roleName
+  userId
   user {
     ...UserName
   }

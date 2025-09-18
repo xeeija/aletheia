@@ -12,9 +12,15 @@
     // "prettier",
     "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
+    "next/typescript"
   ],
-  "plugins": ["@typescript-eslint", "prettier", "react"],
+  "plugins": [
+    "react",
+    "prettier",
+    "@typescript-eslint",
+    "eslint-plugin-react-compiler"
+],
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
@@ -39,6 +45,7 @@
     "jsx-quotes": ["warn", "prefer-double"],
     "no-constant-binary-expression": "error",
     "prettier/prettier": "warn",
+    "react-compiler/react-compiler": "warn",
     // "@typescript-eslint/no-explicit-any": "off",
     // maybe enable floating promises again, and mark them with 'void' instead
     "@typescript-eslint/no-floating-promises": "off",

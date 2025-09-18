@@ -1,8 +1,17 @@
-import { DeleteDialog, Dropdown, LoadingButton, LoadingIconButton } from "@/components"
+"use client"
+
+import {
+  BooleanField,
+  DeleteDialog,
+  Dropdown,
+  LinkInputField,
+  LoadingButton,
+  LoadingIconButton,
+  Tooltip,
+} from "@/components"
 import { LinkAdd } from "@/components/icons"
-import { BooleanField, LinkInputField } from "@/components/input"
-import { RandomWheelDetails, useRandomWheelActions } from "@/hooks"
-import { Box, IconButton, Paper, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { RandomWheelDetails, useLocation, useRandomWheelActions } from "@/hooks"
+import { Box, IconButton, Paper, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useEffect, useState } from "react"
 import { HiExternalLink } from "react-icons/hi"
@@ -39,7 +48,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const privateWheel = wheel.accessType === "PRIVATE"
 
-  const baseUrl = `${window.location.href}`
+  const baseUrl = useLocation()?.href ?? "" // `${window.location.href}`
 
   const initialUrl = `${baseUrl}/popout${privateWheel ? `?token=${token}` : ""}`
   const [shareUrl, setShareUrl] = useState(initialUrl)
@@ -72,11 +81,11 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const validUrlExists = !privateWheel || token
 
-  const wheelEditable = wheel.editable || wheel.editAnonymous
+  const shareDisabled = !(wheel.editable || wheel.editAnonymous || wheel.accessType === "PUBLIC")
 
   // if (!privateWheel) {
   //   return (
-  //     <Tooltip arrow placement="bottom" title="Popout">
+  //     <Tooltip placement="bottom" title="Popout">
   //       <IconButton color="secondary" href={shareUrl} target="_blank" sx={{ ml: 1 }}>
   //         <SvgIcon component={HiExternalLink} viewBox="1 1 18 18" />
   //       </IconButton>
@@ -86,10 +95,10 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   return (
     <>
-      <Tooltip arrow placement="bottom" title={wheelEditable ? "Popout" : ""}>
+      <Tooltip placement="bottom" title="Popout">
         <IconButton
           color="secondary"
-          disabled={!wheelEditable}
+          disabled={shareDisabled}
           onClick={(ev) => setAnchor(ev.currentTarget)}
           sx={{ ml: 1 }}
         >
@@ -125,17 +134,20 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
                   helperText="Customize this link with the options below."
                 />
 
-                <LoadingIconButton
-                  color="error"
-                  loading={fetchingReset}
-                  tooltip="Reset token"
-                  onClick={() => setResetDialogOpen(true)}
-                >
-                  <TiRefresh viewBox="1 2 20 20" />
-                </LoadingIconButton>
+                {privateWheel && (
+                  <LoadingIconButton
+                    color="error"
+                    loading={fetchingReset}
+                    tooltip="Reset token"
+                    onClick={() => setResetDialogOpen(true)}
+                  >
+                    <TiRefresh viewBox="1 2 20 20" />
+                  </LoadingIconButton>
+                )}
 
                 <DeleteDialog
                   title="Reset token?"
+                  confirmText="Reset"
                   open={resetDialogOpen}
                   closeOnConfirm
                   onConfirm={async () => {

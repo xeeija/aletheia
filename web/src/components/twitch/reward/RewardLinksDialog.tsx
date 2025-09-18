@@ -1,3 +1,5 @@
+"use client"
+
 import { FormDialog } from "@/components/input"
 import { CustomRewardFragment } from "@/generated/graphql"
 import { useRewardLinks } from "@/hooks"

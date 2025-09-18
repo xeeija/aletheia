@@ -1,9 +1,9 @@
+"use client"
+
 import { InputField, LinkText, LoadingButton, PasswordField } from "@/components"
-import { useLoginMutation } from "@/generated/graphql"
-import { useAlert } from "@/hooks"
+import { useAuth } from "@/hooks"
 import { SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/router"
 import { FC } from "react"
 import { TiArrowRight } from "react-icons/ti"
 import { object, string } from "yup"
@@ -11,10 +11,7 @@ import { object, string } from "yup"
 interface Props {}
 
 export const LoginForm: FC<Props> = () => {
-  const [, login] = useLoginMutation()
-  const router = useRouter()
-
-  const { showError } = useAlert()
+  const { login } = useAuth()
 
   const validationSchema = object().shape({
     username: string().required("Required"),
@@ -31,19 +28,11 @@ export const LoginForm: FC<Props> = () => {
       validationSchema={validationSchema}
       validateOnChange={false}
       onSubmit={async (values, { setFieldError }) => {
-        const response = await login(values)
+        const response = await login(values, "/")
 
         // Unexpected error
         if (response.error) {
           // console.log({ error: response.error })
-
-          if (response.error.networkError) {
-            showError("Could not connect to login server.")
-          } else if (response.error.graphQLErrors) {
-            showError(response.error.graphQLErrors.join("\\n"))
-          } else {
-            showError("Unknown error, please try again later.")
-          }
 
           // Reset password
           values.password = ""
@@ -60,9 +49,6 @@ export const LoginForm: FC<Props> = () => {
           values.password = ""
           return
         }
-
-        // Go to home page
-        await router.push("/")
       }}
     >
       {({ isSubmitting }) => (

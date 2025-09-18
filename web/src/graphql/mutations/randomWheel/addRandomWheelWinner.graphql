@@ -1,0 +1,10 @@
+mutation LocalAddRandomWheelWinner($winner: RandomWheelWinnerInput!) {
+  addRandomWheelWinner(winner: $winner) {
+    id
+    randomWheelId
+    name
+    createdAt
+    drawnById
+    winnerIndex
+  }
+}

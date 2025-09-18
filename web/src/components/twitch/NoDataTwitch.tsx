@@ -1,3 +1,5 @@
+"use client"
+
 import { LinkText, NoData } from "@/components"
 import { useAuth } from "@/hooks"
 import { Button, Typography } from "@mui/material"
@@ -16,11 +18,9 @@ export const NoDataTwitch: FC<Props> = () => {
       </Typography>
 
       {!user?.username && !fetchingUser && (
-        <Link href="/login" passHref legacyBehavior>
-          <Button variant="outlined" color="primary">
-            Login
-          </Button>
-        </Link>
+        <Button href="/login" LinkComponent={Link} variant="outlined" color="primary">
+          Login
+        </Button>
       )}
 
       {user && !userAccessToken && (

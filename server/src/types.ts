@@ -1,5 +1,5 @@
 import { RewardGroupFull } from "@/resolvers/index.js"
-import { PrismaClient, RandomWheelEntry, RandomWheelWinner } from "@prisma/client"
+import { PrismaClient, type RandomWheel, type RandomWheelEntry, type RandomWheelWinner } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { Request, Response } from "express"
@@ -52,10 +52,11 @@ export type SocketHandler = (
 export interface ServerToClientEvents {
   "wheel:entries": (type: "add" | "delete" | "update" | "clear") => void
   // "wheel:winners": (winner: RandomWheelWinner) => void
-  "wheel:spin": (spinResult: { winner: RandomWheelWinner; entry: RandomWheelEntry; rotation: number }) => void
+  "wheel:spin": (spinResult: SpinResult) => void
   "wheel:update": (type: string) => void
   "rewardgroup:pause": (rewardGroup: RewardGroupFull[], paused: boolean) => void
-  "reward:update": (reward?: RewardIconData) => void
+  "reward:update": (reward: RewardIconData) => void
+  "rewardlink:delete": () => void
 }
 
 export interface ClientToServerEvents {
@@ -70,6 +71,12 @@ export type InterServerEvents = Record<string, never>
 
 // export interface SocketData {}
 export type SocketData = Record<string, never>
+
+export type SpinResult = {
+  winner: RandomWheelWinner
+  entry: RandomWheelEntry
+  wheel: RandomWheel & { editable: boolean }
+}
 
 export enum SubscriptionType {
   redemptionAdd = "channel.channel_points_custom_reward_redemption.add",

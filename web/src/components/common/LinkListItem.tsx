@@ -1,7 +1,7 @@
 import { ThemeColor } from "@/types"
 import {
   Divider,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   ListItemTextProps,
@@ -46,7 +46,9 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
           gap: 0.75,
         }}
       >
-        <span>{name}</span>
+        <Typography component="span" {...textProps?.primaryTypographyProps}>
+          {name}
+        </Typography>
         <Typography component="span" color="text.secondary">
           {subtitle}
         </Typography>
@@ -54,14 +56,18 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     )
 
     const linkItem = (
-      <ListItem
-        button
+      <ListItemButton
         ref={ref}
-        component={href ? "a" : "button"}
+        // component={href ? Link : "button"}
+        component={Link}
+        href={href ?? "#"}
         disabled={disabled}
         sx={{
           color: themeColor,
-          "&:hover": { backgroundColor: color ? `${themeColor}14` : undefined },
+          width: "100%",
+          "&:hover": {
+            backgroundColor: color ? `${themeColor}14` : undefined,
+          },
           ...sx,
         }}
         {...props}
@@ -75,7 +81,7 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
           {icon}
         </ListItemIcon>
         <ListItemText primary={subtitle ? subtitleText : name} {...textProps} />
-      </ListItem>
+      </ListItemButton>
     )
 
     const defaultDivider = <Divider variant="middle" sx={{ borderBottomWidth: 2, m: 1 }} />
@@ -84,12 +90,6 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
       return divider === true ? defaultDivider : divider
     }
 
-    return !href ? (
-      linkItem
-    ) : (
-      <Link href={href} passHref legacyBehavior>
-        {linkItem}
-      </Link>
-    )
+    return linkItem
   }
 )

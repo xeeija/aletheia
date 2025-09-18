@@ -49,6 +49,13 @@ import { Arg, Ctx, FieldResolver, Info, Int, Mutation, Query, Resolver, Root } f
 // workaround: generic RandomWheelList type: with "items" property that is the list
 // const RandomWheelListResponse = createAppErrorUnion(RandomWheelList)
 
+const WheelListTypes = ["my", "shared", "favorite"] as const
+type WheelListType = (typeof WheelListTypes)[number]
+
+const isWheelListType = (value: string): value is WheelListType => {
+  return WheelListTypes.includes(value as WheelListType)
+}
+
 const includeRandomWheel = (info: GraphQLResolveInfo) => {
   const resolveInfo = parseResolveInfo(info)
   const fields = resolveInfo?.fieldsByTypeName.RandomWheel ?? {}
@@ -91,24 +98,30 @@ export class RandomWheelResolver {
   // [x] remove entry
   // [x] clear all entries
 
+  @FieldResolver(() => String)
+  title(@Root() wheel: RandomWheelFull) {
+    return wheel.name || `Wheel #${wheel.slug}`
+  }
+
   @FieldResolver(() => Boolean)
-  async editable(@Root() randomWheel: RandomWheelFull, @Ctx() { req, prisma }: GraphqlContext) {
+  async editable(@Root() randomWheel: RandomWheel, @Ctx() { req, prisma }: GraphqlContext) {
     // TODO: Option to make public wheels editable anonymously
 
-    if (randomWheel.ownerId === req.session.userId || randomWheel.ownerId === null) {
+    const userId = req.session.userId
+    if (randomWheel.ownerId === userId || randomWheel.ownerId === null || randomWheel.editAnonymous) {
       return true
     }
 
     // if session.userId is undefined in the prisma query
     // it is treated as not beeing in the query, so any user with edit is found - fix with this if
-    if (req.session.userId === undefined && randomWheel.ownerId) {
+    if (userId === undefined && randomWheel.ownerId) {
       return false
     }
 
     const member = await prisma.randomWheelMember.findFirst({
       where: {
         randomWheelId: randomWheel.id,
-        userId: req.session.userId,
+        userId: userId,
         roleName: "EDIT",
       },
     })
@@ -140,16 +153,15 @@ export class RandomWheelResolver {
   async myRandomWheels(
     @Ctx() { req, prisma }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
-    @Arg("type", { defaultValue: "my" }) type: string // "should" be: "my" | "shared" | "favorite"
+    @Arg("type", { defaultValue: "my" }) type: WheelListType // "should" be: "my" | "shared" | "favorite"
   ) {
     // TODO: FIX so it throws a proper Graphql Error or so
     if (!req.session.userId) {
       return []
     }
 
-    if (!["my", "shared", "favorite"].includes(type)) {
-      // TODO: unsupported type, maybe use enum instead and throw proper Graphql Error
-      return []
+    if (!isWheelListType(type)) {
+      throw new Error(`Invalid type. Must be one of: ${WheelListTypes.join(", ")}`)
     }
 
     const randomWheels = await prisma.randomWheel.findMany({
@@ -239,6 +251,42 @@ export class RandomWheelResolver {
         errorCode: 500,
         errorMessage: "Unknown error",
       }
+    }
+  }
+
+  @Query(() => RandomWheelFull, { nullable: true })
+  async randomWheel(
+    @Ctx() { req, prisma }: GraphqlContext,
+    @Arg("slug") slug: string,
+    @Arg("token", () => String, { nullable: true }) token: string | undefined,
+    @Info() info: GraphQLResolveInfo
+  ) {
+    try {
+      const userId = req.session.userId
+
+      const wheel = await prisma.randomWheel.findFirst({
+        where: {
+          slug: slug,
+          accessType: !req.session.userId && !token ? "PUBLIC" : undefined,
+          OR: [
+            { accessType: "PUBLIC" },
+            { shareToken: token ?? "" },
+            userId ? { ownerId: userId } : {},
+            // userId ? { members: { some: { userId } } } : {},
+            { members: userId ? { some: { userId } } : {} },
+          ],
+        },
+        include: {
+          ...includeRandomWheel(info),
+        },
+        // TODO: Maybe select only the requested fields
+      })
+
+      return wheel as RandomWheelFull
+    } catch (err) {
+      logger.error("Failed to find wheel:", err)
+
+      throw new Error("Failed to find wheel")
     }
   }
 
@@ -469,10 +517,9 @@ export class RandomWheelResolver {
   }
 
   @Mutation(() => RandomWheelWinner)
-  async spinRandomWheel(
-    @Ctx() { prisma, req, socketIo }: GraphqlContext,
-    @Arg("randommWheelId") randomWheelId: string
-  ) {
+  async spinRandomWheel(@Ctx() context: GraphqlContext, @Arg("randomWheelId") randomWheelId: string) {
+    const { prisma, req, socketIo } = context
+
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
       include: {
@@ -524,15 +571,20 @@ export class RandomWheelResolver {
     const wheelLog = `${wheel.name || `#${wheel.slug}`}, ${wheel.id.slice(0, 6)}*`
     logger.debug(`Spin: New winner '${winner.name}' #${winnerIndex} with ${winChance} chance (${wheelLog})`)
 
-    await prisma.randomWheel.update({
+    const wheelDetails = await prisma.randomWheel.update({
       where: { id: wheel.id },
       data: { rotation: newRotation % 360 },
     })
 
+    const editable = await this.editable(wheel, context)
+
     socketIo.to(`wheel/${wheel.id}`).emit("wheel:spin", {
       winner: winner,
       entry: winnerEntry,
-      rotation: newRotation % 360,
+      wheel: {
+        ...wheelDetails,
+        editable,
+      },
     })
 
     loggerSocket.debug(`Emit wheel:spin to room wheel/${wheel.id.slice(0, 6)}*`)

@@ -1,3 +1,5 @@
+"use client"
+
 import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"

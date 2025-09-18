@@ -1,3 +1,5 @@
+"use client"
+
 import { DeleteDialog, NoData, SkeletonList } from "@/components"
 import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
 import { useAlert, useChannelRewards } from "@/hooks"
@@ -18,12 +20,12 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
 
   const { showSuccess, showError } = useAlert()
 
-  const { channelRewards, fetching: fetchingRewards, deleteReward } = useChannelRewards(true, filterRewards)
+  const { channelRewards, fetching, deleteReward } = useChannelRewards(true, filterRewards)
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      {(!channelRewardsEmpty || fetchingRewards) && (
+      {(!channelRewardsEmpty || fetching) && (
         <Box
           sx={{
             display: "flex",
@@ -42,9 +44,9 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
         </Box>
       )}
 
-      {fetchingRewards && <SkeletonList n={4} height={72} />}
+      {fetching && <SkeletonList n={4} height={72} />}
 
-      {!fetchingRewards &&
+      {!fetching &&
         channelRewards?.map((reward) => (
           <ChannelRewardListItem
             key={reward.id}
@@ -60,7 +62,7 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
           />
         ))}
 
-      {channelRewardsEmpty && !fetchingRewards && (
+      {channelRewardsEmpty && !fetching && (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
           <NoData>{"You don't have any channel point rewards yet."}</NoData>
 

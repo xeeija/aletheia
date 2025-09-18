@@ -1,10 +1,12 @@
-import { BooleanFieldPlain } from "@/components"
+"use client"
+
+import { BooleanFieldPlain, CooldownTimer, Tooltip } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { ChannelRewardIcon, RewardLinksDialog } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useAlert, useChannelRewards } from "@/hooks"
+import { useAlert, useChannelRewardsActions } from "@/hooks"
 import { handleTwitchApiError } from "@/utils/twitch"
-import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Chip, IconButton, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { HiCollection, HiLink, HiOutlineCollection, HiPencil, HiTrash } from "react-icons/hi"
 import { TiChartBar, TiMediaFastForward } from "react-icons/ti"
@@ -21,7 +23,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
 
   const { showError } = useAlert()
 
-  const { updateReward, fetchingUpdate } = useChannelRewards(false)
+  const { updateReward, fetchingUpdate } = useChannelRewardsActions()
 
   const inStock = reward.isInStock
   const redemptions = reward.redemptionsThisStream
@@ -63,11 +65,11 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
           </Box>
 
           {/* Icons für isPaused, isInStock, skipQueue, cooldown expiry etc. */}
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 1, width: "max(10%, 140px)" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1, width: "max(10%, 140px)" }}>
             <Tooltip
-              arrow
               placement="bottom"
               title={`${redemptionsCount} redemption${redemptions === 1 ? "" : "s"} this stream`}
+              enterDelay={0}
             >
               <Chip
                 size="small"
@@ -78,19 +80,21 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
               />
             </Tooltip>
 
-            <Tooltip arrow placement="bottom" title={inStock ? "In stock" : "Out of stock"}>
-              <SvgIcon color={inStock ? "info" : "disabled"}>
+            <Tooltip placement="bottom" title={inStock ? "In stock" : "Out of stock"} enterDelay={0}>
+              <SvgIcon color={inStock ? "info" : "disabled"} sx={{ display: "flex" }}>
                 {inStock ? <HiCollection /> : <HiOutlineCollection />}
               </SvgIcon>
             </Tooltip>
 
             {reward.autoFulfill && (
-              <Tooltip arrow placement="bottom" title="Skip reward queue">
+              <Tooltip placement="bottom" title="Skip reward queue" enterDelay={0}>
                 <SvgIcon color="info">
                   <TiMediaFastForward />
                 </SvgIcon>
               </Tooltip>
             )}
+
+            <CooldownTimer expiry={reward.cooldownExpiryDate} />
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
@@ -144,7 +148,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
             {!readonly && (
               <>
-                <Tooltip arrow placement="bottom" title="Manage Reward links">
+                <Tooltip placement="bottom" title="Manage Reward links">
                   <IconButton
                     color="secondary"
                     onClick={() => {
@@ -175,7 +179,7 @@ export const ChannelRewardListItem: FC<Props> = ({ reward, readonly = false, onE
                   Edit
                 </Button>
 
-                <Tooltip arrow placement="bottom" title="Delete">
+                <Tooltip placement="bottom" title="Delete">
                   <IconButton color="error" onClick={() => onDelete?.(reward.id)}>
                     <HiTrash />
                   </IconButton>

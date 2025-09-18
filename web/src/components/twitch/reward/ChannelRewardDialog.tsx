@@ -1,3 +1,5 @@
+"use client"
+
 import { FormDialog } from "@/components"
 import { ChannelRewardValues, CreateChannelRewardForm, EditChannelRewardForm } from "@/components/twitch"
 import { CustomRewardFragment } from "@/generated/graphql"
@@ -14,7 +16,7 @@ interface Props {
 
 export const ChannelRewardDialog: FC<Props> = ({ open, onClose, reward, type, readonly }) => {
   const formRef = useRef<FormikProps<ChannelRewardValues>>(null)
-  const actionsRef = useRef(null)
+  const actionsRef = useRef<Element>(null)
 
   const title = type === "create" ? "Create Channel Reward" : "Edit Channel Reward"
 

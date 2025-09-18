@@ -96,8 +96,7 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
     }
 
     if (data?.updateRandomWheel) {
-      const wheelName = data.updateRandomWheel.name || `Wheel #${data.updateRandomWheel.slug}`
-      showSuccess(`${wheelName} updated successfully`)
+      showSuccess(`${data.updateRandomWheel.title} updated successfully`)
     }
   }
 

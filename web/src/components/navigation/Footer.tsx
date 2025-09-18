@@ -1,3 +1,4 @@
+import { EnvInfoBadge } from "@/components"
 import { Box, Typography } from "@mui/material"
 import { FC } from "react"
 
@@ -30,7 +31,7 @@ export const Footer: FC<Props> = () => {
           </Typography>{" "}
           by Xeeija
         </span>
-        {/* <EnvInfoBadge /> */}
+        <EnvInfoBadge />
       </Typography>
     </Box>
   )

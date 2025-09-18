@@ -1,3 +1,5 @@
+"use client"
+
 import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar, UserStatusDot } from "@/components"
 import { useLogoutMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
@@ -14,7 +16,7 @@ import {
   Typography,
 } from "@mui/material"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
 import { TiPower, TiSpanner, TiUser, TiWarning } from "react-icons/ti"
 
@@ -80,7 +82,7 @@ export const UserMenu: FC<Props> = () => {
     // TODO: Show snackbar "Logged out successfully"
 
     // Redirect to home
-    await router.push("/")
+    router.push("/")
   }
 
   return (
@@ -186,16 +188,12 @@ export const UserMenu: FC<Props> = () => {
 
       {!user && !fetchingUser && (
         <>
-          <Link href="/register" passHref legacyBehavior>
-            <Button variant="outlined" color="secondary">
-              Register
-            </Button>
-          </Link>
-          <Link href="/login" passHref legacyBehavior>
-            <Button variant="outlined" color="primary">
-              Login
-            </Button>
-          </Link>
+          <Button href="/register" LinkComponent={Link} variant="outlined" color="secondary">
+            Register
+          </Button>
+          <Button href="/login" LinkComponent={Link} variant="outlined" color="primary">
+            Login
+          </Button>
         </>
       )}
     </Box>

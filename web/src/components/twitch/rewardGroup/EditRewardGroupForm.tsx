@@ -1,7 +1,9 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { RewardGroupFormFields, RewardGroupValues, RewardItemList } from "@/components/twitch"
-import { RewardGroupFragment } from "@/generated/graphql"
-import { useAlert, useChannelRewards, useRewardGroups } from "@/hooks"
+import { CustomRewardFragment, RewardGroupFragment } from "@/generated/graphql"
+import { useAlert, useRewardGroupsActions } from "@/hooks"
 import { FormDialogProps } from "@/types"
 import { Box, Portal, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
@@ -10,19 +12,26 @@ import { array, boolean, object, string } from "yup"
 
 type Props = FormDialogProps<RewardGroupValues> & {
   rewardGroup: RewardGroupFragment
+  channelRewards?: CustomRewardFragment[]
   readonly?: boolean
 }
 
-export const EditRewardGroupForm: FC<Props> = ({ rewardGroup, formRef, actionsRef, onClose, readonly }) => {
-  const { updateGroup, fetchingUpdate, rewardGroup: group } = useRewardGroups({ id: rewardGroup.id })
-  const { channelRewards } = useChannelRewards()
+export const EditRewardGroupForm: FC<Props> = ({
+  rewardGroup,
+  channelRewards,
+  formRef,
+  actionsRef,
+  onClose,
+  readonly,
+}) => {
+  const { updateGroup, fetchingUpdate } = useRewardGroupsActions()
 
   const { showSuccess, showError } = useAlert()
 
   const initialValues: RewardGroupValues = {
     name: rewardGroup.name ?? "",
     active: rewardGroup.active,
-    items: group?.items ?? [],
+    items: rewardGroup?.items ?? [],
   }
 
   const validationSchema = object().shape({

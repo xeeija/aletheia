@@ -1,1 +1,2 @@
-export * from "./BingoBoard"
+// export * from "./BingoBoard"
+export { BingoBoard } from "./BingoBoard"

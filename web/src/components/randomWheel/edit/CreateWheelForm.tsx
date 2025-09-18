@@ -1,9 +1,12 @@
+"use client"
+
 import { LoadingButton } from "@/components"
 import { WheelFormFields } from "@/components/randomWheel"
-import { useCreateRandomWheelMutation } from "@/generated/graphql"
+import { useColorThemesQuery, useCreateRandomWheelMutation } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import { Portal } from "@mui/material"
 import { Form, Formik, FormikProps } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { FC, RefObject } from "react"
 
 export type WheelValues = {
@@ -27,14 +30,17 @@ const wheelDraft: WheelValues = {
 }
 
 interface Props {
-  dialogActionsRef?: RefObject<Element>
-  formRef?: RefObject<FormikProps<WheelValues>>
+  dialogActionsRef?: RefObject<Element | null>
+  formRef?: RefObject<FormikProps<WheelValues> | null>
 }
 
 export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
   const router = useRouter()
 
   const [, createRandomWheel] = useCreateRandomWheelMutation()
+
+  const { authenticated } = useAuth()
+  const [{ data }] = useColorThemesQuery()
 
   return (
     <Formik
@@ -51,13 +57,13 @@ export const CreateWheelForm: FC<Props> = ({ formRef, dialogActionsRef }) => {
 
         if (response.data?.createRandomWheel) {
           // TODO: Success snackbar
-          await router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
+          router.push(`/randomwheel/${response.data.createRandomWheel.slug}`)
         }
       }}
     >
       {({ isSubmitting }) => (
         <Form id="createRandomWheelForm">
-          <WheelFormFields />
+          <WheelFormFields authenticated={authenticated} colorThemes={data?.colorThemes} />
 
           <Portal container={dialogActionsRef?.current}>
             <LoadingButton

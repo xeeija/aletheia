@@ -1,0 +1,31 @@
+/* Product Sans */
+@font-face {
+  font-family: "Product Sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./fonts/ProductSans-Light.woff") format("woff");
+}
+@font-face {
+  font-family: "Product Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/ProductSans-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Product Sans";
+  font-style: normal;
+  font-weight: 500;
+  src: url("./fonts/ProductSans-Medium.woff") format("woff");
+}
+@font-face {
+  font-family: "Product Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./fonts/ProductSans-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Product Sans";
+  font-style: normal;
+  font-weight: 800;
+  src: url("./fonts/ProductSans-Black.woff") format("woff");
+}

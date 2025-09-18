@@ -1,10 +1,11 @@
-import { getTitle } from "@/components"
+"use client"
+
 import { Wheel, WheelControls, WheelEntries, WheelSkeleton, WheelToolbar, WinnerDialog } from "@/components/randomWheel"
-import { useRandomWheel } from "@/hooks"
-import NotFoundPage from "@/pages/404"
+import { useLocalAddRandomWheelWinnerMutation } from "@/generated/graphql"
+import { RandomWheelSocketOptions, SpinFinishedFn, useRandomWheel } from "@/hooks"
 import { Box, Paper } from "@mui/material"
-import Head from "next/head"
-import { FC, useState } from "react"
+import { notFound } from "next/navigation"
+import { FC, useCallback, useMemo, useState } from "react"
 
 interface Props {
   slug: string | undefined
@@ -12,43 +13,65 @@ interface Props {
 }
 
 export const RandomWheelDetail: FC<Props> = ({ slug, token }) => {
+  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
+  // const [lastWinnerEntry, setLastWinnerEntry] = useState<RandomWheelEntry>()
+
+  const [, addRandomWheelWinner] = useLocalAddRandomWheelWinnerMutation()
+
+  const onSpinStarted = useCallback(() => {
+    // console.log("onSpinStarted")
+    setWinnerDialogOpen(false)
+  }, [])
+
+  const onSpinFinished = useCallback<SpinFinishedFn>(
+    ({ wheel, winner }) => {
+      // console.log("onSpinFinished", { wheel, winner })
+
+      addRandomWheelWinner({ winner }, { requestPolicy: "cache-only" })
+
+      if (wheel?.editable) {
+        setWinnerDialogOpen(true)
+        // setLastWinnerEntry(result.entry)
+      }
+    },
+    [addRandomWheelWinner]
+  )
+
+  const socketOptions = useMemo<RandomWheelSocketOptions>(
+    () => ({
+      enabled: true,
+      onSpinStarted,
+      onSpinFinished,
+    }),
+    [onSpinStarted, onSpinFinished]
+  )
+
   const [{ wheel, entries, winners, fetching, lastWinnerEntry }, { deleteEntry }] = useRandomWheel(slug ?? "", {
     details: true,
     entries: true,
     winners: true,
     token: token,
-    socket: {
-      onSpinStarted: () => setWinnerDialogOpen(false),
-      onSpinFinished: () => {
-        if (wheel?.editable || wheel?.editAnonymous) {
-          setWinnerDialogOpen(true)
-        }
-      },
-    },
+    socket: socketOptions,
   })
-
-  const [winnerDialogOpen, setWinnerDialogOpen] = useState(false)
 
   if (fetching.wheel || !slug) {
     return <WheelSkeleton />
   }
 
-  if (!wheel || !wheel.viewable) {
+  if (!wheel) {
     // TODO: Proper error pages
-    return <NotFoundPage />
+    notFound()
+    // return <NotFoundPage />
   }
 
   // TODO: Use members, server-side
   // https://nextjs.org/docs/advanced-features/middleware
 
-  const title = wheel.name || `Wheel #${slug}`
   const wheelDiameter = 688
 
   return (
     <>
-      <Head>
-        <title>{getTitle(title)}</title>
-      </Head>
+      {/* <pre>{JSON.stringify(wheel, undefined, 2)}</pre> */}
 
       <WheelToolbar wheel={wheel} />
 

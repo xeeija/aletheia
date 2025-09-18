@@ -1,5 +1,7 @@
+"use client"
+
 import { RandomWheelEntryFragment } from "@/generated/graphql"
-import { Sector, logistic, pointOnCircle } from "@/utils/math"
+import { Sector, froundPoint, logistic, pointOnCircle } from "@/utils/math"
 import { Box, useTheme } from "@mui/material"
 import { FC } from "react"
 
@@ -63,6 +65,7 @@ export const Wheel: FC<Props> = ({
   //   return () => observer.disconnect()
   // })
 
+  // TODO: refactor to server component when mui theme is updated to work with Server Components
   const theme = useTheme()
 
   colors =
@@ -161,14 +164,13 @@ export const Wheel: FC<Props> = ({
 
             const angleOffset = segmentPos[i] * d.endAngle
 
-            const startPos = pointOnCircle(d.center, d.radius, d.endAngle * entry.weight, angleOffset)
-            const endPos = pointOnCircle(d.center, d.radius, d.startAngle, angleOffset)
-            const middlePos = pointOnCircle(
-              d.center,
-              d.radius,
-              (d.endAngle * entry.weight) / 2 + adjustTextBaseline,
-              angleOffset
+            const startPos = froundPoint(pointOnCircle(d.center, d.radius, d.endAngle * entry.weight, angleOffset))
+            const endPos = froundPoint(pointOnCircle(d.center, d.radius, d.startAngle, angleOffset))
+            const middlePos = froundPoint(
+              pointOnCircle(d.center, d.radius, (d.endAngle * entry.weight) / 2 + adjustTextBaseline, angleOffset)
             ) // for text path
+            // const middlePosX = Math.fround(middlePos.x)
+            // const middlePosY = Math.fround(middlePos.y)
 
             // Note: logistic values come from trial and error
 

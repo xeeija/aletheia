@@ -1,5 +1,8 @@
-import { LinkItem, LinkList, LinkListItem, LogoListItem } from "@/components"
-import { Box, CSSObject, Divider, Drawer, Theme, Tooltip, useTheme } from "@mui/material"
+"use client"
+
+import { LinkItem, LinkList, LinkListItem, LogoListItem, Tooltip } from "@/components"
+import { useSidebar } from "@/hooks"
+import { Box, CSSObject, Divider, Drawer, Theme, useTheme } from "@mui/material"
 import { Dispatch, FC, ReactNode, SetStateAction } from "react"
 
 // Animate expand (transition)
@@ -30,13 +33,17 @@ const closedMixin = (theme: Theme): CSSObject => ({
 interface Props {
   items: LinkItem[]
   openedWidth: number
-  open: boolean
-  setOpen: Dispatch<SetStateAction<boolean>>
+  open?: boolean
+  setOpen?: Dispatch<SetStateAction<boolean>>
   children?: ReactNode
 }
 
 // #BetterMiniDrawer
-export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen }) => {
+export const Sidebar: FC<Props> = ({ children, items, openedWidth, open: openInput, setOpen: setOpenInput }) => {
+  const [sidebarOpen, setSidebarOpen] = useSidebar()
+  const open = openInput ?? sidebarOpen
+  const setOpen = setOpenInput ?? setSidebarOpen
+
   const theme = useTheme()
   const itemWidth = `calc(100% - ${theme.spacing(2)})`
 
@@ -66,15 +73,13 @@ export const Sidebar: FC<Props> = ({ children, items, openedWidth, open, setOpen
             divider ? (
               <LinkListItem divider={divider} />
             ) : (
-              <Tooltip title={!props.disabled ? name : ""} arrow placement="right" enterDelay={1000}>
-                <span>
-                  <LinkListItem
-                    name={name}
-                    {...props}
-                    sx={{ width: itemWidth }}
-                    textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
-                  />
-                </span>
+              <Tooltip title={!props.disabled ? name : ""} placement="right">
+                <LinkListItem
+                  name={name}
+                  {...props}
+                  sx={{ width: itemWidth }}
+                  textProps={{ primaryTypographyProps: { fontWeight: 500, sx: { opacity: 0.9 } } }}
+                />
               </Tooltip>
             )
           }

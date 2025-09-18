@@ -1,5 +1,7 @@
-import { BooleanFieldHelper, BooleanFieldLabel } from "@/components"
-import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, Tooltip, TooltipProps } from "@mui/material"
+"use client"
+
+import { BooleanFieldHelper, BooleanFieldLabel, Tooltip } from "@/components"
+import { Box, Checkbox, CheckboxProps, FormControlLabelProps, Switch, TooltipProps } from "@mui/material"
 import { useField, useFormikContext } from "formik"
 import { FC, ReactNode } from "react"
 
@@ -73,7 +75,7 @@ export const BooleanField: FC<Props> = ({
 
   return (
     <Box>
-      <Tooltip title={tooltip ?? ""} arrow enterDelay={1000} {...tooltipProps}>
+      <Tooltip title={tooltip ?? ""} {...tooltipProps}>
         <Box>
           {hasLabel ? (
             <BooleanFieldLabel
