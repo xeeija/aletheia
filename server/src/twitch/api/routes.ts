@@ -7,7 +7,12 @@ import { ApiClient } from "@twurple/api"
 import { getTokenInfo } from "@twurple/auth"
 import { Router } from "express"
 
-export const twitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
+type TwitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => Router
+
+// needs an explicit type annotation, with symlinked node_modules (eg. pnpm)
+// see https://github.com/microsoft/TypeScript/issues/42873#issuecomment-2065572017
+// https://github.com/microsoft/TypeScript/issues/47663#issuecomment-1519138189
+export const twitchRouter: TwitchRouter = (apiClient: ApiClient, prisma: PrismaClient) => {
   const router = Router()
 
   router.get("/oauth2/token", async (req, res) => {
