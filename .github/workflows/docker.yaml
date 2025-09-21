@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -67,12 +67,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push ${{ matrix.project }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: ${{ matrix.context }}
+          # see default context: https://github.com/docker/build-push-action?tab=readme-ov-file#git-context
+          # context: "{{defaultContext}}:${{ matrix.project }}"
           # docker-metadata annotations see https://github.com/opencontainers/image-spec/blob/main/annotations.md
           # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
           # github.event.head_commit.timestamp is only set on push event, not worflow_dispatch
