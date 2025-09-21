@@ -49,7 +49,7 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
   })
 
   const rewardGroup = config?.socket
-    ? pausedGroups.find((g) => g.id === dataGroup?.rewardGroup.id) ?? dataGroup?.rewardGroup
+    ? (pausedGroups.find((g) => g.id === dataGroup?.rewardGroup.id) ?? dataGroup?.rewardGroup)
     : (dataGroup?.rewardGroup as RewardGroupFragment | undefined)
 
   const actions = useRewardGroupsActions()

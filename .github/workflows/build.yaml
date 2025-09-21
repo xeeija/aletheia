@@ -23,26 +23,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup NodeJS 20.x
-        uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: "./web/package-lock.json"
+          version: 10
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: "pnpm"
+          cache-dependency-path: "./web/pnpm-lock.yaml"
 
       - name: Install packages
-        # TODO: remove legacy peer deps with stable React 19 (added because React 19 RC)
-        run: npm ci --legacy-peer-deps
+        run: pnpm install
 
       - name: Run Lint
         id: lint
-        run: npm run lint:ci
+        run: pnpm run lint:ci
 
       - name: Run Prettier
         id: prettier
-        run: npm run format:check .
+        run: pnpm run format:check .
         # run: npx prettier --check --no-color . 2> prettier_report.txt
         if: success() || steps.lint.outcome == 'failure'
 
@@ -94,25 +98,30 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Setup NodeJS 20.x
-        uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: "./server/package-lock.json"
+          version: 10
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: "pnpm"
+          cache-dependency-path: "./server/pnpm-lock.yaml"
 
       - name: Install packages
-        run: npm ci
+        run: pnpm install
 
       - name: Run Lint
         id: lint
-        run: npm run lint:ci
+        run: pnpm run lint:ci
 
       - name: Run Prettier
         id: prettier
-        run: npm run format:check .
+        run: pnpm run format:check .
         # run: npx prettier --check --no-color . 2> prettier_report.txt
         if: success() || steps.lint.outcome == 'failure'
 
@@ -127,7 +136,7 @@ jobs:
         if: always()
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
   # TODO: Add tests
   # also comment in the previous migrations step and "env" and "services" sections

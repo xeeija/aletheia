@@ -23,7 +23,7 @@ export const AlertContent = forwardRef<HTMLDivElement, Props>(({ message, varian
       severity={!standard ? variant : "success"}
       id={`alert-${id}`}
       variant={variant === "default" ? "standard" : "filled"}
-      icon={props.hideIconVariant || standard ? false : icon ?? undefined}
+      icon={props.hideIconVariant || standard ? false : (icon ?? undefined)}
       // action={actionProp}
       // automatically shows an "x" icon when onClose is set but action prop is undefined
       onClose={props.closeable ? () => closeSnackbar(id) : undefined}

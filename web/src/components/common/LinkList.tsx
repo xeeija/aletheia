@@ -20,6 +20,7 @@ export const LinkList: FC<LinkListProps> = ({ children, items, ...listProps }) =
           // 3. the list is never reordered or filtered
 
           return (
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             <li key={item.name?.toString() || index}>
               {(childrenFn ? children?.(item, index) : null) ?? <LinkListItem {...item} />}
             </li>

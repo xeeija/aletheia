@@ -34,7 +34,7 @@ export const EnvInfoBadge: FC<Props> = ({ color, opacity, outlined }) => {
             <HiBeaker viewBox="0 -2 20 20" />
           </Tooltip>
         }
-        color={typeof color === "boolean" ? "success" : color ?? "default"}
+        color={typeof color === "boolean" ? "success" : (color ?? "default")}
         size="small"
         variant={outlined ? "outlined" : "filled"}
         sx={{ mt: -0.25, fontSize: "0.75rem", opacity: opacity ?? (color ? 1 : 0.6) }}

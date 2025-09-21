@@ -82,7 +82,7 @@ export const Popout: FC<Props> = ({ slug, token }) => {
           visibility: testMode ? undefined : "hidden",
           transition: theme.transitions.create(["opacity", "visibility"], {
             duration: 500,
-            delay: wheel.spinning ? 0 : wheel.fadeDuration ?? 5000,
+            delay: wheel.spinning ? 0 : (wheel.fadeDuration ?? 5000),
             easing: theme.transitions.easing.easeOut,
           }),
           ...(wheel.spinning && {

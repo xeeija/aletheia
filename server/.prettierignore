@@ -6,3 +6,4 @@ tsconfig.json
 src/twitch/mock
 eslint_report.json
 package.json
+pnpm-lock.yaml

@@ -32,6 +32,9 @@ export const BooleanField: FC<Props> = ({
   fullWidth,
   submitOnChange,
   size,
+  // not passed to componets types of slotProps do not match error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  slotProps,
   ...props
 }) => {
   const [field, { error, touched }] = useField<boolean>(name ?? "")
@@ -39,6 +42,7 @@ export const BooleanField: FC<Props> = ({
   const { submitForm } = useFormikContext()
 
   const hasLabel = label !== undefined && label !== null
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   const labelId = name ? `${name}Label` : label?.toString().slice(0, 16).toLowerCase().replaceAll(" ", "_")
 
   const hasError = error !== undefined && touched

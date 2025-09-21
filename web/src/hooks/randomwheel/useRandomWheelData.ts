@@ -56,7 +56,7 @@ interface DataOptions {
 }
 
 export const useRandomWheelData = (wheelSlug: string | string[] | undefined, options?: DataOptions) => {
-  const slug = typeof wheelSlug === "string" ? wheelSlug : wheelSlug?.[0] ?? ""
+  const slug = typeof wheelSlug === "string" ? wheelSlug : (wheelSlug?.[0] ?? "")
 
   const context = useUrqlContextCookies()
 

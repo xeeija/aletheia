@@ -1,5 +1,13 @@
 # Aletheia Web Frontend
-FROM node:20.17.0-alpine3.20 AS base
+# FROM node:20.17.0-alpine3.20 AS base
+FROM node:24.8.0-alpine3.22 AS base
+
+# pnpm setup
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+# requires node >=22.14.0, see https://github.com/pnpm/pnpm/issues/9029#issuecomment-2650658230
+RUN corepack enable pnpm
+
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -8,16 +16,17 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json package-lock.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# TODO: remove legacy peer deps with stable React 19 (added because React 19 RC)
-RUN npm ci --legacy-peer-deps
+RUN pnpm fetch
+RUN pnpm install --offline
 
 # Rebuild the source code only when needed
 FROM base AS build
 
 WORKDIR /app
 
+COPY --from=deps /pnpm/store /pnpm/store
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -36,7 +45,7 @@ ENV NEXT_PUBLIC_COMMIT_SHA=${COMMIT_SHA}
 ENV NEXT_PUBLIC_COMMIT_TIME=${COMMIT_TIME}
 ENV NEXT_PUBLIC_VERSION=${VERSION}
 
-RUN npm run build
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS run
