@@ -1,7 +1,6 @@
 # Aletheia Web Frontend
 # FROM node:20.17.0-alpine3.20 AS base
-FROM node:22.19.0-alpine3.22 AS base
-# 24.8.0-alpine3.22
+FROM node:24.8.0-alpine3.22 AS base
 
 # pnpm setup
 ENV PNPM_HOME="/pnpm"
