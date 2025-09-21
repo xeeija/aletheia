@@ -31,7 +31,7 @@ export const EnvInfoBadgeClient: FC<Props> = ({ color, opacity, outlined }) => {
       <Chip
         label={environment}
         icon={<HiBeaker />}
-        color={typeof color === "boolean" ? "success" : color ?? "default"}
+        color={typeof color === "boolean" ? "success" : (color ?? "default")}
         size="small"
         variant={outlined ? "outlined" : "filled"}
         sx={{ mt: -0.25, fontSize: "0.75rem", opacity: opacity ?? (color ? 1 : 0.6) }}
