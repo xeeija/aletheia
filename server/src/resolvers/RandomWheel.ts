@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client.js"
 import {
   includeRandomWheelMember,
   RandomWheel,
@@ -11,7 +12,6 @@ import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { loggerGraphql as logger, loggerSocket, random, randomBase64Url, randomNumber, slugify } from "@/utils/index.js"
-import { Prisma } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { parseResolveInfo } from "graphql-parse-resolve-info"

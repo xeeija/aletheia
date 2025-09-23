@@ -1,6 +1,7 @@
 import "dotenv/config"
 import "reflect-metadata" // must be before any resolvers or type-graphql imports
 
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { Resolvers } from "@/resolvers/index.js"
 import { socketHandlers } from "@/socket/index.js"
 import {
@@ -24,7 +25,7 @@ import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-p
 import { expressMiddleware } from "@apollo/server/express4"
 import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/disabled"
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer"
-import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
 import PGStore from "connect-pg-simple"
 import cors from "cors"
 import express from "express"
@@ -35,7 +36,8 @@ import { buildSchema } from "type-graphql"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 process.on("beforeExit", async () => {
   await prisma.$disconnect()

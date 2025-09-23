@@ -4,6 +4,7 @@ README.md
 .eslintrc.cjs
 tsconfig.json
 src/twitch/mock
+src/generated/prisma
 eslint_report.json
 package.json
 pnpm-lock.yaml

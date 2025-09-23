@@ -1,5 +1,10 @@
+import {
+  PrismaClient,
+  type RandomWheel,
+  type RandomWheelEntry,
+  type RandomWheelWinner,
+} from "@/generated/prisma/client.js"
 import { RewardGroupFull } from "@/resolvers/index.js"
-import { PrismaClient, type RandomWheel, type RandomWheelEntry, type RandomWheelWinner } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { Request, Response } from "express"

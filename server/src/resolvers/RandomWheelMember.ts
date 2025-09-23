@@ -1,7 +1,7 @@
+import { Prisma } from "@/generated/prisma/client.js"
 import { RandomWheelMemberFull, RandomWheelMemberInput } from "@/resolvers/index.js"
 import type { GraphqlContext } from "@/types.js"
 import { loggerGraphql as logger } from "@/utils/index.js"
-import { Prisma } from "@prisma/client"
 import type { GraphQLResolveInfo } from "graphql"
 import { FieldsByTypeName, ResolveTree, parseResolveInfo } from "graphql-parse-resolve-info"
 import { Arg, Ctx, Info, Mutation, Resolver } from "type-graphql"

@@ -1,5 +1,6 @@
 import "dotenv/config"
 
+import { PrismaClient, RewardGroup, RewardGroupItem } from "@/generated/prisma/client.js"
 import {
   handleSubscriptionRewardGroup,
   handleSubscriptionRewardUpdate,
@@ -9,7 +10,6 @@ import {
 import { apiClient, eventSubApiClient, getTwitchUserId, useMockServer } from "@/twitch/index.js"
 import { EventSubType, type SocketServer } from "@/types.js"
 import { loggerEventsub as logger, useColors } from "@/utils/index.js"
-import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { EventSubSubscription } from "@twurple/eventsub-base"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 

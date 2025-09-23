@@ -1,3 +1,4 @@
+import { PrismaClient, RewardGroup, RewardGroupItem } from "@/generated/prisma/client.js"
 import { activeSubscriptions, getTwitchUserId, useMockServer } from "@/twitch/index.js"
 import {
   EventSubConfigGroup,
@@ -8,7 +9,6 @@ import {
   type SocketServer,
 } from "@/types.js"
 import { createLogger, loggerEventsub as logger, loggerSocket } from "@/utils/index.js"
-import { PrismaClient, RewardGroup, RewardGroupItem } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
