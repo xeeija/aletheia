@@ -1,5 +1,5 @@
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { logger } from "@/utils/index.js"
-import { PrismaClient } from "@prisma/client"
 import { PrismaClientInitializationError } from "@prisma/client/runtime/library.js"
 
 export const errorsDatabase = new Map<number, string>()

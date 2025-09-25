@@ -1,7 +1,7 @@
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { activeSubscriptions } from "@/twitch/index.js"
 import { EventSubConfigRewardUpdate, EventSubType, RewardIconData, SocketServer, SubscriptionType } from "@/types.js"
 import { loggerEventsub as logger, loggerSocket } from "@/utils/index.js"
-import { PrismaClient } from "@prisma/client"
 import { EventSubMiddleware } from "@twurple/eventsub-http"
 import { randomUUID } from "crypto"
 

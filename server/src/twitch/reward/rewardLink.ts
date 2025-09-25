@@ -1,6 +1,6 @@
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { getTwitchUserId } from "@/twitch/index.js"
 import { RewardIconData, RewardLinkType } from "@/types.js"
-import { PrismaClient } from "@prisma/client"
 import { ApiClient, HelixCustomReward, HelixUpdateCustomRewardData } from "@twurple/api"
 
 export const findRewardByLink = async (

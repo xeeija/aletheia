@@ -1,10 +1,10 @@
 import "dotenv/config"
 
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { useMockServer } from "@/twitch/index.js"
 import { addMockAccessTokens } from "@/twitch/mock/index.js"
 import type { HttpError } from "@/types.js"
 import { loggerTwitch as logger, loggerTwitchAuth as loggerAuth } from "@/utils/index.js"
-import { PrismaClient } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import { type AccessToken, RefreshingAuthProvider } from "@twurple/auth"
 

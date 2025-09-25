@@ -1,6 +1,6 @@
+import { PrismaClient, UserAccessToken } from "@/generated/prisma/client.js"
 import { authProvider, mockAuthProvider } from "@/twitch/index.js"
 import { useColors } from "@/utils/index.js"
-import { PrismaClient, UserAccessToken } from "@prisma/client"
 import { ApiClient } from "@twurple/api"
 import "dotenv/config"
 import { Request } from "express"

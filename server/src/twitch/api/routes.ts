@@ -1,7 +1,7 @@
+import { PrismaClient } from "@/generated/prisma/client.js"
 import { authProvider, getRewardIconData, updateRewardByLink } from "@/twitch/index.js"
 import type { AccessTokenResponse } from "@/types.js"
 import { loggerTwitchAuth as logger, randomBase64Url } from "@/utils/index.js"
-import { PrismaClient } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { ApiClient } from "@twurple/api"
 import { getTokenInfo } from "@twurple/auth"
