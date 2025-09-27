@@ -41,6 +41,7 @@
     "@twurple/eventsub-base": "^7.1.0",
     "@twurple/eventsub-http": "^7.1.0",
     "argon2": "^0.41.1",
+    "bufferutil": "^4.0.9",
     "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -52,7 +53,8 @@
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.0",
     "tslib": "^2.7.0",
-    "type-graphql": "^2.0.0-rc.2"
+    "type-graphql": "^2.0.0-rc.2",
+    "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
     "@types/connect-pg-simple": "^7.0.3",

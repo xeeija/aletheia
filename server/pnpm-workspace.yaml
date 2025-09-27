@@ -1,6 +1,8 @@
 onlyBuiltDependencies:
-  - "@apollo/protobufjs"
-  - "@prisma/client"
-  - "@prisma/engines"
+  - '@apollo/protobufjs'
+  - '@prisma/client'
+  - '@prisma/engines'
   - argon2
+  - bufferutil
   - prisma
+  - utf-8-validate
