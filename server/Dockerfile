@@ -42,8 +42,7 @@ COPY . .
 # Prisma error with node:16-alpine (fixed in prisma@4.8.0) https://github.com/prisma/prisma/issues/16834#issuecomment-1355195025
 # RUN apk add --no-cache openssl1.1-compat
 
-# prisma client is generated during install already?
-# RUN pnpm run generate
+RUN pnpm run generate
 
 RUN pnpm run build
 
