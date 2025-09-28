@@ -11,7 +11,14 @@ import { AppError } from "@/resolvers/types.js"
 import { handleSubscriptionSync } from "@/twitch/events/index.js"
 import { accessTokenForUser } from "@/twitch/index.js"
 import type { GraphqlContext } from "@/types.js"
-import { loggerGraphql as logger, loggerSocket, random, randomBase64Url, randomNumber, slugify } from "@/utils/index.js"
+import {
+  loggerGraphql as logger,
+  loggerSocket,
+  random,
+  randomBase64Url,
+  randomForSpin,
+  slugify,
+} from "@/utils/index.js"
 import { randomUUID } from "crypto"
 import { GraphQLError, type GraphQLResolveInfo } from "graphql"
 import { parseResolveInfo } from "graphql-parse-resolve-info"
@@ -535,7 +542,8 @@ export class RandomWheelResolver {
 
     const totalWeight = wheel.entries.reduce((acc, entry) => acc + entry.weight || 1, 0)
 
-    const winnerNumber = await randomNumber(0, totalWeight)
+    // const winnerNumber = await randomNumber(0, totalWeight)
+    const winnerNumber = randomForSpin(0, totalWeight)
     logger.trace(`Spin: generated number ${winnerNumber} from [0, ${totalWeight - 1}]`)
 
     let winnerAcc = 0
