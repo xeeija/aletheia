@@ -36,7 +36,13 @@ import { buildSchema } from "type-graphql"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+
+const databaseUrl = new URL(process.env.DATABASE_URL ?? "")
+
+const adapter = new PrismaPg(
+  { connectionString: process.env.DATABASE_URL },
+  { schema: databaseUrl.searchParams.get("schema") || undefined }
+)
 const prisma = new PrismaClient({ adapter })
 
 process.on("beforeExit", async () => {
