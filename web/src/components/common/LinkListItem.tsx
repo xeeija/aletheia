@@ -58,8 +58,8 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     const linkItem = (
       <ListItemButton
         ref={ref}
-        // component={href ? Link : "button"}
-        component={Link}
+        component={href ? Link : "button"}
+        LinkComponent={href ? "a" : "button"}
         href={href ?? "#"}
         disabled={disabled}
         sx={{
