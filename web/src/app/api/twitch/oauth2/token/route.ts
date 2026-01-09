@@ -6,7 +6,7 @@ export const GET: RouteHandler = async (req) => {
   const errorCode = req.nextUrl.searchParams.get("error")
 
   const serverUrl = process.env.SERVER_URL ?? "http://localhost:4000"
-  const origin = req.nextUrl.origin
+  const origin = process.env.TWITCH_REDIRECT_URI
 
   console.log({ url: req.url, ...req.nextUrl })
 
