@@ -13,6 +13,8 @@
 // export * from "./user"
 
 // ### explicit re-export of everything
+export { WebVitals } from "./WebVitals"
+
 // common
 export { AboutDialog } from "./common/AboutDialog"
 export { ButtonContainer } from "./common/ButtonContainer"
