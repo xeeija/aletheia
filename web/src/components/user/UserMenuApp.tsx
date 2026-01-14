@@ -1,5 +1,5 @@
 import { UserMenuDropdown } from "@/components"
-import { getUser } from "@/utils/graphql"
+import { getAuth } from "@/utils/graphql"
 import { Box, Button, Typography } from "@mui/material"
 import Link from "next/link"
 import { FC } from "react"
@@ -13,7 +13,7 @@ export const UserMenuApp: FC<Props> = async () => {
 
   // only works directly inside of app/ directory
   // because cookies() errors if used anywhere outside, like components/ directory
-  const user = await getUser()
+  const { user } = await getAuth()
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

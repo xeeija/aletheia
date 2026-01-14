@@ -20,12 +20,12 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
               {wheel.title}
             </Typography>
           </Tooltip>
-          <Typography variant="body2" color="text.secondary">
+          {/* <Typography variant="body2" color="text.secondary">
             {new Date(wheel.createdAt).toLocaleString(undefined, {
               dateStyle: "medium",
               timeStyle: "short",
             })}
-          </Typography>
+          </Typography> */}
 
           <Box sx={{ display: "flex", gap: 0.5, mt: 1 }}>
             <AccessTypeBadge type={wheel.accessType} />

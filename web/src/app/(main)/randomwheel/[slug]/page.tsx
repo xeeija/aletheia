@@ -1,6 +1,6 @@
 import { RandomWheelDetail } from "@/components/randomWheel"
 import { MetadataFn, Page } from "@/types"
-import { getUser } from "@/utils/graphql"
+import { getAuth } from "@/utils/graphql"
 import { getRandomWheel, getRandomWheelEmtries } from "@/utils/graphql/randomwheel"
 import { notFound } from "next/navigation"
 
@@ -49,7 +49,7 @@ const SlugPage: Page<Params, SearchParams> = async (props) => {
     notFound()
   }
 
-  const user = (await getUser()) ?? undefined
+  const { user } = await getAuth()
 
   return <RandomWheelDetail slug={slug} token={token} wheel={wheel} entries={entries} user={user} />
 }

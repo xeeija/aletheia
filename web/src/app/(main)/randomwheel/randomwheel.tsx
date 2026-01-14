@@ -2,24 +2,28 @@
 
 import { TabPanel, Tooltip } from "@/components"
 import { CreateEditWheelDialog, NoDataWheelList, WheelList } from "@/components/randomWheel"
+import type { RandomWheelListItemFragment, UserNameFragment } from "@/generated/graphql"
 import { useAuth, useMyRandomWheels } from "@/hooks"
 import { Box, Button, IconButton, SvgIcon, Tab, Tabs } from "@mui/material"
 import { FC, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { TiPlus } from "react-icons/ti"
 
-interface Props {}
-
 type WheelListType = "my" | "shared" | "favorite"
 const wheelsTypes: WheelListType[] = ["my", "shared", "favorite"]
 
-export const Randomwheel: FC<Props> = () => {
+interface Props {
+  wheels?: RandomWheelListItemFragment[]
+  user?: UserNameFragment
+}
+
+export const Randomwheel: FC<Props> = ({ wheels: initialWheels, user: initialUser }) => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [wheelsTab, setWheelsTab] = useState(0)
 
-  const { authenticated } = useAuth()
+  const { authenticated } = useAuth({ initialUser })
 
-  const { wheels, fetching } = useMyRandomWheels(wheelsTypes[wheelsTab])
+  const { wheels, fetching } = useMyRandomWheels(wheelsTypes[wheelsTab], initialWheels)
 
   const wheelsEmpty = (wheels?.length ?? 0) === 0
 
@@ -63,11 +67,13 @@ export const Randomwheel: FC<Props> = () => {
 
       {[0, 1, 2].map((i) => (
         <TabPanel key={i} index={i} activeTab={wheelsTab} fullHeight noPadding>
-          <WheelList items={wheels} loading={fetching} />
+          <WheelList items={wheels} loading={fetching && !initialWheels} />
         </TabPanel>
       ))}
 
-      {wheelsEmpty && !fetching && <NoDataWheelList type={wheelsTypes[wheelsTab]} authenticated={authenticated} />}
+      {wheelsEmpty && !(fetching && !initialWheels) && (
+        <NoDataWheelList type={wheelsTypes[wheelsTab]} authenticated={authenticated} />
+      )}
 
       <CreateEditWheelDialog type="create" open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
     </>

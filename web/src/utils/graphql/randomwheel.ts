@@ -32,5 +32,5 @@ export const getMyRandomWheels = async (type = "my") => {
   const client = await getUrqlClient()
 
   const wheelResult = await client.query(MyRandomWheelsDocument, { type })
-  return wheelResult.data?.myRandomWheels as RandomWheelListItemFragment[]
+  return wheelResult.data?.myRandomWheels as RandomWheelListItemFragment[] | undefined
 }
