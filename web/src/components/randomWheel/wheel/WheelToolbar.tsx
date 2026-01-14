@@ -1,24 +1,31 @@
 "use client"
 
-import { Tooltip } from "@/components"
 import {
   AccessTypeBadge,
   PopoutWheelDropdown,
   ShareWheelDropdown,
   WheelOptionsDropdown,
 } from "@/components/randomWheel"
+import type { UserNameFragment } from "@/generated/graphql"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
-import { Box, IconButton, SvgIcon, Typography } from "@mui/material"
+import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { FC } from "react"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
 
 interface Props {
-  wheel: RandomWheelDetails
+  wheel: RandomWheelDetails | undefined
+  user?: UserNameFragment
 }
 
-export const WheelToolbar: FC<Props> = ({ wheel }) => {
-  const { user } = useAuth()
-  const [, { like }] = useRandomWheel(wheel.slug, { details: true })
+export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
+  const { authenticated } = useAuth({ initialUser: user })
+  const [, { like }] = useRandomWheel(wheel?.slug ?? "", { details: false, fetchOnly: true, id: wheel?.id })
+
+  // const createdAt = wheel?.createdAt as unknown as string | undefined
+
+  if (!wheel) {
+    return null
+  }
 
   return (
     <>
@@ -33,7 +40,7 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
           <Tooltip placement="bottom" title="Favorite">
             <IconButton
               color={wheel.liked ? "error" : "secondary"}
-              disabled={!user}
+              disabled={!authenticated}
               sx={{ ml: 1 }}
               onClick={async () => await like()}
             >
@@ -54,7 +61,7 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
 
       <Typography variant="body1" color="text.secondary" sx={{ opacity: 0.9 }}>
         {`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}
-        {new Date(wheel.createdAt).toLocaleString()}
+        {/* {createdAt} */}
       </Typography>
     </>
   )

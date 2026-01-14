@@ -1,6 +1,7 @@
 import { RandomWheelDetail } from "@/components/randomWheel"
 import { MetadataFn, Page } from "@/types"
-import { getRandomWheel } from "@/utils/graphql/randomwheel"
+import { getUser } from "@/utils/graphql"
+import { getRandomWheel, getRandomWheelEmtries } from "@/utils/graphql/randomwheel"
 import { notFound } from "next/navigation"
 
 type Params = {
@@ -42,12 +43,15 @@ const SlugPage: Page<Params, SearchParams> = async (props) => {
   const token = queryParams.get("token") ?? undefined
 
   const wheel = await getRandomWheel(slug, token)
+  const entries = (await getRandomWheelEmtries(slug, token)) ?? undefined
 
   if (!wheel) {
     notFound()
   }
 
-  return <RandomWheelDetail slug={slug} token={token} />
+  const user = (await getUser()) ?? undefined
+
+  return <RandomWheelDetail slug={slug} token={token} wheel={wheel} entries={entries} user={user} />
 }
 
 export default SlugPage

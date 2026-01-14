@@ -1,5 +1,5 @@
 import { MetadataFn, Page } from "@/types"
-import { getRandomWheel } from "@/utils/graphql/randomwheel"
+import { getRandomWheel, getRandomWheelEmtries } from "@/utils/graphql/randomwheel"
 import { notFound } from "next/navigation"
 import { Popout } from "./popout"
 
@@ -39,12 +39,13 @@ const PopoutPage: Page<Params, PopoutSearchParams> = async (props) => {
   const token = queryParams.get("token") ?? undefined
 
   const wheel = await getRandomWheel(slug, token)
+  const entries = (await getRandomWheelEmtries(slug, token)) ?? undefined
 
   if (!wheel) {
     notFound()
   }
 
-  return <Popout slug={slug} token={token} />
+  return <Popout slug={slug} token={token} wheel={wheel} entries={entries} />
 }
 
 export default PopoutPage

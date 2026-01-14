@@ -13,9 +13,18 @@ interface Props {
   spinning?: boolean
   autoScroll?: boolean
   autoScrollThreshold?: number
+  // render at least so many entries for SSR
+  initialItemCount?: number
 }
 
-export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, autoScrollThreshold = 3 }) => {
+export const EntryList: FC<Props> = ({
+  entries,
+  editable,
+  spinning,
+  autoScroll,
+  autoScrollThreshold = 3,
+  initialItemCount = 20,
+}) => {
   const maxHeight = 480 + (!editable ? 88 + 64 : 0)
 
   // const [deleteEnabled, setDeleteEnabled] = useState(false)
@@ -123,6 +132,7 @@ export const EntryList: FC<Props> = ({ entries, editable, spinning, autoScroll, 
                 scrolling={scrolling}
               />
             )}
+            initialItemCount={Math.min(entries.length, initialItemCount)}
           />
         )}
 
