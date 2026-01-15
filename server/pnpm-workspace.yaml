@@ -6,3 +6,8 @@ onlyBuiltDependencies:
   - bufferutil
   - prisma
   - utf-8-validate
+
+# Overrides to fix vulnerabilities from audit
+overrides:
+  js-yaml@>=4.0.0 <4.1.1: '>=4.1.1'
+  qs@<6.14.1: '>=6.14.1'
