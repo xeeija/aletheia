@@ -1,5 +1,6 @@
 "use client"
 
+import { RelativeTime } from "@/components"
 import {
   AccessTypeBadge,
   PopoutWheelDropdown,
@@ -9,6 +10,7 @@ import {
 import type { UserNameFragment } from "@/generated/graphql"
 import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
 import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { useFormatter } from "next-intl"
 import { FC } from "react"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
 
@@ -20,6 +22,8 @@ interface Props {
 export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
   const { authenticated } = useAuth({ initialUser: user })
   const [, { like }] = useRandomWheel(wheel?.slug ?? "", { details: false, fetchOnly: true, id: wheel?.id })
+
+  const { dateTime } = useFormatter()
 
   // const createdAt = wheel?.createdAt as unknown as string | undefined
 
@@ -60,8 +64,12 @@ export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
       </Box>
 
       <Typography variant="body1" color="text.secondary" sx={{ opacity: 0.9 }}>
-        {`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}
-        {/* {createdAt} */}
+        <span>{`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}</span>
+        <Tooltip title={dateTime(new Date(wheel.createdAt), "short")}>
+          <span>
+            <RelativeTime date={wheel.createdAt} />
+          </span>
+        </Tooltip>
       </Typography>
     </>
   )

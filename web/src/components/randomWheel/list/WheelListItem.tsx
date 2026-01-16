@@ -2,6 +2,7 @@ import { Tooltip } from "@/components"
 import { AccessTypeBadge } from "@/components/randomWheel"
 import { RandomWheelListItemFragment } from "@/generated/graphql"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
+import { useFormatter } from "next-intl"
 import Link from "next/link"
 import { FC } from "react"
 import { TiThList } from "react-icons/ti"
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export const WheelListItem: FC<Props> = ({ wheel }) => {
+  const { dateTime } = useFormatter()
+
   return (
     <Card>
       <CardActionArea href={`randomwheel/${wheel.slug}`} LinkComponent={Link} sx={{ height: "100%" }}>
@@ -26,6 +29,9 @@ export const WheelListItem: FC<Props> = ({ wheel }) => {
               timeStyle: "short",
             })}
           </Typography> */}
+          <Typography variant="body2" color="text.secondary">
+            <span>{dateTime(new Date(wheel.createdAt), "short")}</span>
+          </Typography>
 
           <Box sx={{ display: "flex", gap: 0.5, mt: 1 }}>
             <AccessTypeBadge type={wheel.accessType} />

@@ -1,6 +1,7 @@
 import { NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
 
-export const nextConfig: NextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -41,4 +42,6 @@ export const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+const withNextIntl = createNextIntlPlugin()
+
+export default withNextIntl(nextConfig)
