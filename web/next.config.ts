@@ -3,9 +3,9 @@ import createNextIntlPlugin from "next-intl/plugin"
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  reactCompiler: true,
   output: "standalone",
-  // eslint-disable-next-line @typescript-eslint/require-await
-  headers: async () => {
+  headers: () => {
     return [
       // Disable buffering for nginx to enable streaming for app router
       // https://nextjs.org/docs/app/guides/self-hosting#streaming-and-suspense
@@ -20,8 +20,7 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  // eslint-disable-next-line @typescript-eslint/require-await
-  redirects: async () => [
+  redirects: () => [
     {
       source: "/r/:path",
       destination: "/randomwheel/:path",

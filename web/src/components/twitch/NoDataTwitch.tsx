@@ -1,9 +1,9 @@
 "use client"
 
 import { LinkText, NoData } from "@/components"
+import { Link } from "@/components/client/next"
 import { useAuth } from "@/hooks"
 import { Button, Typography } from "@mui/material"
-import Link from "next/link"
 import { FC } from "react"
 
 interface Props {}

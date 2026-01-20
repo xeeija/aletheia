@@ -1,7 +1,7 @@
 import { NoData } from "@/components"
+import { Link } from "@/components/client/next"
 import { NoDataWheelListActions } from "@/components/randomWheel"
 import { Button, SvgIcon, Typography } from "@mui/material"
-import Link from "next/link"
 import { FC } from "react"
 import { TiStarOutline } from "react-icons/ti"
 

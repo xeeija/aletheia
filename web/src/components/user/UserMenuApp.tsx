@@ -1,7 +1,7 @@
 import { UserMenuDropdown } from "@/components"
+import { Link } from "@/components/client/next"
 import { getAuth } from "@/utils/graphql"
 import { Box, Button, Typography } from "@mui/material"
-import Link from "next/link"
 import { FC } from "react"
 
 interface Props {}

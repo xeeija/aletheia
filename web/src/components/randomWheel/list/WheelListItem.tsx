@@ -1,9 +1,9 @@
 import { Tooltip } from "@/components"
+import { Link } from "@/components/client/next"
 import { AccessTypeBadge } from "@/components/randomWheel"
 import { RandomWheelListItemFragment } from "@/generated/graphql"
 import { Box, Card, CardActionArea, CardContent, Chip, SvgIcon, Typography } from "@mui/material"
 import { useFormatter } from "next-intl"
-import Link from "next/link"
 import { FC } from "react"
 import { TiThList } from "react-icons/ti"
 

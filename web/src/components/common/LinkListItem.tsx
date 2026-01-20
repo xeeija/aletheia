@@ -1,3 +1,4 @@
+import { Link } from "@/components/client/next"
 import { ThemeColor } from "@/types"
 import {
   Divider,
@@ -10,7 +11,6 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import Link from "next/link"
 import { forwardRef, MouseEventHandler, ReactNode } from "react"
 
 export interface LinkItem {

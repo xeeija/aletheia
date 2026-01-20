@@ -1,6 +1,7 @@
 "use client"
 
 import { Dropdown, LinkItem, LinkList, LoadingButton, UserAvatar, UserStatusDot } from "@/components"
+import { Link } from "@/components/client/next"
 import { useLogoutMutation } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
 import {
@@ -15,7 +16,6 @@ import {
   SvgIcon,
   Typography,
 } from "@mui/material"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
 import { TiPower, TiSpanner, TiUser, TiWarning } from "react-icons/ti"
