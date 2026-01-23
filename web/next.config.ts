@@ -9,15 +9,15 @@ const nextConfig: NextConfig = {
     return [
       // Disable buffering for nginx to enable streaming for app router
       // https://nextjs.org/docs/app/guides/self-hosting#streaming-and-suspense
-      {
-        source: "/:path*{/}?",
-        headers: [
-          {
-            key: "X-Accel-Buffering",
-            value: "no",
-          },
-        ],
-      },
+      // {
+      //   source: "/:path*{/}?",
+      //   headers: [
+      //     {
+      //       key: "X-Accel-Buffering",
+      //       value: "no",
+      //     },
+      //   ],
+      // },
     ]
   },
   redirects: () => [
