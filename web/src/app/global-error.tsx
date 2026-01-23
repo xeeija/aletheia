@@ -23,7 +23,7 @@ const GlobalError: FC<AppErrorProps> = ({ error, reset }) => {
         <WebVitals />
         <MuiProvider>
           <CssBaseline />
-          <ErrorFallback global showReset error={error} reset={reset} />
+          <ErrorFallback global showReset={!!reset} error={error} reset={reset} />
         </MuiProvider>
       </body>
     </html>

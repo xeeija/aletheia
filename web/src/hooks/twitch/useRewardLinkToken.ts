@@ -1,13 +1,15 @@
 import { CustomRewardMenuItemFragment, useRewardByTokenQuery, useUpdateRewardTokenMutation } from "@/generated/graphql"
 import { RewardLinkType } from "@/types"
+import { useMemo } from "react"
 
 type RewardLinkConfig = {
   type: RewardLinkType
   token: string
   pause?: boolean
+  initialReward?: CustomRewardMenuItemFragment
 }
 
-export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => {
+export const useRewardLinkToken = ({ type, token, pause, initialReward }: RewardLinkConfig) => {
   const [{ data, fetching, error, stale }, fetchReward] = useRewardByTokenQuery({
     variables: {
       token,
@@ -19,8 +21,10 @@ export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => 
 
   const [{ fetching: fetchingUpdate, error: errorUpdate }, updateRewardToken] = useUpdateRewardTokenMutation()
 
+  const reward = useMemo(() => data?.rewardByToken ?? initialReward, [data?.rewardByToken, initialReward])
+
   return {
-    reward: data?.rewardByToken as CustomRewardMenuItemFragment | undefined,
+    reward: reward, // data?.rewardByToken as CustomRewardMenuItemFragment | undefined,
     fetching,
     error,
     refetch: () => {
@@ -29,6 +33,7 @@ export const useRewardLinkToken = ({ type, token, pause }: RewardLinkConfig) => 
         additionalTypenames: ["RewardLink"],
       })
     },
+    fetchReward,
     updateReward: async () => {
       const response = await updateRewardToken(
         { token, type },

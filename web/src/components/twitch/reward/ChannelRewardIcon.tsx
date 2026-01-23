@@ -49,7 +49,9 @@ export const ChannelRewardIcon: FC<Props> = ({
   const disabledPaused = (reward.isPaused && !reward.isEnabled && !error) || loading || stale
   const showTitleBottom = sizeInput !== "xl" || titleBottom
 
-  const imageAdjust = (!reward.image || reward.image.match(defaultImagePattern)) && sizeInput !== "xl" ? 1.2 : 1
+  const isDefaultIcon = reward.image.match(defaultImagePattern)
+  const defaultImage = "/img/channelpoints-2.png"
+  const imageAdjust = (!reward.image || isDefaultIcon) && sizeInput !== "xl" ? 1.2 : 1
 
   const size = sizes[sizeInput]
   const iconSize = (sizeInput === "xl" ? size * 0.5 : size * 0.65) * imageAdjust
@@ -98,7 +100,7 @@ export const ChannelRewardIcon: FC<Props> = ({
         >
           <Image
             alt={`${reward.title} Reward`}
-            src={reward.image || "/img/channelpoints-2.png"}
+            src={isDefaultIcon ? defaultImage : reward.image || defaultImage}
             width={iconSize}
             height={iconSize}
             style={{
