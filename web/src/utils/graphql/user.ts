@@ -1,7 +1,8 @@
 import { MeDocument, UserNameFragment } from "@/generated/graphql"
 import { getUrqlClient } from "@/utils/urql"
+import { cache } from "react"
 
-export const getAuth = async () => {
+const getAuthInternal = async () => {
   const client = await getUrqlClient()
   // const cookieStore = await cookies()
 
@@ -12,3 +13,5 @@ export const getAuth = async () => {
     authenticated: !!user,
   }
 }
+
+export const getAuth = cache(getAuthInternal)

@@ -31,3 +31,6 @@ export const getUrqlClient = async (fetchOptions?: RequestInit) => {
   const { getClient } = registerUrql(makeClientFn)
   return getClient()
 }
+
+// TODO: Maybe use cache() to immediately cache the urql client,
+// and subsequently directly get always cached results for client.query() calls for all queries?

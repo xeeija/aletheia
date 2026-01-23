@@ -1,7 +1,10 @@
 import { MetadataFn, Page } from "@/types"
 import { getRandomWheel, getRandomWheelEmtries } from "@/utils/graphql/randomwheel"
 import { notFound } from "next/navigation"
+import { cache } from "react"
 import { Popout } from "./popout"
+
+const getRandomWheelCached = cache(getRandomWheel)
 
 type Params = {
   slug: string
@@ -20,7 +23,7 @@ export const generateMetadata: MetadataFn<Params, PopoutSearchParams> = async (p
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
-  const wheel = await getRandomWheel(params.slug, token)
+  const wheel = await getRandomWheelCached(params.slug, token)
 
   if (!wheel) {
     notFound()
@@ -38,7 +41,7 @@ const PopoutPage: Page<Params, PopoutSearchParams> = async (props) => {
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
-  const wheel = await getRandomWheel(slug, token)
+  const wheel = await getRandomWheelCached(slug, token)
   const entries = (await getRandomWheelEmtries(slug, token)) ?? undefined
 
   if (!wheel) {
