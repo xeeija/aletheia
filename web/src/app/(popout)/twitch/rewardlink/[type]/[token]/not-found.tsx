@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Not Found",
 }
 
-const NotFoundRewardLink: Page<Params, SearchParams> = async (props) => {
+export const NotFoundRewardLink: Page<Params, SearchParams> = async (props) => {
   const [searchParams] = await Promise.all([props.searchParams])
 
   const size = ["sm", "md", "lg", "xl"].includes(searchParams?.size ?? "") ? (searchParams.size as ItemSize) : "xl"

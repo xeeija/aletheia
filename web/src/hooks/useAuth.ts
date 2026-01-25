@@ -15,6 +15,7 @@ type Config = {
   includeToken?: boolean
   initialUser?: UserNameFragment
   pauseUser?: boolean
+  initialAccessToken?: UserAccessTokenFragment
 }
 
 export const useAuth = (config?: Config) => {
@@ -61,7 +62,7 @@ export const useAuth = (config?: Config) => {
   }
 
   return {
-    user: (user?.me ?? config?.initialUser) as UserNameFragment | undefined,
+    user: user?.me ?? config?.initialUser, // ) as UserNameFragment | undefined,
     error: errorUser,
     fetchingUser,
     refetchUser,
@@ -127,7 +128,8 @@ export const useAuth = (config?: Config) => {
       return response
     },
     // twitch
-    userAccessToken: token?.userAccesToken as UserAccessTokenFragment | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    userAccessToken: (token?.userAccesToken ?? config?.initialAccessToken) as UserAccessTokenFragment | undefined,
     errorUserAccessToken: errorToken,
     fetchingToken,
     fetchingDisconnect,

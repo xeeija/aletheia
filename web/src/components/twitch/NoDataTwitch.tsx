@@ -2,14 +2,18 @@
 
 import { LinkText, NoData } from "@/components"
 import { Link } from "@/components/client/next"
+import type { UserAccessTokenFragment, UserNameFragment } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
 import { Button, Typography } from "@mui/material"
 import { FC } from "react"
 
-interface Props {}
+interface Props {
+  user?: UserNameFragment
+  accessToken?: UserAccessTokenFragment
+}
 
-export const NoDataTwitch: FC<Props> = () => {
-  const { user, userAccessToken, fetchingUser } = useAuth({ includeToken: true })
+export const NoDataTwitch: FC<Props> = ({ user: initialUser, accessToken: initialAccessToken }) => {
+  const { user, userAccessToken, fetchingUser } = useAuth({ includeToken: true, initialUser, initialAccessToken })
 
   return (
     <NoData image="/img/online_connection.svg" iconSize={200} sx={{ mt: 4 }}>

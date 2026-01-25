@@ -1,7 +1,6 @@
 import { type MetadataFn, type Page } from "@/types"
 import { getRewardLinkToken } from "@/utils/graphql/twitch"
-import { cache } from "react"
-import NotFoundRewardLink from "./not-found"
+import { NotFoundRewardLink } from "./not-found"
 import { Token } from "./token"
 
 export type Params = {
@@ -19,13 +18,10 @@ export type SearchParams = {
 
 // const rewardLinkTypes = ["enable", "pause"]
 
-// cache the result for each server request
-const getRewardLinkTokenCached = cache(getRewardLinkToken)
-
 export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ params }) => {
   const { type, token } = await params
 
-  const reward = await getRewardLinkTokenCached(token, type)
+  const reward = await getRewardLinkToken(token, type)
 
   if (!reward) {
     // notFound()
@@ -43,7 +39,7 @@ export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ param
 const RewardLinkPage: Page<Params, SearchParams> = async ({ params, searchParams }) => {
   const [{ token, type }] = await Promise.all([params])
 
-  const reward = await getRewardLinkTokenCached(token, type)
+  const reward = await getRewardLinkToken(token, type)
 
   if (!reward) {
     // notFound() does not respect searchParams, so ?size=lg will not still use the default size
