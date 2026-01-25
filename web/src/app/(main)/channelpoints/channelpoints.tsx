@@ -13,17 +13,20 @@ import type { CustomRewardFragment, UserAccessTokenFragment, UserNameFragment } 
 import { useAuth } from "@/hooks"
 import { Box, Tab, Tabs } from "@mui/material"
 import { FC, useState } from "react"
+import type { CombinedError } from "urql"
 
 interface Props {
   user?: UserNameFragment
   userAccessToken?: UserAccessTokenFragment
   channelRewards?: CustomRewardFragment[]
+  error?: CombinedError
 }
 
 export const Channelpoints: FC<Props> = ({
   user: initialUser,
   channelRewards: initialRewards,
   userAccessToken: initialAccessToken,
+  error,
 }) => {
   const [tab, setTab] = useState(0)
 
@@ -45,7 +48,7 @@ export const Channelpoints: FC<Props> = ({
   // })
   const channelRewards = initialRewards
   const fetchingRewards = false
-  const error = null
+  // const error = null
 
   const tokenAvailable = user && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
@@ -96,7 +99,9 @@ export const Channelpoints: FC<Props> = ({
 
         {!tokenAvailable && !fetching && <NoDataTwitch user={user} accessToken={userAccessToken} />}
 
-        {tokenAvailable && !fetchingRewards && error && <NoDataTwitchError error={error} />}
+        {tokenAvailable && !fetchingRewards && error && (
+          <NoDataTwitchError error={error} accessToken={userAccessToken} />
+        )}
       </Box>
     </>
   )

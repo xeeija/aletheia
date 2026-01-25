@@ -1,21 +1,31 @@
 "use client"
 
 import { NoData } from "@/components"
+import type { UserAccessTokenFragment } from "@/generated/graphql"
 import { parseTwitchApiError } from "@/utils/twitch"
 import { Typography } from "@mui/material"
-import { FC, useMemo } from "react"
+import { useNow } from "next-intl"
+import { FC } from "react"
 import { CombinedError } from "urql"
+
+const invalidTokenPattern = /user context for the user \d+ has been disabled/
+const requestFailedPattern = /request to ([\w.:/?=&]+) failed/
 
 interface Props {
   error: CombinedError
+  accessToken?: UserAccessTokenFragment
 }
 
-export const NoDataTwitchError: FC<Props> = ({ error }) => {
+export const NoDataTwitchError: FC<Props> = ({ error, accessToken }) => {
   const twitchError = parseTwitchApiError(error)
 
-  const errorMessage = twitchError?.message.replace("The broadcaster", "You")
+  const twitchErrorMessage = twitchError?.message.replace("The broadcaster", "You")
 
-  const requestFailedPattern = useMemo(() => /request to ([\w.:/?=&]+) failed/, [])
+  const invalidToken = error.message.match(invalidTokenPattern)?.[0] !== null
+
+  const date = useNow()
+  const isTokenExpired = Number(accessToken?.obtainmentTimestamp ?? 0) + (accessToken?.expiresIn ?? 0) < date.getTime()
+  const invalidTokenMessage = `Access token for user ${accessToken?.twitchUsername} became invalid${isTokenExpired ? " (expired)" : ""} and refreshing it failed.`
 
   const requestFailedMatch = error.message.match(requestFailedPattern)?.[1]
   const requestFailed = requestFailedMatch ? new URL(requestFailedMatch) : null
@@ -30,11 +40,23 @@ export const NoDataTwitchError: FC<Props> = ({ error }) => {
       {twitchError && (
         <>
           <Typography variant="h5" color="text.secondary" sx={{ textAlign: "center" }}>
-            {errorMessage}
+            {twitchErrorMessage}
           </Typography>
 
           <Typography color="textSecondary" sx={{ mt: -2 }}>
             Status {twitchError.status} {twitchError.error}
+          </Typography>
+        </>
+      )}
+
+      {invalidToken && (
+        <>
+          <Typography variant="h5" color="text.secondary" sx={{ textAlign: "center" }}>
+            Invalid access token.
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ textAlign: "center" }}>
+            {invalidTokenMessage}
           </Typography>
         </>
       )}
@@ -51,7 +73,7 @@ export const NoDataTwitchError: FC<Props> = ({ error }) => {
         </>
       )}
 
-      {!twitchError && !requestFailed?.host && (
+      {!twitchError && !requestFailed?.host && !invalidToken && (
         <>
           <Typography variant="h5" color="text.secondary" sx={{ textAlign: "center" }}>
             {error.message}

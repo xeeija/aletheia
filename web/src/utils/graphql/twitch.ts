@@ -31,7 +31,17 @@ const getChannelRewardsInternal = async (onlyManageable?: boolean) => {
   const client = await getUrqlClient()
   const result = await client.query(ChannelRewardsDocument, { onlyManageable })
 
-  return result.data?.channelRewards as CustomRewardFragment[] | undefined
+  const channelRewards = result.data?.channelRewards as CustomRewardFragment[] | undefined
+  const error = result.error
+    ? {
+        name: result.error.name,
+        message: result.error.message,
+        networkError: result.error.networkError,
+        graphQLErrors: result.error.graphQLErrors,
+      }
+    : undefined
+
+  return [channelRewards, error] as const
 }
 
 export const getChannelRewards = cache(getChannelRewardsInternal)
