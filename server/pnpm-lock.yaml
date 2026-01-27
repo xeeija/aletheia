@@ -6,6 +6,7 @@ settings:
 
 overrides:
   js-yaml@>=4.0.0 <4.1.1: '>=4.1.1'
+  lodash@>=4.0.0 <=4.17.22: '>=4.17.23'
   qs@<6.14.1: '>=6.14.1'
 
 importers:
@@ -1248,8 +1249,8 @@ packages:
   lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   loglevel@1.9.2:
     resolution: {integrity: sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==}
@@ -2647,7 +2648,7 @@ snapshots:
   concurrently@9.0.1:
     dependencies:
       chalk: 4.1.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       rxjs: 7.8.1
       shell-quote: 1.8.1
       supports-color: 8.1.1
@@ -3224,7 +3225,7 @@ snapshots:
 
   lodash.sortby@4.7.0: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   loglevel@1.9.2: {}
 

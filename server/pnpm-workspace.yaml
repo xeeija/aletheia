@@ -7,7 +7,7 @@ onlyBuiltDependencies:
   - prisma
   - utf-8-validate
 
-# Overrides to fix vulnerabilities from audit
 overrides:
   js-yaml@>=4.0.0 <4.1.1: '>=4.1.1'
+  lodash@>=4.0.0 <=4.17.22: '>=4.17.23'
   qs@<6.14.1: '>=6.14.1'
