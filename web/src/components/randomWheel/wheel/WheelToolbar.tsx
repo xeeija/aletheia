@@ -8,7 +8,7 @@ import {
   WheelOptionsDropdown,
 } from "@/components/randomWheel"
 import type { UserNameFragment } from "@/generated/graphql"
-import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
+import { RandomWheelDetails, useAuth, useRandomWheelLike } from "@/hooks"
 import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { useFormatter } from "next-intl"
 import { FC } from "react"
@@ -21,7 +21,7 @@ interface Props {
 
 export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
   const { authenticated } = useAuth({ initialUser: user })
-  const [, { like }] = useRandomWheel(wheel?.slug ?? "", { details: false, fetchOnly: true, id: wheel?.id })
+  const [liked, like] = useRandomWheelLike(wheel?.id, wheel?.liked)
 
   const { dateTime } = useFormatter()
 
@@ -43,12 +43,12 @@ export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
         <Box>
           <Tooltip placement="bottom" title="Favorite">
             <IconButton
-              color={wheel.liked ? "error" : "secondary"}
+              color={liked ? "error" : "secondary"}
               disabled={!authenticated}
               sx={{ ml: 1 }}
               onClick={async () => await like()}
             >
-              <SvgIcon component={wheel.liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
+              <SvgIcon component={liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
             </IconButton>
           </Tooltip>
 
