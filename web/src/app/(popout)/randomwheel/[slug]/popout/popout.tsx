@@ -1,7 +1,8 @@
 "use client"
 
 import { Wheel, WinnerDialog } from "@/components/randomWheel"
-import { useRandomWheel, type RandomWheelSocketOptions, type SpinFinishedFn } from "@/hooks"
+import type { RandomWheelEntryFragment } from "@/generated/graphql"
+import { useRandomWheel, type RandomWheelDetails, type RandomWheelSocketOptions, type SpinFinishedFn } from "@/hooks"
 import { Box, useTheme } from "@mui/material"
 import { notFound, useSearchParams } from "next/navigation"
 import { FC, useCallback, useMemo, useState } from "react"
@@ -16,9 +17,11 @@ import { FC, useCallback, useMemo, useState } from "react"
 interface Props {
   slug: string | undefined
   token?: string
+  wheel?: RandomWheelDetails
+  entries?: RandomWheelEntryFragment[]
 }
 
-export const Popout: FC<Props> = ({ slug, token }) => {
+export const Popout: FC<Props> = ({ slug, token, wheel: initialWheel, entries: initialEntries }) => {
   const theme = useTheme()
   const params = useSearchParams()
 
@@ -59,6 +62,9 @@ export const Popout: FC<Props> = ({ slug, token }) => {
     entries: true,
     token: token,
     socket: socketOptions,
+    initialWheel: initialWheel,
+    initialEntries: initialEntries,
+    id: initialWheel?.id,
   })
 
   if (!wheel) {

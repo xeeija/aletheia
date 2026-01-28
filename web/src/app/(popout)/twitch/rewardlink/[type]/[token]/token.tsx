@@ -1,53 +1,58 @@
 "use client"
 
-import { ChannelRewardIcon } from "@/components/twitch"
+import { ChannelRewardIcon, ChannelRewardStatusOverlay } from "@/components/twitch"
+import type { CustomRewardMenuItemFragment } from "@/generated/graphql"
 import { useDebounce, useInterval, useRewardLinkSocket, useRewardLinkToken } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
-import { getTitle } from "@/utils"
 import { Box, Skeleton } from "@mui/material"
-import Head from "next/head"
-import { notFound, useParams, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { FC, ReactNode, useState } from "react"
 
 // const errorMessagePattern = /^\[GraphQL\] /
 
-type Params = {
-  type: string
-  token: string
+interface Props {
+  token?: string
+  type?: string
+  reward?: CustomRewardMenuItemFragment
 }
 
-export const Token: FC = () => {
-  const params = useParams<Params>()
-  const type = params?.type
-  const token = params?.token
-
+export const Token: FC<Props> = ({ token, type, reward: initialReward }) => {
   const searchParams = useSearchParams()
 
   const customTitle = searchParams?.get("title") ?? undefined
-  const fontSize = Number(searchParams?.get("fontSize")) || null
-  const sizeString = searchParams?.get("size")
+  const fontSize = Number(searchParams?.get("fontSize")) || undefined
   const hideTitle = searchParams?.get("hideTitle") === "1"
   const titleBottom = searchParams?.get("titlePosition") === "bottom"
 
-  const size = ["sm", "md", "lg", "xl"].includes(sizeString ?? "") ? (sizeString as ItemSize) : undefined
-  const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size ?? "xl"]
+  const size = ["sm", "md", "lg", "xl"].includes(searchParams.get("size") ?? "")
+    ? (searchParams.get("size") as ItemSize)
+    : "xl"
+
+  const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size]
 
   const { reward, fetching, fetchingUpdate, updateReward, refetch, stale } = useRewardLinkToken({
     token: token ?? "",
     type: type as RewardLinkType,
+    initialReward,
   })
 
   const loading = useDebounce(fetching || fetchingUpdate, 300)
-
-  useRewardLinkSocket(token ?? "", !token, () => refetch())
-
   const [error, setError] = useState<ReactNode>(null)
 
+  useRewardLinkSocket(token ?? "", !token, refetch)
   // refetch the reward every 10 minutes, to check if status changed
-  useInterval(() => refetch(), reward ? 10 * 60 * 1000 : null)
+  useInterval(refetch, reward ? 10 * 60 * 1000 : null)
 
-  if (!reward && !fetching) {
-    notFound()
+  if (!reward && fetching) {
+    // notFound()
+    return (
+      <>
+        <ChannelRewardStatusOverlay size={skeletonSize} statusSize={skeletonSize / 2} enabled error="Not Found">
+          <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
+        </ChannelRewardStatusOverlay>
+        <Skeleton variant="rounded" animation={false} sx={{ width: skeletonSize, height: skeletonSize }} />
+      </>
+    )
   }
 
   const handleUpdate = async () => {
@@ -65,21 +70,18 @@ export const Token: FC = () => {
 
   return (
     <div>
-      <Head>
-        <title>{getTitle(`Reward ${reward?.title} (${type})`)}</title>
-      </Head>
       {reward && !fetching && (
         <Box sx={{ width: "fit-content" }}>
           <ChannelRewardIcon
             reward={reward}
-            size={size ?? "xl"}
+            size={size}
             showTitle={!hideTitle}
             showStatus
             error={error}
             loading={loading}
             stale={stale}
             customTitle={customTitle}
-            fontSize={Number(fontSize) || undefined}
+            fontSize={fontSize}
             titleBottom={titleBottom}
             button
             onClick={handleUpdate}

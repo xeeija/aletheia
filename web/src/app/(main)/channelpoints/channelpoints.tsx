@@ -9,18 +9,46 @@ import {
   RewardGroups,
   RewardGroupsToolbar,
 } from "@/components/twitch"
-import { useAuth, useChannelRewards } from "@/hooks"
+import type { CustomRewardFragment, UserAccessTokenFragment, UserNameFragment } from "@/generated/graphql"
+import { useAuth } from "@/hooks"
 import { Box, Tab, Tabs } from "@mui/material"
 import { FC, useState } from "react"
+import type { CombinedError } from "urql"
 
-interface Props {}
+interface Props {
+  user?: UserNameFragment
+  userAccessToken?: UserAccessTokenFragment
+  channelRewards?: CustomRewardFragment[]
+  error?: CombinedError
+}
 
-export const Channelpoints: FC<Props> = () => {
+export const Channelpoints: FC<Props> = ({
+  user: initialUser,
+  channelRewards: initialRewards,
+  userAccessToken: initialAccessToken,
+  error,
+}) => {
   const [tab, setTab] = useState(0)
 
   const [filterRewards, setFilterRewards] = useState(false)
-  const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({ includeToken: true })
-  const { channelRewards, fetching: fetchingRewards, error } = useChannelRewards(true, filterRewards)
+  const { user, userAccessToken, fetchingUser, fetchingToken } = useAuth({
+    includeToken: true,
+    initialUser,
+    initialAccessToken,
+  })
+
+  // Workaround for infinite loop with fetching /graphql user when useChannelRewards is commented in
+  // const {
+  //   channelRewards,
+  //   fetching: fetchingRewards,
+  //   error,
+  // } = useChannelRewards({
+  //   onlyManageble: filterRewards,
+  //   initialRewards,
+  // })
+  const channelRewards = initialRewards
+  const fetchingRewards = false
+  // const error = null
 
   const tokenAvailable = user && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
@@ -57,21 +85,23 @@ export const Channelpoints: FC<Props> = () => {
       <Box sx={{ mt: 2 }}>
         {tokenAvailable && !error && (
           <>
-            {tab === 0 && <ChannelRewards filterRewards={filterRewards} />}
+            {tab === 0 && <ChannelRewards channelRewards={channelRewards} filterRewards={filterRewards} />}
 
             {tab === 1 && <RewardGroups channelRewards={channelRewards} />}
           </>
         )}
 
-        {fetching && (
+        {fetching && !channelRewards && tokenAvailable && (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 6 }}>
             <SkeletonList n={4} height={72} />
           </Box>
         )}
 
-        {!tokenAvailable && !fetching && <NoDataTwitch />}
+        {!tokenAvailable && !fetching && <NoDataTwitch user={user} accessToken={userAccessToken} />}
 
-        {tokenAvailable && !fetchingRewards && error && <NoDataTwitchError error={error} />}
+        {tokenAvailable && !fetchingRewards && error && (
+          <NoDataTwitchError error={error} accessToken={userAccessToken} />
+        )}
       </Box>
     </>
   )

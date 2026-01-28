@@ -69,7 +69,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
       params.append("winnerDialog", "false")
     }
 
-    if (values.test) {
+    if (values.test && !values.noPopout && values.fade) {
       params.append("test", values.test.toString())
     }
 
@@ -166,9 +166,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
                 initialValues={initialValues}
                 validateOnChange={false}
                 enableReinitialize
-                onSubmit={(values) => {
-                  updateUrl(values)
-                }}
+                onSubmit={(values) => updateUrl(values)}
               >
                 {({ values }) => (
                   <Form id="popoutOptionsForm" style={{ width: "calc(100%)" }}>
@@ -194,7 +192,14 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
                         submitOnChange
                       />
 
-                      {/* <BooleanField name="test" label="Enable testing mode" submitOnChange /> */}
+                      <BooleanField
+                        name="test"
+                        label="Test mode"
+                        labelProps={{ slotProps: { typography: { color: "textSecondary" } } }}
+                        helperText="Show hidden wheel as transparent"
+                        disabled={values.noPopout || !values.fade}
+                        submitOnChange
+                      />
                     </Box>
                   </Form>
                 )}

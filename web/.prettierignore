@@ -9,3 +9,4 @@ package.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
 src/generated/graphql/schema.json
+src/messages/*.json

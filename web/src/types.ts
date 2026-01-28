@@ -14,6 +14,7 @@ import { Socket as SocketDefault } from "socket.io-client"
 
 export type Awaitable<T> = T | Promise<T>
 export type Empty = Record<string, never>
+export type StringObject = Record<string, string>
 
 // Next
 
@@ -85,9 +86,13 @@ export type RouteConfig = {
 }
 
 // Custom
+// export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
+export const ThemeColors = ["primary", "secondary", "success", "error", "info", "warning"] as const
+export type ThemeColor = (typeof ThemeColors)[number]
 
-export type ThemeColor = "primary" | "secondary" | "success" | "error" | "info" | "warning"
-export type ItemSize = "sm" | "md" | "lg" | "xl"
+// export type ItemSize = "sm" | "md" | "lg" | "xl"
+export const ItemSizes = ["sm", "md", "lg", "xl"] as const
+export type ItemSize = (typeof ItemSizes)[number]
 
 export type SpinResult = {
   winner: RandomWheelWinner

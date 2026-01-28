@@ -1,24 +1,37 @@
 import { CustomRewardFragment, useChannelRewardsQuery } from "@/generated/graphql"
-import { useChannelRewardsActions, useUrqlContextCookies } from "@/hooks"
+import { useUrqlContextCookies } from "@/hooks"
+import { cache, useMemo } from "react"
 
-export const useChannelRewards = (fetchRewards = true, onlyManageable?: boolean) => {
+interface Config {
+  pauseRewards?: boolean
+  onlyManageble?: boolean
+  initialRewards?: CustomRewardFragment[]
+}
+
+export const useChannelRewards = (config?: Config) => {
   const context = useUrqlContextCookies()
 
-  const [{ data, fetching, error }, refetch] = useChannelRewardsQuery({
+  const [{ data, fetching, error }, refetchRewards] = useChannelRewardsQuery({
     variables: {
-      onlyManageable,
+      onlyManageable: config?.onlyManageble,
     },
-    pause: !fetchRewards,
+    pause: config?.pauseRewards,
     context,
   })
 
-  const actions = useChannelRewardsActions()
+  // const actions = useChannelRewardsActions()
 
-  return {
-    channelRewards: data?.channelRewards as CustomRewardFragment[] | undefined,
-    fetching,
-    error,
-    refetch: () => refetch({ requestPolicy: "cache-and-network" }),
-    ...actions,
-  }
+  return useMemo(
+    () => ({
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      channelRewards: (data?.channelRewards ?? config?.initialRewards) as CustomRewardFragment[] | undefined,
+      fetching,
+      error,
+      refetch: () => refetchRewards({ requestPolicy: "cache-and-network" }),
+      // ...actions,
+    }),
+    [data?.channelRewards, config?.initialRewards, fetching, error, refetchRewards]
+  )
 }
+
+export const useChannelRewardsCached = cache(useChannelRewards)

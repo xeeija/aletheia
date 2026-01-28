@@ -1,16 +1,17 @@
 import { useLikeRandomWheelMutation } from "@/generated/graphql"
 import { useAlert } from "@/hooks"
-import { Dispatch, SetStateAction } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-export const useRandomWheelLike = (
-  wheelId: string | undefined,
-  liked: boolean | undefined,
-  setLiked: Dispatch<SetStateAction<boolean | undefined>>
-) => {
+export const useRandomWheelLike = (wheelId: string | undefined, wheelLiked: boolean | undefined) => {
+  const [liked, setLiked] = useState(wheelLiked)
+  useEffect(() => {
+    setLiked(wheelLiked)
+  }, [wheelLiked])
+
   const [, likeRandomWheel] = useLikeRandomWheelMutation()
   const { showError } = useAlert()
 
-  const like = async () => {
+  const like = useCallback(async () => {
     if (!wheelId) {
       return
     }
@@ -32,7 +33,7 @@ export const useRandomWheelLike = (
 
     // TODO: Error when undefined?
     setLiked(Boolean(data?.likeRandomWheel))
-  }
+  }, [likeRandomWheel, liked, showError, wheelId])
 
-  return like
+  return [liked, like] as const
 }

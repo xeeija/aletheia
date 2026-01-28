@@ -83,6 +83,7 @@ export const BooleanField: FC<Props> = ({
         <Box>
           {hasLabel ? (
             <BooleanFieldLabel
+              {...labelProps}
               control={checkbox}
               label={label}
               hasError={hasError}
@@ -90,13 +91,13 @@ export const BooleanField: FC<Props> = ({
               id={labelId}
               toggle={toggle}
               fullWidth={fullWidth}
-              {...labelProps}
             />
           ) : (
             checkbox
           )}
           {helperText || hasError ? (
             <BooleanFieldHelper
+              {...labelProps}
               hasError={hasError}
               toggle={toggle}
               labelPlacement={labelPlacement}

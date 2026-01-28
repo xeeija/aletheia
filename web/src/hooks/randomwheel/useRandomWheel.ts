@@ -1,14 +1,16 @@
+import type { RandomWheelEntryFragment, RandomWheelFragment } from "@/generated/graphql"
 import { RandomWheelSocketOptions, useRandomWheelSocket } from "@/hooks"
 import {
   RandomWheelActions,
   RandomWheelData,
+  RandomWheelDetails,
   RandomWheelFetch,
   useRandomWheelActions,
   useRandomWheelData,
   useRandomWheelLike,
   useRandomWheelSpin,
 } from "@/hooks/randomwheel"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 
 interface RandomWheelHandlers extends RandomWheelActions, RandomWheelFetch {
   spin: () => Promise<void>
@@ -23,6 +25,9 @@ interface RandomWheelOptions {
   socket?: RandomWheelSocketOptions
   fetchOnly?: boolean
   token?: string
+  initialWheel?: RandomWheelFragment
+  initialEntries?: RandomWheelEntryFragment[]
+  id?: string
 }
 
 export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWheelOptions) => {
@@ -35,17 +40,17 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
     members: options?.members,
     token: options?.token,
     fetchOnly: options?.fetchOnly,
+    initialWheel: options?.initialWheel,
+    initialEntries: options?.initialEntries,
+    id: options?.id ?? options?.initialWheel?.id,
   })
+
+  // const wheel = useMemo(() => wheelClient ?? options?.initialWheel, [wheelClient, options?.initialWheel])
 
   // TODO FIX: without options.details the actions dont work, because wheel.id is undefined
   const randomWheelActions = useRandomWheelActions(id)
 
-  const [liked, setLiked] = useState(wheel?.liked)
-  useEffect(() => {
-    setLiked(wheel?.liked)
-  }, [wheel?.liked])
-
-  const like = useRandomWheelLike(id, liked, setLiked)
+  const [liked, like] = useRandomWheelLike(id, wheel?.liked)
 
   const socketOptions = useMemo<RandomWheelSocketOptions>(
     () => ({
@@ -60,11 +65,9 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
   // TODO: onSpinFinished actually not in like here? - or only through incoming websocket spin event?
   const spin = useRandomWheelSpin(id, spinning)
 
-  return [
-    {
-      ...randomWheelData,
-      id,
-      wheel: wheel
+  const wheelExtended = useMemo<RandomWheelDetails | undefined>(
+    () =>
+      wheel
         ? {
             ...wheel,
             rotation: rotation ?? wheel?.rotation,
@@ -72,6 +75,14 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
             liked: liked ?? wheel?.liked ?? false,
           }
         : undefined,
+    [wheel, rotation, spinning, liked]
+  )
+
+  return [
+    {
+      ...randomWheelData,
+      id,
+      wheel: wheelExtended,
       lastWinnerEntry,
       isConnected,
     } as RandomWheelData,

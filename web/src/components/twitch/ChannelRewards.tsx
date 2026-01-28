@@ -1,31 +1,34 @@
 "use client"
 
-import { DeleteDialog, NoData, SkeletonList } from "@/components"
-import { ChannelRewardDialog, ChannelRewardListItem } from "@/components/twitch"
-import { useAlert, useChannelRewards } from "@/hooks"
-import { handleTwitchApiError } from "@/utils/twitch"
+import { NoData, SkeletonList } from "@/components"
+import { ChannelRewardDialog, ChannelRewardListItem, DeleteChannelRewardDialog } from "@/components/twitch"
+import type { CustomRewardFragment } from "@/generated/graphql"
+import { useChannelRewards } from "@/hooks"
 import { Box, Button, SvgIcon, Typography } from "@mui/material"
 import { FC, useState } from "react"
 import { TiPlus } from "react-icons/ti"
 
 interface Props {
+  channelRewards?: CustomRewardFragment[]
   filterRewards?: boolean
 }
 
-export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
+export const ChannelRewards: FC<Props> = ({ filterRewards, channelRewards: initialRewards }) => {
   const [createRewardOpen, setCreateRewardOpen] = useState(false)
   const [editRewardOpen, setEditRewardOpen] = useState(false)
   const [editReward, setEditReward] = useState<string | null>(null)
-  const [deleteRewardOpen, setDeleteRewardOpen] = useState<string | null>(null)
+  const [deleteRewardId, setDeleteRewardId] = useState<string | null>(null)
 
-  const { showSuccess, showError } = useAlert()
+  const { channelRewards, fetching } = useChannelRewards({
+    onlyManageble: filterRewards,
+    initialRewards,
+  })
 
-  const { channelRewards, fetching, deleteReward } = useChannelRewards(true, filterRewards)
   const channelRewardsEmpty = (channelRewards?.length ?? 0) === 0
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      {(!channelRewardsEmpty || fetching) && (
+      {(fetching || !channelRewardsEmpty) && (
         <Box
           sx={{
             display: "flex",
@@ -44,9 +47,9 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
         </Box>
       )}
 
-      {fetching && <SkeletonList n={4} height={72} />}
+      {fetching && !channelRewards && <SkeletonList n={4} height={72} />}
 
-      {!fetching &&
+      {!channelRewardsEmpty &&
         channelRewards?.map((reward) => (
           <ChannelRewardListItem
             key={reward.id}
@@ -56,7 +59,7 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
               setEditReward(reward.id)
             }}
             onDelete={(rewardId) => {
-              setDeleteRewardOpen(rewardId)
+              setDeleteRewardId(rewardId)
               // console.warn("delete", rewardId)
             }}
           />
@@ -92,28 +95,11 @@ export const ChannelRewards: FC<Props> = ({ filterRewards }) => {
         reward={channelRewards?.find((r) => r.id === editReward)}
       />
 
-      <DeleteDialog
-        title="Delete Reward"
-        open={deleteRewardOpen !== null}
-        onClose={() => setDeleteRewardOpen(null)}
-        onConfirm={async () => {
-          if (deleteRewardOpen) {
-            const reward = channelRewards?.find((r) => r.id === deleteRewardOpen)
-            const response = await deleteReward(deleteRewardOpen)
-
-            if (response.deleted) {
-              showSuccess(`'${reward?.title}' deleted successfully`)
-            } else {
-              if (!handleTwitchApiError(response.error, undefined, showError)) {
-                showError(response.error?.message || "An error occurred")
-              }
-            }
-          }
-        }}
-      >
-        Do you really want to delete this reward? <br />
-        This cannot be undone. It will be lost <b>forever</b>.
-      </DeleteDialog>
+      <DeleteChannelRewardDialog
+        open={deleteRewardId !== null}
+        onClose={() => setDeleteRewardId(null)}
+        reward={channelRewards?.find((r) => r.id === deleteRewardId)}
+      />
     </Box>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { ErrorFallback } from "@/components"
+import { ErrorFallback, WebVitals } from "@/components"
 import { MuiProvider } from "@/components/providers"
 import { AppErrorProps } from "@/types"
 import { CssBaseline } from "@mui/material"
@@ -20,9 +20,10 @@ const GlobalError: FC<AppErrorProps> = ({ error, reset }) => {
   return (
     <html lang="en" className={`${productSans.className} ${productSans.variable}`}>
       <body>
+        <WebVitals />
         <MuiProvider>
           <CssBaseline />
-          <ErrorFallback global showReset error={error} reset={reset} />
+          <ErrorFallback global showReset={!!reset} error={error} reset={reset} />
         </MuiProvider>
       </body>
     </html>

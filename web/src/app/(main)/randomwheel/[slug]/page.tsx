@@ -1,7 +1,11 @@
 import { RandomWheelDetail } from "@/components/randomWheel"
 import { MetadataFn, Page } from "@/types"
-import { getRandomWheel } from "@/utils/graphql/randomwheel"
+import { getAuth } from "@/utils/graphql"
+import { getRandomWheel, getRandomWheelEmtries } from "@/utils/graphql/randomwheel"
 import { notFound } from "next/navigation"
+import { cache } from "react"
+
+const getRandomWheelCached = cache(getRandomWheel)
 
 type Params = {
   slug: string
@@ -17,7 +21,7 @@ export const generateMetadata: MetadataFn<Params, SearchParams> = async (props) 
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
-  const wheel = await getRandomWheel(params.slug, token)
+  const wheel = await getRandomWheelCached(params.slug, token)
 
   if (!wheel) {
     notFound()
@@ -41,13 +45,16 @@ const SlugPage: Page<Params, SearchParams> = async (props) => {
   const queryParams = new URLSearchParams(searchParams)
   const token = queryParams.get("token") ?? undefined
 
-  const wheel = await getRandomWheel(slug, token)
+  const wheel = await getRandomWheelCached(slug, token)
+  const entries = (await getRandomWheelEmtries(slug, token)) ?? undefined
 
   if (!wheel) {
     notFound()
   }
 
-  return <RandomWheelDetail slug={slug} token={token} />
+  const { user } = await getAuth()
+
+  return <RandomWheelDetail slug={slug} token={token} wheel={wheel} entries={entries} user={user} />
 }
 
 export default SlugPage

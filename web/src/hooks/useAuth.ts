@@ -14,14 +14,17 @@ import { CombinedError } from "urql"
 type Config = {
   includeToken?: boolean
   initialUser?: UserNameFragment
+  pauseUser?: boolean
+  initialAccessToken?: UserAccessTokenFragment
 }
 
 export const useAuth = (config?: Config) => {
   const context = useUrqlContextCookies()
-  const [{ data: user, error: errorUser, fetching: fetchingUser }, fetchUser] = useMeQuery({
+  const [{ data: user, error: errorUser, fetching: fetchingUser }, refetchUser] = useMeQuery({
     // required for initial page load, as long as initialUser is not provided
     // requestPolicy: "cache-and-network",
     context,
+    pause: config?.pauseUser,
   })
 
   const [, loginFn] = useLoginMutation()
@@ -59,10 +62,10 @@ export const useAuth = (config?: Config) => {
   }
 
   return {
-    user: user?.me ?? config?.initialUser, // as UserNameFragment | undefined,
+    user: user?.me ?? config?.initialUser, // ) as UserNameFragment | undefined,
     error: errorUser,
     fetchingUser,
-    refetchUser: fetchUser,
+    refetchUser,
     // refetchUser: async (force?: boolean) =>
     //   new Promise<void>((resolve) => {
     //     setTimeout(() => {
@@ -81,7 +84,7 @@ export const useAuth = (config?: Config) => {
     //       }, 250)
     //     })
     //   }),
-    authenticated: !!user?.me,
+    authenticated: !!(user?.me ?? config?.initialUser),
     login: async (vars: LoginMutationVariables, redirectHref?: string) => {
       const response = await loginFn(vars)
 
@@ -118,12 +121,15 @@ export const useAuth = (config?: Config) => {
         showSuccess("Logged out successfully")
       }
 
+      refetchUser({ requestPolicy: "cache-and-network" })
+
       // setFetchingLogout(true)
 
       return response
     },
     // twitch
-    userAccessToken: token?.userAccesToken as UserAccessTokenFragment | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    userAccessToken: (token?.userAccesToken ?? config?.initialAccessToken) as UserAccessTokenFragment | undefined,
     errorUserAccessToken: errorToken,
     fetchingToken,
     fetchingDisconnect,

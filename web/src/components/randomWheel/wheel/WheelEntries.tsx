@@ -8,7 +8,7 @@ import { Box, Chip, Paper, Tab, Tabs } from "@mui/material"
 import { FC, useDeferredValue, useState, useTransition } from "react"
 
 interface Props {
-  wheel: RandomWheelDetails
+  wheel: RandomWheelDetails | undefined
   entries: RandomWheelEntryFragment[] | undefined
   winners: RandomWheelWinnerFragment[] | undefined
 }
@@ -87,12 +87,12 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
         >
           <EntryList
             entries={entries ?? []}
-            editable={wheel.editable || wheel.editAnonymous}
-            spinning={wheel.spinning}
+            editable={wheel?.editable || wheel?.editAnonymous}
+            spinning={wheel?.spinning}
             autoScroll
           />
 
-          {(wheel.editable || wheel.editAnonymous) && (
+          {(wheel?.editable || wheel?.editAnonymous) && (
             <AddEntryForm
               wheelId={wheel.id}
               spinning={wheel.spinning}
@@ -104,8 +104,8 @@ export const WheelEntries: FC<Props> = ({ wheel, entries, winners }) => {
       <TabPanel index={1} activeTab={entriesTab} fullHeight>
         <WinnerList
           winners={winners ?? []}
-          spinning={wheel.spinning}
-          editable={wheel.editable || wheel.editAnonymous}
+          spinning={wheel?.spinning}
+          editable={wheel?.editable || wheel?.editAnonymous}
         />
       </TabPanel>
     </Paper>

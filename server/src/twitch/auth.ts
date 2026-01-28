@@ -59,7 +59,7 @@ export const setupAuthProvider = async (prisma: PrismaClient) => {
       }
 
       const userLog = `${token.twitchUsername} (${token.twitchUserId})`
-      loggerAuth.warn(`Removing invalid user access token for ${userLog}\n`, JSON.parse(httpError.body))
+      loggerAuth.warn(`Removing invalid user access token for ${userLog}\n`, JSON.stringify(JSON.parse(httpError.body)))
 
       await prisma.eventSubscription.deleteMany({
         where: {

@@ -1,12 +1,12 @@
-import { Providers } from "@/components"
+import { Providers, WebVitals } from "@/components"
 import { getTitle } from "@/utils"
 import { CssBaseline } from "@mui/material"
 import { Metadata } from "next"
-import { FC, ReactNode } from "react"
 
 import { productSans } from "@/style/fonts"
 // import "@/style/fonts.css"
 import "@/style/global.css"
+import type { Layout } from "@/types"
 
 export const metadata: Metadata = {
   icons: "/favicon.svg",
@@ -16,14 +16,11 @@ export const metadata: Metadata = {
   },
 }
 
-interface Props {
-  children: ReactNode
-}
-
-const RootLayout: FC<Props> = ({ children }) => {
+const RootLayout: Layout = ({ children }) => {
   return (
     <html lang="en" className={`${productSans.className} ${productSans.variable}`}>
       <body>
+        <WebVitals />
         <Providers>
           <CssBaseline />
           {children}

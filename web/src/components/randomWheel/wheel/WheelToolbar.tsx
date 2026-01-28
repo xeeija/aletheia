@@ -1,24 +1,35 @@
 "use client"
 
-import { Tooltip } from "@/components"
+import { RelativeTime } from "@/components"
 import {
   AccessTypeBadge,
   PopoutWheelDropdown,
   ShareWheelDropdown,
   WheelOptionsDropdown,
 } from "@/components/randomWheel"
-import { RandomWheelDetails, useAuth, useRandomWheel } from "@/hooks"
-import { Box, IconButton, SvgIcon, Typography } from "@mui/material"
+import type { UserNameFragment } from "@/generated/graphql"
+import { RandomWheelDetails, useAuth, useRandomWheelLike } from "@/hooks"
+import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
+import { useFormatter } from "next-intl"
 import { FC } from "react"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
 
 interface Props {
-  wheel: RandomWheelDetails
+  wheel: RandomWheelDetails | undefined
+  user?: UserNameFragment
 }
 
-export const WheelToolbar: FC<Props> = ({ wheel }) => {
-  const { user } = useAuth()
-  const [, { like }] = useRandomWheel(wheel.slug, { details: true })
+export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
+  const { authenticated } = useAuth({ initialUser: user })
+  const [liked, like] = useRandomWheelLike(wheel?.id, wheel?.liked)
+
+  const { dateTime } = useFormatter()
+
+  // const createdAt = wheel?.createdAt as unknown as string | undefined
+
+  if (!wheel) {
+    return null
+  }
 
   return (
     <>
@@ -32,12 +43,12 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
         <Box>
           <Tooltip placement="bottom" title="Favorite">
             <IconButton
-              color={wheel.liked ? "error" : "secondary"}
-              disabled={!user}
+              color={liked ? "error" : "secondary"}
+              disabled={!authenticated}
               sx={{ ml: 1 }}
               onClick={async () => await like()}
             >
-              <SvgIcon component={wheel.liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
+              <SvgIcon component={liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
             </IconButton>
           </Tooltip>
 
@@ -53,8 +64,12 @@ export const WheelToolbar: FC<Props> = ({ wheel }) => {
       </Box>
 
       <Typography variant="body1" color="text.secondary" sx={{ opacity: 0.9 }}>
-        {`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}
-        {new Date(wheel.createdAt).toLocaleString()}
+        <span>{`${wheel.owner ? `Created by ${wheel.owner.displayname}` : "Anonymous"} • `}</span>
+        <Tooltip title={dateTime(new Date(wheel.createdAt), "short")}>
+          <span>
+            <RelativeTime date={wheel.createdAt} />
+          </span>
+        </Tooltip>
       </Typography>
     </>
   )

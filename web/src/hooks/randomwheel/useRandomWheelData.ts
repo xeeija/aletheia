@@ -53,6 +53,9 @@ interface DataOptions {
   members?: boolean
   fetchOnly?: boolean
   token?: string
+  initialWheel?: RandomWheelFragment
+  initialEntries?: RandomWheelEntryFragment[]
+  id?: string
 }
 
 export const useRandomWheelData = (wheelSlug: string | string[] | undefined, options?: DataOptions) => {
@@ -67,12 +70,22 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   })
   const wheel = wheelData?.randomWheel as RandomWheelFragment | undefined
 
+  // const wheel = useMemo<RandomWheelFragment | undefined>(
+  //   () => wheelData?.randomWheel ?? options?.initialWheel,
+  //   [wheelData?.randomWheel, options?.initialWheel]
+  // )
+
   const [{ data: entriesData, fetching: fetchingEntries }, fetchEntries] = useRandomWheelEntriesQuery({
     variables: { slug, token: options?.token },
     pause: !options?.entries || options.fetchOnly,
     context,
   })
   const entries = entriesData?.randomWheel?.entries as RandomWheelEntryFragment[] | undefined
+
+  // const entries = useMemo<RandomWheelEntryFragment[] | undefined>(
+  //   () => entriesData?.randomWheel?.entries ?? options?.initialEntries,
+  //   [entriesData?.randomWheel?.entries, options?.initialEntries]
+  // )
 
   const [{ data: winnersData, fetching: fetchingWinners }, fetchWinners] = useRandomWheelWinnersQuery({
     variables: { slug, token: options?.token },
@@ -88,7 +101,7 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   })
   const members = membersData?.randomWheel?.members as RandomWheelMemberFragment[] | undefined
 
-  const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheel?.id
+  const id = wheel?.id ?? (entriesData ?? winnersData ?? membersData)?.randomWheel?.id ?? options?.id
 
   // const { user } = useAuth()
   // const viewable =
@@ -101,8 +114,8 @@ export const useRandomWheelData = (wheelSlug: string | string[] | undefined, opt
   return [
     {
       id,
-      wheel: wheel,
-      entries: entries,
+      wheel: wheel ?? options?.initialWheel,
+      entries: entries ?? options?.initialEntries,
       winners: winners,
       members: members,
       fetching: {
