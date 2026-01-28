@@ -1,20 +1,28 @@
 "use client"
 
 import { DisconnectTwitchDialog, InputField, LinkText, LoadingButton } from "@/components"
-import { useUpdateUserMutation } from "@/generated/graphql"
+import { useUpdateUserMutation, type UserAccessTokenFragment, type UserNameFragment } from "@/generated/graphql"
 import { useAlert, useAuth } from "@/hooks"
 import { Button, Grid, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useState } from "react"
 
-interface Props {}
+interface Props {
+  user?: UserNameFragment
+  accessToken?: UserAccessTokenFragment
+}
 
-export const Settings: FC<Props> = () => {
-  const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({ includeToken: true })
+export const Settings: FC<Props> = ({ user: initialUser, accessToken: initialAccessToken }) => {
+  const { user, userAccessToken, disconnectAccessToken, fetchingDisconnect } = useAuth({
+    includeToken: true,
+    initialUser,
+    initialAccessToken,
+  })
   const [, updateUser] = useUpdateUserMutation()
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false)
 
   const { showSuccess, showError } = useAlert()
+  const [tokenDisconnected, setTokenDisconnected] = useState(false)
 
   // TODO: show error for twitch auth
 
@@ -95,7 +103,7 @@ export const Settings: FC<Props> = () => {
         Twitch
       </Typography>
 
-      {user && !userAccessToken?.id && (
+      {user && (!userAccessToken?.id || tokenDisconnected) && (
         <Button variant="outlined" href="/api/twitch/oauth2/authorize" sx={{ mb: 1 }}>
           Connect with Twitch
         </Button>
@@ -115,7 +123,7 @@ export const Settings: FC<Props> = () => {
         </Typography>
       )}
 
-      {userAccessToken?.id && (
+      {userAccessToken?.id && !tokenDisconnected && (
         <>
           <Typography color="text.secondary" sx={{ pb: 1 }}>
             Connected as <span style={{ fontWeight: 500 }}>{userAccessToken.twitchUsername}</span>
@@ -140,7 +148,16 @@ export const Settings: FC<Props> = () => {
         open={disconnectDialogOpen}
         onClose={() => setDisconnectDialogOpen(false)}
         onDelete={async () => {
-          await disconnectAccessToken()
+          const result = await disconnectAccessToken()
+
+          if (result.data?.disconnectAccessToken) {
+            setTokenDisconnected(true)
+          }
+
+          if (result.error) {
+            console.error(`Failed to disconnect: ${result.error.message}`)
+            showError(`Failed to disconnect`)
+          }
         }}
       />
     </>
