@@ -24,7 +24,8 @@ export const NoDataTwitchError: FC<Props> = ({ error, accessToken }) => {
   const invalidToken = error.message.match(invalidTokenPattern)?.[0] !== null
 
   const date = useNow()
-  const isTokenExpired = Number(accessToken?.obtainmentTimestamp ?? 0) + (accessToken?.expiresIn ?? 0) < date.getTime()
+  const expiryTimestamp = Number(accessToken?.obtainmentTimestamp ?? 0) + (accessToken?.expiresIn ?? 0) * 1000
+  const isTokenExpired = expiryTimestamp < date.getTime()
   const invalidTokenMessage = `Access token for user ${accessToken?.twitchUsername} became invalid${isTokenExpired ? " (expired)" : ""} and refreshing it failed.`
 
   const requestFailedMatch = error.message.match(requestFailedPattern)?.[1]
@@ -49,7 +50,7 @@ export const NoDataTwitchError: FC<Props> = ({ error, accessToken }) => {
         </>
       )}
 
-      {invalidToken && (
+      {invalidToken && !twitchError && (
         <>
           <Typography variant="h5" color="text.secondary" sx={{ textAlign: "center" }}>
             Invalid access token.

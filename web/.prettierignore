@@ -8,5 +8,6 @@ eslint_report.json
 package.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
+next-env.d.ts
 src/generated/graphql/schema.json
 src/messages/*.json

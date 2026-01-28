@@ -91,7 +91,7 @@ export const Channelpoints: FC<Props> = ({
           </>
         )}
 
-        {fetching && !channelRewards && tokenAvailable && (
+        {fetching && !channelRewards && tokenAvailable && !error && (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 6 }}>
             <SkeletonList n={4} height={72} />
           </Box>

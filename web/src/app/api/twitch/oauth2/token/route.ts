@@ -8,8 +8,6 @@ export const GET: RouteHandler = async (req) => {
   const serverUrl = process.env.SERVER_URL ?? "http://localhost:4000"
   const origin = process.env.TWITCH_REDIRECT_URI
 
-  console.log({ url: req.url, ...req.nextUrl })
-
   // handle errors
   if (errorCode) {
     console.error("Error twitch/ouath2/token:", errorCode)
