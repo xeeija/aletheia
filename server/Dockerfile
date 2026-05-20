@@ -48,7 +48,7 @@ RUN pnpm run generate
 RUN pnpm run build
 
 # remove tsc build info files from incremental build (not needed, saves space)
-RUN rm ./dist/*.tsbuildinfo
+RUN rm -f ./dist/*.tsbuildinfo
 
 RUN rm -Rf ./node_modules
 
