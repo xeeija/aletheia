@@ -6,6 +6,7 @@ on:
       - "server/**"
       - "web/**"
       - "!README.md"
+      - ".github/workflows/build.yaml"
     branches:
       - "**"
   workflow_dispatch: {}
