@@ -51,6 +51,9 @@
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/no-empty-object-type": ["error", { "allowWithName": "Props$" }],
+    // most/all cases are explicit type annotaions for generated graphql types,
+    // so named types are used instead of inferred types (e.g. UserFragment instead of { name: string, ... })
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/no-restricted-types": [
       "warn",
       {
