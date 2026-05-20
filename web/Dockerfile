@@ -1,6 +1,6 @@
 # Aletheia Web Frontend
 # FROM node:20.17.0-alpine3.20 AS base
-FROM node:24.8.0-alpine3.22 AS base
+FROM node:24.15.0-alpine3.23 AS base
 
 # pnpm setup
 ENV PNPM_HOME="/pnpm"
@@ -16,10 +16,10 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN pnpm fetch
-RUN pnpm install --offline
+
 
 # Rebuild the source code only when needed
 FROM base AS build
@@ -27,7 +27,13 @@ FROM base AS build
 WORKDIR /app
 
 COPY --from=deps /pnpm/store /pnpm/store
-COPY --from=deps /app/node_modules ./node_modules
+# COPY --from=deps /app/node_modules ./node_modules
+
+# COPY package.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm ci --offline
+
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
