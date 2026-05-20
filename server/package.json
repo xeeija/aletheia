@@ -28,11 +28,12 @@
   "keywords": [],
   "author": "xeeija",
   "license": "ISC",
+  "packageManager": "pnpm@11.1.1+sha512.d1fdf5f73c617b64fa1a56a81c3c8dfe0e966e33a6010aa256b517ae77be21d93e05affc0de1a83b0e4f29d569f68b446ae8f068cd7247c0bb3df0fb4d7bdf9a",
   "engines": {
-    "node": ">=20.16.0"
+    "node": ">=24.15.0"
   },
   "dependencies": {
-    "@apollo/server": "^4.11.0",
+    "@apollo/server": "^4.13.0",
     "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
     "@prisma/adapter-pg": "^6.16.2",
     "@prisma/client": "^6.16.2",
@@ -61,7 +62,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "4.17.14",
     "@types/express-session": "^1.18.0",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24",
     "@typescript-eslint/eslint-plugin": "^8.6.0",
     "concurrently": "^9.0.1",
     "dotenv-cli": "^7.4.2",

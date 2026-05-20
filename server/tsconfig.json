@@ -26,6 +26,7 @@
 
     /* Module Resolution Options */
     // "baseUrl": "./src", // not required anymore for paths
+    "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"],

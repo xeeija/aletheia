@@ -1,5 +1,5 @@
 # Aletheia Server
-FROM node:24.8.0-alpine3.22 AS base
+FROM node:24.15.0-alpine3.23 AS base
 
 
 # Install dependencies only when needed
@@ -18,13 +18,14 @@ RUN corepack enable pnpm
 
 WORKDIR /server
 
-COPY prisma ./prisma
-
 # Install dependencies based on the preferred package manager
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# RUN pnpm fetch
-RUN pnpm install --frozen-lockfile
+RUN pnpm fetch
+
+COPY package.json ./
+
+RUN pnpm ci --offline
 
 # mount pnpm store from host? - not useful for building on CI
 # RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -56,7 +57,7 @@ RUN rm -Rf ./node_modules
 # RUN rm -Rf ./node_modules
 
 # install only prod dependencies and clean dev dependencies from node_modules
-RUN pnpm install --prod --offline --frozen-lockfile --no-optional
+RUN pnpm ci --prod --offline --no-optional
 
 # remove prisma files for unused databases
 RUN cd node_modules/@prisma/client/runtime && ls | grep -E "cockroachdb|mysql|sqlite|sqlserver|react-native|edge|browser" | xargs rm -f
