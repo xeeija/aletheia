@@ -33,8 +33,8 @@
     "node": ">=24.15.0"
   },
   "dependencies": {
-    "@apollo/server": "^4.13.0",
-    "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/express4": "^1.1.2",
     "@prisma/adapter-pg": "^6.16.2",
     "@prisma/client": "^6.16.2",
     "@twurple/api": "^7.1.0",

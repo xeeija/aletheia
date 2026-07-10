@@ -21,8 +21,7 @@ import type {
 } from "@/types.js"
 import { checkInitialDatabase, isDefined, logger } from "@/utils/index.js"
 import { ApolloServer } from "@apollo/server"
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground"
-import { expressMiddleware } from "@apollo/server/express4"
+import { expressMiddleware } from "@as-integrations/express4"
 import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/disabled"
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer"
 import { PrismaPg } from "@prisma/adapter-pg"
@@ -33,6 +32,7 @@ import session from "express-session"
 import { createServer } from "http"
 import { Server } from "socket.io"
 import { buildSchema } from "type-graphql"
+import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default"
 
 // Database client
 // Create one instance and pass it around is the best practice for prisma
@@ -160,11 +160,10 @@ const main = async () => {
     }),
     cache: "bounded",
     csrfPrevention: true,
-    status400ForVariableCoercionErrors: true,
     plugins: [
       process.env.ENABLE_GRAPHQL !== "1"
         ? ApolloServerPluginLandingPageDisabled()
-        : ApolloServerPluginLandingPageGraphQLPlayground(),
+        : ApolloServerPluginLandingPageLocalDefault(),
       ApolloServerPluginDrainHttpServer({ httpServer }),
     ],
   })
