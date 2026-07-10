@@ -1,6 +1,9 @@
+# 1 day = 1440 min
 minimumReleaseAge: 1440
 blockExoticSubdeps: true
 trustPolicy: no-downgrade
+# 7 days = 10080 min
+trustPolicyIgnoreAfter: 10080
 
 # TODO: check which can be upgraded to remove them, or check which verions are fine
 trustPolicyExclude:

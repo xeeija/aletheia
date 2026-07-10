@@ -1,6 +1,6 @@
 # Aletheia Web Frontend
 # FROM node:20.17.0-alpine3.20 AS base
-FROM node:24.15.0-alpine3.23 AS base
+FROM node:24.18.0-alpine3.24 AS base
 
 # pnpm setup
 ENV PNPM_HOME="/pnpm"
@@ -14,6 +14,9 @@ FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 # RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# pin version for `pnpm fetch` here, which comes before package.json is added (which contains pinned packageManager field)
+RUN corepack install -g pnpm@11.11.0
 
 # Install dependencies based on the preferred package manager
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
