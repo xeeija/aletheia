@@ -1,5 +1,5 @@
 # Aletheia Server
-FROM node:24.15.0-alpine3.23 AS base
+FROM node:24.18.0-alpine3.24 AS base
 
 
 # Install dependencies only when needed
@@ -17,6 +17,8 @@ RUN curl -sf https://gobinaries.com/tj/node-prune@v1.2.0 | sh
 RUN corepack enable pnpm
 
 WORKDIR /server
+
+RUN corepack install -g pnpm@11.11.0
 
 # Install dependencies based on the preferred package manager
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
