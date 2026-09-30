@@ -86,7 +86,8 @@ export const Wheel: FC<Props> = ({
     center: { x: diameter / 2, y: diameter / 2 },
     radius: diameter / 2 - 5,
     startAngle: 0,
-    endAngle: segments > 1 ? 360 / segments : 359.99, // 360° angle would be the same as 0°
+    // 360° angle would be the same as 0°
+    endAngle: Math.min(359.99, 360 / segments),
   }
 
   const arrowHeight = diameter * 0.02
@@ -213,7 +214,7 @@ export const Wheel: FC<Props> = ({
               colorIndex === 0 && i === entries.length - 1 ? colors[~~(colors.length / 2)] : colors[colorIndex]
 
             return (
-              <g key={`wheel-g-${i}`}>
+              <g key={entry.id}>
                 <path
                   style={{
                     stroke: theme.palette.background.default, //"#191d21",
