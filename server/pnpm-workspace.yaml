@@ -14,10 +14,10 @@ allowBuilds:
 
 overrides:
   body-parser@<1.20.6: ^1.20.6
-  brace-expansion@<2.1.4: ^2.1.4
+  brace-expansion@<2.1.7: ^2.1.7
   deepmerge-ts@<8.0.0: ^8.0.0
   effect@<3.20.0: ^3.20.0
-  engine.io@>=4.1.0 <6.6.7: ^6.6.7
+  engine.io@>=4.1.0 <6.6.10: ^6.6.10
   form-data@>=4.0.0 <4.0.6: ^4.0.6
   js-yaml@<4.3.2: ^4.3.2
   lodash@<4.17.23: '>=4.17.23'
