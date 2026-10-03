@@ -1,5 +1,8 @@
+"use client"
+
+import { useRandomWheelVolume } from "@/hooks"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material"
-import { Dispatch, FC, ReactNode, SetStateAction } from "react"
+import { Dispatch, FC, ReactNode, SetStateAction, useEffect } from "react"
 
 interface Props {
   open: [boolean, Dispatch<SetStateAction<boolean>>]
@@ -25,6 +28,24 @@ export const WinnerDialog: FC<Props> = ({
   backdropWidth,
 }) => {
   const [open, setOpen] = openState
+
+  const { mutedKey } = useRandomWheelVolume()
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const muted = JSON.parse(window.localStorage.getItem(mutedKey) ?? "false") as boolean
+
+    if (muted) {
+      return
+    }
+
+    const winnerSound = new Audio("/audio/yeeeah.mp3")
+    winnerSound.volume = 0.25
+    winnerSound.play()
+  }, [open, mutedKey])
 
   return (
     <Dialog
