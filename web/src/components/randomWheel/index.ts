@@ -51,6 +51,7 @@ export { WheelControls } from "./wheel/WheelControls"
 export { WheelEntries } from "./wheel/WheelEntries"
 export { WheelOptionsDropdown } from "./wheel/WheelOptionsDropdown"
 export { WheelSkeleton } from "./wheel/WheelSkeleton"
+export { WheelSound } from "./wheel/WheelSound"
 export { WheelToolbar } from "./wheel/WheelToolbar"
 
 export { CreateEditWheelDialog } from "./edit/CreateEditWheelDialog"

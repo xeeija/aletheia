@@ -1,9 +1,10 @@
 "use client"
 
+import { WheelSound } from "@/components/randomWheel"
 import { RandomWheelEntryFragment } from "@/generated/graphql"
 import { Sector, froundPoint, logistic, pointOnCircle } from "@/utils/math"
 import { Box, useTheme } from "@mui/material"
-import { FC } from "react"
+import { FC, useRef } from "react"
 
 interface Props {
   diameter: number
@@ -28,42 +29,12 @@ export const Wheel: FC<Props> = ({
   popout,
   behindBackdrop,
 }) => {
-  // const spinClickSounds = useMemo(() => Array(10).fill(0).map((v) => new Audio(`/audio/boob6-${v}.wav`)), [])
+  // const sounds = Array(10)
+  //   .fill(0)
+  //   .map(() => new Audio(`/audio/boob.wav`))
+  // const [soundIndex, setSoundIndex] = useState(0)
 
-  // TODO: Use WebAPI instead
-  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
-
-  // useEffect(() => {
-  //   const spinClickSound = new Audio("/audio/boob.wav")
-
-  //   const observer = new IntersectionObserver((entries) => {
-  //     entries.forEach((entry) => {
-  //       // TODO: Fix initial sound when starting, and sound when adding/removing
-  //       // getSpinning() function instead, so spinning is evaluated only once the callback is executed?
-  //       if (!spinning) {
-  //         return
-  //       }
-
-  //       if (entry.isIntersecting && !entry.target.classList.contains("item-intersect")) {
-  //         entry.target.classList.add("item-intersect")
-  //         spinClickSound.play()
-
-  //       } else if (!entry.isIntersecting && entry.target.classList.contains("item-intersect")) {
-  //         entry.target.classList.remove("item-intersect")
-  //       }
-  //     })
-  //   },
-  //     {
-  //       root: document.querySelector("#wheel-svg"),
-  //       // top right bottom left
-  //       rootMargin: "-50% 0px 0px -50%",
-  //       threshold: 0.5,
-  //     })
-
-  //   document.querySelectorAll(".wheel-item-start").forEach((target) => observer.observe(target))
-
-  //   return () => observer.disconnect()
-  // })
+  const wheelRef = useRef<SVGSVGElement>(null)
 
   // TODO: refactor to server component when mui theme is updated to work with Server Components
   const theme = useTheme()
@@ -121,7 +92,7 @@ export const Wheel: FC<Props> = ({
             marginLeft: arrowWidth,
           }),
         }}
-        // ref={wheelRef}
+        ref={wheelRef}
         id="wheel-svg"
       >
         <circle
@@ -252,15 +223,15 @@ export const Wheel: FC<Props> = ({
                   </textPath>
                 </text>
 
-                {/* Trigger Element for "clack" sound when spinning */}
-                <circle
-                  className={`wheel-item-start start-${i}`}
-                  cx={startPos.x}
-                  cy={startPos.y}
-                  r="5"
-                  fill={color}
-                  stroke="#000"
-                  visibility="hidden"
+                <WheelSound
+                  position={startPos}
+                  index={i}
+                  wheelRef={wheelRef}
+                  disabled={!spinning}
+                  // onIntersect={() => {
+                  //   sounds[soundIndex].play()
+                  //   setSoundIndex((i) => (i + 1) % 10)
+                  // }}
                 />
 
                 {/* <circle cx={middlePos.x} cy={middlePos.y} r="5" fill={color} /> */}
