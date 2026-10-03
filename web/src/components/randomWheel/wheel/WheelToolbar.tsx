@@ -8,10 +8,11 @@ import {
   WheelOptionsDropdown,
 } from "@/components/randomWheel"
 import type { UserNameFragment } from "@/generated/graphql"
-import { RandomWheelDetails, useAuth, useRandomWheelLike } from "@/hooks"
+import { RandomWheelDetails, useAuth, useRandomWheelLike, useRandomWheelVolume } from "@/hooks"
 import { Box, IconButton, SvgIcon, Tooltip, Typography } from "@mui/material"
 import { useFormatter } from "next-intl"
 import { FC } from "react"
+import { HiVolumeOff, HiVolumeUp } from "react-icons/hi"
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti"
 
 interface Props {
@@ -22,6 +23,8 @@ interface Props {
 export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
   const { authenticated } = useAuth({ initialUser: user })
   const [liked, like] = useRandomWheelLike(wheel?.id, wheel?.liked)
+
+  const { muted, setMuted } = useRandomWheelVolume()
 
   const { dateTime } = useFormatter()
 
@@ -49,6 +52,19 @@ export const WheelToolbar: FC<Props> = ({ wheel, user }) => {
               onClick={async () => await like()}
             >
               <SvgIcon component={liked ? TiStarFullOutline : TiStarOutline} viewBox="2 2 20 20" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip placement="bottom" title={muted ? "Unmute" : "Mute"}>
+            <IconButton
+              color="secondary"
+              sx={{ ml: 1 }}
+              onClick={() => {
+                setMuted((x) => !x)
+              }}
+            >
+              {muted && <HiVolumeOff />}
+              {!muted && <HiVolumeUp />}
             </IconButton>
           </Tooltip>
 
