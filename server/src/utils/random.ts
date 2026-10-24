@@ -1,7 +1,7 @@
 import { randomBytes, randomInt } from "crypto"
 
 /**
- * Generates a secure random number between 0 and `max` (exclusive)
+ * Generates a secure random number between `min` and `max` (exclusive)
  * @param min inclusive minimum
  * @param max exclusive maximum
  */
@@ -58,4 +58,10 @@ export const randomScaled = (min: number, max: number) => {
 const randomFunctions = [random, randomInt, randomScaled]
 
 const currentRandomFn = parseInt(process.env.SPIN_RANDOM_FN ?? "") || 0
-export const randomForSpin = (min: number, max: number) => Math.floor(randomFunctions[currentRandomFn](min, max))
+
+export const randomForSpin = (min: number, max: number) => {
+  const selectedRandomFn = currentRandomFn !== -1 ? currentRandomFn : Math.floor(Math.random() * randomFunctions.length)
+  const randomFnIndex = Math.max(0, Math.min(selectedRandomFn, randomFunctions.length - 1))
+
+  return Math.floor(randomFunctions[randomFnIndex](min, max))
+}
