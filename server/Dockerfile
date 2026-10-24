@@ -1,75 +1,64 @@
-# Aletheia Server
-FROM node:24.18.0-alpine3.24 AS base
+FROM registry.access.redhat.com/hi/nodejs:24.22.1 AS base
+
+ENV CONTAINER_DEFAULT_USER=65532
 
 
-# Install dependencies only when needed
-FROM base AS build
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-# RUN apk add --no-cache libc6-compat
+# Base node image with pnpm and dependencies
+FROM registry.access.redhat.com/hi/nodejs:24.22.1-builder AS deps
 
-RUN apk add --update --no-cache curl
-RUN curl -sf https://gobinaries.com/tj/node-prune@v1.2.0 | sh
+USER root
 
-# pnpm setup
-# ENV PNPM_HOME="/pnpm"
-# ENV PATH="$PNPM_HOME:$PATH"
-# requires node >=22.14.0, see https://github.com/pnpm/pnpm/issues/9029#issuecomment-2650658230
-RUN corepack enable pnpm
+# tar, gzip and openssl are required for installing pnpm
+RUN dnf install -y tar gzip openssl && dnf clean all
+
+USER ${CONTAINER_DEFAULT_USER}
+
+# install node-prune (remove unnecessary files in node_modules to save space)
+RUN curl -f https://gobinaries.com/tj/node-prune@v1.2.0 | PREFIX=$HOME sh
+
+# install pnpm
+ENV PNPM_HOME="$HOME/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+
+RUN curl -f https://get.pnpm.io/install.sh | env PNPM_VERSION=12.15.0 ENV="$HOME/.shrc" SHELL="/bin/sh" sh -
 
 WORKDIR /server
 
-RUN corepack install -g pnpm@11.11.0
-
-# Install dependencies based on the preferred package manager
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm doctor --json --benchmark
 
 RUN pnpm fetch
 
-COPY package.json ./
-
-RUN pnpm ci --offline
-
-# mount pnpm store from host? - not useful for building on CI
-# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
 
 # Rebuild the source code only when needed
-# FROM deps AS build
+FROM deps AS build
 
-# WORKDIR /server
+WORKDIR /server
 
-# COPY --from=deps /pnpm/store /pnpm/store
-# COPY --from=deps /server/node_modules ./node_modules
-COPY . .
+COPY --chown=${CONTAINER_DEFAULT_USER}:root package.json ./
 
-# Prisma error with node:16-alpine (fixed in prisma@4.8.0) https://github.com/prisma/prisma/issues/16834#issuecomment-1355195025
-# RUN apk add --no-cache openssl1.1-compat
+RUN pnpm ci --offline --frozen-lockfile
+
+COPY --chown=${CONTAINER_DEFAULT_USER}:root . .
 
 RUN pnpm run generate
 
 RUN pnpm run build
-
-# remove tsc build info files from incremental build (not needed, saves space)
 RUN rm -f ./dist/*.tsbuildinfo
-
-RUN rm -Rf ./node_modules
 
 # TODO: Use a bundler like webpack or vite if possible
 # Install again without dev dependencies
-# RUN rm -Rf ./node_modules
+RUN rm -Rf ./node_modules
 
-# install only prod dependencies and clean dev dependencies from node_modules
-RUN pnpm ci --prod --offline --no-optional
+RUN pnpm ci --prod --offline --frozen-lockfile
 
 # remove prisma files for unused databases
 RUN cd node_modules/@prisma/client/runtime && ls | grep -E "cockroachdb|mysql|sqlite|sqlserver|react-native|edge|browser" | xargs rm -f
 
-# remove .js files (both .js and .mjs are available), except library or client
-# RUN cd node_modules/@prisma/client/runtime && ls | grep -E ".js" | grep -v -E "library|client" | xargs rm -f
+RUN $HOME/node-prune
 
-RUN node-prune
-
-COPY package.json ./dist
+COPY --chown=${CONTAINER_DEFAULT_USER}:root package.json ./dist
 
 
 # Production image, copy all the files and run
@@ -77,19 +66,20 @@ FROM base AS run
 
 WORKDIR /server
 
-COPY --from=build /server/node_modules/ ./node_modules
-COPY --from=build /server/dist ./dist
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /server/dist ./dist
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /server/node_modules/ ./node_modules
 
 ARG BUILD_TIME
 ARG COMMIT_SHA
 ARG COMMIT_TIME
 ARG VERSION
 
-ENV NODE_ENV="production"
 ENV BUILD_TIME=${BUILD_TIME}
 ENV COMMIT_SHA=${COMMIT_SHA}
 ENV COMMIT_TIME=${COMMIT_TIME}
 ENV VERSION=${VERSION}
+
+ENV NODE_ENV="production"
 
 ENV PORT=4000
 
