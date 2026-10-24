@@ -73,6 +73,6 @@
     "prettier": "^3.2.4",
     "prisma": "^6.16.2",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.5.4"
+    "typescript": "^7.0.2"
   }
 }

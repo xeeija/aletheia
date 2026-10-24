@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     /* Basic Options */
-    "target": "es2022",
-    "module": "node16",
-    "lib": ["es2023"],
+    "target": "ES2025",
+    "lib": ["ESNext"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "incremental": true,
-    "moduleResolution": "node16",
 
     /* Recommeded */
     "strict": true,
@@ -25,12 +25,13 @@
     "isolatedModules": true,
 
     /* Module Resolution Options */
-    // "baseUrl": "./src", // not required anymore for paths
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"],
     },
+    // explicitly list the needed @types packages in TS 7, just "node" should be enough
+    "types": ["node"],
 
     /* Additional Checks */
     // "noUnusedLocals": true,
@@ -52,10 +53,6 @@
   //   "resolveFullPaths": true,
   // },
   "include": [
-    "./src/**/*.ts",
-    // "./src/**/*.tsx"
-  ],
-  "exclude": [
-    "./node_modules",
+    "./src",
   ]
 }
