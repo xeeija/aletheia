@@ -30,7 +30,7 @@
   "license": "ISC",
   "packageManager": "pnpm@11.11.0+sha512.4463f65fd80ed80d69bc1d4bf163ee94f605c7380fc318bb5b2ebe15f8cd12d49c51a4d59e951b401e764d3b6ca751cbf51bc50ed7001a6bcb4935e684c34882",
   "engines": {
-    "node": ">=24.15.0"
+    "node": "^24.22.1 || ^26.12.1"
   },
   "dependencies": {
     "@apollo/server": "^5.5.1",
@@ -62,7 +62,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "4.17.14",
     "@types/express-session": "^1.18.0",
-    "@types/node": "^24",
+    "@types/node": "^24.19.2",
     "@typescript-eslint/eslint-plugin": "^8.6.0",
     "concurrently": "^9.0.1",
     "dotenv-cli": "^7.4.2",
