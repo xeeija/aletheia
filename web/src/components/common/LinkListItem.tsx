@@ -30,7 +30,6 @@ type ItemProps = LinkItem & {
 }
 
 // Display name is shown in debugger instead of underlying element name
-// eslint-disable-next-line react/display-name
 export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
   ({ name = "", subtitle, icon, divider, href, textProps, disabled, color, sx, ...props }, ref) => {
     const theme = useTheme()
@@ -91,5 +90,5 @@ export const LinkListItem = forwardRef<HTMLAnchorElement, ItemProps>(
     }
 
     return linkItem
-  }
+  },
 )

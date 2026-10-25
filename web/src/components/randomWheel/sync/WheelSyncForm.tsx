@@ -133,12 +133,11 @@ export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   {wheelSync?.length ? (
-                    <List role="list" dense>
+                    <List dense>
                       {values.wheelSync.map((sync, i) => (
                         // subscription.reward &&
                         <ListItem
                           key={sync.id}
-                          role="listitem"
                           sx={{ width: "100%" }}
                           secondaryAction={
                             !sync.delete && (
@@ -238,7 +237,6 @@ export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
                                   onClick={() => {
                                     setFieldValue(`wheelSync[${i}].delete`, true)
                                   }}
-                                  role="button"
                                 >
                                   <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
                                 </IconButton>
@@ -342,7 +340,6 @@ export const WheelSyncForm: FC<Props> = ({ slug, formRef, dialogActionsRef }) =>
                         />
                         <Box sx={{ mt: 0.75 }}>
                           <IconButton
-                            role="button"
                             onClick={() => {
                               setShowNewSync(false)
                               setFieldValue("useInput", false)

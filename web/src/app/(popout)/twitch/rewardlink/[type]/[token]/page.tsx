@@ -37,7 +37,7 @@ export const generateMetadata: MetadataFn<Params, SearchParams> = async ({ param
 
 // const RewardLinkPage: Page<Params, SearchParams> = async ({ params, searchParams }) => {
 const RewardLinkPage: Page<Params, SearchParams> = async ({ params, searchParams }) => {
-  const [{ token, type }] = await Promise.all([params])
+  const { token, type } = await params
 
   const reward = await getRewardLinkToken(token, type)
 

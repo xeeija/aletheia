@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 }
 
 export const NotFoundRewardLink: Page<Params, SearchParams> = async (props) => {
-  const [searchParams] = await Promise.all([props.searchParams])
+  const searchParams = await props.searchParams
 
   const size = ["sm", "md", "lg", "xl"].includes(searchParams?.size ?? "") ? (searchParams.size as ItemSize) : "xl"
   const skeletonSize = { sm: 28, md: 40, lg: 48, xl: 84 }[size]

@@ -19,10 +19,13 @@ interface Props {
   behindBackdrop?: boolean
 }
 
+const defaultEntries: RandomWheelEntryFragment[] = []
+const defaultColors: string[] = []
+
 export const Wheel: FC<Props> = ({
   diameter,
-  entries = [],
-  colors = [],
+  entries = defaultEntries,
+  colors = defaultColors,
   rotation = 0,
   spinning,
   spinDuration = 8000,
@@ -139,7 +142,7 @@ export const Wheel: FC<Props> = ({
             const startPos = froundPoint(pointOnCircle(d.center, d.radius, d.endAngle * entry.weight, angleOffset))
             const endPos = froundPoint(pointOnCircle(d.center, d.radius, d.startAngle, angleOffset))
             const middlePos = froundPoint(
-              pointOnCircle(d.center, d.radius, (d.endAngle * entry.weight) / 2 + adjustTextBaseline, angleOffset)
+              pointOnCircle(d.center, d.radius, (d.endAngle * entry.weight) / 2 + adjustTextBaseline, angleOffset),
             ) // for text path
             // const middlePosX = Math.fround(middlePos.x)
             // const middlePosY = Math.fround(middlePos.y)

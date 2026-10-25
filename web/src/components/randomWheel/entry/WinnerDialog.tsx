@@ -20,8 +20,8 @@ interface Props {
 export const WinnerDialog: FC<Props> = ({
   open: openState,
   description,
-  onClose = () => {},
-  onRemove = () => {},
+  onClose,
+  onRemove,
   hideClose,
   hideRemove,
   popout,
@@ -52,7 +52,7 @@ export const WinnerDialog: FC<Props> = ({
       fullWidth
       maxWidth="xs"
       open={open}
-      onClose={() => onClose()}
+      onClose={() => onClose?.()}
       aria-labelledby="winner-dialog-title"
       aria-describedby="winner-dialog-description"
       slotProps={{
@@ -83,7 +83,7 @@ export const WinnerDialog: FC<Props> = ({
             color="secondary"
             onClick={() => {
               setOpen(false)
-              onClose()
+              onClose?.()
             }}
           >
             Close
@@ -95,8 +95,8 @@ export const WinnerDialog: FC<Props> = ({
             color="primary"
             onClick={() => {
               setOpen(false)
-              onClose()
-              onRemove()
+              onClose?.()
+              onRemove?.()
             }}
           >
             Remove

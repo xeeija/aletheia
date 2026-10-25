@@ -23,14 +23,13 @@ export const useChannelRewards = (config?: Config) => {
 
   return useMemo(
     () => ({
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       channelRewards: (data?.channelRewards ?? config?.initialRewards) as CustomRewardFragment[] | undefined,
       fetching,
       error,
       refetch: () => refetchRewards({ requestPolicy: "cache-and-network" }),
       // ...actions,
     }),
-    [data?.channelRewards, config?.initialRewards, fetching, error, refetchRewards]
+    [data?.channelRewards, config?.initialRewards, fetching, error, refetchRewards],
   )
 }
 

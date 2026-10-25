@@ -17,7 +17,7 @@ import { ElementType, FC, ReactNode, useState } from "react"
 export interface ConfirmDialogProps {
   title: ReactNode
   open: boolean
-  type: ThemeColor
+  type?: ThemeColor
   confirmText: ReactNode
   onClose: () => void
   onConfirm?: () => Awaitable<void | boolean>

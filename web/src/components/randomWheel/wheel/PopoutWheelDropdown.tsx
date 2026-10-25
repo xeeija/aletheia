@@ -13,7 +13,7 @@ import { LinkAdd } from "@/components/icons"
 import { RandomWheelDetails, useLocation, useRandomWheelActions } from "@/hooks"
 import { Box, IconButton, Paper, SvgIcon, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import { HiExternalLink } from "react-icons/hi"
 import { TiRefresh } from "react-icons/ti"
 
@@ -52,7 +52,6 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const initialUrl = `${baseUrl}/popout${privateWheel ? `?token=${token}` : ""}`
   const [shareUrl, setShareUrl] = useState(initialUrl)
-  useEffect(() => setShareUrl(initialUrl), [initialUrl])
 
   const updateUrl = (values: PopoutOptions) => {
     const params = new URLSearchParams()

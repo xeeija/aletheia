@@ -55,7 +55,7 @@ export const WinnerList: FC<Props> = ({ winners, spinning, editable }) => {
             computeItemKey={(_, winner) => winner.id}
             style={{ height: maxHeight }}
             itemContent={(_, { name, createdAt }) => (
-              <ListItem role="listitem" dense sx={{ mt: 0 }}>
+              <ListItem dense sx={{ mt: 0 }}>
                 <ListItemText
                   primary={name}
                   secondary={dateTime(new Date(createdAt), "short")}

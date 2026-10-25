@@ -60,6 +60,7 @@ export const CreateChannelRewardForm: FC<Props> = ({ formRef, actionsRef, onClos
       .min(60, "Must be at least 1")
       .when("cooldownUnit", {
         is: (val: number) => val < 60,
+        // oxlint-disable-next-line unicorn/no-thenable
         then: (schema) => schema.min(60, "Must be at least 60"),
         otherwise: (schema) => schema.min(1, "Must be at least 1"),
       }),

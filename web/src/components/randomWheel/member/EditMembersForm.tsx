@@ -34,16 +34,16 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
   })
 
   const initialMembers: Record<string, MemberFormEntry> = (defaultMembers ?? []).reduce(
-    (acc, member) => ({
-      ...acc,
-      [member.user.username]: {
-        id: member.id,
-        username: member.user.username,
-        displayname: member.user.displayname ?? undefined,
-        role: member.roleName,
-      },
-    }),
-    {}
+    (acc, member) =>
+      Object.assign(acc, {
+        [member.user.username]: {
+          id: member.id,
+          username: member.user.username,
+          displayname: member.user.displayname ?? undefined,
+          role: member.roleName,
+        },
+      }),
+    {},
   )
 
   const initialValues: InitialValues = {
@@ -72,7 +72,7 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
 
         // FIX: Doesn't reload wheel (and members) when the members are empty and one is added
         // Any fix for this? Maybe normalized cache?
-        if (response?.length ?? 0 <= 1) {
+        if ((response?.length ?? 0) <= 1) {
           fetchMembers({ requestPolicy: "cache-and-network" })
         }
 
@@ -87,11 +87,10 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
           <Form id="editMembersForm" autoComplete="off">
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <List role="list">
+                <List>
                   {members.map(([key, member]) => (
                     <ListItem
                       key={member.id}
-                      role="listitem"
                       dense
                       secondaryAction={
                         !member.delete && (
@@ -113,7 +112,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                                   // setDeletedMembers([...deletedMembers, member.id])
                                   setFieldValue(`members.${key}.delete`, true)
                                 }}
-                                role="button"
                                 aria-label={`Delete member '${member.username}'`}
                               >
                                 <SvgIcon component={HiTrash} fontSize="small" viewBox="0 0 20 20" color="error" />
@@ -141,7 +139,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
 
                   {!readonly && values.draft && (
                     <ListItem
-                      role="listitem"
                       dense
                       secondaryAction={
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -156,7 +153,6 @@ export const EditMembersForm: FC<Props> = ({ slug, formRef, dialogActionsRef, re
                             sx={{ width: "7rem" }}
                           />
                           <IconButton
-                            role="button"
                             aria-label={`Delete draft member`}
                             onClick={() => {
                               setFieldValue("draft", initialValues.draft)

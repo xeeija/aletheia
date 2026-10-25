@@ -17,7 +17,7 @@ import { useRewardLinks } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
 import { Box, FormHelperText, IconButton, Skeleton, SvgIcon } from "@mui/material"
 import { Form, Formik } from "formik"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import { HiCog, HiEye, HiEyeOff, HiTrash } from "react-icons/hi"
 
 type RewardLinkValues = {
@@ -73,7 +73,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
   const initialUrl = `${widgetBaseUrl}/${type}/${link?.token ?? ""}`
 
   const [url, setUrl] = useState(initialUrl)
-  useEffect(() => setUrl(initialUrl), [initialUrl])
+  // useEffect(() => setUrl(initialUrl), [initialUrl])
 
   const updateUrl = (values: RewardLinkValues) => {
     const params = new URLSearchParams()

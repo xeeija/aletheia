@@ -17,7 +17,7 @@ interface Props {
 
 export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete, onValidate, hideDelete }) => {
   return (
-    <ListItem role="listitem" dense sx={{ display: "flex", gap: 2, px: 0 }}>
+    <ListItem dense sx={{ display: "flex", gap: 2, px: 0 }}>
       <SelectField
         name={`items[${index}].rewardId`}
         options={channelRewards?.map((reward) => ({
@@ -45,7 +45,7 @@ export const RewardItemListItem: FC<Props> = ({ index, channelRewards, onDelete,
       {!hideDelete && (
         <Box>
           <Tooltip title="Delete">
-            <IconButton role="button" aria-label="Delete item" onClick={() => onDelete?.(index)} disabled={hideDelete}>
+            <IconButton aria-label="Delete item" onClick={() => onDelete?.(index)} disabled={hideDelete}>
               <SvgIcon component={HiTrash} viewBox="0 0 20 20" color={hideDelete ? "disabled" : "error"} />
             </IconButton>
           </Tooltip>

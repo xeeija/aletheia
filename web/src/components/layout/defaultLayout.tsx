@@ -17,7 +17,6 @@ type Props = NavigationProps & {
 }
 
 // Helper to pass props to Navigation
-// eslint-disable-next-line react/display-name
 export const defaultLayout = (props?: Props) => (page: ReactElement<unknown>) => {
   const { title, fullWidth = true, ...navProps } = props ?? {}
   return (

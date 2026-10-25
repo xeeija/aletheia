@@ -128,7 +128,6 @@ export const useAuth = (config?: Config) => {
       return response
     },
     // twitch
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     userAccessToken: (token?.userAccesToken ?? config?.initialAccessToken) as UserAccessTokenFragment | undefined,
     errorUserAccessToken: errorToken,
     fetchingToken,
@@ -138,7 +137,7 @@ export const useAuth = (config?: Config) => {
         {},
         {
           additionalTypenames: ["UserAccessToken"],
-        }
+        },
       ),
   }
 }

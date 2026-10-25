@@ -10,7 +10,7 @@ interface Props {
   authenticated: boolean
 }
 
-export const NoDataWheelList: FC<Props> = ({ type = "my", authenticated }) => {
+export const NoDataWheelList: FC<Props> = ({ type, authenticated }) => {
   const image = {
     my: undefined,
     shared: "/img/share.svg",

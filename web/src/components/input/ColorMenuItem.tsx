@@ -29,6 +29,7 @@ export const ColorMenuItem: FC<Props> = ({ name, colors, noMenuItem, ...props })
       >
         {colorList?.map((color, i) => (
           <Box
+            // oxlint-disable-next-line react/no-array-index-key
             key={i}
             sx={{
               width: "100%",

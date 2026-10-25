@@ -14,7 +14,6 @@ interface Props {
 
 export const EditMembersDialog: FC<Props> = ({ open, onClose, slug, readonly }) => {
   const actionsRef = useRef(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<FormikProps<any>>(null)
 
   const closeHandler = () => {

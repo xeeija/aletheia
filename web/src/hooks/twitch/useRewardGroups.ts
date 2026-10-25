@@ -33,10 +33,11 @@ export const useRewardGroups = (config?: RewardGroupsConfig) => {
       })
     : (data?.rewardGroups as RewardGroupFragment[] | undefined)
 
-  const rewardGroups = groupsWithoutDate?.map((group) => ({
-    ...group,
-    cooldownExpiry: new Date(group.cooldownExpiry ?? ""),
-  }))
+  const rewardGroups = groupsWithoutDate?.map((group) =>
+    Object.assign(group, {
+      cooldownExpiry: new Date(group.cooldownExpiry ?? ""),
+    }),
+  )
 
   // Single Reward Group
 

@@ -18,10 +18,12 @@ export const SkeletonList: FC<Props> = ({ n, variant = "rectangular", animationD
     <>
       {items.map((_, i) =>
         children ? (
+          // oxlint-disable-next-line react/no-array-index-key
           <Fragment key={i}>{children}</Fragment>
         ) : (
+          // oxlint-disable-next-line react/no-array-index-key
           <Skeleton key={i} variant={variant} sx={{ animationDelay: `${i * (animationDelay ?? 50)}ms` }} {...props} />
-        )
+        ),
       )}
     </>
   )

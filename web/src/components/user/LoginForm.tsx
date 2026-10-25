@@ -60,7 +60,8 @@ export const LoginForm: FC<Props> = () => {
             size="small"
             margin="normal"
             fullWidth
-            autoFocus
+            // no autofocus for better a11y
+            // autoFocus
             required
           />
 

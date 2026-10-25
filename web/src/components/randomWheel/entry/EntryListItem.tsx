@@ -26,9 +26,9 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
         theme.transitions.create(["opacity", "visibility", "transform"], {
           duration: theme.transitions.duration.shortest,
           delay: delay,
-        })
+        }),
       ),
-    [theme.transitions]
+    [theme.transitions],
   )
 
   // const [hovered, setHovered] = useState(false)
@@ -40,7 +40,7 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
       { id: entry.id },
       {
         additionalTypenames: ["RandomWheelEntry"],
-      }
+      },
     )
 
     if (data?.deleteRandomWheelEntry) {
@@ -53,7 +53,6 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
   return (
     <ListItem
       key={entry.id}
-      role="listitem"
       dense
       // onMouseEnter={() => setHovered(true)}
       // onMouseLeave={() => setHovered(false)}
@@ -96,7 +95,6 @@ export const EntryListItem: FC<Props> = ({ entry, editable, disabled, scrolling,
               <IconButton
                 onClick={async () => await onDelete?.(entry)}
                 // onClick={async () => await onDelete(entry)}
-                role="button"
                 disabled={disabled}
                 aria-label={`Delete entry '${entry.name}'`}
               >

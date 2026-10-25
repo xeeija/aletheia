@@ -23,10 +23,10 @@ export const RewardItemList: FC<Props> = ({ channelRewards }) => {
   const showOneItemHint = values.items.length === 1 && dirty
 
   return (
-    <List role="list">
+    <List>
       {values.items.map((item, index) => (
         <RewardItemListItem
-          key={`${index}.${item.rewardId}`}
+          key={item.rewardId}
           channelRewards={channelRewards}
           index={index}
           hideDelete={values.items.length <= 1}
@@ -34,7 +34,7 @@ export const RewardItemList: FC<Props> = ({ channelRewards }) => {
             setFieldError(`items[${index}].rewardId`, undefined)
             setFieldValue(
               "items",
-              values.items.filter((_, i) => i !== index)
+              values.items.filter((_, i) => i !== index),
             )
           }}
           onValidate={(value) => {

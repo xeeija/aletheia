@@ -22,6 +22,7 @@ export const BingoBoard: FC<Props> = ({ items }) => {
           const y = Math.floor(i / dimens) * cell
 
           return (
+            // oxlint-disable-next-line react/no-array-index-key
             <g key={i}>
               <rect
                 id={`bingoItem-${i}`}

@@ -94,12 +94,12 @@ export const EntryList: FC<Props> = ({
       Array(10)
         .fill(0)
         .map(() => (2 + Math.round(Math.random() * 3)) * 10),
-    []
+    [],
   )
 
   return (
     <>
-      <List role="list" sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
+      <List sx={{ py: 0, mt: -0.5, overflowY: "auto", maxHeight: maxHeight }}>
         {/* TODO: Provider and custom hook for alerts, maybe with possibility to stack them (see: notistack) */}
 
         {entries.length > 0 && (
