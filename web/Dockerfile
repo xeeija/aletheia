@@ -1,47 +1,44 @@
-# Aletheia Web Frontend
-# FROM node:20.17.0-alpine3.20 AS base
-FROM node:24.18.0-alpine3.24 AS base
+FROM registry.access.redhat.com/hi/nodejs:24.22.1 AS base
 
-# pnpm setup
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-# requires node >=22.14.0, see https://github.com/pnpm/pnpm/issues/9029#issuecomment-2650658230
-RUN corepack enable pnpm
+ENV CONTAINER_DEFAULT_USER=65532
 
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-# RUN apk add --no-cache libc6-compat
+# Base node image with pnpm and dependencies
+FROM registry.access.redhat.com/hi/nodejs:24.22.1-builder AS deps
+
+USER root
+
+# tar, gzip and openssl are required for installing pnpm
+RUN dnf install -y tar gzip openssl && dnf clean all
+
+USER ${CONTAINER_DEFAULT_USER}
+
+ENV PNPM_HOME="$HOME/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+
+RUN curl https://get.pnpm.io/install.sh | env PNPM_VERSION=12.15.0 ENV="$HOME/.shrc" SHELL="/bin/sh" sh -
+
 WORKDIR /app
 
-# pin version for `pnpm fetch` here, which comes before package.json is added (which contains pinned packageManager field)
-RUN corepack install -g pnpm@11.11.0
-
-# Install dependencies based on the preferred package manager
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm doctor --json --benchmark
 
 RUN pnpm fetch
 
 
 # Rebuild the source code only when needed
-FROM base AS build
+FROM deps AS build
 
 WORKDIR /app
 
-COPY --from=deps /pnpm/store /pnpm/store
-# COPY --from=deps /app/node_modules ./node_modules
+COPY --chown=${CONTAINER_DEFAULT_USER}:root package.json ./
 
-# COPY package.json ./
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm ci --offline --frozen-lockfile
 
-RUN pnpm ci --offline
+COPY --chown=${CONTAINER_DEFAULT_USER}:root . .
 
-COPY . .
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
+# Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED=1
 
 ARG BUILD_TIME
@@ -56,6 +53,7 @@ ENV NEXT_PUBLIC_VERSION=${VERSION}
 
 RUN pnpm run build
 
+
 # Production image, copy all the files and run next
 FROM base AS run
 
@@ -66,17 +64,17 @@ ENV NODE_ENV="production"
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
 
 COPY --from=build /app/public ./public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /app/.next/standalone ./
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /app/.next/static ./.next/static
 
-USER nextjs
+# USER nextjs
 
 ARG BUILD_TIME
 ARG COMMIT_SHA
@@ -88,8 +86,8 @@ ENV COMMIT_SHA=${COMMIT_SHA}
 ENV COMMIT_TIME=${COMMIT_TIME}
 ENV VERSION=${VERSION}
 
-# NEXT_PUBLIC_ env are set at build time (see above) and included in the client bundle
-# so changing this later does not affect the values on the client side (website)
+# NEXT_PUBLIC_* env are set at build time (see above) and included in the client bundle
+# so changing them later does not affect the values on the client side (browser)
 ENV NEXT_PUBLIC_BUILD_TIME=${BUILD_TIME}
 ENV NEXT_PUBLIC_COMMIT_SHA=${COMMIT_SHA}
 ENV NEXT_PUBLIC_COMMIT_TIME=${COMMIT_TIME}
@@ -98,9 +96,5 @@ ENV NEXT_PUBLIC_VERSION=${VERSION}
 ENV PORT=3000
 
 EXPOSE ${PORT}
-
-# set internal hostname for dns resolution in /etc/hosts
-# ENV HOSTNAME="0.0.0.0"
-# ENV HOSTNAME=localhost
 
 CMD ["node", "server.js"]
