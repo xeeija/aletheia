@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "esnext",
+    "target": "es2025",
     "lib": [
       "dom",
       "dom.iterable",
-      "es2021",
-      "es2022",
-      "es2023",
       "esnext"
     ],
+    "module": "esnext",
     "moduleResolution": "bundler",
     "allowJs": true,
     "skipLibCheck": true,
@@ -31,6 +28,8 @@
       "@/style/*": ["./style/*"],
       "@/style": ["./style/index"],
     },
+    // explicitly list the needed @types packages in TS 7, just "node" should be enough
+    "types": ["node"],
     "plugins": [
       { "name": "next" },
     ],
