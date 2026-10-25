@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "printWidth": 120,
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    "node_modules",
+    "/prisma",
+    "src/generated",
+    ".oxlintrc.json",
+    ".oxfmtrc.json",
+    "tsconfig.json",
+    "README.md",
+    // ".vscode/extensions.json",
+    // ".vscode/settings.json"
+  ]
+}

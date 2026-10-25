@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // "extends": ["../.oxlintrc.json"],
+  "plugins": [
+    "eslint",
+    "oxc",
+    "typescript",
+    "unicorn",
+    "import"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "off",
+    "perf": "warn"
+  },
+  "options": {
+    // typeAware, typeCheck and reportUnusedDisableDirectives are only supported in the root config
+    "typeAware": true,
+    "typeCheck":  true,
+    "reportUnusedDisableDirectives": "warn"
+  },
+  "env": {
+    "builtin": true
+  },
+  // TODO: check and review migrated rules
+  "rules": {
+    // typescript
+    "typescript/no-floating-promises": "off",
+    "typescript/restrict-template-expressions": "off",
+    // import
+    "import/no-anonymous-default-export": "warn"
+  }
+}

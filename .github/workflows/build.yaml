@@ -123,28 +123,19 @@ jobs:
         run: pnpm ci
 
       - name: Generate Prisma client
+        id: generate
         run: pnpm run generate
 
       - name: Run Lint
         id: lint
-        run: pnpm run lint:ci
+        run: pnpm run lint .
 
-      - name: Run Prettier
-        id: prettier
+      - name: Check Format
+        id: format
         run: pnpm run format:check .
-        # run: npx prettier --check --no-color . 2> prettier_report.txt
-        if: success() || steps.lint.outcome == 'failure'
-
-      - name: Annotate Lint results
-        uses: ataylorme/eslint-annotate-action@5a8d8ab89a57679e90c32750e0f382e9d8570750 # v4 branch
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          report-json: ./server/eslint_report.json
-          check-name: ESLint Report Server
-        # Continue to the next step even if this fails
-        continue-on-error: true
-        # Run this, even if the previous step fails
-        if: always()
+        # "success() && " is implied if no status function is used,
+        # so only checking the step would only run if the previous step (lint) succeeded
+        if: success() || steps.generate.outcome == 'success'
 
       - name: Build
         run: pnpm run build
