@@ -16,7 +16,6 @@ export class RandomWheelSyncResolver {
 export class EventSubResolver {
   // Only for testing
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   // @Query(() => GraphQLJSON)
   // async eventSubActiveSubscriptions(@Ctx() { apiClient }: GraphqlContext) {
   //   const subs = await apiClient.eventSub.getSubscriptions()
@@ -189,9 +188,10 @@ export class EventSubResolver {
 
     const rewards = await apiClient.channelPoints.getCustomRewardsByIds(twitchUserId ?? "", rewardIds)
 
-    return wheelSync.map((sync) => ({
-      ...sync,
-      reward: rewards.find((r) => r.id === sync.rewardId),
-    }))
+    return wheelSync.map((sync) =>
+      Object.assign(sync, {
+        reward: rewards.find((r) => r.id === sync.rewardId),
+      }),
+    )
   }
 }

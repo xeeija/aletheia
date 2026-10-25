@@ -41,12 +41,11 @@ export const twitchRouter: TwitchRouter = (apiClient: ApiClient, prisma: PrismaC
     }
 
     // get access token for user with code
-
     const params = new URLSearchParams({
       client_id: process.env.TWITCH_CLIENT_ID ?? "",
       client_secret: process.env.TWITCH_CLIENT_SECRET ?? "",
       grant_type: "authorization_code",
-      code: `${req.query.code?.toString()}`,
+      code: typeof req.query.code === "string" ? req.query.code : "",
     }).toString()
     const redirectUri = `redirect_uri=${process.env.TWITCH_REDIRECT_URI}/api/twitch/oauth2/token`
 

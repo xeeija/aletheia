@@ -11,7 +11,6 @@ export const includeRandomWheelMember = (info: GraphQLResolveInfo) => {
 
   try {
     // TODO: Fix without eslint-disable
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     const fallbackMembers: ResolveTree | FieldsByTypeName | null | undefined = (<Record<string, any>>(
       resolveInfo?.fieldsByTypeName.RandomWheel
     ))?.members
@@ -41,7 +40,7 @@ export class RandomWheelMemberResolver {
     @Ctx() { prisma, req, socketIo }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("randomWheelId") randomWwheelId: string,
-    @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[]
+    @Arg("members", () => [RandomWheelMemberInput]) members: RandomWheelMemberInput[],
   ) {
     // TODO: Validate username input
 

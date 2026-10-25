@@ -88,6 +88,7 @@ export const slugTest: RequestHandler<{ slug: string }> = (req, res) => {
     length: req.query.l,
     number: BigInt(`0x${req.params.slug}`).toString(),
     slug36: BigInt(`0x${req.params.slug}`).toString(36),
+    // oxlint-disable-next-line typescript/no-base-to-string
     slug64: slugify(req.params.slug, parseInt(req.query.l?.toString() ?? "0")),
   })
 }

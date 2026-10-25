@@ -28,6 +28,8 @@
     "typescript/no-floating-promises": "off",
     "typescript/restrict-template-expressions": "off",
     // import
-    "import/no-anonymous-default-export": "warn"
+    "import/no-anonymous-default-export": "warn",
+    // eslint
+    "no-await-in-loop": "off",
   }
 }

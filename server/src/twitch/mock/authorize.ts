@@ -21,10 +21,9 @@ const main = async () => {
   const response = await fetch(
     // `http://localhost:${port}/auth/authorize?client_id=${clientId}&client_secret=${secret}&grant_type=user_token&user_id=${userId}&scope=${scopeList}`,
     `http://localhost:${port}/auth/authorize?${params}`,
-    { method: "POST" }
+    { method: "POST" },
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const tokenJson = (await response.json()) as Record<string, string>
 
   // const newToken: AccessToken = {
@@ -48,5 +47,4 @@ const main = async () => {
   logger.info(`Fetched new user access token for ${userId}`)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
 main()

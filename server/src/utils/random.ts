@@ -34,7 +34,6 @@ export const randomScaled = (min: number, max: number) => {
   // upper limit (max) of the available RNG
   const k = 256
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     if (q >= max) {
       if (p < q - (q % max)) {

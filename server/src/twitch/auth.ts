@@ -111,7 +111,7 @@ export const handleTokenValidation = (apiClient: ApiClient, prisma: PrismaClient
 
     loggerAuth.trace("Validating access tokens...")
 
-    for await (const token of tokens) {
+    for (const token of tokens) {
       const response = await fetch("https://id.twitch.tv/oauth2/validate", {
         headers: {
           Authorization: `Bearer ${token.accessToken}`,

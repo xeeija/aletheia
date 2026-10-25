@@ -10,9 +10,7 @@ export const getRewards = () => {
   if (mockRewards.length === 0) {
     // const rewardData: any[] = (JSON.parse(await readFile("./src/twitch/mock/rewards.json", "utf-8")))
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rewardData: any[] = rewards
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockRewards = rewardData.map((r) => new HelixCustomReward(r))
   }
   return mockRewards
@@ -20,10 +18,8 @@ export const getRewards = () => {
 
 export const addMockAccessTokens = async (mockAuthProvider: RefreshingAuthProvider) => {
   // const tokenJson = (await import("./mock/token.json", { assert: { type: "json" } })).default
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const tokenJson: AccessToken = JSON.parse(await readFile("./src/twitch/mock/data/token.json", "utf-8"))
 
     // const token: AccessToken = {

@@ -262,7 +262,7 @@ export const handleSubscriptionRewardGroup = async (
     const alreadyPausedReward: string[] = []
 
     // handle all reward groups the redeemed reward is part of, and await them all (sequentially)
-    for await (const group of relevantGroups) {
+    for (const group of relevantGroups) {
       // disable all items in the same group for the duration of the cooldown
       const rewardItems = group.items.filter((i) => i.rewardEnabled && i.rewardId !== event.rewardId)
 
@@ -270,21 +270,27 @@ export const handleSubscriptionRewardGroup = async (
         return
       }
 
-      for await (const item of rewardItems) {
-        if (!alreadyPausedReward.includes(item.rewardId)) {
-          try {
-            await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
-              isPaused: true,
-            })
-            alreadyPausedReward.push(item.rewardId)
-          } catch (err) {
-            // HttpStatusCodeError from @twurple/api-call
-            const errorMessage = err instanceof Error ? `${err.name}: ${err.message}` : null
-            loggerGroup.error(`Failed to pause group '${group.name}':`, errorMessage ?? err)
-          }
-        }
-        // await new Promise((resolve) => setTimeout(resolve, 50))
+      try {
+        const settledRewards = await Promise.allSettled(
+          rewardItems.map((item) =>
+            apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, { isPaused: true }),
+          ),
+        )
+
+        const fulfilled = settledRewards.filter((v) => v.status === "fulfilled")
+        loggerGroup.info(`Paused group '${group.name}': ${fulfilled.length}/${settledRewards.length} rewards paused`)
+
+        const rejected = settledRewards.filter((v) => v.status === "rejected")
+        const rejectedReasons = rejected.map((v) => v.reason).join("\n")
+        loggerGroup.error(`Failed to pause group '${group.name}': ${rejectedReasons}`)
+
+        alreadyPausedReward.push(...fulfilled.map((item) => item.value.id))
+      } catch (err) {
+        // HttpStatusCodeError from @twurple/api-call
+        const errorMessage = err instanceof Error ? `${err.name}: ${err.message}` : null
+        loggerGroup.error(`Failed to pause group '${group.name}':`, errorMessage ?? err)
       }
+      // await new Promise((resolve) => setTimeout(resolve, 50))
 
       loggerGroup.debug(`Pause group '${group.name}' with ${rewardItems.length} rewards for ${cooldown}s`)
 
@@ -494,15 +500,22 @@ export const unpauseRewardGroup = (config: UnpauseRewardConfig) => {
     // TODO: maybe fetch rewards from twitch again,
     loggerGroup.debug(`Unpause group '${group.name}' with ${rewardItems.length} rewards`)
 
-    for await (const item of rewardItems) {
-      try {
-        await apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, {
-          isPaused: false,
-        })
-      } catch (err) {
-        const errorMessage = err instanceof Error ? `${err.name}: ${err.message}` : null
-        loggerGroup.error(`Failed to unpause group '${group.name}':`, errorMessage ?? err)
-      }
+    try {
+      const settledRewards = await Promise.allSettled(
+        rewardItems.map((item) =>
+          apiClient.channelPoints.updateCustomReward(twitchUserId, item.rewardId, { isPaused: false }),
+        ),
+      )
+
+      const fulfilled = settledRewards.filter((v) => v.status === "fulfilled")
+      loggerGroup.info(`Unpaused group '${group.name}': ${fulfilled.length}/${settledRewards.length} rewards unpaused`)
+
+      const rejected = settledRewards.filter((v) => v.status === "rejected")
+      const rejectedReasons = rejected.map((v) => v.reason).join("\n")
+      loggerGroup.error(`Failed to unpause group '${group.name}': reason ${rejectedReasons}`)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? `${err.name}: ${err.message}` : null
+      loggerGroup.error(`Failed to unpause group '${group.name}':`, errorMessage ?? err)
       // await new Promise((resolve) => setTimeout(resolve, 50))
     }
 

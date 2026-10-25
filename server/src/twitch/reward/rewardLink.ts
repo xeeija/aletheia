@@ -7,7 +7,7 @@ export const findRewardByLink = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   token: string,
-  type?: RewardLinkType
+  type?: RewardLinkType,
 ) => {
   const rewardLink = await prisma.rewardLink.findUnique({
     where: { token },
@@ -50,11 +50,12 @@ export const updateRewardByLink = async (
   prisma: PrismaClient,
   token: string,
   type: RewardLinkType,
-  update: (reward: HelixCustomReward) => HelixUpdateCustomRewardData
+  update: (reward: HelixCustomReward) => HelixUpdateCustomRewardData,
 ) => {
   const { reward, rewardLink, twitchUserId } = await findRewardByLink(apiClient, prisma, token, type)
 
   const updatedReward = await apiClient.channelPoints.updateCustomReward(twitchUserId, rewardLink.rewardId, {
+    // oxlint-disable-next-line typescript/no-misused-spread
     ...reward,
     ...update(reward),
   })

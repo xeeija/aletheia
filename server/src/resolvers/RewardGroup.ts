@@ -181,6 +181,7 @@ export class RewardGroupResolver {
     const updatedGroup = await prisma.rewardGroup.update({
       where: { id },
       data: {
+        // oxlint-disable-next-line typescript/no-misused-spread
         ...input,
         items: {
           // create new items
