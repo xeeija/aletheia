@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "printWidth": 120,
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    "node_modules",
+    ".oxlintrc.json",
+    ".oxfmtrc.json",
+    "tsconfig.json",
+    "README.md",
+    "src/generated/graphql/schema.json"
+  ]
+}

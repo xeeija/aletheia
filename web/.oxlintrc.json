@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // "extends": ["../.oxlintrc.json"],
+  "plugins": [
+    "eslint",
+    "oxc",
+    "typescript",
+    "react",
+    "nextjs",
+    "unicorn",
+    "import",
+    "jsx-a11y"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "off",
+    "perf": "warn"
+  },
+  "options": {
+    // typeAware, typeCheck and reportUnusedDisableDirectives are only supported in the root config
+    "typeAware": true,
+    "typeCheck":  true,
+    "reportUnusedDisableDirectives": "warn"
+  },
+  "env": {
+    "builtin": true
+  },
+  "settings": {
+    "react": {
+      "version": "19"
+    }
+  },
+  "rules": {
+    // typescript
+    "typescript/no-empty-object-type": ["error", { "allowWithName": "Props$" }],
+    "typescript/no-floating-promises": "off",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": { "arguments": false, "attributes": false } }],
+    // allow spread of sx props (which could also be a function (theme) => SxProps)
+    "typescript/no-misused-spread": "off",
+    "typescript/no-unnecessary-type-assertion": "off",
+  },
+}

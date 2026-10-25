@@ -1,6 +1,0 @@
-**/node_modules
-**/dist
-tsconfig.json
-# next.config.js
-next-env.d.ts
-README.md

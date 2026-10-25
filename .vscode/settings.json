@@ -31,9 +31,9 @@
   "[yaml]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "oxc.configPath": "server/.oxlintrc.json",
-  "oxc.fmt.configPath": "server/.oxfmtrc.json",
-  "oxc.path.oxfmt": "server/node_modules/.bin/oxfmt",
-  "oxc.path.oxlint": "server/node_modules/.bin/oxlint",
-  "oxc.path.tsgolint": "server/node_modules/.bin/tsgolint.cmd",
+  "oxc.configPath": "web/.oxlintrc.json",
+  "oxc.fmt.configPath": "web/.oxfmtrc.json",
+  "oxc.path.oxfmt": "web/node_modules/.bin/oxfmt",
+  "oxc.path.oxlint": "web/node_modules/.bin/oxlint",
+  "oxc.path.tsgolint": "web/node_modules/.bin/tsgolint.cmd",
 }
