@@ -22,7 +22,7 @@ ENV PATH="$PNPM_HOME/bin:$PATH"
 
 RUN curl -f https://get.pnpm.io/install.sh | env PNPM_VERSION=12.15.0 ENV="$HOME/.shrc" SHELL="/bin/sh" sh -
 
-WORKDIR /server
+WORKDIR /app
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
@@ -34,8 +34,6 @@ RUN pnpm fetch
 # Rebuild the source code only when needed
 FROM deps AS build
 
-WORKDIR /server
-
 COPY --chown=${CONTAINER_DEFAULT_USER}:root package.json ./
 
 RUN pnpm ci --offline --frozen-lockfile
@@ -45,12 +43,9 @@ COPY --chown=${CONTAINER_DEFAULT_USER}:root . .
 RUN pnpm run generate
 
 RUN pnpm run build
-RUN rm -f ./dist/*.tsbuildinfo
 
 # TODO: Use a bundler like webpack or vite if possible
 # Install again without dev dependencies
-RUN rm -Rf ./node_modules
-
 RUN pnpm ci --prod --offline --frozen-lockfile
 
 # remove prisma files for unused databases
@@ -64,10 +59,10 @@ COPY --chown=${CONTAINER_DEFAULT_USER}:root package.json ./dist
 # Production image, copy all the files and run
 FROM base AS run
 
-WORKDIR /server
+WORKDIR /app
 
-COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /server/dist ./dist
-COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /server/node_modules/ ./node_modules
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /app/dist ./dist
+COPY --from=build --chown=${CONTAINER_DEFAULT_USER}:root /app/node_modules/ ./node_modules
 
 ARG BUILD_TIME
 ARG COMMIT_SHA
