@@ -19,7 +19,7 @@
     "migrate": "prisma migrate dev --create-only --name",
     "migrate:deploy:prod": "dotenv -e .env.production -- prisma migrate deploy",
     "generate": "prisma generate && pnpm run generate:fix",
-    "generate:fix": "sed -i -E 's/ (\\w+Null) / \\1: \\1 /g' src/generated/prisma/internal/prismaNamespace.ts",
+    "generate:fix": "sed -i -E 's/ (\\w+Null) / \\1: \\1 /g' src/generated/prisma/internal/prismaNamespace*.ts",
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check"
@@ -34,8 +34,8 @@
   "dependencies": {
     "@apollo/server": "^5.5.1",
     "@as-integrations/express4": "^1.1.2",
-    "@prisma/adapter-pg": "^6.16.2",
-    "@prisma/client": "^6.16.2",
+    "@prisma/adapter-pg": "6.19.3",
+    "@prisma/client": "6.19.3",
     "@twurple/api": "^7.1.0",
     "@twurple/auth": "^7.1.0",
     "@twurple/eventsub-base": "^7.1.0",
@@ -68,7 +68,7 @@
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
     "oxlint-tsgolint": "^7.0.2005",
-    "prisma": "^6.16.2",
+    "prisma": "6.19.3",
     "tsc-alias": "^1.8.10",
     "typescript": "^7.0.2"
   }
