@@ -11,9 +11,10 @@ services:
       POSTGRES_PASSWORD: aletheia
     volumes:
       - ./docker/data/postgres:/var/lib/postgresql/data
+    mem_limit: 100m
 
   server:
-    image: xeeija/aletheia-server:1.13.1
+    image: xeeija/aletheia-server:1.14.1
     # build:
     #   context: server
     restart: unless-stopped
@@ -26,15 +27,16 @@ services:
       NODE_ENV: development
       EVENTSUB_STRICT_HOST_CHECK: 1
     volumes:
-      - ./server/src/twitch/mock/data/token.json:/server/src/twitch/mock/data/token.json
+      - ./server/src/twitch/mock/data/token.json:/app/src/twitch/mock/data/token.json
     depends_on:
       - postgres
     # needed for twitch mock API server, so localhost (127.0.0.1) in container finds mock-api in host network
     extra_hosts:
       - localhost:host-gateway
+    mem_limit: 200m
 
   web:
-    image: xeeija/aletheia-web:1.13.1
+    image: xeeija/aletheia-web:1.14.1
     # build:
     #   context: web
     restart: unless-stopped
@@ -46,17 +48,18 @@ services:
       SERVER_URL: http://server:4000
       SOCKET_SERVER_URL: http://server:4000
       ENVIRONMENT: docker
+    mem_limit: 200m
 
   proxy:
-    image: nginx:1.25.4-alpine
+    image: registry.access.redhat.com/hi/nginx:1.30.6
     restart: unless-stopped
     ports:
       - 3000:80
-    environment:
-      SERVER_URL: server:4000
-      WEB_URL: web:3000
+    # environment:
+    #   SERVER_URL: server:4000
+    #   WEB_URL: web:3000
     volumes:
-      - ./proxy/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # logging see: https://docs.nginx.com/nginx/admin-guide/monitoring/logging/
       # - ./docker/data/proxy/log/nginx:/var/log/nginx
-    command: ["nginx", "-g", "daemon off;"]
+    mem_limit: 100m
