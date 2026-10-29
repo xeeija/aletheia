@@ -1,7 +1,7 @@
 name: aletheia
 services:
   postgres:
-    image: postgres:14.8-alpine
+    image: registry.access.redhat.com/hi/postgresql:18.6
     restart: unless-stopped
     ports:
       - 5432:5432
@@ -12,6 +12,8 @@ services:
     volumes:
       - ./docker/data/postgres:/var/lib/postgresql/data
     mem_limit: 100m
+    # run as root, so the container user can read and update mounted data (on Windows)
+    user: "0"
 
   server:
     image: xeeija/aletheia-server:1.14.1
