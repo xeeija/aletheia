@@ -2,6 +2,7 @@ import { UserMenuDropdown } from "@/components"
 import { Link } from "@/components/client/next"
 import { getAuth } from "@/utils/graphql"
 import { Box, Button, Typography } from "@mui/material"
+import { cookies } from "next/headers"
 import { FC } from "react"
 
 interface Props {}
@@ -11,9 +12,9 @@ export const UserMenuApp: FC<Props> = async () => {
   // const userResult = await client.query(MeDocument, {})
   // const user = userResult.data?.me as UserNameFragment
 
-  // only works directly inside of app/ directory
-  // because cookies() errors if used anywhere outside, like components/ directory
-  const { user } = await getAuth()
+  const cookieStore = await cookies()
+  const cookie = cookieStore.toString()
+  const { user } = await getAuth(cookie)
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

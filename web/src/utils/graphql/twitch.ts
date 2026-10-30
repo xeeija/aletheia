@@ -7,10 +7,14 @@ import {
   type UserAccessTokenFragment,
 } from "@/generated/graphql"
 import { getUrqlClient } from "@/utils/urql"
+import { cacheLife } from "next/cache"
 import { cache } from "react"
 
-const getUserAccessTokenInternal = async () => {
-  const client = await getUrqlClient()
+const getUserAccessTokenInternal = async (cookies?: string) => {
+  "use cache"
+  cacheLife("seconds")
+
+  const client = await getUrqlClient({ cookies })
 
   const result = await client.query(UserAccessTokenDocument, {})
   return result.data?.userAccesToken as UserAccessTokenFragment | undefined
@@ -18,8 +22,11 @@ const getUserAccessTokenInternal = async () => {
 
 export const getUserAccessToken = cache(getUserAccessTokenInternal)
 
-const getRewardLinkTokenInternal = async (token: string, type: string) => {
-  const client = await getUrqlClient()
+const getRewardLinkTokenInternal = async (token: string, type: string, cookies?: string) => {
+  "use cache"
+  cacheLife("seconds")
+
+  const client = await getUrqlClient({ cookies })
   const result = await client.query(RewardByTokenDocument, { token, type })
 
   return result.data?.rewardByToken as CustomRewardMenuItemFragment | undefined
@@ -27,8 +34,11 @@ const getRewardLinkTokenInternal = async (token: string, type: string) => {
 
 export const getRewardLinkToken = cache(getRewardLinkTokenInternal)
 
-const getChannelRewardsInternal = async (onlyManageable?: boolean) => {
-  const client = await getUrqlClient()
+const getChannelRewardsInternal = async (onlyManageable?: boolean, cookies?: string) => {
+  "use cache"
+  cacheLife("seconds")
+
+  const client = await getUrqlClient({ cookies })
   const result = await client.query(ChannelRewardsDocument, { onlyManageable })
 
   const channelRewards = result.data?.channelRewards as CustomRewardFragment[] | undefined

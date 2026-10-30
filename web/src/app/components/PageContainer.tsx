@@ -1,6 +1,6 @@
 import { AppNavbar } from "@/app/components"
-import { Box } from "@mui/material"
-import { FC, ReactNode } from "react"
+import { Box, LinearProgress } from "@mui/material"
+import { FC, ReactNode, Suspense } from "react"
 
 interface Props {
   children: ReactNode
@@ -13,7 +13,9 @@ export const PageContainer: FC<Props> = ({ children, title, maxWidth = 1360, ful
   return (
     <>
       <AppNavbar>{title}</AppNavbar>
-      <Box sx={{ maxWidth: fullWidth ? undefined : maxWidth, mx: "auto" }}>{children}</Box>
+      <Suspense fallback={<LinearProgress sx={{ mx: -3, mt: -3, mb: 2.5, zIndex: 1100 }} />}>
+        <Box sx={{ maxWidth: fullWidth ? undefined : maxWidth, mx: "auto" }}>{children}</Box>
+      </Suspense>
     </>
   )
 }

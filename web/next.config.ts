@@ -4,6 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin"
 const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone",
+  cacheComponents: true,
+  partialPrefetching: true,
   headers: () => {
     return [
       // Disable buffering for nginx to enable streaming for app router
