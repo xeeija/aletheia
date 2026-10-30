@@ -53,7 +53,7 @@ export const ErrorFallback: FC<AppErrorProps & Props> = ({ error, global, reset,
           </Typography>
 
           <Typography variant="body1" sx={{ fontSize: "1.125em" }} className="muted">
-            {"But dont worry, it's not on your end - it's us."}
+            {"But don't worry, it's not on your end - it's us."}
           </Typography>
 
           <Typography variant="body1" className="muted" sx={{ fontSize: "1em", mt: 2 }}>

@@ -43,14 +43,14 @@ export const useCooldown = (expiry: Date | null | undefined) => {
 
   // useInterval(() => setCooldown(new Date((expiry?.getTime() ?? 0) - Date.now())), cooldownActive ? 500 : null)
 
-  const cooldown = expiry ? new Date(expiry.getTime() - now.getTime()) : null
+  const cooldown = isSet ? new Date(expiry.getTime() - now.getTime()) : null
 
   // const cooldownLeft = formatCooldown(cooldown)
   const cooldownLeft = cooldownFormat.format({
-    seconds: cooldown?.getUTCSeconds(),
-    minutes: cooldown?.getUTCMinutes(),
-    hours: cooldown?.getUTCHours(),
-    days: cooldown?.getUTCDate(),
+    seconds: cooldown?.getUTCSeconds() || 0,
+    minutes: cooldown?.getUTCMinutes() || 0,
+    hours: cooldown?.getUTCHours() || 0,
+    days: cooldown?.getUTCDate() || 0,
   })
 
   return {
