@@ -2,7 +2,7 @@ import { Box } from "@mui/material"
 import { NextPage } from "next"
 import Head from "next/head"
 import { ReactElement, ReactNode } from "react"
-import { Navigation, NavigationProps } from "../navigation"
+import { Footer, Navigation, NavigationProps } from "../navigation"
 
 export type LayoutNextPage<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement<unknown>) => ReactNode
@@ -18,13 +18,13 @@ type Props = NavigationProps & {
 
 // Helper to pass props to Navigation
 export const defaultLayout = (props?: Props) => (page: ReactElement<unknown>) => {
-  const { title, fullWidth = true, ...navProps } = props ?? {}
+  const { title, fullWidth = true, footer = <Footer />, ...navProps } = props ?? {}
   return (
     <>
       <Head>
         <title>{getTitle(title)}</title>
       </Head>
-      <Navigation {...navProps}>
+      <Navigation {...navProps} footer={footer}>
         <Box
           sx={{
             ...(!fullWidth && {

@@ -1,6 +1,6 @@
 "use client"
 
-import { Footer, LinkItem, Navbar, Sidebar, UserMenu } from "@/components"
+import { LinkItem, Navbar, Sidebar, UserMenu } from "@/components"
 import { ChannelPoints } from "@/components/icons"
 import { Box, SvgIcon, Typography, useTheme } from "@mui/material"
 import { FC, ReactNode, useState } from "react"
@@ -11,6 +11,7 @@ export interface NavigationProps {
   noPadding?: boolean
   navTitle?: ReactNode
   children?: ReactNode
+  footer?: ReactNode
 }
 
 const sidebarItems: LinkItem[] = [
@@ -48,7 +49,7 @@ const sidebarWidth = 240
 // [x] TODO: Burger Menu Button to expand sidebar from only icons to icons with text
 // TODO: Add "noAppBar" option and move AppBar here from MiniDrawer
 
-export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, navTitle }) => {
+export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding, navTitle, footer }) => {
   const theme = useTheme()
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -89,7 +90,8 @@ export const Navigation: FC<NavigationProps> = ({ children, noAppbar, noPadding,
         <Box component="main" sx={{ height: "100%" }}>
           {children}
         </Box>
-        <Footer />
+        {/* <Footer /> */}
+        {footer}
       </Box>
     </Sidebar>
   )

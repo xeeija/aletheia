@@ -1,10 +1,10 @@
+"use cache"
+
 import { Tooltip } from "@/components"
 import { ThemeColor } from "@/types"
 import { Chip } from "@mui/material"
-import { unstable_noStore as noStore } from "next/cache"
 import { FC } from "react"
 import { HiBeaker } from "react-icons/hi"
-import { EnvInfoBadgeClient } from "./EnvInfoBadgeClient"
 
 const capitalize = (text?: string) => (text ? `${text?.slice(0, 1).toUpperCase()}${text?.slice(1)}` : text)
 
@@ -14,14 +14,14 @@ interface Props {
   outlined?: boolean
 }
 
-export const EnvInfoBadge: FC<Props> = ({ color, opacity, outlined }) => {
-  // noStore opts into dynamic rendering for this component (instead of static rendering at build time)
-  noStore()
-
+// "use cache" must be at file top level for client components
+export const EnvInfoBadge: FC<Props> = async ({ color, opacity, outlined }) => {
   const env = process.env.ENVIRONMENT
-  if (!env) {
-    return <EnvInfoBadgeClient color={color} opacity={opacity} outlined={outlined} />
-  }
+
+  // causes a hydration missmatch error
+  // if (!env) {
+  //   return <EnvInfoBadgeClient color={color} opacity={opacity} outlined={outlined} />
+  // }
 
   const environment = env === "production" ? null : capitalize(env)
 
