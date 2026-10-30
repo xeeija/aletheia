@@ -38,6 +38,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    typedEnv: true,
+    authInterrupts: true,
+    useTypeScriptCli: true,
+    // use the Rust version, instead of the OG Babel one
+    turbopackRustReactCompiler: true,
+    turbopackGc: true,
+    turbopackCjsTreeShaking: true,
+    // falls back to child processes for Node >=24.13.1 until a workthread teardown issue in Node is fixed (issue #65100)
+    // turbopackPluginRuntimeStrategy: "workerThreads",
+  },
 }
 
 const withNextIntl = createNextIntlPlugin()
