@@ -38,7 +38,10 @@ export default getRequestConfig(() => {
   // match the locale based on header
 
   return {
-    now: new Date(),
+    // accessing Date in a server component before accessing request or uncached gives a warning/error
+    // so either use "use cache", connection(), or dont include a server-side now
+    // see https://nextjs.org/docs/messages/next-prerender-current-time
+    // now: new Date(),
     locale: defaultLocale,
     messages,
     formats,

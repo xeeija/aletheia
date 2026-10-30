@@ -1,5 +1,6 @@
-import { useInterval } from "@/hooks"
-import { useState } from "react"
+import { useNow } from "next-intl"
+
+export const cooldownFormat = new Intl.DurationFormat(undefined, { style: "narrow" })
 
 export const formatCooldown = (remaining: Date | null) => {
   if (!remaining || isNaN(remaining.getTime())) {
@@ -23,24 +24,34 @@ export const formatCooldown = (remaining: Date | null) => {
 }
 
 export const useCooldown = (expiry: Date | null | undefined) => {
-  const isSet = expiry && !Number.isNaN(expiry.getTime())
-  const cooldownActive = isSet && expiry > new Date()
+  const now = useNow({ updateInterval: 100 })
+
+  const isSet = !!expiry && !Number.isNaN(expiry.getTime())
+  const cooldownActive = isSet && expiry > now
 
   const cooldownUntil = expiry?.toLocaleString(undefined, {
     timeZone: "utc",
-    dateStyle: expiry > new Date(Date.now() + 24 * 3600 * 100) ? "medium" : undefined,
+    dateStyle: expiry > new Date(now.getTime() + 24 * 3600 * 100) ? "medium" : undefined,
     timeStyle: "medium",
   })
 
   // careful with SSR with rendering dates
-  const [cooldown, setCooldown] = useState<Date | null>(null)
+  // const [cooldown, setCooldown] = useState<Date | null>(null)
 
   // maybe always delay until next "full second",
   // so the render/update time doesn't slowly "get out of sync" (interval is slighlty longer than 500ms)
 
-  useInterval(() => setCooldown(new Date((expiry?.getTime() ?? 0) - Date.now())), cooldownActive ? 500 : null)
+  // useInterval(() => setCooldown(new Date((expiry?.getTime() ?? 0) - Date.now())), cooldownActive ? 500 : null)
 
-  const cooldownLeft = formatCooldown(cooldown)
+  const cooldown = expiry ? new Date(expiry.getTime() - now.getTime()) : null
+
+  // const cooldownLeft = formatCooldown(cooldown)
+  const cooldownLeft = cooldownFormat.format({
+    seconds: cooldown?.getUTCSeconds(),
+    minutes: cooldown?.getUTCMinutes(),
+    hours: cooldown?.getUTCHours(),
+    days: cooldown?.getUTCDate(),
+  })
 
   return {
     cooldown,
