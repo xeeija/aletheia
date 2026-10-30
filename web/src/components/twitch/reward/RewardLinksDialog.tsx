@@ -2,9 +2,8 @@
 
 import { FormDialog } from "@/components/input"
 import { CustomRewardFragment } from "@/generated/graphql"
-import { useRewardLinks } from "@/hooks"
-import { Box, SvgIcon, Typography } from "@mui/material"
-import { FC } from "react"
+import { Box, Skeleton, SvgIcon, Typography } from "@mui/material"
+import { FC, Suspense } from "react"
 import { TiWarning } from "react-icons/ti"
 import { RewardLinkOptions } from "./RewardLinkOptions"
 
@@ -15,15 +14,6 @@ interface Props {
 }
 
 export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
-  const { rewardLinks } = useRewardLinks({
-    rewardIds: reward.id,
-    pause: !open,
-    type: "enable",
-  })
-
-  const enableLink = rewardLinks?.find((l) => l.type === "enable")
-  const pauseLink = rewardLinks?.find((l) => l.type === "pause")
-
   return (
     <FormDialog
       maxWidth="sm"
@@ -47,13 +37,18 @@ export const RewardLinksDialog: FC<Props> = ({ reward, open, onClose }) => {
         <div>
           <Typography sx={{ mb: 1, fontWeight: 500 }}>Enable/Disable reward</Typography>
 
-          <RewardLinkOptions link={enableLink} type="enable" reward={reward} pause={!open} />
+          {/* <Skeleton variant="rounded" sx={{ height: 40, width: "calc(100% - 64px - 28px)" }} /> */}
+          <Suspense fallback={<Skeleton variant="rounded" sx={{ mb: 2, height: 40, width: "calc(100% - 92px)" }} />}>
+            <RewardLinkOptions type="enable" reward={reward} pause={!open} />
+          </Suspense>
         </div>
 
         <div>
           <Typography sx={{ mb: 1, fontWeight: 500 }}>Pause reward</Typography>
 
-          <RewardLinkOptions link={pauseLink} type="pause" reward={reward} />
+          <Suspense fallback={<Skeleton variant="rounded" sx={{ mb: 2, height: 40, width: "calc(100% - 92px)" }} />}>
+            <RewardLinkOptions type="pause" reward={reward} />
+          </Suspense>
         </div>
       </Box>
     </FormDialog>

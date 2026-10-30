@@ -15,7 +15,7 @@ import { ChannelRewardIcon } from "@/components/twitch"
 import { CustomRewardMenuItemFragment, RewardLinkFragment } from "@/generated/graphql"
 import { useRewardLinks } from "@/hooks"
 import { ItemSize, RewardLinkType } from "@/types"
-import { Box, FormHelperText, IconButton, Skeleton, SvgIcon } from "@mui/material"
+import { Box, Collapse, FormHelperText, IconButton, Skeleton, SvgIcon, useTheme } from "@mui/material"
 import { Form, Formik } from "formik"
 import { FC, useState } from "react"
 import { HiCog, HiEye, HiEyeOff, HiTrash } from "react-icons/hi"
@@ -30,14 +30,15 @@ type RewardLinkValues = {
 }
 
 interface Props {
-  link: RewardLinkFragment | undefined
   type: RewardLinkType
+  link?: RewardLinkFragment | undefined
   reward: CustomRewardMenuItemFragment
   loading?: boolean
   pause?: boolean
 }
 
-export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, pause }) => {
+export const RewardLinkOptions: FC<Props> = ({ link: linkProp, type, reward, loading, pause }) => {
+  const theme = useTheme()
   const [hide, setHide] = useState(true)
   const [showOptions, setShowOptions] = useState(false)
   const [showStatusPreview, setShowStatusPreview] = useState(false)
@@ -48,11 +49,13 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
     isPaused: type === "pause" ? showStatusPreview : reward.isPaused,
   }
 
-  const { createRewardLink, deleteRewardLink, fetchingCreate, fetchingDelete } = useRewardLinks({
+  const { rewardLinks, createRewardLink, deleteRewardLink, fetchingCreate, fetchingDelete } = useRewardLinks({
     pause: pause,
     type: type,
     rewardIds: reward.id,
   })
+
+  const link = linkProp ?? rewardLinks?.find((l) => l.type === type)
 
   const initialValues: RewardLinkValues = {
     size: "xl",
@@ -123,13 +126,23 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
               position="start"
               value={url}
               type={hide ? "password" : "text"}
-              InputProps={{
-                endAdornment: hideIcon,
+              slotProps={{
+                input: {
+                  endAdornment: hideIcon,
+                },
               }}
             />
 
             <Tooltip placement="bottom" title={"Options / Preview"}>
-              <IconButton color="secondary" sx={{ ml: 0.5 }} onClick={() => setShowOptions((x) => !x)}>
+              <IconButton
+                color="secondary"
+                onClick={() => setShowOptions((x) => !x)}
+                sx={{
+                  ml: 0.5,
+                  transition: theme.transitions.create("transform"),
+                  transform: `rotate(${showOptions ? 360 : 0}deg)`,
+                }}
+              >
                 <HiCog />
               </IconButton>
             </Tooltip>
@@ -177,7 +190,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
         )}
       </Box>
 
-      {showOptions && (
+      <Collapse in={showOptions}>
         <Formik
           initialValues={initialValues}
           validateOnChange={false}
@@ -274,7 +287,7 @@ export const RewardLinkOptions: FC<Props> = ({ link, type, reward, loading, paus
             </Form>
           )}
         </Formik>
-      )}
+      </Collapse>
 
       {/* Show preview */}
     </Box>

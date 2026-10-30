@@ -12,7 +12,7 @@ import {
 import type { CustomRewardFragment, UserAccessTokenFragment, UserNameFragment } from "@/generated/graphql"
 import { useAuth } from "@/hooks"
 import { Box, Tab, Tabs } from "@mui/material"
-import { FC, useState } from "react"
+import { FC, Suspense, useState } from "react"
 import type { CombinedError } from "urql"
 
 interface Props {
@@ -53,6 +53,12 @@ export const Channelpoints: FC<Props> = ({
   const tokenAvailable = user && userAccessToken?.twitchUserId
   const fetching = fetchingUser || fetchingToken
 
+  const loadingFallback = (
+    <Box sx={{ pt: 4, display: "flex", flexDirection: "column", gap: 1 }}>
+      <SkeletonList n={4} height={72} />
+    </Box>
+  )
+
   return (
     <>
       <Box
@@ -85,9 +91,17 @@ export const Channelpoints: FC<Props> = ({
       <Box sx={{ mt: 2 }}>
         {tokenAvailable && !error && (
           <>
-            {tab === 0 && <ChannelRewards channelRewards={channelRewards} filterRewards={filterRewards} />}
+            {tab === 0 && (
+              <Suspense fallback={loadingFallback}>
+                <ChannelRewards channelRewards={channelRewards} filterRewards={filterRewards} />
+              </Suspense>
+            )}
 
-            {tab === 1 && <RewardGroups channelRewards={channelRewards} />}
+            {tab === 1 && (
+              <Suspense fallback={loadingFallback}>
+                <RewardGroups channelRewards={channelRewards} />
+              </Suspense>
+            )}
           </>
         )}
 
