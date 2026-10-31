@@ -3,18 +3,30 @@
 import { useRandomWheelVolume } from "@/hooks"
 import { useIntersectionObserver } from "@/hooks/react-use"
 import type { Point } from "@/utils/math"
-import { FC, useRef, type RefObject } from "react"
+import { FC, useMemo, useRef, type RefObject } from "react"
 
 interface Props {
   position: Point
   index: number
-  wheelRef: RefObject<Element | null>
+  wheelId: string
+  wheelRef?: RefObject<Element | null>
   disabled?: boolean
   onIntersect?: IntersectionObserverCallback
 }
 
-export const WheelSound: FC<Props> = ({ position, index, wheelRef, disabled, onIntersect }) => {
+export const WheelSound: FC<Props> = ({ position, index, wheelId, disabled, onIntersect }) => {
   const ref = useRef<SVGCircleElement>(null)
+
+  // const parentElement = useMemo(() => document.getElementById(wheelId), [wheelId])
+  const intersectOptions = useMemo<IntersectionObserverInit>(
+    () => ({
+      root: document.getElementById(wheelId),
+      // move the "center" to middle right, where the wheel arrow is
+      rootMargin: "-50% 0px 0px -50%",
+      threshold: 0,
+    }),
+    [wheelId],
+  )
 
   const { mutedKey } = useRandomWheelVolume()
 
@@ -51,12 +63,7 @@ export const WheelSound: FC<Props> = ({ position, index, wheelRef, disabled, onI
         }
       })
     },
-    {
-      root: wheelRef.current,
-      // move the "center" to middle right, where the wheel arrow is
-      rootMargin: "-50% 0px 0px -50%",
-      threshold: 0,
-    }
+    intersectOptions,
   )
 
   return (

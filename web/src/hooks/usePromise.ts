@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from "react"
+import { useCallback, useEffect, useRef, useTransition } from "react"
 
 /**
  * `useTransition` wrapper for synchronous functions to use as Promise. Resolves when `pending` from `useTransition` is finished
@@ -8,14 +8,14 @@ import { useEffect, useState, useTransition } from "react"
 
 export const usePromise = (callback: () => void) => {
   const [isPending, startTransition] = useTransition()
-  const [isTriggered, setIsTriggered] = useState(false)
 
-  const [resolve, setResolve] = useState<() => void>()
+  const triggerRef = useRef(false)
+  const resolveRef = useRef<(() => void) | undefined>(undefined)
 
   const callbackAsync = () => {
     return new Promise<void>((resolve) => {
-      // setResolve(resolve)
-      setResolve(() => resolve)
+      resolveRef.current = resolve
+
       startTransition(() => {
         callback()
       })
@@ -23,19 +23,18 @@ export const usePromise = (callback: () => void) => {
   }
 
   useEffect(() => {
-    if (isTriggered && !isPending) {
-      if (resolve) {
-        resolve()
+    if (!isPending && triggerRef.current) {
+      resolveRef.current?.()
 
-        setIsTriggered(false)
-        setResolve(undefined)
-      }
+      triggerRef.current = false
+      resolveRef.current = undefined
     }
 
     if (isPending) {
-      setIsTriggered(true)
+      // setIsTriggered(true)
+      triggerRef.current = true
     }
-  }, [isTriggered, isPending, resolve])
+  }, [isPending])
 
   return [callbackAsync, isPending] as const
 }
@@ -46,37 +45,39 @@ export const usePromise = (callback: () => void) => {
  */
 export const usePromiseArgs = <T>(callback: (value: T) => void) => {
   const [isPending, startTransition] = useTransition()
-  const [isTriggered, setIsTriggered] = useState(false)
 
-  const [resolve, setResolve] = useState<() => void>()
-  const [args, setArgs] = useState<T>()
+  const triggeredRef = useRef(false)
+  const resolveRef = useRef<((value: T) => void) | undefined>(undefined)
+  const argsRef = useRef<T | undefined>(undefined)
 
-  const callbackAsync = (args: T) => {
-    return new Promise<void>((resolve) => {
-      // setResolve(resolve)
-      setResolve(resolve)
-      setArgs(args)
-      startTransition(() => {
-        callback(args)
+  const callbackAsync = useCallback(
+    (args: T) => {
+      return new Promise<void>((resolve) => {
+        resolveRef.current = () => resolve
+        argsRef.current = args
+        startTransition(() => {
+          callback(args)
+        })
       })
-    })
-  }
+    },
+    [callback],
+  )
 
   useEffect(() => {
-    if (isTriggered && !isPending) {
-      if (resolve && args) {
-        resolve()
+    if (!isPending && triggeredRef.current) {
+      if (resolveRef.current && argsRef.current !== undefined) {
+        resolveRef.current?.(argsRef.current)
 
-        setIsTriggered(false)
-        setResolve(undefined)
-        setArgs(undefined)
+        triggeredRef.current = false
+        resolveRef.current = undefined
+        argsRef.current = undefined
       }
     }
 
     if (isPending) {
-      setIsTriggered(true)
+      triggeredRef.current = true
     }
-  }, [isTriggered, isPending, resolve, args])
+  }, [isPending])
 
   return [callbackAsync, isPending] as const
 }

@@ -38,6 +38,7 @@ export const Wheel: FC<Props> = ({
   // const [soundIndex, setSoundIndex] = useState(0)
 
   const wheelRef = useRef<SVGSVGElement>(null)
+  const wheelId = "wheel-parent"
 
   // TODO: refactor to server component when mui theme is updated to work with Server Components
   const theme = useTheme()
@@ -96,7 +97,7 @@ export const Wheel: FC<Props> = ({
           }),
         }}
         ref={wheelRef}
-        id="wheel-svg"
+        id={wheelId}
       >
         <circle
           cx={d.center.x}
@@ -230,6 +231,7 @@ export const Wheel: FC<Props> = ({
                   position={startPos}
                   index={i}
                   wheelRef={wheelRef}
+                  wheelId={wheelId}
                   disabled={!spinning}
                   // onIntersect={() => {
                   //   sounds[soundIndex].play()

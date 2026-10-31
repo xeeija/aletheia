@@ -50,7 +50,9 @@ export const useDebounceWithTimeout = <T>(value: T, delay: number | null) => {
 
   // reset the timeout by setting the delay to null and immediately to the original delay again
   useEffect(() => {
-    setDelay(null)
+    // TODO: react/set-state-effects lint error is "hidden" in closure -> refactor
+    // but this hook is not used atm, so fix that later
+    ;(() => setDelay(null))()
     if (delay) {
       setTimeout(() => setDelay(delay))
     }

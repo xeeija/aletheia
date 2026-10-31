@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react"
+import { useRef } from "react"
 
 export const useLocation = () => {
-  const [loc, setLocation] = useState<Location>()
-
-  useEffect(() => {
-    setLocation(location)
-  }, [])
-
-  return loc
+  const locationRef = useRef(location)
+  return locationRef
 }

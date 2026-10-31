@@ -7,6 +7,10 @@ import { RandomWheelEntryFragment } from "@/generated/graphql"
 import { Box, List, Skeleton, Typography } from "@mui/material"
 import { FC, useEffect, useMemo, useRef, useState } from "react"
 
+const widths = Array(10)
+  .fill(0)
+  .map(() => (2 + Math.round(Math.random() * 3)) * 10)
+
 interface Props {
   entries: RandomWheelEntryFragment[]
   editable?: boolean
@@ -88,14 +92,6 @@ export const EntryList: FC<Props> = ({
   }, [entries, autoScroll, scrolledBottom])
 
   const totalWeight = useMemo(() => entries.reduce((acc, entry) => acc + entry.weight, 0), [entries])
-
-  const widths = useMemo(
-    () =>
-      Array(10)
-        .fill(0)
-        .map(() => (2 + Math.round(Math.random() * 3)) * 10),
-    [],
-  )
 
   return (
     <>

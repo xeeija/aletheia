@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react"
+import { useRef } from "react"
 
 export const useWindow = () => {
-  const [win, setWindow] = useState<Window>()
-
-  useEffect(() => {
-    setWindow(window)
-  }, [])
-
-  return win
+  const windowRef = useRef(window)
+  return windowRef
 }

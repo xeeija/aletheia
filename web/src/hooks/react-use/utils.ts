@@ -67,10 +67,10 @@ export function getTargetElement<T extends TargetType>(target: BasicTarget<T>, d
  */
 export function useStableTarget<T extends HTMLElement | Element | Window | Document | EventTarget>(
   target?: BasicTarget<T>,
-  defaultElement?: T
+  defaultElement?: T,
 ) {
   const targetRef = useRef(target)
-  targetRef.current = target
+  // targetRef.current = target
 
   // Calculate stable key without memoization
   // For ref objects: return the ref itself (always stable)

@@ -13,7 +13,7 @@ interface Props {
 export const ShareWheelDropdown: FC<Props> = ({ slug }) => {
   const [anchor, setAnchor] = useState<Element | null>(null)
 
-  const shareUrl = `${useLocation()?.host ?? ""}/r/${slug}`
+  const shareUrl = `${useLocation().current?.host ?? ""}/r/${slug}`
 
   return (
     <>

@@ -2,7 +2,7 @@
 
 import { BaseInputFieldProps, InputFieldBasic } from "@/components"
 import { FieldValidator, useField, useFormikContext } from "formik"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 
 export type InputFieldProps = BaseInputFieldProps & {
   name: string // make required
@@ -25,12 +25,10 @@ export const InputField: FC<InputFieldProps> = ({ name, icon, validate, submitOn
     validate: validate,
   })
 
-  useEffect(() => {
-    if (!isValidating) {
-      setValidatingActive(false)
-      clearTimeout(validatingTimeout)
-    }
-  }, [isValidating, validatingTimeout])
+  if (!isValidating && validatingActive) {
+    setValidatingActive(false)
+    clearTimeout(validatingTimeout)
+  }
 
   const isFieldValidating = isValidating && validatingActive
 

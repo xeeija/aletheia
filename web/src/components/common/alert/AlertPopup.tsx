@@ -1,7 +1,7 @@
 "use client"
 
 import { Alert, AlertColor, Snackbar, SnackbarCloseReason, useTheme } from "@mui/material"
-import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useEffect, useState, type ReactElement } from "react"
+import { Dispatch, FC, ReactNode, SetStateAction, SyntheticEvent, useState, type ReactElement } from "react"
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi"
 import { TiWarning } from "react-icons/ti"
 
@@ -10,6 +10,8 @@ interface Props {
   hideDuration?: number | null
   messageState: [ReactNode, Dispatch<SetStateAction<ReactNode>>]
 }
+
+type CloseReason = SnackbarCloseReason | "close"
 
 const alertIcons: { [key in AlertColor | "default"]: ReactElement | null } = {
   success: <HiCheckCircle />,
@@ -25,13 +27,7 @@ export const AlertPopup: FC<Props> = ({ severity, hideDuration = 6000, messageSt
 
   const theme = useTheme()
 
-  useEffect(() => {
-    if (message !== null) {
-      setOpen(true)
-    }
-  }, [message])
-
-  const onClose: (event: Event | SyntheticEvent, reason: SnackbarCloseReason) => void = (_ev, reason) => {
+  const onClose = (_event: Event | SyntheticEvent, reason: CloseReason) => {
     if (reason === "clickaway") {
       return
     }
@@ -57,7 +53,7 @@ export const AlertPopup: FC<Props> = ({ severity, hideDuration = 6000, messageSt
         severity={severity}
         variant="filled"
         icon={alertIcons[severity ?? "default"]}
-        onClose={() => setMessage(null)}
+        onClose={(ev) => onClose(ev, "close")}
         sx={{ my: 1 }}
       >
         {message}

@@ -48,7 +48,7 @@ export const PopoutWheelDropdown: FC<Props> = ({ wheel }) => {
 
   const privateWheel = wheel.accessType === "PRIVATE"
 
-  const baseUrl = useLocation()?.href ?? "" // `${window.location.href}`
+  const baseUrl = useLocation()?.current?.href ?? "" // `${window.location.href}`
 
   const initialUrl = `${baseUrl}/popout${privateWheel ? `?token=${token}` : ""}`
   const [shareUrl, setShareUrl] = useState(initialUrl)
