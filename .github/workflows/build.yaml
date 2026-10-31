@@ -47,22 +47,11 @@ jobs:
         id: lint
         run: pnpm run lint .
 
-      - name: Run Prettier
+      - name: Check Format
         id: prettier
         run: pnpm run format:check .
         # run: npx prettier --check --no-color . 2> prettier_report.txt
         if: success() || steps.lint.outcome == 'failure'
-
-      - name: Annotate Lint results
-        uses: ataylorme/eslint-annotate-action@5a8d8ab89a57679e90c32750e0f382e9d8570750 # v4 branch
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          report-json: ./web/eslint_report.json
-          check-name: ESLint Report Web
-        # Continue to the next step even if this fails
-        continue-on-error: true
-        # Run this, even if the previous step fails
-        if: always()
 
   # TODO: Add tests
   # unit: eg. https://nextjs.org/docs/app/building-your-application/testing/vitest
@@ -135,7 +124,7 @@ jobs:
         run: pnpm run format:check .
         # "success() && " is implied if no status function is used,
         # so only checking the step would only run if the previous step (lint) succeeded
-        if: success() || steps.generate.outcome == 'success'
+        if: success() || steps.lint.outcome == 'failure'
 
       - name: Build
         run: pnpm run build
