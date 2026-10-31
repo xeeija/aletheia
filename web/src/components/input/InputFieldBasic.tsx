@@ -10,6 +10,9 @@ import {
   TextFieldProps,
   Tooltip,
   TooltipProps,
+  type FilledInputProps,
+  type InputProps,
+  type OutlinedInputProps,
 } from "@mui/material"
 import { FC, useDeferredValue } from "react"
 import { TiTick, TiWarning } from "react-icons/ti"
@@ -25,6 +28,8 @@ export type BaseInputFieldProps = TextFieldProps & {
   adornment?: boolean
   readonly?: boolean
 }
+
+type SlotInputProps = Partial<FilledInputProps> | Partial<OutlinedInputProps> | Partial<InputProps>
 
 export type InputFieldBasicProps = {
   errorMessage?: string
@@ -79,56 +84,60 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
 
           props.onChange?.(ev)
         }}
-        InputProps={{
-          ...props.InputProps,
-          readOnly: readonly,
-          endAdornment: showMax ? (
-            <>
-              {maxLengthAdornment}
-              {props.InputProps?.endAdornment}
-            </>
-          ) : (
-            props.InputProps?.endAdornment
-          ),
-          ...(icon &&
-            touched && {
-              endAdornment: (
-                <>
-                  <InputAdornment position="end" sx={{ gap: 0.5 }}>
-                    {!hasError && !isValidating && valueLength > 0 && (
-                      <Tooltip title={props.label ? <>{props.label} is valid</> : "Valid"}>
-                        <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
-                          <SvgIcon component={TiTick} color="success" sx={{ mr: 0.25 }} />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {hasError && !isValidating && (valueLength > 0 || required) && (
-                      <Tooltip title={props.label ? <>{props.label} is invalid</> : "Invalid input"}>
-                        <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
-                          <SvgIcon component={TiWarning} color="error" sx={{ mr: 0.25 }} />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {isValidating && <CircularProgress color="info" sx={{ p: 1.25, m: -0.75, mr: -1 }} />}
-                    {showMax ? maxLengthAdornment : null}
-                    {props.InputProps?.endAdornment}
-                  </InputAdornment>
-                </>
-              ),
-            }),
-          ...(adornment && {
-            sx: {
-              ...props.InputProps?.sx,
-              textAlign: "right",
-              backgroundColor: "transparent !important",
-              "::before, ::after": {
-                borderBottomWidth: 0,
-              },
-              ".MuiFilledInput-input:focus": {
+        slotProps={{
+          inputLabel: {
+            ...props.InputLabelProps,
+            required: required,
+          },
+          input: {
+            ...(props.slotProps?.input ?? props.InputProps),
+            readOnly: readonly,
+            endAdornment: (
+              <>
+                {showMax && maxLengthAdornment}
+                {(props.slotProps?.input as SlotInputProps)?.endAdornment ?? props.InputProps?.endAdornment}
+              </>
+            ),
+            ...(icon &&
+              touched && {
+                endAdornment: (
+                  <>
+                    <InputAdornment position="end" sx={{ gap: 0.5 }}>
+                      {!hasError && !isValidating && valueLength > 0 && (
+                        <Tooltip title={props.label ? <>{props.label} is valid</> : "Valid"}>
+                          <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
+                            <SvgIcon component={TiTick} color="success" sx={{ mr: 0.25 }} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {hasError && !isValidating && (valueLength > 0 || required) && (
+                        <Tooltip title={props.label ? <>{props.label} is invalid</> : "Invalid input"}>
+                          <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
+                            <SvgIcon component={TiWarning} color="error" sx={{ mr: 0.25 }} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {isValidating && <CircularProgress color="info" sx={{ p: 1.25, m: -0.75, mr: -1 }} />}
+                      {showMax && maxLengthAdornment}
+                      {(props.slotProps?.input as SlotInputProps)?.endAdornment ?? props.InputProps?.endAdornment}
+                    </InputAdornment>
+                  </>
+                ),
+              }),
+            ...(adornment && {
+              sx: {
+                ...((props.slotProps?.input as SlotInputProps)?.sx ?? props.InputProps?.sx),
+                textAlign: "right",
                 backgroundColor: "transparent !important",
+                "::before, ::after": {
+                  borderBottomWidth: 0,
+                },
+                ".MuiFilledInput-input:focus": {
+                  backgroundColor: "transparent !important",
+                },
               },
-            },
-          }),
+            }),
+          },
         }}
         sx={{
           ...props.sx,
@@ -137,10 +146,6 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
           }),
         }}
         className={`${props.className}${hiddenArrows ? " hidden-arrows" : ""}`}
-        InputLabelProps={{
-          ...props.InputLabelProps,
-          required: required,
-        }}
         // show error message over default helper text
         {...(touched && hasError && !isValidating && (valueLength > 0 || required) && { helperText: errorMessage })}
         {...(touched && hasError && isValidating && valueLength > 0 && required && { helperText: errorMessage })}
