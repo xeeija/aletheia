@@ -95,14 +95,14 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
               endAdornment: (
                 <>
                   <InputAdornment position="end" sx={{ gap: 0.5 }}>
-                    {!hasError && !isValidating && (
+                    {!hasError && !isValidating && valueLength > 0 && (
                       <Tooltip title={props.label ? <>{props.label} is valid</> : "Valid"}>
                         <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
                           <SvgIcon component={TiTick} color="success" sx={{ mr: 0.25 }} />
                         </IconButton>
                       </Tooltip>
                     )}
-                    {hasError && !isValidating && (
+                    {hasError && !isValidating && (valueLength > 0 || required) && (
                       <Tooltip title={props.label ? <>{props.label} is invalid</> : "Invalid input"}>
                         <IconButton edge="end" disableRipple role="tooltip" sx={{ cursor: "text" }}>
                           <SvgIcon component={TiWarning} color="error" sx={{ mr: 0.25 }} />
@@ -142,7 +142,8 @@ export const InputFieldBasic: FC<BaseInputFieldProps & InputFieldBasicProps> = (
           required: required,
         }}
         // show error message over default helper text
-        {...(hasError && touched && { helperText: errorMessage })}
+        {...(touched && hasError && !isValidating && (valueLength > 0 || required) && { helperText: errorMessage })}
+        {...(touched && hasError && isValidating && valueLength > 0 && required && { helperText: errorMessage })}
       />
     </Tooltip>
   )
