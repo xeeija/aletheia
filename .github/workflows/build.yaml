@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Lint
         id: lint
-        run: pnpm run lint:ci
+        run: pnpm run lint .
 
       - name: Run Prettier
         id: prettier
