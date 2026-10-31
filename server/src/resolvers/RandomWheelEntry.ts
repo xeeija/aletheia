@@ -16,7 +16,7 @@ export class RandomWheelEntryResolver {
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("name") name: string,
     @Arg("color", () => String, { nullable: true }) color?: string | null,
-    @Arg("weight", { nullable: true }) weight?: number
+    @Arg("weight", { nullable: true }) weight?: number,
   ) {
     const wheel = await prisma.randomWheel.findUnique({
       where: { id: randomWheelId },
@@ -57,7 +57,7 @@ export class RandomWheelEntryResolver {
   async updateRandomWheelEntry(
     @Ctx() { prisma, socketIo }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("entry") entry: RandomWheelEntryInput
+    @Arg("entry") entry: RandomWheelEntryInput,
   ) {
     // only fetch wheel for duplicate check if name is updated
     if (entry.name) {

@@ -9,7 +9,7 @@ export class RandomWheelWinnerResolver {
   @Mutation(() => RandomWheelWinner, { nullable: true })
   addRandomWheelWinner(
     // @Ctx() { prisma }: GraphqlContext,
-    @Arg("winner", () => RandomWheelWinner) winner: Omit<RandomWheelWinner, "randomWheel">
+    @Arg("winner", () => RandomWheelWinner) winner: Omit<RandomWheelWinner, "randomWheel">,
   ) {
     // const createdWinner = await prisma.randomWheelWinner.create({
     //   data: winner,

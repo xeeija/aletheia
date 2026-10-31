@@ -37,7 +37,7 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("displayname", { nullable: true }) displayname: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: GraphqlContext
+    @Ctx() { req, prisma }: GraphqlContext,
   ): Promise<UserResponse> {
     let errors: FieldError[] = []
 
@@ -92,7 +92,7 @@ export class UserResolver {
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() { req, prisma }: GraphqlContext
+    @Ctx() { req, prisma }: GraphqlContext,
   ): Promise<UserResponse> {
     let errors: FieldError[] = []
 
@@ -214,7 +214,7 @@ export class UserResolver {
         `https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.refreshToken}`,
         {
           method: "POST",
-        }
+        },
       )
 
       // token succesfully revoked or token was already invalid
@@ -231,7 +231,7 @@ export class UserResolver {
         `https://id.twitch.tv/oauth2/revoke?client_id=${process.env.TWITCH_CLIENT_ID}&token=${token.accessToken}`,
         {
           method: "POST",
-        }
+        },
       )
 
       // token succesfully revoked or token was already invalid

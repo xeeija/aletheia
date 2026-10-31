@@ -22,7 +22,7 @@ if (!process.env.EVENTSUB_SECRET) {
 // const twurpleLogger = createLogger("twurple:eventsub")
 
 export const eventSubMiddleware = new EventSubMiddleware({
-  apiClient: useMockServer ? eventSubApiClient ?? apiClient : apiClient,
+  apiClient: useMockServer ? (eventSubApiClient ?? apiClient) : apiClient,
   hostName: process.env.EVENTSUB_HOSTNAME ?? "",
   pathPrefix: process.env.EVENTSUB_PATH_PREFIX ?? "/api/twitch/eventsub",
   secret: process.env.EVENTSUB_SECRET ?? "haAd89DzsdIA93d2jd28Id238dh2E9hd82Q93dhEhi",
@@ -105,7 +105,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
       if (deletedToken.count > 0 || deletedSubscriptions.count > 0) {
         logger.info(
           `Deleted ${deletedToken.count} access tokens and`,
-          `${deletedSubscriptions.count} subscriptions of user ${sub.authUserId} after revoke`
+          `${deletedSubscriptions.count} subscriptions of user ${sub.authUserId} after revoke`,
         )
       }
     }
@@ -139,8 +139,8 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
           userId: sub.userId ?? "",
           rewardId,
         })
-      })
-    )
+      }),
+    ),
   )
 
   // initialize reward group subscriptions
@@ -154,7 +154,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         twitchUserId: sub?.twitchUserId ?? "",
         userId: sub.userId ?? "",
       })
-    })
+    }),
   )
 
   // resuming timeouts to unpause reward group
@@ -200,7 +200,7 @@ export const handleEventSub = async (eventSub: EventSubMiddleware, prisma: Prism
         twitchUserId: sub.twitchUserId,
         userId: sub.userId ?? "",
       })
-    })
+    }),
   )
 
   const initializedSubs = storedSync.length + storedGroup.length + storedLink.length

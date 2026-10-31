@@ -9,7 +9,7 @@ export const handleSubscriptionRewardUpdate = async (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: EventSubConfigRewardUpdate
+  subConfig: EventSubConfigRewardUpdate,
 ) => {
   const existingSub = await prisma.eventSubscription.findFirst({
     where: {
@@ -61,7 +61,7 @@ export const handleSubscriptionRewardUpdate = async (
 
     if (rooms.length > 0) {
       loggerSocket.debug(
-        `Emit reward:update to ${rooms.length} rooms after reward '${event.title}' (${event.broadcasterName}) was updated`
+        `Emit reward:update to ${rooms.length} rooms after reward '${event.title}' (${event.broadcasterName}) was updated`,
       )
     }
 

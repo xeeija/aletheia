@@ -41,7 +41,7 @@ const databaseUrl = new URL(process.env.DATABASE_URL ?? "")
 
 const adapter = new PrismaPg(
   { connectionString: process.env.DATABASE_URL },
-  { schema: databaseUrl.searchParams.get("schema") || undefined }
+  { schema: databaseUrl.searchParams.get("schema") || undefined },
 )
 const prisma = new PrismaClient({ adapter })
 
@@ -66,7 +66,7 @@ const main = async () => {
     cors({
       credentials: true,
       origin: originUrl,
-    })
+    }),
   )
 
   if (!process.env.SESSION_SECRET) {
@@ -190,7 +190,7 @@ const main = async () => {
           apiClient,
           eventSub: eventSubMiddleware,
         }),
-    })
+    }),
   )
 
   // Twitch Integration

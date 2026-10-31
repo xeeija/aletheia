@@ -42,7 +42,7 @@ export class EventSubResolver {
     @Arg("randomWheelId") randomWheelId: string,
     @Arg("rewardId") rewardId: string,
     @Arg("useInput", { defaultValue: false }) useInput: boolean,
-    @Arg("addExisting", { defaultValue: false }) addExisting: boolean
+    @Arg("addExisting", { defaultValue: false }) addExisting: boolean,
   ) {
     const token = await accessTokenForUser({ req, prisma })
 
@@ -87,7 +87,7 @@ export class EventSubResolver {
   async pauseWheelSync(
     @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     @Arg("id") id: string,
-    @Arg("paused") paused: boolean
+    @Arg("paused") paused: boolean,
   ) {
     const token = await accessTokenForUser({ req, prisma })
 
@@ -122,7 +122,7 @@ export class EventSubResolver {
   async deleteWheelSync(
     @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     // @Arg("id") id: string
-    @Arg("ids", () => [String]) ids: string[]
+    @Arg("ids", () => [String]) ids: string[],
   ) {
     const token = await accessTokenForUser({ req, prisma })
 
@@ -145,7 +145,7 @@ export class EventSubResolver {
           userId: req.session.userId,
           rewardId: sync.rewardId,
         })
-      })
+      }),
     )
 
     return deleted.count > 0
@@ -167,7 +167,7 @@ export class EventSubResolver {
   @Query(() => [RandomWheelSyncFull])
   async syncForWheel(
     @Ctx() { prisma, apiClient }: GraphqlContext,
-    @Arg("randomWheelId") randomWheelId: string
+    @Arg("randomWheelId") randomWheelId: string,
   ): Promise<RandomWheelSyncFull[]> {
     const wheelSync = await prisma.randomWheelSync.findMany({
       where: {

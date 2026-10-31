@@ -10,7 +10,7 @@ export class RewardLinkResolver {
   @Query(() => [RewardLink])
   async rewardLinks(
     @Ctx() { req, prisma }: GraphqlContext,
-    @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[]
+    @Arg("rewardIds", () => [String], { nullable: true }) rewardIds: string[],
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     await accessTokenForUser({ req, prisma })
@@ -30,7 +30,7 @@ export class RewardLinkResolver {
     @Ctx() { req, prisma, eventSub, socketIo }: GraphqlContext,
     // @Arg("rewardLink") rewardLink: RewardLinkInput
     @Arg("rewardId") rewardId: string,
-    @Arg("type") type: string
+    @Arg("type") type: string,
   ) {
     const { realTwitchUserId } = await accessTokenForUser({ req, prisma })
 
@@ -95,7 +95,7 @@ export class RewardLinkResolver {
   async rewardByToken(
     @Ctx() { apiClient, prisma }: GraphqlContext,
     @Arg("token") token: string,
-    @Arg("type") type: string
+    @Arg("type") type: string,
   ) {
     if (!["enable", "pause"].includes(type)) {
       throw new Error("Invalid type")
@@ -110,7 +110,7 @@ export class RewardLinkResolver {
   async updateRewardToken(
     @Ctx() { apiClient, prisma }: GraphqlContext,
     @Arg("token") token: string,
-    @Arg("type") type: string
+    @Arg("type") type: string,
   ) {
     if (!["enable", "pause"].includes(type)) {
       throw new Error("Invalid type")

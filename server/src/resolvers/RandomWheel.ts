@@ -160,7 +160,7 @@ export class RandomWheelResolver {
   async myRandomWheels(
     @Ctx() { req, prisma }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
-    @Arg("type", { defaultValue: "my" }) type: WheelListType // "should" be: "my" | "shared" | "favorite"
+    @Arg("type", { defaultValue: "my" }) type: WheelListType, // "should" be: "my" | "shared" | "favorite"
   ) {
     // TODO: FIX so it throws a proper Graphql Error or so
     if (!req.session.userId) {
@@ -205,7 +205,7 @@ export class RandomWheelResolver {
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("slug") slug: string,
     @Arg("token", () => String, { nullable: true }) token: string | undefined,
-    @Info() info: GraphQLResolveInfo
+    @Info() info: GraphQLResolveInfo,
   ) {
     //: Promise<typeof RandomWheelResponse> {
     try {
@@ -266,7 +266,7 @@ export class RandomWheelResolver {
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("slug") slug: string,
     @Arg("token", () => String, { nullable: true }) token: string | undefined,
-    @Info() info: GraphQLResolveInfo
+    @Info() info: GraphQLResolveInfo,
   ) {
     try {
       const userId = req.session.userId
@@ -306,7 +306,7 @@ export class RandomWheelResolver {
     @Arg("spinDuration", () => Int, { nullable: true }) spinDuration?: number,
     @Arg("fadeDuration", () => Int, { nullable: true }) fadeDuration?: number,
     @Arg("editAnonymous", { nullable: true }) editAnonymous?: boolean,
-    @Arg("uniqueEntries", { nullable: true }) uniqueEntries?: boolean
+    @Arg("uniqueEntries", { nullable: true }) uniqueEntries?: boolean,
   ): Promise<RandomWheel | AppError> {
     // const tempSlug = `slug-${Date.now()}`
 
@@ -368,7 +368,7 @@ export class RandomWheelResolver {
     @Ctx() { prisma, req, socketIo, eventSub }: GraphqlContext,
     @Info() info: GraphQLResolveInfo,
     @Arg("id") id: string,
-    @Arg("options") { theme, ...wheelOptions }: RandomWheelInput
+    @Arg("options") { theme, ...wheelOptions }: RandomWheelInput,
   ) {
     // TODO: Middleware to get randomWheel (or any other entity) or return a not found error/permission error
     const randomWheel = await prisma.randomWheel.findUnique({
@@ -458,7 +458,7 @@ export class RandomWheelResolver {
               userId: req.session.userId,
               rewardId: sync.rewardId,
             })
-          })
+          }),
         )
       }
 
@@ -611,7 +611,7 @@ export class RandomWheelResolver {
   async likeRandomWheel(
     @Ctx() { prisma, req }: GraphqlContext,
     @Arg("randomWheelId") randomWheelId: string,
-    @Arg("like") like: boolean
+    @Arg("like") like: boolean,
   ) {
     // TODO
     if (!req.session.userId) {

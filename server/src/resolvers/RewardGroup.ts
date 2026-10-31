@@ -53,7 +53,7 @@ export class RewardGroupResolver {
   async createRewardGroup(
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("rewardGroup", () => RewardGroupInput) input: RewardGroupInput,
-    @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[]
+    @Arg("items", () => [RewardGroupItemInput]) items: RewardGroupItemInput[],
     // @Arg("name") name: string,
     // @Arg("active", { defaultValue: true }) active?: boolean,
     // @Arg("triggerSelected", { nullable: true }) triggerSelected?: boolean
@@ -109,7 +109,7 @@ export class RewardGroupResolver {
     @Ctx() { req, prisma, apiClient, eventSub, socketIo }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("rewardGroup", () => RewardGroupInput, { nullable: true }) input?: RewardGroupInput,
-    @Arg("items", () => [RewardGroupItemInput], { nullable: true }) items?: RewardGroupItemInput[]
+    @Arg("items", () => [RewardGroupItemInput], { nullable: true }) items?: RewardGroupItemInput[],
     // @Arg("name", { nullable: true }) name?: string,
     // @Arg("items") items: RewardGroupItemInput[],
     // @Arg("active", { nullable: true }) active?: boolean,
@@ -145,7 +145,7 @@ export class RewardGroupResolver {
       (c) =>
         !group.items.map((i) => i.rewardId).includes(c.rewardId) &&
         updateItems &&
-        !updateItems.map((i) => i.rewardId).includes(c.rewardId)
+        !updateItems.map((i) => i.rewardId).includes(c.rewardId),
     )
 
     const deleteItems = group.items?.filter(
@@ -153,14 +153,14 @@ export class RewardGroupResolver {
         items &&
         !items.map((i) => i.rewardId).includes(d.rewardId) &&
         updateItems &&
-        !updateItems.map((i) => i.rewardId).includes(d.rewardId)
+        !updateItems.map((i) => i.rewardId).includes(d.rewardId),
     )
 
     logger.debug(
       `Update reward group '${group.name}':`,
       `create ${createItems?.length},`,
       `update ${updateItems?.length}`,
-      `and delete ${deleteItems?.length} items`
+      `and delete ${deleteItems?.length} items`,
     )
 
     const updateItemsFalse = updateItems?.filter((i) => i.triggerCooldown === false)
@@ -226,7 +226,7 @@ export class RewardGroupResolver {
   @Mutation(() => Boolean, { nullable: true })
   async deleteRewardGroup(
     @Ctx() { req, prisma, eventSub, apiClient, socketIo }: GraphqlContext,
-    @Arg("id") id: string
+    @Arg("id") id: string,
   ) {
     const token = await accessTokenForUser({ req, prisma })
 
@@ -257,7 +257,7 @@ export class RewardGroupResolver {
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("rewardGroupId") rewardGroupId: string,
     @Arg("rewardId") rewardId: string,
-    @Arg("triggerCooldown", { nullable: true }) triggerCooldown?: boolean
+    @Arg("triggerCooldown", { nullable: true }) triggerCooldown?: boolean,
   ) {
     if (!req.session.userId) {
       throw new Error("Not logged in")
@@ -307,7 +307,7 @@ export class RewardGroupResolver {
     @Ctx() { req, prisma }: GraphqlContext,
     @Arg("id") id: string,
     @Arg("rewardEnabled", { nullable: true }) rewardEnabled?: boolean,
-    @Arg("triggerCooldown", { nullable: true }) triggerCooldown?: boolean
+    @Arg("triggerCooldown", { nullable: true }) triggerCooldown?: boolean,
   ) {
     if (!req.session.userId) {
       throw new Error("Not logged in")

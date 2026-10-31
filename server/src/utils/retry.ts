@@ -7,7 +7,7 @@ export const retryWithBackoff = async <T = void>(
     unit?: number
     // runs when finished, just before returning
     finished?: (retries: number) => void | Promise<void>
-  }
+  },
 ): Promise<T> => {
   const unit = config?.unit ?? 1000
   const maxRetries = config?.retries ?? 4

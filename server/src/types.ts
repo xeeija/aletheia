@@ -51,7 +51,7 @@ export type SocketHandler = (
   options: {
     socketIo: SocketServer //Server<ClientToServerEvents, ServerToClientEvents>
     prisma: PrismaClient
-  }
+  },
 ) => void
 
 export interface ServerToClientEvents {

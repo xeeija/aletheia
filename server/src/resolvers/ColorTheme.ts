@@ -15,7 +15,7 @@ export class ColorThemeResolver {
   async colorThemes(
     @Ctx() { req, prisma }: GraphqlContext,
     // @Info() info: GraphQLResolveInfo,
-    @Arg("type", { defaultValue: "all" }) type: ColorThemeType
+    @Arg("type", { defaultValue: "all" }) type: ColorThemeType,
   ) {
     if (!isColorThemeType(type)) {
       throw new Error(`Invalid type. Must be one of: ${AllColorThemeTypes.join(", ")}`)
@@ -25,7 +25,7 @@ export class ColorThemeResolver {
       where: {
         OR: [
           { global: type === "all" || type === "global" ? true : undefined },
-          { creatorId: type === "all" || type === "my" ? req.session.userId ?? null : undefined },
+          { creatorId: type === "all" || type === "my" ? (req.session.userId ?? null) : undefined },
         ],
       },
       orderBy: {

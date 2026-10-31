@@ -25,7 +25,7 @@ export class TwitchResolver {
   async channelRewards(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("userId", { nullable: true }) userId?: string,
-    @Arg("onlyManageable", { nullable: true }) onlyManageable?: boolean
+    @Arg("onlyManageable", { nullable: true }) onlyManageable?: boolean,
   ) {
     const token = await accessTokenForUser({ req, prisma, userId })
 
@@ -36,7 +36,7 @@ export class TwitchResolver {
   @Mutation(() => CustomReward, { nullable: true })
   async createChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("reward", () => CustomRewardCreateInput) rewardInput: CustomRewardCreateInput
+    @Arg("reward", () => CustomRewardCreateInput) rewardInput: CustomRewardCreateInput,
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     const token = await accessTokenForUser({ req, prisma })
@@ -49,7 +49,7 @@ export class TwitchResolver {
   async updateChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
     @Arg("rewardId") rewardId: string,
-    @Arg("reward", () => CustomRewardUpdateInput) rewardInput: CustomRewardUpdateInput
+    @Arg("reward", () => CustomRewardUpdateInput) rewardInput: CustomRewardUpdateInput,
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     const token = await accessTokenForUser({ req, prisma })
@@ -61,7 +61,7 @@ export class TwitchResolver {
   @Mutation(() => Boolean)
   async deleteChannelReward(
     @Ctx() { req, prisma, apiClient }: GraphqlContext,
-    @Arg("rewardId") rewardId: string
+    @Arg("rewardId") rewardId: string,
     // @Arg("userId", { nullable: true }) userId: string
   ) {
     const token = await accessTokenForUser({ req, prisma })

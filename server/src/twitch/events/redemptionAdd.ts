@@ -21,7 +21,7 @@ export const handleSubscriptionSync = async (
   eventSub: EventSubMiddleware,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: EventSubConfigSync
+  subConfig: EventSubConfigSync,
 ) => {
   const existingSub = await prisma.eventSubscription.findFirst({
     where: {
@@ -100,7 +100,7 @@ export const handleSubscriptionSync = async (
 
             if (existingEntry) {
               loggerSync.debug(
-                `Skipped duplicate entry '${entryName}' for wheel '${wheel.name || wheel.slug}' (${wheelLog})`
+                `Skipped duplicate entry '${entryName}' for wheel '${wheel.name || wheel.slug}' (${wheelLog})`,
               )
               return
             }
@@ -116,9 +116,9 @@ export const handleSubscriptionSync = async (
           loggerSocket.debug(`Emit wheel:entries add to room wheel/${wheelLog}* (from eventsub)`)
 
           socketIo.to(`wheel/${wheel.id}`).emit("wheel:entries", "add")
-        })
+        }),
       )
-    }
+    },
   )
 
   const id = existingSub?.id ?? randomUUID()
@@ -141,7 +141,7 @@ export const handleSubscriptionSync = async (
 
   logger.trace(
     `Added channelRedemptionAddForReward subscrption, id: ${addedSub.id}, cli:`,
-    await addedSub.getCliTestCommand()
+    await addedSub.getCliTestCommand(),
   )
 
   activeSubscriptions.set(subscription.id, addedSub)
@@ -154,7 +154,7 @@ export const handleSubscriptionRewardGroup = async (
   prisma: PrismaClient,
   apiClient: ApiClient,
   socketIo: SocketServer,
-  subConfig: EventSubConfigGroup
+  subConfig: EventSubConfigGroup,
 ) => {
   // TODO: eventsub for reward groups, seperate function?
   // Update or UpdateForReward? - subscription for each reward or one for all and then check, if its in the group?
@@ -195,7 +195,7 @@ export const handleSubscriptionRewardGroup = async (
   if (userRewardGroups.length === 0) {
     loggerGroup.info(
       `No active reward groups for user ${subConfig.twitchUserId}`,
-      `(${subConfig.userId.slice(0, 7)}), removing subscription`
+      `(${subConfig.userId.slice(0, 7)}), removing subscription`,
     )
 
     activeSubscriptions.get(existingSub?.id ?? "")?.stop()
@@ -212,12 +212,12 @@ export const handleSubscriptionRewardGroup = async (
     // loggerGroup.debug(`${event.userName} redeemed reward '${event.rewardTitle}' in channel ${event.broadcasterName}`)
 
     const relevantGroups = userRewardGroups.filter((g) =>
-      g.items.some((i) => i.rewardId === event.rewardId && i.triggerCooldown)
+      g.items.some((i) => i.rewardId === event.rewardId && i.triggerCooldown),
     )
 
     loggerGroup.trace(
       `${event.userName} redeemed reward '${event.rewardTitle}' in channel ${event.broadcasterName}:`,
-      `${relevantGroups.length} reward groups found`
+      `${relevantGroups.length} reward groups found`,
     )
 
     if (relevantGroups.length === 0) {
@@ -236,7 +236,7 @@ export const handleSubscriptionRewardGroup = async (
     if (!eventReward) {
       loggerGroup.error(
         `Reward is ${JSON.stringify(eventReward)}, this should never happen`,
-        `(${event.rewardTitle}, ${event.broadcasterName})`
+        `(${event.rewardTitle}, ${event.broadcasterName})`,
       )
       return
     }
@@ -247,7 +247,7 @@ export const handleSubscriptionRewardGroup = async (
     if (cooldown === null) {
       loggerGroup.trace(
         `Reward has no global cooldown, so it doesn't trigger a reward group cooldown`,
-        `(${event.rewardTitle} ${event.rewardId}, ${event.broadcasterName})`
+        `(${event.rewardTitle} ${event.rewardId}, ${event.broadcasterName})`,
       )
       return
     }
@@ -255,7 +255,7 @@ export const handleSubscriptionRewardGroup = async (
     const totalRewards = relevantGroups.flatMap((g) => g.items).filter((r) => r.rewardId !== event.rewardId).length
     loggerGroup.info(
       `Pausing ${relevantGroups.length} groups with ${totalRewards} rewards for ${cooldown}s`,
-      `(${event.rewardTitle}, ${event.broadcasterName})`
+      `(${event.rewardTitle}, ${event.broadcasterName})`,
     )
 
     const updatedGroups: RewardGroup[] = []
@@ -371,7 +371,7 @@ export const addExistingRedemptionsSync = async (
   apiClient: ApiClient,
   prisma: PrismaClient,
   socketIo: SocketServer,
-  subConfig: EventSubConfigSyncAdd
+  subConfig: EventSubConfigSyncAdd,
 ) => {
   const twitchUserId = getTwitchUserId(subConfig.twitchUserId)
 
@@ -379,7 +379,7 @@ export const addExistingRedemptionsSync = async (
     twitchUserId,
     subConfig.rewardId,
     "UNFULFILLED",
-    {}
+    {},
   )
 
   await redemptions.getNext()
@@ -411,7 +411,7 @@ export const addExistingRedemptionsSync = async (
   loggerSync.info(
     `Adding existing redemptions of ${redemptions.current?.[0].broadcaster_name}`,
     `for reward '${redemptions.current?.[0].reward.title}' (${redemptions.current?.[0].broadcaster_login})`,
-    `to wheel ${subConfig.randomWheelId.slice(0, 7)}* (${subConfig.useInput ? "input" : "name"})`
+    `to wheel ${subConfig.randomWheelId.slice(0, 7)}* (${subConfig.useInput ? "input" : "name"})`,
   )
 
   while (redemptions.current?.length) {
@@ -473,7 +473,7 @@ export const addExistingRedemptionsSync = async (
 
   loggerSync.info(
     `Added ${redemptionsCount} existing redemptions`,
-    `${subConfig.uniqueEntries && skippedCount > 0 ? `and skipped ${skippedCount} redemptions` : ""}`
+    `${subConfig.uniqueEntries && skippedCount > 0 ? `and skipped ${skippedCount} redemptions` : ""}`,
     // `from reward '${rewardTitle}' (${rewardChannel})`,
     // `to wheel ${subConfig.randomWheelId.slice(0, 7)}* (using ${subConfig.useInput ? "input" : "name"})`
   )
