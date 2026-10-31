@@ -1,9 +1,10 @@
 "use client"
 
+import { SkeletonList } from "@/components/common"
 import { WheelSyncForm } from "@/components/randomWheel"
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { FormikProps } from "formik"
-import { FC, useRef } from "react"
+import { FC, Suspense, useRef } from "react"
 
 interface Props {
   open: boolean
@@ -38,7 +39,15 @@ export const WheelSyncDialog: FC<Props> = ({ open, onClose, slug }) => {
       >
         <DialogTitle id="redemption-sync-dialog-title">Synchronize Channel Rewards</DialogTitle>
         <DialogContent>
-          <WheelSyncForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
+          <Suspense
+            fallback={
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <SkeletonList n={4} height={40} />
+              </Box>
+            }
+          >
+            <WheelSyncForm slug={slug} formRef={formRef} dialogActionsRef={actionsRef} />
+          </Suspense>
         </DialogContent>
         <DialogActions ref={actionsRef}>
           <Button color="secondary" variant="outlined" onClick={closeHandler}>
