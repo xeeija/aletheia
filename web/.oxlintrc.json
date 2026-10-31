@@ -31,6 +31,7 @@
     }
   },
   "rules": {
+    "no-unused-vars": "warn",
     // typescript
     "typescript/no-empty-object-type": ["error", { "allowWithName": "Props$" }],
     "typescript/no-floating-promises": "off",
