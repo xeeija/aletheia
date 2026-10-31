@@ -39,7 +39,7 @@ export const useRewardLinkToken = ({ type, token, pause, initialReward }: Reward
         { token, type },
         {
           requestPolicy: "cache-and-network",
-        }
+        },
       )
 
       if (response.error?.graphQLErrors.some((e) => e.message === "Invalid token")) {

@@ -13,7 +13,7 @@ export const useRewardGroupSocket = (disable?: boolean) => {
         socket.emit("rewardgroup:join")
       })
     },
-    [disable]
+    [disable],
   )
 
   const socket = useSocket(setup)

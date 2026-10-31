@@ -50,7 +50,7 @@ export const PasswordField: FC<Props> = ({ strength: strengthInput, InputProps, 
                 {
                   duration: theme.transitions.duration.shorter,
                   easing: theme.transitions.easing.easeInOut,
-                }
+                },
               ),
               width: `${Math.min(100, strength)}%`,
               borderBottomRightRadius: strength < 100 ? 0 : undefined,

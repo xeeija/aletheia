@@ -14,13 +14,13 @@ export function useLogoutMutation() {
 
 export function useRegisterMutation() {
   return Urql.useMutation<Operations.RegisterMutation, Operations.RegisterMutationVariables>(
-    Operations.RegisterDocument
+    Operations.RegisterDocument,
   )
 }
 
 export function useAddRandomWheelEntryMutation() {
   return Urql.useMutation<Operations.AddRandomWheelEntryMutation, Operations.AddRandomWheelEntryMutationVariables>(
-    Operations.AddRandomWheelEntryDocument
+    Operations.AddRandomWheelEntryDocument,
   )
 }
 
@@ -33,19 +33,19 @@ export function useLocalAddRandomWheelWinnerMutation() {
 
 export function useClearRandomWheelMutation() {
   return Urql.useMutation<Operations.ClearRandomWheelMutation, Operations.ClearRandomWheelMutationVariables>(
-    Operations.ClearRandomWheelDocument
+    Operations.ClearRandomWheelDocument,
   )
 }
 
 export function useCreateRandomWheelMutation() {
   return Urql.useMutation<Operations.CreateRandomWheelMutation, Operations.CreateRandomWheelMutationVariables>(
-    Operations.CreateRandomWheelDocument
+    Operations.CreateRandomWheelDocument,
   )
 }
 
 export function useDeleteRandomWheelMutation() {
   return Urql.useMutation<Operations.DeleteRandomWheelMutation, Operations.DeleteRandomWheelMutationVariables>(
-    Operations.DeleteRandomWheelDocument
+    Operations.DeleteRandomWheelDocument,
   )
 }
 
@@ -58,25 +58,25 @@ export function useDeleteRandomWheelEntryMutation() {
 
 export function useLikeRandomWheelMutation() {
   return Urql.useMutation<Operations.LikeRandomWheelMutation, Operations.LikeRandomWheelMutationVariables>(
-    Operations.LikeRandomWheelDocument
+    Operations.LikeRandomWheelDocument,
   )
 }
 
 export function useResetShareTokenMutation() {
   return Urql.useMutation<Operations.ResetShareTokenMutation, Operations.ResetShareTokenMutationVariables>(
-    Operations.ResetShareTokenDocument
+    Operations.ResetShareTokenDocument,
   )
 }
 
 export function useSpinRandomWheelMutation() {
   return Urql.useMutation<Operations.SpinRandomWheelMutation, Operations.SpinRandomWheelMutationVariables>(
-    Operations.SpinRandomWheelDocument
+    Operations.SpinRandomWheelDocument,
   )
 }
 
 export function useUpdateRandomWheelMutation() {
   return Urql.useMutation<Operations.UpdateRandomWheelMutation, Operations.UpdateRandomWheelMutationVariables>(
-    Operations.UpdateRandomWheelDocument
+    Operations.UpdateRandomWheelDocument,
   )
 }
 
@@ -96,109 +96,109 @@ export function useUpdateRandomWheelMembersMutation() {
 
 export function useAddWheelSyncMutation() {
   return Urql.useMutation<Operations.AddWheelSyncMutation, Operations.AddWheelSyncMutationVariables>(
-    Operations.AddWheelSyncDocument
+    Operations.AddWheelSyncDocument,
   )
 }
 
 export function useDeleteWheelSyncMutation() {
   return Urql.useMutation<Operations.DeleteWheelSyncMutation, Operations.DeleteWheelSyncMutationVariables>(
-    Operations.DeleteWheelSyncDocument
+    Operations.DeleteWheelSyncDocument,
   )
 }
 
 export function useDisconnectAccessTokenMutation() {
   return Urql.useMutation<Operations.DisconnectAccessTokenMutation, Operations.DisconnectAccessTokenMutationVariables>(
-    Operations.DisconnectAccessTokenDocument
+    Operations.DisconnectAccessTokenDocument,
   )
 }
 
 export function usePauseWheelSyncMutation() {
   return Urql.useMutation<Operations.PauseWheelSyncMutation, Operations.PauseWheelSyncMutationVariables>(
-    Operations.PauseWheelSyncDocument
+    Operations.PauseWheelSyncDocument,
   )
 }
 
 export function useCreateChannelRewardMutation() {
   return Urql.useMutation<Operations.CreateChannelRewardMutation, Operations.CreateChannelRewardMutationVariables>(
-    Operations.CreateChannelRewardDocument
+    Operations.CreateChannelRewardDocument,
   )
 }
 
 export function useCreateRewardLinkMutation() {
   return Urql.useMutation<Operations.CreateRewardLinkMutation, Operations.CreateRewardLinkMutationVariables>(
-    Operations.CreateRewardLinkDocument
+    Operations.CreateRewardLinkDocument,
   )
 }
 
 export function useDeleteChannelRewardMutation() {
   return Urql.useMutation<Operations.DeleteChannelRewardMutation, Operations.DeleteChannelRewardMutationVariables>(
-    Operations.DeleteChannelRewardDocument
+    Operations.DeleteChannelRewardDocument,
   )
 }
 
 export function useDeleteRewardLinkMutation() {
   return Urql.useMutation<Operations.DeleteRewardLinkMutation, Operations.DeleteRewardLinkMutationVariables>(
-    Operations.DeleteRewardLinkDocument
+    Operations.DeleteRewardLinkDocument,
   )
 }
 
 export function useUpdateChannelRewardMutation() {
   return Urql.useMutation<Operations.UpdateChannelRewardMutation, Operations.UpdateChannelRewardMutationVariables>(
-    Operations.UpdateChannelRewardDocument
+    Operations.UpdateChannelRewardDocument,
   )
 }
 
 export function useUpdateRewardTokenMutation() {
   return Urql.useMutation<Operations.UpdateRewardTokenMutation, Operations.UpdateRewardTokenMutationVariables>(
-    Operations.UpdateRewardTokenDocument
+    Operations.UpdateRewardTokenDocument,
   )
 }
 
 export function useAddRewardGroupItemMutation() {
   return Urql.useMutation<Operations.AddRewardGroupItemMutation, Operations.AddRewardGroupItemMutationVariables>(
-    Operations.AddRewardGroupItemDocument
+    Operations.AddRewardGroupItemDocument,
   )
 }
 
 export function useCreateRewardGroupMutation() {
   return Urql.useMutation<Operations.CreateRewardGroupMutation, Operations.CreateRewardGroupMutationVariables>(
-    Operations.CreateRewardGroupDocument
+    Operations.CreateRewardGroupDocument,
   )
 }
 
 export function useDeleteRewardGroupMutation() {
   return Urql.useMutation<Operations.DeleteRewardGroupMutation, Operations.DeleteRewardGroupMutationVariables>(
-    Operations.DeleteRewardGroupDocument
+    Operations.DeleteRewardGroupDocument,
   )
 }
 
 export function useDeleteRewardGroupItemMutation() {
   return Urql.useMutation<Operations.DeleteRewardGroupItemMutation, Operations.DeleteRewardGroupItemMutationVariables>(
-    Operations.DeleteRewardGroupItemDocument
+    Operations.DeleteRewardGroupItemDocument,
   )
 }
 
 export function useUpdateRewardGroupMutation() {
   return Urql.useMutation<Operations.UpdateRewardGroupMutation, Operations.UpdateRewardGroupMutationVariables>(
-    Operations.UpdateRewardGroupDocument
+    Operations.UpdateRewardGroupDocument,
   )
 }
 
 export function useUpdateRewardGroupItemMutation() {
   return Urql.useMutation<Operations.UpdateRewardGroupItemMutation, Operations.UpdateRewardGroupItemMutationVariables>(
-    Operations.UpdateRewardGroupItemDocument
+    Operations.UpdateRewardGroupItemDocument,
   )
 }
 
 export function useUpdateUserMutation() {
   return Urql.useMutation<Operations.UpdateUserMutation, Operations.UpdateUserMutationVariables>(
-    Operations.UpdateUserDocument
+    Operations.UpdateUserDocument,
   )
 }
 
 export function useUsernameExistsMutation() {
   return Urql.useMutation<Operations.UsernameExistsMutation, Operations.UsernameExistsMutationVariables>(
-    Operations.UsernameExistsDocument
+    Operations.UsernameExistsDocument,
   )
 }
 
@@ -214,7 +214,7 @@ export function useMeQuery(options?: Omit<Urql.UseQueryArgs<Operations.MeQueryVa
 }
 
 export function useMyRandomWheelsQuery(
-  options?: Omit<Urql.UseQueryArgs<Operations.MyRandomWheelsQueryVariables>, "query">
+  options?: Omit<Urql.UseQueryArgs<Operations.MyRandomWheelsQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.MyRandomWheelsQuery, Operations.MyRandomWheelsQueryVariables>({
     query: Operations.MyRandomWheelsDocument,
@@ -230,7 +230,7 @@ export function useRandomWheelQuery(options: Omit<Urql.UseQueryArgs<Operations.R
 }
 
 export function useRandomWheelShareTokenQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelShareTokenQueryVariables>, "query">
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelShareTokenQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RandomWheelShareTokenQuery, Operations.RandomWheelShareTokenQueryVariables>({
     query: Operations.RandomWheelShareTokenDocument,
@@ -239,7 +239,7 @@ export function useRandomWheelShareTokenQuery(
 }
 
 export function useRandomWheelEntriesQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelEntriesQueryVariables>, "query">
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelEntriesQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RandomWheelEntriesQuery, Operations.RandomWheelEntriesQueryVariables>({
     query: Operations.RandomWheelEntriesDocument,
@@ -248,7 +248,7 @@ export function useRandomWheelEntriesQuery(
 }
 
 export function useRandomWheelWinnersQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelWinnersQueryVariables>, "query">
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelWinnersQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RandomWheelWinnersQuery, Operations.RandomWheelWinnersQueryVariables>({
     query: Operations.RandomWheelWinnersDocument,
@@ -257,7 +257,7 @@ export function useRandomWheelWinnersQuery(
 }
 
 export function useRandomWheelMembersQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelMembersQueryVariables>, "query">
+  options: Omit<Urql.UseQueryArgs<Operations.RandomWheelMembersQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RandomWheelMembersQuery, Operations.RandomWheelMembersQueryVariables>({
     query: Operations.RandomWheelMembersDocument,
@@ -266,7 +266,7 @@ export function useRandomWheelMembersQuery(
 }
 
 export function useChannelRewardsQuery(
-  options?: Omit<Urql.UseQueryArgs<Operations.ChannelRewardsQueryVariables>, "query">
+  options?: Omit<Urql.UseQueryArgs<Operations.ChannelRewardsQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.ChannelRewardsQuery, Operations.ChannelRewardsQueryVariables>({
     query: Operations.ChannelRewardsDocument,
@@ -275,7 +275,7 @@ export function useChannelRewardsQuery(
 }
 
 export function useRewardByTokenQuery(
-  options: Omit<Urql.UseQueryArgs<Operations.RewardByTokenQueryVariables>, "query">
+  options: Omit<Urql.UseQueryArgs<Operations.RewardByTokenQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RewardByTokenQuery, Operations.RewardByTokenQueryVariables>({
     query: Operations.RewardByTokenDocument,
@@ -291,7 +291,7 @@ export function useRewardGroupQuery(options: Omit<Urql.UseQueryArgs<Operations.R
 }
 
 export function useRewardGroupsQuery(
-  options?: Omit<Urql.UseQueryArgs<Operations.RewardGroupsQueryVariables>, "query">
+  options?: Omit<Urql.UseQueryArgs<Operations.RewardGroupsQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.RewardGroupsQuery, Operations.RewardGroupsQueryVariables>({
     query: Operations.RewardGroupsDocument,
@@ -314,7 +314,7 @@ export function useSyncForWheelQuery(options: Omit<Urql.UseQueryArgs<Operations.
 }
 
 export function useUserAccessTokenQuery(
-  options?: Omit<Urql.UseQueryArgs<Operations.UserAccessTokenQueryVariables>, "query">
+  options?: Omit<Urql.UseQueryArgs<Operations.UserAccessTokenQueryVariables>, "query">,
 ) {
   return Urql.useQuery<Operations.UserAccessTokenQuery, Operations.UserAccessTokenQueryVariables>({
     query: Operations.UserAccessTokenDocument,

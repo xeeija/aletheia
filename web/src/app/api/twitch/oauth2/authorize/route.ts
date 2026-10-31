@@ -23,7 +23,7 @@ export const GET: RouteHandler = async () => {
       stateResponse.status,
       stateResponse.statusText,
       stateResponse.url,
-      await stateResponse.text()
+      await stateResponse.text(),
     )
 
     // return Response.json({ message: "Failed to generate state" }, { status: 500 })

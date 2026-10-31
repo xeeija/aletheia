@@ -41,7 +41,7 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token, wheel: initialWheel,
         // setLastWinnerEntry(result.entry)
       }
     },
-    [addRandomWheelWinner]
+    [addRandomWheelWinner],
   )
 
   const socketOptions = useMemo<RandomWheelSocketOptions>(
@@ -50,7 +50,7 @@ export const RandomWheelDetail: FC<Props> = ({ slug, token, wheel: initialWheel,
       onSpinStarted,
       onSpinFinished,
     }),
-    [onSpinStarted, onSpinFinished]
+    [onSpinStarted, onSpinFinished],
   )
 
   const [{ wheel, entries, winners, fetching, lastWinnerEntry }, { deleteEntry }] = useRandomWheel(slug ?? "", {

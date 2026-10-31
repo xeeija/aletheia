@@ -57,7 +57,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
       ...options?.socket,
       token: options?.socket?.token || options?.token,
     }),
-    [options?.socket, options?.token]
+    [options?.socket, options?.token],
   )
 
   const { rotation, spinning, lastWinnerEntry, isConnected } = useRandomWheelSocket(wheelSlug, socketOptions)
@@ -75,7 +75,7 @@ export const useRandomWheel = (wheelSlug: string | string[], options?: RandomWhe
             liked: liked ?? wheel?.liked ?? false,
           }
         : undefined,
-    [wheel, rotation, spinning, liked]
+    [wheel, rotation, spinning, liked],
   )
 
   return [

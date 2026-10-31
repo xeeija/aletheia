@@ -14,7 +14,7 @@ export interface RandomWheelActions {
   clear: () => Promise<void>
   updateWheel: (options: RandomWheelInput) => Promise<void>
   updateMembers: (
-    members: RandomWheelMemberInput | RandomWheelMemberInput[]
+    members: RandomWheelMemberInput | RandomWheelMemberInput[],
   ) => Promise<{ id: string }[] | null | undefined>
   deleteEntry: (entryId: string) => Promise<void>
   deleteWheel: () => Promise<void>
@@ -31,7 +31,7 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
       { id: entryId },
       {
         additionalTypenames: ["RandomWheelEntry"],
-      }
+      },
     )
 
     if (error || !data?.deleteRandomWheelEntry) {
@@ -111,7 +111,7 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
       {
         requestPolicy: "cache-and-network",
         additionalTypenames: ["RandomWheel"],
-      }
+      },
     )
 
     if (error || !data?.resetShareToken) {
@@ -136,7 +136,7 @@ export const useRandomWheelActions = (wheelId: string | undefined) => {
       },
       {
         additionalTypenames: ["RandomWheelMember"],
-      }
+      },
     )
 
     if (error) {

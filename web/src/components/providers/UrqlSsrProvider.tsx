@@ -85,7 +85,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
               .forEach((field) => {
                 cache.updateQuery(
                   { query: MyRandomWheelsDocument, variables: field.arguments ?? undefined },
-                  (data) => ({ ...data, myRandomWheels: [] })
+                  (data) => ({ ...data, myRandomWheels: [] }),
                 )
 
                 //     // cache.invalidate(key, field.fieldKey)
@@ -99,7 +99,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
           addRandomWheelEntry: (
             result: AddRandomWheelEntryMutation,
             args: AddRandomWheelEntryMutationVariables,
-            cache
+            cache,
           ) => {
             // console.log("addRandomWheelEntry", { _result, _args: args, _info })
 
@@ -190,7 +190,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
           addRandomWheelWinner: (
             _: LocalAddRandomWheelWinnerMutation,
             args: LocalAddRandomWheelWinnerMutationVariables,
-            cache
+            cache,
           ) => {
             // console.log("cache addRandomWheelEntry", { result, args })
 
@@ -236,7 +236,7 @@ export const UrqlSsrProvider: FC<Props> = ({ children }) => {
                   (data) => ({
                     ...data,
                     channelRewards: data?.channelRewards.filter((r) => r.id !== args.rewardId) ?? [],
-                  })
+                  }),
                 )
               })
           },

@@ -37,7 +37,7 @@ export const useRewardLinks = ({ type, rewardIds, pause }: RewardLinkConfig) => 
         {
           requestPolicy: "cache-and-network",
           additionalTypenames: ["RewardLink"],
-        }
+        },
       )
 
       fetchRewardLinks({ requestPolicy: "cache-and-network" })
@@ -55,7 +55,7 @@ export const useRewardLinks = ({ type, rewardIds, pause }: RewardLinkConfig) => 
         {
           requestPolicy: "cache-and-network",
           additionalTypenames: ["RewardLink"],
-        }
+        },
       )
 
       return {

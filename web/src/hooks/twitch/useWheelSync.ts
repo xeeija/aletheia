@@ -49,14 +49,14 @@ export const useWheelSync = (config: { randomWheelId: string; fetchSync?: boolea
         { id, paused },
         {
           additionalTypenames: ["RandomWheelSync"],
-        }
+        },
       ),
     deleteWheelSync: (ids: string | string[]) =>
       deleteWheelSync(
         { ids },
         {
           additionalTypenames: ["RandomWheelSync"],
-        }
+        },
       ),
   }
 }

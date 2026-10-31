@@ -35,7 +35,7 @@ export const useRewardGroupsActions = () => {
     updateGroup: async (
       id: string,
       rewardGroup?: RewardGroupInput,
-      items?: RewardGroupItemInput | RewardGroupItemInput[]
+      items?: RewardGroupItemInput | RewardGroupItemInput[],
     ) => {
       const response = await updateRewardGroup({
         id,

@@ -91,7 +91,7 @@ export const useRandomWheelSocket = (wheelSlug: string | string[] | undefined, o
 
           // TODO: update urql cache
         },
-        wheel.spinDuration + 500 + 20
+        wheel.spinDuration + 500 + 20,
       )
     }
 

@@ -19,7 +19,7 @@ export const useUsernameValidator = () => {
     }
 
     return usernameExists({ username: username }).then(({ data }) =>
-      data?.usernameExists ? "User already exists" : undefined
+      data?.usernameExists ? "User already exists" : undefined,
     )
   }
 

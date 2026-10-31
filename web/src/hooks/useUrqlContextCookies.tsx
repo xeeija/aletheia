@@ -16,7 +16,7 @@ export const useUrqlContextCookies = () => {
         // ...context?.fetchOptions,
       },
     }),
-    [cookie]
+    [cookie],
   )
 
   return contextMemo

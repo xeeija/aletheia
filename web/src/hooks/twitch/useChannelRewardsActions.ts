@@ -85,6 +85,6 @@ export const useChannelRewardsActions = () => {
       deleteChannelReward,
       fetchingDelete,
       errorDelete,
-    ]
+    ],
   )
 }

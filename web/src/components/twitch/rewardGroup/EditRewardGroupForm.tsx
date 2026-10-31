@@ -42,7 +42,7 @@ export const EditRewardGroupForm: FC<Props> = ({
         object().shape({
           rewardId: string().required("Required"),
           triggerCooldown: boolean(),
-        })
+        }),
       )
       .min(1, "At least one reward is required"),
   })
@@ -64,7 +64,7 @@ export const EditRewardGroupForm: FC<Props> = ({
           values.items.map((item) => ({
             rewardId: item.rewardId,
             triggerCooldown: item.triggerCooldown,
-          }))
+          })),
         )
 
         if (response.rewardGroup) {

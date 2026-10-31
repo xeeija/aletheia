@@ -47,7 +47,7 @@ export interface AppErrorProps {
 
 export type MetadataFn<P extends object = Empty, SP extends object = Empty> = (
   props: AppPageProps<P, SP>,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ) => Awaitable<Metadata>
 
 // Route Handlers (and old API routes)
@@ -55,7 +55,7 @@ export type ApiHandler<T = unknown> = (req: NextApiRequest, res: NextApiResponse
 
 export type RouteHandler<Params extends object = Empty, Body = unknown> = (
   request: NextRequest,
-  context: RouteContext<Params>
+  context: RouteContext<Params>,
 ) => Awaitable<NextResponse<Body> | Response>
 
 export type RouteContext<Params extends object = Empty> = {

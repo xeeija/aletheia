@@ -44,7 +44,7 @@ export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose,
         object().shape({
           rewardId: string().required("Required"),
           triggerCooldown: boolean(),
-        })
+        }),
       )
       .min(1, "At least one reward is required"),
   })
@@ -62,7 +62,7 @@ export const CreateRewardGroupForm: FC<Props> = ({ formRef, actionsRef, onClose,
             name: values.name || null,
             active: values.active,
           },
-          values.items
+          values.items,
         )
 
         if (response.rewardGroup) {

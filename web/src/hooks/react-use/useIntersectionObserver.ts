@@ -7,13 +7,13 @@ import { getTargetElement, useIsomorphicLayoutEffect, useLatest, useStableTarget
 export type UseIntersectionObserver = (
   target: BasicTarget<Element>,
   callback: IntersectionObserverCallback,
-  options?: IntersectionObserverInit
+  options?: IntersectionObserverInit,
 ) => () => void
 
 export const useIntersectionObserver: UseIntersectionObserver = (
   target,
   callback: IntersectionObserverCallback,
-  options: IntersectionObserverInit = {}
+  options: IntersectionObserverInit = {},
 ): (() => void) => {
   const savedCallback = useLatest(callback)
   const observerRef = useRef<IntersectionObserver>(undefined)

@@ -58,7 +58,7 @@ export const UserMenu: FC<Props> = () => {
       {},
       {
         additionalTypenames: ["User"],
-      }
+      },
     )
 
     if (response.error) {

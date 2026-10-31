@@ -16,7 +16,7 @@ export const useRewardLinkSocket = (token: string, disable?: boolean, onUpdate?:
         socket.emit("rewardlink:join", token)
       })
     },
-    [token, disable]
+    [token, disable],
   )
 
   const socket = useSocket(setup)

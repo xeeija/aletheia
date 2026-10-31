@@ -45,7 +45,7 @@ export const Popout: FC<Props> = ({ slug, token, wheel: initialWheel, entries: i
         setTimeout(() => setWinnerDialogOpen(false), wheel?.fadeDuration ?? 6000)
       }
     },
-    [hideWinnerDialog]
+    [hideWinnerDialog],
   )
 
   const socketOptions = useMemo<RandomWheelSocketOptions>(
@@ -54,7 +54,7 @@ export const Popout: FC<Props> = ({ slug, token, wheel: initialWheel, entries: i
       onSpinStarted,
       onSpinFinished,
     }),
-    [onSpinStarted, onSpinFinished]
+    [onSpinStarted, onSpinFinished],
   )
 
   const [{ wheel, lastWinnerEntry, entries }] = useRandomWheel(slug ?? "", {
